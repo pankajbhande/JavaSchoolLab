@@ -1,0 +1,83 @@
+# JavaSchoolLab: web (nginx + static site) -> api (Express) -> db (MySQL)
+#
+#   cd docker
+#   cp .env.example .env            # set JWT_SECRET and DB passwords
+#   docker compose up -d --build
+#   open http://localhost:8080
+name: javaschoollab
+
+services:
+  db:
+    image: mysql:8.4
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:?set DB_ROOT_PASSWORD in .env}
+      MYSQL_DATABASE: ${DB_NAME:-javaschoollab}
+      MYSQL_USER: ${DB_USER:-jsl}
+      MYSQL_PASSWORD: ${DB_PASSWORD:?set DB_PASSWORD in .env}
+    volumes:
+      - db_data:/var/lib/mysql
+      # Run once on first start (empty volume only), in filename order.
+      - ./mysql-init/000_base_schema.sql:/docker-entrypoint-initdb.d/000_base_schema.sql:ro
+      - ../server/migrations/001_learning_progress.sql:/docker-entrypoint-initdb.d/001_learning_progress.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p\"$$MYSQL_ROOT_PASSWORD\" --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    networks: [backend]
+
+  api:
+    build:
+      context: ../server
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PORT: 3001
+      JWT_SECRET: ${JWT_SECRET:?set JWT_SECRET in .env}
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_USER: ${DB_USER:-jsl}
+      DB_PASSWORD: ${DB_PASSWORD:?set DB_PASSWORD in .env}
+      DB_NAME: ${DB_NAME:-javaschoollab}
+      DB_POOL_SIZE: ${DB_POOL_SIZE:-10}
+      CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:8080}
+      # Email OTP delivery (Hostinger SMTP). Leave SMTP_HOST empty to disable.
+      SMTP_HOST: ${SMTP_HOST:-}
+      SMTP_PORT: ${SMTP_PORT:-465}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASS: ${SMTP_PASS:-}
+      SMTP_FROM: ${SMTP_FROM:-}
+    # Not published to the host: only nginx reaches it, via the internal network.
+    expose:
+      - "3001"
+    networks: [backend, frontend]
+
+  web:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+      args:
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL:-/api}
+        VITE_ADSENSE_CLIENT: ${VITE_ADSENSE_CLIENT:-}
+        VITE_AD_SLOT_RAIL_TOP: ${VITE_AD_SLOT_RAIL_TOP:-}
+        VITE_AD_SLOT_RAIL_BOTTOM: ${VITE_AD_SLOT_RAIL_BOTTOM:-}
+        VITE_AD_SLOT_CORNER: ${VITE_AD_SLOT_CORNER:-}
+        SITE_URL: ${SITE_URL:-https://javaschoollab.com}
+    restart: unless-stopped
+    depends_on:
+      - api
+    ports:
+      - "${WEB_PORT:-8080}:80"
+    networks: [frontend]
+
+volumes:
+  db_data:
+
+networks:
+  backend:
+  frontend:

@@ -1,0 +1,20 @@
+/// <reference types="vite/client" />
+
+interface ImportMetaEnv {
+  /** Base URL of the JavaSchoolLab API, e.g. https://api.javaschoollab.com/api */
+  readonly VITE_API_BASE_URL?: string;
+
+  /**
+   * AdSense publisher id, e.g. ca-pub-1234567890123456. Unset disables every ad slot,
+   * which is the correct state for local dev and for builds made before approval.
+   */
+  readonly VITE_ADSENSE_CLIENT?: string;
+  /** Numeric ad unit ids from AdSense > Ads > By ad unit. */
+  readonly VITE_AD_SLOT_RAIL_TOP?: string;
+  readonly VITE_AD_SLOT_RAIL_BOTTOM?: string;
+  readonly VITE_AD_SLOT_CORNER?: string;
+}
+
+interface ImportMeta {
+  readonly env: ImportMetaEnv;
+}

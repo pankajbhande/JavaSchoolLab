@@ -1,0 +1,933 @@
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  --font-size: 16px;
+  --background: #ffffff;
+  --foreground: oklch(0.145 0 0);
+  --card: #ffffff;
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: #030213;
+  --primary-foreground: oklch(1 0 0);
+  --secondary: oklch(0.95 0.0058 264.53);
+  --secondary-foreground: #030213;
+  --muted: #ececf0;
+  --muted-foreground: #717182;
+  --accent: #e9ebef;
+  --accent-foreground: #030213;
+  --destructive: #d4183d;
+  --destructive-foreground: #ffffff;
+  --border: rgba(0, 0, 0, 0.1);
+  --input: transparent;
+  --input-background: #f3f3f5;
+  --switch-background: #cbced4;
+  --font-weight-medium: 500;
+  --font-weight-normal: 400;
+  --ring: oklch(0.708 0 0);
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+  --radius: 0.625rem;
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: #030213;
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
+}
+
+.dark {
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.145 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.145 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.985 0 0);
+  --primary-foreground: oklch(0.205 0 0);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.396 0.141 25.723);
+  --destructive-foreground: oklch(0.637 0.237 25.331);
+  --border: oklch(0.269 0 0);
+  --input: oklch(0.269 0 0);
+  --ring: oklch(0.439 0 0);
+  --font-weight-medium: 500;
+  --font-weight-normal: 400;
+  --chart-1: oklch(0.488 0.243 264.376);
+  --chart-2: oklch(0.696 0.17 162.48);
+  --chart-3: oklch(0.769 0.188 70.08);
+  --chart-4: oklch(0.627 0.265 303.9);
+  --chart-5: oklch(0.645 0.246 16.439);
+  --sidebar: oklch(0.205 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(0.269 0 0);
+  --sidebar-ring: oklch(0.439 0 0);
+}
+
+@theme inline {
+  --font-sans: var(--font-sans);
+  --font-display: var(--font-display);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-input-background: var(--input-background);
+  --color-switch-background: var(--switch-background);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-feature-settings: 'cv11', 'ss01';
+  }
+
+  /**
+  * Default typography styles for HTML elements (h1-h4, p, label, button, input).
+  * These are in @layer base, so Tailwind utility classes (like text-sm, text-lg) automatically override them.
+  */
+
+  html {
+    font-size: var(--font-size);
+  }
+
+  h1 {
+    font-family: var(--font-display);
+    font-size: var(--text-2xl);
+    font-weight: 700;
+    line-height: 1.35;
+    letter-spacing: -0.01em;
+  }
+
+  h2 {
+    font-family: var(--font-display);
+    font-size: var(--text-xl);
+    font-weight: 700;
+    line-height: 1.4;
+    letter-spacing: -0.01em;
+  }
+
+  h3 {
+    font-family: var(--font-display);
+    font-size: var(--text-lg);
+    font-weight: 600;
+    line-height: 1.45;
+    letter-spacing: -0.005em;
+  }
+
+  h4 {
+    font-family: var(--font-display);
+    font-size: var(--text-base);
+    font-weight: 600;
+    line-height: 1.5;
+  }
+
+  label {
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+  }
+
+  button {
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+  }
+
+  input {
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-normal);
+    line-height: 1.5;
+  }
+
+  /* Custom Scrollbar Styles */
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 10px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #ea580c 0%, #f59e0b 100%);
+    border-radius: 10px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, #c2410c 0%, #d97706 100%);
+  }
+
+  .dark .custom-scrollbar::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  .dark .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #ea580c 0%, #f59e0b 100%);
+  }
+
+  .dark .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, #f97316 0%, #fbbf24 100%);
+  }
+
+  /* Firefox */
+  .custom-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: #ea580c rgba(0, 0, 0, 0.05);
+  }
+
+  .dark .custom-scrollbar {
+    scrollbar-color: #ea580c rgba(255, 255, 255, 0.05);
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  /* ---- Topic content styling: applies to every topic's raw HTML automatically ---- */
+  .topic-content table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin: 1.1rem 0;
+    border-radius: 0.875rem;
+    overflow: hidden;
+    box-shadow: 0 8px 24px -8px rgba(234, 88, 12, 0.25), 0 1px 3px rgba(0, 0, 0, 0.06);
+    border: 1px solid rgba(234, 88, 12, 0.18);
+  }
+
+  .topic-content th {
+    background: linear-gradient(135deg, #ea580c 0%, #f59e0b 100%);
+    color: #ffffff;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 0.8rem;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    padding: 0.75rem 1.1rem;
+    text-align: left;
+    border-bottom: 2px solid rgba(0, 0, 0, 0.08);
+    border-right: 1px solid rgba(255, 255, 255, 0.18);
+  }
+
+  .topic-content th:last-child {
+    border-right: none;
+  }
+
+  .topic-content td {
+    padding: 0.7rem 1.1rem;
+    border-top: 1px solid rgba(234, 88, 12, 0.1);
+    border-right: 1px solid rgba(234, 88, 12, 0.12);
+    transition: background 0.15s ease;
+  }
+
+  .topic-content td:last-child {
+    border-right: none;
+  }
+
+  .topic-content tr:nth-child(even) td {
+    background: rgba(254, 215, 170, 0.2);
+  }
+
+  .topic-content tr:hover td {
+    background: rgba(253, 186, 116, 0.4);
+    box-shadow: inset 3px 0 0 0 #ea580c;
+  }
+
+  .dark .topic-content table {
+    border-color: rgba(251, 146, 60, 0.22);
+    box-shadow: 0 8px 24px -8px rgba(0, 0, 0, 0.5), 0 1px 3px rgba(0, 0, 0, 0.4);
+  }
+
+  .dark .topic-content td {
+    border-top-color: rgba(251, 146, 60, 0.14);
+    border-right-color: rgba(251, 146, 60, 0.16);
+  }
+
+  .dark .topic-content tr:nth-child(even) td {
+    background: rgba(154, 52, 18, 0.18);
+  }
+
+  .dark .topic-content tr:hover td {
+    background: rgba(154, 52, 18, 0.32);
+    box-shadow: inset 3px 0 0 0 #f59e0b;
+  }
+
+  /* Pointwise lists: hanging indent so wrapped lines align under the text, not the bullet */
+  .topic-content ul {
+    list-style: none;
+    margin: 0.5rem 0;
+    padding: 0;
+  }
+
+  .topic-content ul li {
+    position: relative;
+    padding-left: 1.3rem;
+    margin-bottom: 0.55rem;
+    line-height: 1.65;
+    font-size: 0.95rem;
+    color: #3f3f46;
+  }
+
+  .dark .topic-content ul li {
+    color: #d4d4d8;
+  }
+
+  .topic-content ul li::before {
+    content: '\2022';
+    position: absolute;
+    left: 0.25rem;
+    color: #ea580c;
+    font-weight: 700;
+  }
+
+  .dark .topic-content ul li::before {
+    color: #fb923c;
+  }
+
+  .topic-content h3 {
+    font-family: var(--font-display);
+    color: #c2410c;
+    border-left: 4px solid #f59e0b;
+    padding-left: 0.75rem;
+    margin-top: 1.5rem;
+    margin-bottom: 0.65rem;
+    text-decoration: underline;
+    text-decoration-color: #f59e0b;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 4px;
+  }
+
+  .dark .topic-content h3 {
+    color: #fdba74;
+    border-left-color: #f59e0b;
+  }
+
+  .topic-content h4 {
+    font-family: var(--font-display);
+    color: #9a3412;
+    margin-top: 1rem;
+    margin-bottom: 0.4rem;
+  }
+
+  .dark .topic-content h4 {
+    color: #fcd34d;
+  }
+
+  /* Headings and tables already carry their own margins, so any <br> used as a
+     manual spacer immediately next to one (in either direction) is pure
+     redundant whitespace on top of that margin — remove the <br> itself
+     outright, so the heading/table margins are the only spacing rendered.
+     NOTE: "A + B" selects B (the element AFTER), so to remove a <br> that
+     comes BEFORE a heading/table we have to select the <br> directly via
+     :has(+ ...), not the heading/table that follows it. */
+  .topic-content br:has(+ h3),
+  .topic-content br:has(+ h4),
+  .topic-content br:has(+ table),
+  .topic-content h3 + br,
+  .topic-content h4 + br,
+  .topic-content table + br,
+  .topic-content br + br {
+    display: none;
+  }
+
+  /* Inline callout / scenario boxes used in topic content, e.g. <div class="border border-primary p-2"> */
+  .topic-content div.border {
+    background: linear-gradient(135deg, rgba(255, 247, 237, 0.9) 0%, rgba(254, 243, 199, 0.6) 100%);
+    border-radius: 0.5rem;
+    border-color: rgba(234, 88, 12, 0.35) !important;
+    line-height: 1.9;
+    margin: 0.75rem 0;
+  }
+
+  .dark .topic-content div.border {
+    background: linear-gradient(135deg, rgba(124, 45, 18, 0.25) 0%, rgba(120, 53, 15, 0.15) 100%);
+    border-color: rgba(251, 146, 60, 0.3) !important;
+  }
+
+  .topic-content div.bg-secondary {
+    background: rgba(255, 237, 213, 0.7) !important;
+    border-radius: 0.5rem;
+    line-height: 1.9;
+  }
+
+  .dark .topic-content div.bg-secondary {
+    background: rgba(124, 45, 18, 0.25) !important;
+  }
+
+  .topic-content strong {
+    color: #c2410c;
+  }
+
+  .dark .topic-content strong {
+    color: #fdba74;
+  }
+
+  /* ==================================================================
+     READABILITY PASS
+     Everything below styles the raw HTML that each topic injects, so it
+     applies to all 474 topics at once. Tag counts across the library:
+     td 9288 - br 8570 - tr 4512 - strong 3339 - code 3141 - h3 2607
+     li 1955 - th 1889 - h4 1247 - table 768 - b 738 - ul 498 - p 430
+     h2 403 - pre 310 - img 48 - ol 41
+     Of these, code / h2 / p / b / pre / ol / img / em previously had NO
+     rules at all and fell back to browser defaults.
+     ================================================================== */
+
+  /* ---- Base type scale. 16px with a 1.75 line height is the readable
+     baseline for long-form technical prose; list items were 0.95rem. ---- */
+  .topic-content {
+    font-size: 1rem;
+    line-height: 1.75;
+    color: #27272a;              /* ~13:1 on white, well past AA */
+  }
+
+  .dark .topic-content {
+    color: #d4d4d8;              /* ~11:1 on gray-900 */
+  }
+
+  .topic-content p {
+    margin: 0.85rem 0;
+    line-height: 1.8;
+  }
+
+  /* ---- h2 had no rule at all despite 403 uses ---- */
+  .topic-content h2 {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1.3;
+    color: #9a3412;
+    margin: 1.9rem 0 0.85rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 2px solid rgba(234, 88, 12, 0.25);
+    letter-spacing: -0.01em;
+  }
+
+  .dark .topic-content h2 {
+    color: #fdba74;
+    border-bottom-color: rgba(251, 146, 60, 0.3);
+  }
+
+  .topic-content h3 {
+    font-size: 1.22rem;
+    font-weight: 700;
+    line-height: 1.35;
+  }
+
+  .topic-content h4 {
+    font-size: 1.05rem;
+    line-height: 1.4;
+  }
+
+  /* ---- Lists: match the base size so prose and bullets read as one voice ---- */
+  .topic-content ul li,
+  .topic-content ol li {
+    font-size: 1rem;
+    line-height: 1.75;
+  }
+
+  /* ---- Ordered lists had no styling; numbers now match the bullet treatment ---- */
+  .topic-content ol {
+    counter-reset: jsl-ol;
+    list-style: none;
+    margin: 0.6rem 0;
+    padding: 0;
+  }
+
+  .topic-content ol li {
+    counter-increment: jsl-ol;
+    position: relative;
+    padding-left: 2.1rem;
+    margin-bottom: 0.55rem;
+    color: #3f3f46;
+  }
+
+  .dark .topic-content ol li {
+    color: #d4d4d8;
+  }
+
+  .topic-content ol li::before {
+    content: counter(jsl-ol);
+    position: absolute;
+    left: 0;
+    top: 0.22rem;
+    width: 1.45rem;
+    height: 1.45rem;
+    border-radius: 0.4rem;
+    background: linear-gradient(135deg, #ea580c, #f59e0b);
+    color: #ffffff;
+    font-size: 0.72rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 6px -1px rgba(234, 88, 12, 0.5);
+  }
+
+  /* ---- Inline code: 3,141 uses and previously rendered as plain prose,
+     so a class name was visually indistinguishable from a sentence. ---- */
+  .topic-content code {
+    font-family: ui-monospace, SFMono-Regular, "Cascadia Code", Consolas, "Courier New", monospace;
+    font-size: 0.88em;
+    background: rgba(234, 88, 12, 0.10);
+    color: #9a3412;
+    padding: 0.12rem 0.38rem;
+    border-radius: 0.35rem;
+    border: 1px solid rgba(234, 88, 12, 0.18);
+  }
+
+  .dark .topic-content code {
+    background: rgba(251, 146, 60, 0.14);
+    color: #fdba74;
+    border-color: rgba(251, 146, 60, 0.25);
+  }
+
+  /* ---- Block code inside the prose. Scrolls rather than overflowing. ---- */
+  .topic-content pre {
+    background: #1e1e1e;
+    color: #d4d4d4;
+    padding: 1rem 1.15rem;
+    border-radius: 0.75rem;
+    overflow-x: auto;
+    margin: 1.1rem 0;
+    font-size: 0.875rem;
+    line-height: 1.65;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 8px 24px -12px rgba(0, 0, 0, 0.5);
+  }
+
+  .topic-content pre code {
+    background: none;
+    border: none;
+    color: inherit;
+    padding: 0;
+    font-size: inherit;
+    white-space: pre;
+  }
+
+  /* ---- MAIN-POINT HIGHLIGHTING ----
+     strong/b marks the important phrase in every topic, and previously got only a
+     colour change (and only inside list items).
+
+     This was first tried as a gradient underlay - linear-gradient(transparent 60%, ...).
+     That positions against the inline CONTENT box, which begins near the baseline, so
+     with this page's 1.75 line-height the band landed under the descenders and read as a
+     clumsy, detached underline rather than a highlight. A padded chip cannot drift,
+     because padding hugs the glyphs whatever the line-height is. ---- */
+  .topic-content strong,
+  .topic-content b {
+    font-weight: 700;
+    color: #9a3412;
+    background: rgba(234, 88, 12, 0.12);
+    padding: 0.08em 0.32em;
+    border-radius: 0.35em;
+    /* Keep the chip whole when a highlighted phrase wraps onto the next line. */
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+  }
+
+  .dark .topic-content strong,
+  .dark .topic-content b {
+    color: #fdba74;
+    background: rgba(251, 146, 60, 0.15);
+  }
+
+  /* Inside a heading the highlighter would fight the heading's own styling. */
+  .topic-content h2 strong, .topic-content h3 strong, .topic-content h4 strong,
+  .topic-content h2 b, .topic-content h3 b, .topic-content h4 b,
+  .topic-content th strong, .topic-content th b {
+    background: none;
+    color: inherit;
+    padding: 0;
+  }
+
+  .topic-content mark {
+    background: rgba(245, 158, 11, 0.4);
+    color: inherit;
+    padding: 0.05rem 0.25rem;
+    border-radius: 0.25rem;
+  }
+
+  .topic-content em,
+  .topic-content i {
+    font-style: italic;
+    color: #52525b;
+  }
+
+  .dark .topic-content em,
+  .dark .topic-content i {
+    color: #a1a1aa;
+  }
+
+  /* ---- Images had no constraint and could overflow the column ---- */
+  .topic-content img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 1.15rem auto;
+    border-radius: 0.75rem;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    box-shadow: 0 8px 24px -14px rgba(0, 0, 0, 0.35);
+  }
+
+  .dark .topic-content img {
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+
+  /* ---- ALIGNMENT ----
+     Table cells previously inherited baseline alignment, so a row mixing a
+     one-word cell with a four-line cell looked vertically ragged. Top-aligning
+     every cell makes rows scan as rows. ---- */
+  .topic-content th,
+  .topic-content td {
+    vertical-align: top;
+    text-align: left;
+  }
+
+  /* A cell holding only a short marker reads better centred. */
+  .topic-content td[align="center"],
+  .topic-content th[align="center"] {
+    text-align: center;
+  }
+
+  .topic-content td code {
+    white-space: normal;
+    word-break: break-word;
+  }
+
+  /* Wide comparison tables must scroll inside their column on a phone rather
+     than pushing the whole page sideways. */
+  @media (max-width: 640px) {
+    .topic-content table {
+      display: block;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+  }
+
+  /* ---- Callouts. Content can opt in with a class; div.border already existed. ---- */
+  .topic-content .jsl-note,
+  .topic-content .jsl-tip,
+  .topic-content .jsl-warn {
+    border-left: 4px solid;
+    border-radius: 0 0.6rem 0.6rem 0;
+    padding: 0.8rem 1rem;
+    margin: 1.1rem 0;
+    font-size: 0.95rem;
+  }
+
+  .topic-content .jsl-note {
+    border-color: #0ea5e9;
+    background: rgba(14, 165, 233, 0.08);
+  }
+
+  .topic-content .jsl-tip {
+    border-color: #10b981;
+    background: rgba(16, 185, 129, 0.08);
+  }
+
+  .topic-content .jsl-warn {
+    border-color: #f59e0b;
+    background: rgba(245, 158, 11, 0.1);
+  }
+
+  /* ---- ANIMATION ----
+     Injected HTML cannot carry motion components, so structural elements get a
+     short CSS reveal instead. `both` holds the start state so nothing flashes
+     at full opacity before the animation runs. ---- */
+  @keyframes jslRise {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: none; }
+  }
+
+  @keyframes jslWipe {
+    from { transform: scaleX(0); }
+    to   { transform: scaleX(1); }
+  }
+
+  .topic-content h2,
+  .topic-content h3,
+  .topic-content table,
+  .topic-content pre,
+  .topic-content img {
+    animation: jslRise 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  .topic-content h2 {
+    transform-origin: left;
+  }
+
+  /* The heading's underline draws itself in rather than simply appearing. */
+  .topic-content h3 {
+    position: relative;
+  }
+
+  .topic-content ul li,
+  .topic-content ol li {
+    animation: jslRise 0.35s ease-out both;
+  }
+
+  /* Stagger the first few list items; beyond that the delay would feel slow. */
+  .topic-content li:nth-child(1) { animation-delay: 0.02s; }
+  .topic-content li:nth-child(2) { animation-delay: 0.06s; }
+  .topic-content li:nth-child(3) { animation-delay: 0.10s; }
+  .topic-content li:nth-child(4) { animation-delay: 0.14s; }
+  .topic-content li:nth-child(5) { animation-delay: 0.18s; }
+
+  .topic-content tbody tr {
+    animation: jslRise 0.4s ease-out both;
+  }
+
+  /* Motion is decoration here, so honour the OS setting and drop all of it. */
+  @media (prefers-reduced-motion: reduce) {
+    .topic-content *,
+    .topic-content *::before,
+    .topic-content *::after {
+      animation: none !important;
+      transition: none !important;
+    }
+  }
+
+
+  /* ---- Diagram animation for the JVM / JDK / JRE topic.
+     This lived in a <style> tag inside that topic's content HTML. Because topic content
+     is injected with dangerouslySetInnerHTML, that tag was a document-wide CSS injection
+     rather than scoped styling, so it belongs here instead. ---- */
+  @keyframes jvmdiagGlowJdk { 0%,100% { box-shadow: 0 0 0px 0px rgba(234,88,12,0.0); border-color: rgba(234,88,12,0.35); } 50% { box-shadow: 0 0 22px 3px rgba(234,88,12,0.35); border-color: rgba(234,88,12,0.9); } }
+  @keyframes jvmdiagGlowJre { 0%,100% { box-shadow: 0 0 0px 0px rgba(245,158,11,0.0); border-color: rgba(245,158,11,0.35); } 50% { box-shadow: 0 0 20px 3px rgba(245,158,11,0.4); border-color: rgba(245,158,11,0.9); } }
+  @keyframes jvmdiagGlowJvm { 0%,100% { box-shadow: 0 0 0px 0px rgba(251,191,36,0.0); border-color: rgba(251,191,36,0.4); } 50% { box-shadow: 0 0 18px 4px rgba(251,191,36,0.55); border-color: rgba(251,191,36,1); } }
+  @keyframes jvmdiagPulseDot { 0% { transform: translateY(-64px); opacity: 0; } 15% { opacity: 1; } 85% { opacity: 1; } 100% { transform: translateY(64px); opacity: 0; } }
+  @keyframes jvmdiagCore { 0%,100% { transform: scale(1); } 50% { transform: scale(1.18); } }
+}
+@layer base {
+  /* ---- Skip link: visually hidden until focused, then pinned top-left. ---- */
+  .jsl-skip-link {
+    position: absolute;
+    left: -9999px;
+    top: 0;
+    z-index: 100;
+    padding: 0.75rem 1.25rem;
+    background: #ea580c;
+    color: #ffffff;
+    font-weight: 600;
+    border-radius: 0 0 0.5rem 0;
+  }
+
+  .jsl-skip-link:focus {
+    left: 0;
+  }
+
+  /* A visible focus ring everywhere, without the mouse-click outline that made
+     people remove outlines in the first place. */
+  :focus-visible {
+    outline: 3px solid #ea580c;
+    outline-offset: 2px;
+    border-radius: 0.25rem;
+  }
+
+  .dark :focus-visible {
+    outline-color: #fb923c;
+  }
+
+  /* Screen-reader-only utility for labelling icon-only controls. */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+}
+
+@layer base {
+  /* ---- Interview questions, laid out line by line ----
+     307 of the 474 topics end in a two-column Question/Answer table. In the content
+     column each cell wrapped to three or four lines and the pairing was hard to follow,
+     so transformQaTables() rewrites those tables (and only those) into this stack. ---- */
+  .topic-content .jsl-qa {
+    margin: 1.1rem 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+  }
+
+  .topic-content .jsl-qa-item {
+    border-left: 3px solid #ea580c;
+    border-radius: 0 0.6rem 0.6rem 0;
+    background: rgba(255, 247, 237, 0.75);
+    padding: 0.75rem 1rem;
+  }
+
+  .dark .topic-content .jsl-qa-item {
+    background: rgba(124, 45, 18, 0.16);
+    border-left-color: #fb923c;
+  }
+
+  .topic-content .jsl-qa-q {
+    margin: 0 0 0.3rem;
+    font-weight: 650;
+    line-height: 1.5;
+    color: #9a3412;
+  }
+
+  .dark .topic-content .jsl-qa-q {
+    color: #fdba74;
+  }
+
+  /* The counter gives each question a number without needing one in the source. */
+  .topic-content .jsl-qa {
+    counter-reset: jsl-qa;
+  }
+
+  .topic-content .jsl-qa-q::before {
+    counter-increment: jsl-qa;
+    content: 'Q' counter(jsl-qa) '. ';
+    font-family: var(--font-display);
+    opacity: 0.75;
+  }
+
+  .topic-content .jsl-qa-a {
+    margin: 0;
+    line-height: 1.7;
+    color: #3f3f46;
+  }
+
+  .dark .topic-content .jsl-qa-a {
+    color: #d4d4d8;
+  }
+
+  .topic-content .jsl-qa-a::before {
+    content: 'A. ';
+    font-family: var(--font-display);
+    font-weight: 600;
+    color: #ea580c;
+    opacity: 0.8;
+  }
+
+  .dark .topic-content .jsl-qa-a::before {
+    color: #fb923c;
+  }
+
+  /* "Feature | Meaning" summaries are definition lists wearing a grid; unwrap them. */
+  .topic-content .jsl-def {
+    margin: 1.1rem 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+  }
+
+  .topic-content .jsl-def-item {
+    border-left: 3px solid #d97706;
+    border-radius: 0 0.6rem 0.6rem 0;
+    background: rgba(254, 252, 232, 0.72);
+    padding: 0.65rem 1rem;
+  }
+
+  .dark .topic-content .jsl-def-item {
+    background: rgba(120, 53, 15, 0.14);
+    border-left-color: #fbbf24;
+  }
+
+  .topic-content .jsl-def-t {
+    margin: 0 0 0.2rem;
+    font-family: var(--font-display);
+    font-weight: 700;
+    line-height: 1.45;
+    color: #92400e;
+  }
+
+  .dark .topic-content .jsl-def-t {
+    color: #fcd34d;
+  }
+
+  .topic-content .jsl-def-d {
+    margin: 0;
+    line-height: 1.7;
+    color: #3f3f46;
+  }
+
+  .dark .topic-content .jsl-def-d {
+    color: #d4d4d8;
+  }
+
+  /* Term cells usually carry their own emphasis; don't stack it on the label style. */
+  .topic-content .jsl-def-t strong,
+  .topic-content .jsl-def-t b {
+    font-weight: inherit;
+    color: inherit;
+  }
+
+  .topic-content .jsl-def-t code {
+    background: none;
+    padding: 0;
+    color: inherit;
+  }
+
+  /* A nested layout table inside a cell keeps its own spacing. */
+  .topic-content .jsl-def-d > table {
+    margin: 0.4rem 0 0;
+  }
+}

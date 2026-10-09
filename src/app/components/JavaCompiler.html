@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Java Compiler</title>
+<style>
+  :root {
+    --bg: #1e1e1e;
+    --bg-panel: #252526;
+    --bg-titlebar: #323233;
+    --border: #3c3c3c;
+    --text: #d4d4d4;
+    --text-dim: #8a8a8a;
+    --accent: #0e9f6e;
+    --accent-hover: #0d8a5f;
+    --blue: #007acc;
+    --blue-hover: #0090f1;
+    --red: #f14c4c;
+    --yellow: #dcb350;
+    --gutter-bg: #1e1e1e;
+    --gutter-text: #6e7681;
+    --page-bg: #12121a;
+    --shadow: 0 20px 50px -20px rgba(0,0,0,0.6);
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    background: var(--page-bg);
+    background-image:
+      radial-gradient(circle at 12% 8%, rgba(234,88,12,0.14), transparent 42%),
+      radial-gradient(circle at 88% 92%, rgba(245,158,11,0.13), transparent 45%),
+      radial-gradient(circle at 92% 15%, rgba(14,159,110,0.06), transparent 38%);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+
+  .page {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 28px 24px 40px;
+    min-height: 100%;
+  }
+
+  .app-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .app-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .app-title .logo {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #f89820, #e76f00);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    box-shadow: 0 4px 14px rgba(232,111,0,0.45);
+  }
+
+  .app-title h1 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 700;
+    color: #f4f4f5;
+    letter-spacing: 0.2px;
+  }
+
+  .app-title .subtitle {
+    margin: 2px 0 0;
+    font-size: 12.5px;
+    color: var(--text-dim);
+  }
+
+  .header-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 12.5px;
+    color: var(--text-dim);
+  }
+
+  .header-badge .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 8px var(--accent);
+  }
+
+  .workspace {
+    display: grid;
+    grid-template-columns: 3fr 2fr;
+    gap: 18px;
+    align-items: stretch;
+  }
+
+  @media (max-width: 900px) {
+    .workspace { grid-template-columns: 1fr; }
+  }
+
+  .panel {
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .panel-titlebar {
+    background: var(--bg-titlebar);
+    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .traffic-lights {
+    display: flex;
+    gap: 7px;
+  }
+
+  .traffic-lights span {
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    display: inline-block;
+  }
+
+  .tl-red { background: #ff5f57; }
+  .tl-yellow { background: #febc2e; }
+  .tl-green { background: #28c840; }
+
+  .panel-filename {
+    font-size: 12.5px;
+    color: var(--text-dim);
+    font-family: ui-monospace, SFMono-Regular, "JetBrains Mono", Menlo, Consolas, monospace;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .panel-filename .file-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--yellow);
+  }
+
+  .toolbar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+    background: var(--bg-panel);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    border: none;
+    border-radius: 7px;
+    padding: 7px 14px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.12s ease, filter 0.12s ease, background 0.12s ease;
+    font-family: inherit;
+  }
+
+  .btn:active { transform: translateY(1px) scale(0.98); }
+
+  .btn svg { width: 14px; height: 14px; flex-shrink: 0; }
+
+  .btn-run {
+    background: linear-gradient(135deg, var(--accent), #0b8659);
+    color: #fff;
+    box-shadow: 0 4px 14px rgba(14,159,110,0.35);
+  }
+  .btn-run:hover { filter: brightness(1.08); }
+  .btn-run:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    filter: none;
+  }
+
+  .btn-copy {
+    background: rgba(255,255,255,0.07);
+    color: var(--text);
+    border: 1px solid var(--border);
+  }
+  .btn-copy:hover { background: rgba(255,255,255,0.12); }
+
+  .btn-reset {
+    background: rgba(220,179,80,0.12);
+    color: var(--yellow);
+    border: 1px solid rgba(220,179,80,0.35);
+  }
+  .btn-reset:hover { background: rgba(220,179,80,0.2); }
+
+  .toolbar-spacer { flex: 1; }
+
+  .lang-pill {
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+    color: #f89820;
+    background: rgba(248,152,32,0.12);
+    border: 1px solid rgba(248,152,32,0.3);
+    padding: 5px 10px;
+    border-radius: 999px;
+  }
+
+  .editor-wrap {
+    position: relative;
+    flex: 1;
+    display: flex;
+    min-height: 420px;
+    background: var(--bg);
+  }
+
+  .gutter {
+    flex-shrink: 0;
+    width: 46px;
+    background: var(--gutter-bg);
+    color: var(--gutter-text);
+    font-family: ui-monospace, SFMono-Regular, "JetBrains Mono", Menlo, Consolas, monospace;
+    font-size: 13px;
+    line-height: 21px;
+    text-align: right;
+    padding: 14px 8px 14px 0;
+    user-select: none;
+    overflow: hidden;
+    border-right: 1px solid var(--border);
+    white-space: pre;
+  }
+
+  #code {
+    flex: 1;
+    resize: none;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: #d4d4d4;
+    font-family: ui-monospace, SFMono-Regular, "JetBrains Mono", Menlo, Consolas, monospace;
+    font-size: 13px;
+    line-height: 21px;
+    padding: 14px 16px;
+    tab-size: 4;
+    white-space: pre;
+    overflow: auto;
+  }
+
+  #code::selection { background: rgba(0,122,204,0.4); }
+
+  .status-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 7px 14px;
+    background: var(--bg-titlebar);
+    border-top: 1px solid var(--border);
+    font-size: 11.5px;
+    color: var(--text-dim);
+    font-family: ui-monospace, SFMono-Regular, "JetBrains Mono", Menlo, Consolas, monospace;
+  }
+
+  .status-left { display: flex; align-items: center; gap: 14px; }
+
+  .output-area {
+    flex: 1;
+    min-height: 420px;
+    padding: 16px;
+    font-family: ui-monospace, SFMono-Regular, "JetBrains Mono", Menlo, Consolas, monospace;
+    font-size: 13px;
+    line-height: 1.6;
+    white-space: pre-wrap;
+    word-break: break-word;
+    overflow: auto;
+    background:
+      repeating-linear-gradient(transparent, transparent 20px, rgba(255,255,255,0.012) 21px);
+  }
+
+  .output-placeholder {
+    color: var(--text-dim);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: 100%;
+  }
+
+  .output-placeholder svg { width: 15px; height: 15px; opacity: 0.7; }
+
+  .output-line-stdout { color: #d4d4d4; }
+  .output-line-stderr { color: var(--red); }
+  .output-line-success-banner {
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+    font-weight: 600;
+    padding-bottom: 8px;
+    border-bottom: 1px dashed var(--border);
+  }
+  .output-line-error-banner {
+    color: var(--red);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+    font-weight: 600;
+    padding-bottom: 8px;
+    border-bottom: 1px dashed var(--border);
+  }
+
+  .running-indicator {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--blue);
+    font-weight: 600;
+  }
+
+  .spinner {
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    border: 2px solid rgba(0,122,204,0.25);
+    border-top-color: var(--blue);
+    animation: spin 0.7s linear infinite;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 6px;
+  }
+  .status-ready .status-dot { background: var(--text-dim); }
+  .status-running .status-dot { background: var(--blue); box-shadow: 0 0 6px var(--blue); animation: pulse 1s infinite; }
+  .status-success .status-dot { background: var(--accent); box-shadow: 0 0 6px var(--accent); }
+  .status-error .status-dot { background: var(--red); box-shadow: 0 0 6px var(--red); }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: #1f2937;
+    color: #fff;
+    padding: 10px 18px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+    border: 1px solid rgba(255,255,255,0.08);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    z-index: 50;
+  }
+  .toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+  .toast svg { width: 15px; height: 15px; color: var(--accent); }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <div class="app-header">
+    <div class="app-title">
+      <div class="logo">☕</div>
+      <div>
+        <h1>Java Compiler</h1>
+        <p class="subtitle">Write, run, and test Java code instantly in your browser</p>
+      </div>
+    </div>
+    <div class="header-badge">
+      <span class="dot"></span>
+      Online &middot; Powered by Wandbox
+    </div>
+  </div>
+
+  <div class="workspace">
+
+    <!-- Editor Panel -->
+    <div class="panel">
+      <div class="panel-titlebar">
+        <div class="traffic-lights">
+          <span class="tl-red"></span>
+          <span class="tl-yellow"></span>
+          <span class="tl-green"></span>
+        </div>
+        <div class="panel-filename"><span class="file-dot"></span>Main.java</div>
+      </div>
+
+      <div class="toolbar">
+        <button class="btn btn-run" id="runBtn" onclick="runCode()">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+          Run
+        </button>
+        <button class="btn btn-copy" onclick="copyCode()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>
+          Copy
+        </button>
+        <button class="btn btn-reset" onclick="resetCode()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+          Reset
+        </button>
+        <div class="toolbar-spacer"></div>
+        <span class="lang-pill">JAVA</span>
+      </div>
+
+      <div class="editor-wrap">
+        <div class="gutter" id="gutter">1</div>
+        <textarea id="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off"></textarea>
+      </div>
+
+      <div class="status-bar">
+        <div class="status-left">
+          <span>UTF-8</span>
+          <span>OpenJDK 22</span>
+        </div>
+        <span id="charCount">0 characters</span>
+      </div>
+    </div>
+
+    <!-- Output Panel -->
+    <div class="panel">
+      <div class="panel-titlebar">
+        <div class="traffic-lights">
+          <span class="tl-red"></span>
+          <span class="tl-yellow"></span>
+          <span class="tl-green"></span>
+        </div>
+        <div class="panel-filename"><span class="file-dot" style="background:#3fb950;"></span>Console Output</div>
+      </div>
+
+      <div class="output-area" id="output">
+        <div class="output-placeholder" id="outputPlaceholder">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 5v14l11-7z"/></svg>
+          Click <b style="color:#d4d4d4; margin: 0 4px;">Run ▶</b> to see the output here
+        </div>
+      </div>
+
+      <div class="status-bar">
+        <div class="status-left">
+          <span id="statusIndicator" class="status-ready"><span class="status-dot"></span>Ready</span>
+        </div>
+        <span id="execTime"></span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="toast" id="toast">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+  <span id="toastText">Copied!</span>
+</div>
+
+<script>
+  const defaultCode = `public class Main {
+    public static void main(String[] args) {
+        System.out.println("Hello, World!");
+    }
+}`;
+
+  const codeArea = document.getElementById("code");
+  const outputArea = document.getElementById("output");
+  const outputPlaceholder = document.getElementById("outputPlaceholder");
+  const gutter = document.getElementById("gutter");
+  const runBtn = document.getElementById("runBtn");
+  const statusIndicator = document.getElementById("statusIndicator");
+  const execTimeEl = document.getElementById("execTime");
+  const charCountEl = document.getElementById("charCount");
+  const toast = document.getElementById("toast");
+  const toastText = document.getElementById("toastText");
+
+  const savedCode = localStorage.getItem("java_try_code");
+  codeArea.value = savedCode && savedCode.trim() ? savedCode : defaultCode;
+
+  function updateGutter() {
+    const lineCount = codeArea.value.split("\n").length;
+    let lines = "";
+    for (let i = 1; i <= lineCount; i++) lines += i + "\n";
+    gutter.textContent = lines;
+    charCountEl.textContent = codeArea.value.length + " characters";
+  }
+
+  function syncScroll() {
+    gutter.scrollTop = codeArea.scrollTop;
+  }
+
+  codeArea.addEventListener("input", () => {
+    updateGutter();
+    localStorage.setItem("java_try_code", codeArea.value);
+  });
+  codeArea.addEventListener("scroll", syncScroll);
+
+  // Tab key -> insert 4 spaces instead of losing focus
+  codeArea.addEventListener("keydown", (e) => {
+    if (e.key === "Tab") {
+      e.preventDefault();
+      const start = codeArea.selectionStart;
+      const end = codeArea.selectionEnd;
+      codeArea.value = codeArea.value.substring(0, start) + "    " + codeArea.value.substring(end);
+      codeArea.selectionStart = codeArea.selectionEnd = start + 4;
+      updateGutter();
+    }
+  });
+
+  updateGutter();
+
+  function showToast(message) {
+    toastText.textContent = message;
+    toast.classList.add("show");
+    setTimeout(() => toast.classList.remove("show"), 1800);
+  }
+
+  function copyCode() {
+    navigator.clipboard.writeText(codeArea.value).then(() => {
+      showToast("Code copied to clipboard!");
+    }).catch(() => {
+      codeArea.select();
+      document.execCommand("copy");
+      showToast("Code copied to clipboard!");
+    });
+  }
+
+  function resetCode() {
+    codeArea.value = defaultCode;
+    updateGutter();
+    localStorage.setItem("java_try_code", defaultCode);
+    setOutputPlaceholder();
+    setStatus("ready");
+    execTimeEl.textContent = "";
+  }
+
+  function setOutputPlaceholder() {
+    outputArea.innerHTML = "";
+    outputArea.appendChild(outputPlaceholder);
+  }
+
+  function setStatus(state, label) {
+    statusIndicator.className = "status-" + state;
+    const text = label || (state === "ready" ? "Ready" : state === "running" ? "Running" : state === "success" ? "Success" : "Error");
+    statusIndicator.innerHTML = '<span class="status-dot"></span>' + text;
+  }
+
+  function escapeHtml(str) {
+    return str
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;");
+  }
+
+  function renderOutput({ banner, bannerType, stdout, stderr }) {
+    let html = "";
+    if (banner) {
+      html += `<div class="output-line-${bannerType === "error" ? "error" : "success"}-banner">${banner}</div>`;
+    }
+    if (stdout) {
+      html += `<div class="output-line-stdout">${escapeHtml(stdout)}</div>`;
+    }
+    if (stderr) {
+      html += `<div class="output-line-stderr">${escapeHtml(stderr)}</div>`;
+    }
+    if (!stdout && !stderr && !banner) {
+      html = `<div class="output-line-stdout" style="color:#6e7681;">(no output)</div>`;
+    }
+    outputArea.innerHTML = html;
+  }
+
+  // NOTE: The public Piston API (emkc.org) went whitelist-only and now
+  // rejects every request with 401. Wandbox (wandbox.org) is used instead —
+  // it's free, requires no API key/token, and allows CORS from any origin.
+  const WANDBOX_COMPILE_URL = "https://wandbox.org/api/compile.json";
+  const WANDBOX_JAVA_COMPILER = "openjdk-jdk-22+36";
+
+  async function runCode() {
+    const code = codeArea.value;
+    if (!code.trim()) {
+      setStatus("error", "Empty");
+      renderOutput({ banner: "✕ No code to run", bannerType: "error" });
+      return;
+    }
+
+    if (!/public\s+static\s+void\s+main\s*\(\s*String/.test(code)) {
+      setStatus("error", "Compile Error");
+      renderOutput({ banner: "✕ No main() method found — add: public static void main(String[] args)", bannerType: "error" });
+      return;
+    }
+
+    runBtn.disabled = true;
+    setStatus("running");
+    execTimeEl.textContent = "";
+    outputArea.innerHTML = `<div class="running-indicator"><span class="spinner"></span>Compiling and running your code…</div>`;
+
+    const startedAt = performance.now();
+
+    // Wandbox always names the submitted file "prog.java". Java only
+    // requires the file name to match a PUBLIC top-level class, so we
+    // strip the "public" modifier from every top-level class/interface/enum
+    // declaration before sending. Multiple classes in one snippet (e.g. a
+    // helper class + a class with main()) keep working exactly as written —
+    // no manual file-splitting needed.
+    const sanitizedCode = code.replace(
+      /\bpublic(\s+)((?:final\s+|abstract\s+|static\s+)*(?:class|interface|enum)\s+)/g,
+      "$2"
+    );
+
+    try {
+      const response = await fetch(WANDBOX_COMPILE_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          code: sanitizedCode,
+          compiler: WANDBOX_JAVA_COMPILER,
+          save: false
+        })
+      });
+
+      if (!response.ok) {
+        const body = await response.text().catch(() => "");
+        finish(() => {
+          setStatus("error", "Server Error");
+          renderOutput({
+            banner: `✕ Compiler service responded with status ${response.status}`,
+            bannerType: "error",
+            stderr: body
+          });
+        });
+        return;
+      }
+
+      const data = await response.json();
+
+      const compileError = (data.compiler_error || "").trim();
+      const runtimeError = (data.program_error || "").trim();
+      const stdout = data.program_output || "";
+      const succeeded = data.status === "0" || data.status === 0;
+
+      finish(() => {
+        if (compileError) {
+          setStatus("error", "Compile Error");
+          renderOutput({ banner: "✕ Compilation failed", bannerType: "error", stderr: compileError });
+        } else if (!succeeded || runtimeError) {
+          setStatus("error", "Runtime Error");
+          renderOutput({ banner: "✕ Program exited with an error", bannerType: "error", stdout, stderr: runtimeError });
+        } else {
+          setStatus("success", "Success");
+          renderOutput({ banner: "✓ Program finished successfully", bannerType: "success", stdout });
+        }
+      });
+    } catch (err) {
+      finish(() => {
+        setStatus("error", "Connection Error");
+        renderOutput({
+          banner: "✕ Could not reach the compiler service",
+          bannerType: "error",
+          stderr: (err && err.message) ? err.message : "Please check your internet connection and try again."
+        });
+      });
+    }
+
+    function finish(render) {
+      const elapsed = ((performance.now() - startedAt) / 1000).toFixed(2);
+      execTimeEl.textContent = elapsed + "s";
+      runBtn.disabled = false;
+      render();
+    }
+  }
+</script>
+
+</body>
+</html>

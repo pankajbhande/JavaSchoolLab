@@ -1,0 +1,657 @@
+import { useEffect, useRef, useState } from 'react';
+import { motion, useMotionValue, useTransform, useInView, animate } from 'motion/react';
+import { ImageWithFallback } from './figma/ImageWithFallback';
+import { incrementVisitor, getVisitorCount } from '../services/api';
+import { ProgressPanel } from './ProgressPanel';
+import { useProgress } from '../context/ProgressContext';
+import { courseStats } from '../data/courseStats';
+import {
+  Users, Sparkles, GraduationCap, BookOpen, Award,
+  FileCode2, Coffee, Boxes, Puzzle, Database, Plug, Globe, Link2, Workflow, Rocket, Atom, Network,
+  Braces, Shield, Wind, AppWindow, Terminal, BrainCircuit, BarChart3, Binary,
+  Compass, Cpu,
+} from 'lucide-react';
+
+interface DashboardProps {
+  onCourseSelect: (courseId: string) => void;
+  /** Text typed in the header search box; filters the course cards. */
+  searchQuery?: string;
+}
+
+// Per-subject idle animation applied to each card's icon badge, keyed by `anim`.
+const iconAnimations: Record<string, { animate: Record<string, any>; transition: Record<string, any> }> = {
+  // HTML/CSS - like a </> tag wiggling open and closed
+  type: {
+    animate: { rotate: [0, -14, 14, 0] },
+    transition: { duration: 2, repeat: Infinity, repeatDelay: 0.6, ease: 'easeInOut' },
+  },
+  // Java - coffee cup jitter/bob
+  brew: {
+    animate: { y: [0, -3, 0, -1, 0], rotate: [0, -6, 6, 0] },
+    transition: { duration: 1.6, repeat: Infinity, ease: 'easeInOut' },
+  },
+  // Collection Framework - stacked layers bobbing
+  stack: {
+    animate: { y: [0, -4, 0] },
+    transition: { duration: 1.2, repeat: Infinity, ease: 'easeInOut' },
+  },
+  // Design Patterns - slow continuous rotation like a gear/blueprint turning
+  gear: {
+    animate: { rotate: 360 },
+    transition: { duration: 5, repeat: Infinity, ease: 'linear' },
+  },
+  // Databases - pulsing like a sync/heartbeat
+  pulse: {
+    animate: { scale: [1, 1.22, 1], opacity: [1, 0.75, 1] },
+    transition: { duration: 1.7, repeat: Infinity, ease: 'easeInOut' },
+  },
+  // Servers/Microservices - radar-style ping
+  ping: {
+    animate: { scale: [1, 1.3, 1] },
+    transition: { duration: 1.5, repeat: Infinity, ease: 'easeOut' },
+  },
+  // Spring Boot - page flip
+  flip: {
+    animate: { rotateY: [0, 180, 360] },
+    transition: { duration: 2.4, repeat: Infinity, ease: 'easeInOut' },
+  },
+  // React JS - full orbit spin, echoing the React atom logo
+  orbit: {
+    animate: { rotate: 360 },
+    transition: { duration: 3, repeat: Infinity, ease: 'linear' },
+  },
+};
+
+const CATEGORY_ORDER = [
+  'Foundations',
+  'Web Development',
+  'Core Java',
+  'Python',
+  'Java Enterprise & Backend',
+  'Desktop Development',
+  'Data Science & AI',
+] as const;
+
+const courseCards = [
+
+  {
+    id: 'software-foundations',
+    name: 'Software Fundamentals',
+    icon: Compass,
+    color: 'from-slate-600 via-blue-600 to-indigo-700',
+    glow: 'group-hover:shadow-blue-500/30',
+    description: 'Core software engineering concepts',
+    query: 'software engineering fundamentals',
+    anim: 'gear',
+    category: 'Foundations'
+  },
+  {
+    id: 'programming-fundamentals',
+    name: 'Programming Fundamentals',
+    icon: Cpu,
+    color: 'from-emerald-600 via-teal-600 to-cyan-700',
+    glow: 'group-hover:shadow-emerald-500/30',
+    description: 'Programming concepts & algorithms',
+    query: 'programming fundamentals algorithms',
+    anim: 'pulse',
+    category: 'Foundations'
+  },
+
+  {
+    id: 'HTML and CSS',
+    name : 'HTML and CSS',
+    icon  : FileCode2,
+    color: 'from-sky-500 via-blue-500 to-indigo-600',
+    glow: 'group-hover:shadow-blue-500/30',
+    description: 'Html and css programming',
+    query: 'html and css programming code',
+    anim: 'type',
+    category: 'Web Development'
+  },
+  {
+    id: 'javascript',
+    name: 'JavaScript',
+    icon: Braces,
+    color: 'from-yellow-400 via-amber-500 to-orange-600',
+    glow: 'group-hover:shadow-amber-500/30',
+    description: 'The language of the web',
+    query: 'javascript programming',
+    anim: 'type',
+    category: 'Web Development'
+  },
+  {
+    id: 'react-js',
+    name: 'React JS',
+    icon: Atom,
+    color: 'from-cyan-400 via-sky-500 to-blue-600',
+    glow: 'group-hover:shadow-sky-500/30',
+    description: 'Build modern user interfaces',
+    query: 'react frontend',
+    anim: 'orbit',
+    category: 'Web Development'
+  },
+  {
+    id: 'angular',
+    name: 'Angular',
+    icon: Shield,
+    color: 'from-red-500 via-rose-600 to-pink-700',
+    glow: 'group-hover:shadow-red-500/30',
+    description: 'Build enterprise single-page apps',
+    query: 'angular framework',
+    anim: 'gear',
+    category: 'Web Development'
+  },
+  {
+    id: 'flutter',
+    name: 'Flutter',
+    icon: Wind,
+    color: 'from-sky-400 via-blue-500 to-cyan-600',
+    glow: 'group-hover:shadow-sky-500/30',
+    description: 'Cross-platform apps from one codebase',
+    query: 'flutter mobile development',
+    anim: 'ping',
+    category: 'Web Development'
+  },
+
+  {
+    id: 'java',
+    name: 'Java',
+    icon: Coffee,
+    color: 'from-orange-500 via-red-500 to-rose-600',
+    glow: 'group-hover:shadow-orange-500/30',
+    description: 'Master Java programming fundamentals',
+    query: 'java programming code',
+    anim: 'brew',
+    category: 'Core Java'
+  },
+  {
+    id: 'collection',
+    name: 'Collection Framework',
+    icon: Boxes,
+    color: 'from-cyan-500 via-sky-500 to-blue-600',
+    glow: 'group-hover:shadow-cyan-500/30',
+    description: 'Learn Java Collections in depth',
+    query: 'data structure collection',
+    anim: 'stack',
+    category: 'Core Java'
+  },
+  {
+    id: 'design-patterns',
+    name: 'Design Patterns',
+    icon: Puzzle,
+    color: 'from-fuchsia-500 via-purple-500 to-violet-600',
+    glow: 'group-hover:shadow-purple-500/30',
+    description: 'Understand software design patterns',
+    query: 'design pattern architecture',
+    anim: 'gear',
+    category: 'Core Java'
+  },
+  {
+    id: 'algorithms',
+    name: 'Algorithms',
+    icon: Binary,
+    color: 'from-slate-500 via-gray-600 to-zinc-700',
+    glow: 'group-hover:shadow-slate-500/30',
+    description: 'Master DSA and problem solving',
+    query: 'algorithms data structures',
+    anim: 'brew',
+    category: 'Core Java'
+  },
+
+  {
+    id: 'mysql',
+    name: 'MySQL',
+    icon: Database,
+    color: 'from-emerald-500 via-green-500 to-teal-600',
+    glow: 'group-hover:shadow-emerald-500/30',
+    description: 'Database and styling concepts',
+    query: 'database mysql',
+    anim: 'pulse',
+    category: 'Java Enterprise & Backend'
+  },
+  {
+    id: 'jdbc',
+    name: 'JDBC',
+    icon: Plug,
+    color: 'from-teal-500 via-cyan-500 to-sky-600',
+    glow: 'group-hover:shadow-teal-500/30',
+    description: 'Java Database Connectivity',
+    query: 'database connection',
+    anim: 'pulse',
+    category: 'Java Enterprise & Backend'
+  },
+  {
+    id: 'jsp-servlet',
+    name: 'JSP Servlet',
+    icon: Globe,
+    color: 'from-indigo-500 via-blue-500 to-violet-600',
+    glow: 'group-hover:shadow-indigo-500/30',
+    description: 'Server-side Java web technologies',
+    query: 'web server technology',
+    anim: 'ping',
+    category: 'Java Enterprise & Backend'
+  },
+  {
+    id: 'hibernate',
+    name: 'Hibernate',
+    icon: Link2,
+    color: 'from-violet-500 via-purple-500 to-fuchsia-600',
+    glow: 'group-hover:shadow-violet-500/30',
+    description: 'Object-Relational Mapping framework',
+    query: 'orm framework',
+    anim: 'pulse',
+    category: 'Java Enterprise & Backend'
+  },
+  {
+    id: 'spring-mvc',
+    name: 'Spring MVC',
+    icon: Workflow,
+    color: 'from-lime-500 via-green-500 to-emerald-600',
+    glow: 'group-hover:shadow-lime-500/30',
+    description: 'Model-View-Controller framework',
+    query: 'spring framework',
+    anim: 'ping',
+    category: 'Java Enterprise & Backend'
+  },
+  {
+    id: 'spring-boot',
+    name: 'Spring Boot',
+    icon: Rocket,
+    color: 'from-amber-500 via-orange-500 to-red-600',
+    glow: 'group-hover:shadow-amber-500/30',
+    description: 'Modern Spring application development',
+    query: 'spring boot application',
+    anim: 'flip',
+    category: 'Java Enterprise & Backend'
+  },
+  {
+    id: 'microservices',
+    name: 'Microservices',
+    icon: Network,
+    color: 'from-rose-500 via-pink-500 to-fuchsia-600',
+    glow: 'group-hover:shadow-rose-500/30',
+    description: 'Distributed system architecture',
+    query: 'microservices architecture',
+    anim: 'ping',
+    category: 'Java Enterprise & Backend'
+  },
+
+  {
+    id: 'javafx',
+    name: 'JavaFX',
+    icon: AppWindow,
+    color: 'from-indigo-500 via-violet-600 to-purple-700',
+    glow: 'group-hover:shadow-indigo-500/30',
+    description: 'Modern Java desktop GUI apps',
+    query: 'javafx desktop application',
+    anim: 'flip',
+    category: 'Desktop Development'
+  },
+  {
+    id: 'python',
+    name: 'Python',
+    icon: Terminal,
+    color: 'from-blue-500 via-indigo-500 to-yellow-500',
+    glow: 'group-hover:shadow-blue-500/30',
+    description: 'From fundamentals to Python internals',
+    query: 'python programming',
+    anim: 'stack',
+    category: 'Python'
+  },
+  {
+    id: 'machine-learning',
+    name: 'Machine Learning',
+    icon: BrainCircuit,
+    color: 'from-teal-500 via-emerald-500 to-green-600',
+    glow: 'group-hover:shadow-teal-500/30',
+    description: 'Teach systems to learn from data',
+    query: 'machine learning models',
+    anim: 'pulse',
+    category: 'Data Science & AI'
+  },
+  {
+    id: 'data-science',
+    name: 'Data Science',
+    icon: BarChart3,
+    color: 'from-fuchsia-500 via-purple-600 to-indigo-700',
+    glow: 'group-hover:shadow-fuchsia-500/30',
+    description: 'Turn raw data into insight',
+    query: 'data science analytics',
+    anim: 'orbit',
+    category: 'Data Science & AI'
+  },
+];
+
+// Scroll-triggered stagger reveal for each category grid + its cards.
+const sectionVariants = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.06 } },
+};
+const cardVariants = {
+  hidden: { opacity: 0, y: 24, scale: 0.94 },
+  show: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: { type: 'spring' as const, stiffness: 260, damping: 22 },
+  },
+};
+
+// Counts up from 0 to `value` once it scrolls into view.
+function AnimatedCounter({ value, suffix = '' }: { value: number; suffix?: string }) {
+  const ref = useRef<HTMLSpanElement>(null);
+  const motionValue = useMotionValue(0);
+  const isInView = useInView(ref, { once: true, margin: '-80px' });
+  const display = useTransform(motionValue, (latest) => `${Math.round(latest).toLocaleString()}${suffix}`);
+
+  useEffect(() => {
+    if (!isInView) return;
+    const controls = animate(motionValue, value, { duration: 1.6, ease: 'easeOut' });
+    return () => controls.stop();
+  }, [isInView, value]);
+
+  return <motion.span ref={ref}>{display}</motion.span>;
+}
+
+export function Dashboard({ onCourseSelect, searchQuery = '' }: DashboardProps) {
+  const { summary } = useProgress();
+
+  // Every typed word must appear in the course name, description, category or keywords.
+  const terms = searchQuery.toLowerCase().split(/\s+/).filter(Boolean);
+  const visibleCards = terms.length === 0
+    ? courseCards
+    : courseCards.filter((course) => {
+        const haystack = `${course.name} ${course.description} ${course.category} ${course.query}`.toLowerCase();
+        return terms.every((t) => haystack.includes(t));
+      });
+  const [visitorCount, setVisitorCount] = useState(0);
+  const [visitorLoading, setVisitorLoading] = useState(true);
+
+  useEffect(() => {
+    const VISITED_KEY = 'javaschoollab_visited';
+    const hasVisited = sessionStorage.getItem(VISITED_KEY);
+
+    if (!hasVisited) {
+      sessionStorage.setItem(VISITED_KEY, 'true');
+      incrementVisitor()
+        .then(data => setVisitorCount(data.count))
+        .catch(() => {})
+        .finally(() => setVisitorLoading(false));
+    } else {
+      getVisitorCount()
+        .then(data => setVisitorCount(data.count))
+        .catch(() => {})
+        .finally(() => setVisitorLoading(false));
+    }
+  }, []);
+
+  return (
+    <div className="relative flex-1 overflow-y-auto bg-gradient-to-br from-orange-50 via-white to-amber-50 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950 p-4 sm:p-6 lg:p-8">
+      {/* Ambient background glow — slow drifting blobs for a living, premium backdrop */}
+      <div className="pointer-events-none fixed inset-0 overflow-hidden">
+        <motion.div
+          className="absolute -top-24 -left-24 w-96 h-96 bg-orange-400/20 dark:bg-orange-500/10 rounded-full blur-3xl"
+          animate={{ x: [0, 40, -20, 0], y: [0, 30, -10, 0] }}
+          transition={{ duration: 18, repeat: Infinity, ease: 'easeInOut' }}
+        />
+        <motion.div
+          className="absolute top-1/3 -right-24 w-96 h-96 bg-blue-400/15 dark:bg-blue-500/10 rounded-full blur-3xl"
+          animate={{ x: [0, -30, 20, 0], y: [0, -25, 15, 0] }}
+          transition={{ duration: 22, repeat: Infinity, ease: 'easeInOut' }}
+        />
+        <motion.div
+          className="absolute bottom-0 left-1/3 w-96 h-96 bg-purple-400/10 dark:bg-purple-500/10 rounded-full blur-3xl"
+          animate={{ x: [0, 25, -25, 0], y: [0, -20, 20, 0] }}
+          transition={{ duration: 20, repeat: Infinity, ease: 'easeInOut' }}
+        />
+      </div>
+
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="relative max-w-7xl mx-auto"
+      >
+        <div className="text-center mb-10">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            whileHover={{ scale: 1.05 }}
+            transition={{ duration: 0.3 }}
+            className="inline-flex items-center gap-1.5 px-3 py-1 mb-4 rounded-full bg-orange-100/80 dark:bg-orange-500/10 border border-orange-200 dark:border-orange-500/20 text-orange-600 dark:text-orange-400 text-xs font-semibold"
+          >
+            <motion.span
+              animate={{ rotate: [0, 15, -10, 0], scale: [1, 1.15, 1] }}
+              transition={{ duration: 2.4, repeat: Infinity, repeatDelay: 0.8, ease: 'easeInOut' }}
+            >
+              <Sparkles className="w-3.5 h-3.5" />
+            </motion.span>
+            Learn Java, Python, React &amp; More
+          </motion.div>
+          <motion.h1
+            className="font-display text-4xl md:text-5xl font-extrabold mb-3 bg-gradient-to-r from-orange-600 via-amber-500 to-orange-500 bg-clip-text text-transparent tracking-tight bg-[length:200%_auto]"
+            initial={{ opacity: 0, scale: 0.9, backgroundPositionX: '0%' }}
+            animate={{ opacity: 1, scale: 1, backgroundPositionX: ['0%', '100%', '0%'] }}
+            transition={{
+              opacity: { duration: 0.3 },
+              scale: { duration: 0.3 },
+              backgroundPositionX: { duration: 7, repeat: Infinity, ease: 'easeInOut' },
+            }}
+          >
+            Welcome to JavaSchoolLab
+          </motion.h1>
+          <motion.p
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.15 }}
+            className="text-sm md:text-base text-gray-600 dark:text-gray-300"
+          >
+            Choose a course to begin your learning journey
+          </motion.p>
+        </div>
+
+        <ProgressPanel />
+
+        {terms.length > 0 && visibleCards.length === 0 && (
+          <p className="text-center text-gray-500 dark:text-gray-400 py-12">
+            No course matches &ldquo;{searchQuery.trim()}&rdquo;. Try another word, e.g. Python, MySQL or React.
+          </p>
+        )}
+
+        <div className="space-y-10">
+          {CATEGORY_ORDER.map((category) => {
+            const coursesInCategory = visibleCards.filter((course) => course.category === category);
+            if (coursesInCategory.length === 0) return null;
+
+            return (
+              <div key={category}>
+                <motion.div
+                  className="flex items-center gap-3 mb-4"
+                  initial={{ opacity: 0, x: -12 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true, amount: 0.6 }}
+                  transition={{ duration: 0.4 }}
+                >
+                  <h2 className="font-display text-lg md:text-xl font-bold text-gray-800 dark:text-gray-100 tracking-tight">
+                    {category}
+                  </h2>
+                  <motion.div
+                    className="h-px flex-1 bg-gradient-to-r from-orange-300/60 dark:from-orange-500/30 to-transparent origin-left"
+                    initial={{ scaleX: 0 }}
+                    whileInView={{ scaleX: 1 }}
+                    viewport={{ once: true, amount: 0.6 }}
+                    transition={{ duration: 0.6, ease: 'easeOut' }}
+                  />
+                </motion.div>
+
+                <motion.div
+                  className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4"
+                  variants={sectionVariants}
+                  initial="hidden"
+                  whileInView="show"
+                  viewport={{ once: true, amount: 0.15 }}
+                >
+                  {coursesInCategory.map((course) => (
+                    <motion.div
+                      key={course.id}
+                      variants={cardVariants}
+                      whileHover={{ scale: 1.05, y: -6, transition: { type: 'spring', stiffness: 320, damping: 18 } }}
+                      whileTap={{ scale: 0.96 }}
+                      onClick={() => onCourseSelect(course.id)}
+                      className="group cursor-pointer"
+                    >
+                      <div className={`bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-sm hover:shadow-2xl ${course.glow} transition-shadow duration-300 overflow-hidden border border-gray-200/70 dark:border-gray-700/70`}>
+                        <div className={`h-24 bg-gradient-to-br ${course.color} relative overflow-hidden`}>
+                          <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.35),transparent_60%)]" />
+                          <div className="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-all duration-300" />
+                          {/* Diagonal light sweep on hover */}
+                          <div className="absolute inset-0 -translate-x-[120%] group-hover:translate-x-[120%] transition-transform duration-700 ease-out bg-gradient-to-r from-transparent via-white/30 to-transparent -skew-x-12 pointer-events-none" />
+                          <div className="absolute top-2.5 right-2.5 bg-white/20 backdrop-blur-sm rounded-full p-1.5 group-hover:scale-110 group-hover:bg-white/30 transition-all duration-300">
+                            <motion.div
+                              animate={iconAnimations[course.anim].animate}
+                              transition={iconAnimations[course.anim].transition}
+                            >
+                              <course.icon className="w-4 h-4 text-white" />
+                            </motion.div>
+                          </div>
+                          <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-black/50 to-transparent" />
+                          <div className="absolute bottom-2.5 left-3">
+                            <h3 className="font-display text-white text-sm font-bold leading-tight drop-shadow-sm">{course.name}</h3>
+                          </div>
+                        </div>
+
+                        <div className="px-3 py-2.5">
+                          {(() => {
+                            // Only meaningful once there is server-side progress to draw from.
+                            const total = courseStats[course.id]?.topics ?? 0;
+                            const seen = summary?.byCourse?.[course.id] ?? 0;
+                            if (!summary || total === 0 || seen === 0) return null;
+                            const pct = Math.min(100, Math.round((seen / total) * 100));
+                            return (
+                              <div className="mb-1.5">
+                                <div className="flex justify-between text-[10px] text-gray-500 dark:text-gray-400 mb-0.5">
+                                  <span>{seen}/{total} topics</span>
+                                  <span className="tabular-nums">{pct}%</span>
+                                </div>
+                                <div className="w-full h-1 rounded-full bg-gray-200 dark:bg-gray-700 overflow-hidden">
+                                  <div
+                                    className={pct === 100
+                                      ? 'h-1 rounded-full bg-gradient-to-r from-emerald-500 to-teal-500'
+                                      : 'h-1 rounded-full bg-gradient-to-r from-orange-500 to-amber-400'}
+                                    style={{ width: `${pct}%` }}
+                                  />
+                                </div>
+                              </div>
+                            );
+                          })()}
+                          <p className="text-xs text-gray-600 dark:text-gray-300 line-clamp-1">
+                            {course.description}
+                          </p>
+                          <motion.button
+                            whileHover={{ x: 4 }}
+                            className="mt-1.5 text-xs text-orange-600 dark:text-orange-400 font-semibold flex items-center gap-1 py-0.5"
+                          >
+                            Start Learning →
+                          </motion.button>
+                        </div>
+                      </div>
+                    </motion.div>
+                  ))}
+                </motion.div>
+              </div>
+            );
+          })}
+        </div>
+
+        <motion.div
+          className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-6 text-center"
+          variants={sectionVariants}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, amount: 0.3 }}
+        >
+          <motion.div
+            variants={cardVariants}
+            whileHover={{ y: -6, scale: 1.03, transition: { type: 'spring', stiffness: 300, damping: 18 } }}
+            className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm p-6 rounded-2xl shadow-md border border-gray-200/60 dark:border-gray-700/60 hover:shadow-xl transition-shadow duration-300"
+          >
+            <motion.div
+              className="w-14 h-14 mx-auto mb-3 rounded-xl bg-gradient-to-br from-purple-500 to-fuchsia-600 flex items-center justify-center shadow-lg shadow-purple-500/20"
+              animate={{ scale: [1, 1.06, 1] }}
+              transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+            >
+              <Users className="w-7 h-7 text-white" />
+            </motion.div>
+            {visitorLoading ? (
+              <div className="h-9 w-20 mx-auto mb-2 rounded-md bg-purple-100 dark:bg-purple-900/30 animate-pulse" />
+            ) : (
+              <div className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-fuchsia-500 bg-clip-text text-transparent mb-2">
+                <AnimatedCounter value={visitorCount} />
+              </div>
+            )}
+            <div className="text-gray-600 dark:text-gray-300 text-sm font-medium">Total Visitors</div>
+          </motion.div>
+          <motion.div
+            variants={cardVariants}
+            whileHover={{ y: -6, scale: 1.03, transition: { type: 'spring', stiffness: 300, damping: 18 } }}
+            className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm p-6 rounded-2xl shadow-md border border-gray-200/60 dark:border-gray-700/60 hover:shadow-xl transition-shadow duration-300"
+          >
+            <motion.div
+              className="w-14 h-14 mx-auto mb-3 rounded-xl bg-gradient-to-br from-orange-500 to-red-600 flex items-center justify-center shadow-lg shadow-orange-500/20"
+              animate={{ scale: [1, 1.06, 1] }}
+              transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut', delay: 0.3 }}
+            >
+              <BookOpen className="w-7 h-7 text-white" />
+            </motion.div>
+            <div className="text-4xl font-bold bg-gradient-to-r from-orange-600 to-red-500 bg-clip-text text-transparent mb-2">
+              <AnimatedCounter value={22} suffix="+" />
+            </div>
+            <div className="text-gray-600 dark:text-gray-300 text-sm font-medium">Comprehensive Courses</div>
+          </motion.div>
+          <motion.div
+            variants={cardVariants}
+            whileHover={{ y: -6, scale: 1.03, transition: { type: 'spring', stiffness: 300, damping: 18 } }}
+            className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm p-6 rounded-2xl shadow-md border border-gray-200/60 dark:border-gray-700/60 hover:shadow-xl transition-shadow duration-300"
+          >
+            <motion.div
+              className="w-14 h-14 mx-auto mb-3 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-600 flex items-center justify-center shadow-lg shadow-blue-500/20"
+              animate={{ scale: [1, 1.06, 1] }}
+              transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut', delay: 0.6 }}
+            >
+              <GraduationCap className="w-7 h-7 text-white" />
+            </motion.div>
+            <div className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-cyan-500 bg-clip-text text-transparent mb-2">
+              <AnimatedCounter value={100} suffix="+" />
+            </div>
+            <div className="text-gray-600 dark:text-gray-300 text-sm font-medium">Topics Covered</div>
+          </motion.div>
+          <motion.div
+            variants={cardVariants}
+            whileHover={{ y: -6, scale: 1.03, transition: { type: 'spring', stiffness: 300, damping: 18 } }}
+            className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm p-6 rounded-2xl shadow-md border border-gray-200/60 dark:border-gray-700/60 hover:shadow-xl transition-shadow duration-300"
+          >
+            <motion.div
+              className="w-14 h-14 mx-auto mb-3 rounded-xl bg-gradient-to-br from-emerald-500 to-green-600 flex items-center justify-center shadow-lg shadow-emerald-500/20"
+              animate={{ scale: [1, 1.06, 1] }}
+              transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut', delay: 0.9 }}
+            >
+              <Award className="w-7 h-7 text-white" />
+            </motion.div>
+            <div className="text-4xl font-bold bg-gradient-to-r from-emerald-600 to-green-500 bg-clip-text text-transparent mb-2">Free</div>
+            <div className="text-gray-600 dark:text-gray-300 text-sm font-medium">Certifications</div>
+          </motion.div>
+        </motion.div>
+
+        <motion.p
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+          className="text-center text-xs text-gray-400 dark:text-gray-500 mt-10"
+        >
+          JavaSchoolLab is an official product of DHIPAN Software Technologies Private Limited.
+        </motion.p>
+      </motion.div>
+    </div>
+  );
+}

@@ -1,0 +1,21 @@
+node_modules
+server/node_modules
+dist
+.git
+.gitignore
+.gitattributes
+.claude
+.env
+.env.*
+!.env.example
+*.log
+docs
+guidelines
+**/*.zip
+Dockerfile*
+docker-compose*.yml
+.dockerignore
+docker/.env
+
+# Unfinished file (truncated template literal) that breaks `tsc`; not imported anywhere.
+src/app/data/topics/ml/RmseEvaluation.tsx

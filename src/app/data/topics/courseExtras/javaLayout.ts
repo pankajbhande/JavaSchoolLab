@@ -1,0 +1,217 @@
+﻿// Re-arranges every Core Java topic into one fixed learning flow:
+//   1 Introduction  2 Need of This Topic  3 Advantages  4 Disadvantages  5 Why We Learn This Topic
+//   6 Basic Concepts  7 Intermediate Concepts  8 Advanced Concepts  9 Code for Each Concept
+//   10 Examples  11 Interview Questions  12 Quick Revision
+// Existing blocks (original content, extras and deep dives) are classified by tab and heading and
+// moved into the matching section; nothing is dropped. Sections 1-6 go to the Basic tab and
+// sections 7-12 to the Expert tab, so reading order across the two tabs is 1 to 12.
+
+import type { ContentBlock, Topic } from '../../types';
+
+/** Short authored overview for one topic (sections 1-5 and 12). */
+export interface Overview {
+    intro: string;
+    need: string;
+    adv: string[];
+    dis: string[];
+    why: string[];
+    revision: string[];
+}
+
+/** Positional constructor to keep the data files compact. */
+export const o = (intro: string, need: string, adv: string[], dis: string[], why: string[], revision: string[]): Overview =>
+    ({ intro, need, adv, dis, why, revision });
+
+const list = (items: string[]) => `<ul>\n${items.map(i => `<li>${i}</li>`).join('\n')}\n</ul>`;
+
+const SECTION_TITLES: Record<number, string> = {
+    1: 'Introduction',
+    2: 'Need of This Topic',
+    3: 'Advantages',
+    4: 'Disadvantages',
+    5: 'Why We Learn This Topic',
+    6: 'Basic Concepts',
+    7: 'Intermediate Concepts',
+    8: 'Advanced Concepts',
+    9: 'Code for Each Concept',
+    10: 'Examples',
+    11: 'Interview Questions',
+    12: 'Quick Revision'
+};
+
+const firstHeading = (html: string): string => {
+    const m = html.match(/<h[1-6][^>]*>([\s\S]*?)<\/h[1-6]>/);
+    return (m ? m[1] : '').replace(/<[^>]+>/g, '').replace(/&amp;/g, '&').trim();
+};
+
+const retitle = (b: ContentBlock, title: string): ContentBlock => ({
+    ...b,
+    content: b.content.replace(/<h[1-6][^>]*>[\s\S]*?<\/h[1-6]>/, `<h3>${title}</h3>`)
+});
+
+interface Placed { section: number; order: number; block: ContentBlock; }
+
+function classify(tab: 'beginner' | 'intermediate' | 'expert', block: ContentBlock): Placed {
+    const h = firstHeading(block.content);
+    const tabSection = tab === 'beginner' ? 6 : tab === 'intermediate' ? 7 : 8;
+    let section = tabSection, order = 5, b = block;
+
+    if (/^Introduction$/i.test(h) || /^\d+\.\s*Definition/i.test(h)) { section = 1; order = 5; }
+    else if (/^\d+\.\s*(Purpose|Need)/i.test(h)) { section = 2; order = 5; }
+    else if (/^\d+\.\s*Advantages/i.test(h)) { section = 3; order = 5; }
+    else if (/^\d+\.\s*Disadvantages/i.test(h)) { section = 4; order = 5; }
+    else if (/^\d+\.\s*Real Time Examples/i.test(h)) { section = 10; order = 1; }
+    else if (/^Fresher Notes$/i.test(h)) { section = 6; order = 9; }
+    else if (/^Mid-Level Notes$/i.test(h)) { section = 7; order = 9; }
+    else if (/^Senior Notes$/i.test(h)) { section = 8; order = 9; }
+    else if (/^Worked Example/i.test(h)) { section = 10; order = 2; }
+    else if (/^Practice Exercise/i.test(h)) { section = 10; order = 3; }
+    else if (/^Deep Dive: Syntax/i.test(h)) { section = 9; order = 1; b = retitle(block, 'Basic Code: Syntax Options &amp; Variants'); }
+    else if (/^Deep Dive: Internals/i.test(h)) { section = 9; order = 2; b = retitle(block, 'Intermediate Code: How It Works Internally'); }
+    else if (/^Deep Dive: Common Mistakes/i.test(h)) { section = 9; order = 3; b = retitle(block, 'Advanced Code: Common Mistakes &amp; Fixes'); }
+    else if (/^Deep Dive: Performance/i.test(h)) { section = 9; order = 4; b = retitle(block, 'Advanced Code: Performance &amp; Tuning'); }
+    else if (/^Deep Dive: Real-World/i.test(h)) { section = 9; order = 5; b = retitle(block, 'Advanced Code: Real-World Scenario'); }
+    else if (/interview/i.test(h)) {
+        section = 11;
+        const mine = /^Interview Questions (&|and) Answers$/i.test(h);
+        order = mine ? 9 : 1;
+        if (mine) b = { ...block, content: stepQA(block.content) };
+    }
+    // original template blocks carry their own "1. Definition" style numbers; drop them so they do not clash with section numbers
+    if (section <= 5 || (section === 10 && /^\d+\./.test(h))) b = retitle(b, h.replace(/^\d+\.\s*/, ''));
+    return { section, order, block: b };
+}
+
+const MARK = '<mark style="background:#fde68a;color:#1f2937;padding:0 4px;border-radius:3px;font-weight:600">';
+
+/** Highlights key terms: tagged <code>/<b> text and identifiers such as camelCase names, Dotted.names and ALL_CAPS. */
+function highlight(html: string): string {
+    const terms = /\b(?:[A-Za-z_]+\.[A-Za-z_]+(?:\(\))?|[a-z]+[A-Z][A-Za-z]*(?:\(\))?|[A-Z][a-z]+[A-Z][A-Za-z]*|[A-Z]{3,}[A-Za-z]*|[A-Za-z]+\(\))/g;
+    return html
+        .replace(/<(code|b)>([\s\S]*?)<\/\1>/g, (_m, tag, inner) => `${MARK}<${tag}>${inner}</${tag}></mark>`)
+        .split(/(<[^>]+>)/)
+        .map((part, i, arr) => {
+            if (part.startsWith('<')) return part;
+            // do not touch text already inside a highlight
+            const before = arr.slice(0, i).join('');
+            if ((before.match(/<mark/g) ?? []).length > (before.match(/<\/mark>/g) ?? []).length) return part;
+            return part.replace(terms, t => `${MARK}${t}</mark>`);
+        })
+        .join('');
+}
+
+/** Turns each answer into numbered steps (sentence by sentence) with highlighted key terms. */
+const KEY_TERMS = new RegExp('\\b(?:' + [
+    'threads?', 'locks?', 'monitor', 'race conditions?', 'deadlock', 'volatile', 'synchroni[sz]\\w*', 'atomic\\w*', 'visibility', 'heap', 'stack', 'metaspace',
+    'bytecode', 'JVM', 'JIT', 'JDK', 'JRE', 'garbage collect\\w*', 'immutable', 'thread-safe', 'references?', 'objects?', 'class(?:es)?', 'interfaces?', 'abstract',
+    'exceptions?', 'null', 'compile[- ]time', 'run[- ]time', 'hash ?codes?', 'buckets?', 'override\\w*', 'overload\\w*', 'inherit\\w*', 'polymorphi\\w*', 'encapsulat\\w*',
+    'memory', 'cache[sd]?', 'pools?', 'streams?', 'lambdas?', 'generics?', 'erasure', 'constructors?', 'static', 'final', 'private', 'public', 'protected', 'collections?',
+    'serializ\\w*', 'reflection', 'annotations?', 'enums?', 'records?', 'sealed', 'virtual threads?', 'pattern matching', 'switch', 'optional', 'checked', 'unchecked'
+].join('|') + ')\\b', 'gi');
+
+const STOP = new Set(['what', 'which', 'when', 'where', 'does', 'that', 'with', 'from', 'this', 'there', 'their', 'about', 'between', 'should', 'would', 'could', 'happens', 'happen', 'difference']);
+
+function stepQA(html: string): string {
+    return html.replace(/<p><b>Q\. ([\s\S]*?)<\/b><br\/>([\s\S]*?)<\/p>/g, (_m, q, a) => {
+        const qWords = new Set((String(q).toLowerCase().match(/[a-z]{5,}/g) ?? []).filter(w => !STOP.has(w)));
+        const steps = String(a)
+            .split(/(?<=[.;])\s+(?=[A-Za-z<])|;\s*|,\s+then\s+|,\s+(?=so\s|which\s|because\s|but\s|while\s|and then\s)|\s+(?=because\s)/)
+            .map(s => s.trim().replace(/[;,]$/, ''))
+            .filter(s => s.length > 2)
+            .map(s => s.charAt(0).toUpperCase() + s.slice(1));
+        // highlight words that link the answer back to the question
+        const link = (s: string) => highlight(s).split(/(<[^>]+>)/).map((p, i, arr) => {
+            if (p.startsWith('<')) return p;
+            const before = arr.slice(0, i).join('');
+            if ((before.match(/<mark/g) ?? []).length > (before.match(/<\/mark>/g) ?? []).length) return p;
+            return p
+                .replace(KEY_TERMS, t => `${MARK}${t}</mark>`)
+                .split(/(<[^>]+>)/).map((q, j, arr2) => {
+                    if (q.startsWith('<')) return q;
+                    const b2 = arr2.slice(0, j).join('');
+                    if ((b2.match(/<mark/g) ?? []).length > (b2.match(/<\/mark>/g) ?? []).length) return q;
+                    return q.replace(/\b[A-Za-z]{5,}\b/g, w => qWords.has(w.toLowerCase()) ? `${MARK}${w}</mark>` : w);
+                }).join('');
+        }).join('');
+        const body = steps.length > 1
+            ? `<ol>${steps.map((s, i) => `<li>${link(s)}</li>`).join('')}</ol>`
+            : `<ol><li>${link(steps[0] ?? '')}</li></ol>`;
+        return `<p><b>Q. ${q}</b></p>${body}`;
+    });
+}
+
+// a line that opens a block element, or is a closing block tag, is kept as is (never wrapped in <p>)
+const BLOCK_START = /^(<(p|h[1-6]|div|img|ul|ol|table|pre|li|section|blockquote)\b|<\/(div|p|ul|ol|li|table|pre|section|blockquote|h[1-6])>)/i;
+const BULLET = /^(?:•|â€¢|&bull;|-)\s+([\s\S]*)$/;
+const NUMBERED = /^(\d+)[.)]\s+([\s\S]*)$/;
+
+/**
+ * Converts "• text <br>" and "1) text <br>" runs into real <ul>/<ol> lists and loose text into paragraphs,
+ * so every point is on its own aligned line (the theme styles lists with a hanging indent).
+ * Existing lists, tables and <pre> diagrams are left untouched.
+ */
+export function pointwise(html: string): string {
+    const keep: string[] = [];
+    const guarded = html.replace(/<(pre|table|ul|ol)\b[\s\S]*?<\/\1>/gi, m => { keep.push(m); return `\n@@KEEP${keep.length - 1}@@\n`; });
+    const lines = guarded.split(/<br\s*\/?>|\n/i).map(l => l.trim()).filter(Boolean);
+    const out: string[] = [];
+    let mode: 'ul' | 'ol' | null = null;
+    const close = () => { if (mode) { out.push(`</${mode}>`); mode = null; } };
+    for (const line of lines) {
+        const b = line.match(BULLET), n = line.match(NUMBERED);
+        if (b && !BLOCK_START.test(line)) { if (mode !== 'ul') { close(); out.push('<ul>'); mode = 'ul'; } out.push(`<li>${b[1].trim()}</li>`); }
+        else if (n && !BLOCK_START.test(line)) { if (mode !== 'ol') { close(); out.push('<ol>'); mode = 'ol'; } out.push(`<li>${n[2].trim()}</li>`); }
+        else { close(); out.push(BLOCK_START.test(line) || /^@@KEEP\d+@@$/.test(line) ? line : `<p>${line}</p>`); }
+    }
+    close();
+    return out.join('\n').replace(/@@KEEP(\d+)@@/g, (_m, i) => keep[Number(i)]);
+}
+
+/** Builds the 12-section layout for one topic. */
+export function layoutTopic(topic: Topic, ov: Overview | undefined): Topic {
+    const placed: Placed[] = [];
+    (['beginner', 'intermediate', 'expert'] as const).forEach(tab =>
+        (topic[tab] ?? []).forEach((block, i) => {
+            const p = classify(tab, block);
+            if (p.section <= 5) {
+                // The text of the original Definition/Purpose/Need/Advantages/Disadvantages blocks is merged into the
+                // authored overview (javaOverview); only their code samples are kept, under section 9.
+                if (p.block.codeExamples?.length) {
+                    const title = firstHeading(p.block.content);
+                    placed.push({
+                        section: 9, order: 500 + i + (tab === 'beginner' ? 0 : 300),
+                        block: { content: `<h3>Code: ${title}</h3>`, codeExamples: p.block.codeExamples, codeExplanations: p.block.codeExplanations }
+                    });
+                }
+                return;
+            }
+            // keep original relative order inside a section: tab first, then position
+            placed.push({ ...p, order: p.order * 1000 + (tab === 'beginner' ? 0 : tab === 'intermediate' ? 300 : 600) + i });
+        }));
+
+    const bySection = (n: number) => placed.filter(p => p.section === n).sort((a, b) => a.order - b.order).map(p => p.block);
+
+    const fixed: Record<number, ContentBlock[]> = {};
+    if (ov) {
+        fixed[1] = [{ content: `<p>${ov.intro}</p>` }];
+        fixed[2] = [{ content: `<p>${ov.need}</p>` }];
+        fixed[3] = [{ content: list(ov.adv) }];
+        fixed[4] = [{ content: list(ov.dis) }];
+        fixed[5] = [{ content: list(ov.why) }];
+        fixed[12] = [{ content: list(ov.revision) }];
+    }
+
+    const sections = (from: number, to: number): ContentBlock[] => {
+        const out: ContentBlock[] = [];
+        for (let n = from; n <= to; n++) {
+            const blocks = [...(fixed[n] ?? []), ...bySection(n)].map(b => ({ ...b, content: pointwise(b.content) }));
+            if (!blocks.length) continue;
+            // the section heading lives inside its first block so it shares one card (no orphaned heading)
+            const head = `<h2>${n}. ${SECTION_TITLES[n]}</h2>`;
+            out.push({ ...blocks[0], content: head + '\n' + blocks[0].content }, ...blocks.slice(1));
+        }
+        return out;
+    };
+
+    return { ...topic, beginner: sections(1, 6), intermediate: [], expert: sections(7, 12) };
+}

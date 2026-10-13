@@ -64,6 +64,19 @@ export function Sidebar({
   const topicCount = (subTopics: Course['subTopics']) =>
     subTopics.reduce((sum, st) => sum + st.topics.length, 0);
 
+  const toggleButton = (
+    <motion.button
+      whileHover={{ scale: 1.1 }}
+      whileTap={{ scale: 0.9 }}
+      onClick={onToggleMinimize}
+      className="p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400"
+      title={isMinimized ? 'Expand sidebar' : 'Minimize sidebar'}
+      aria-label={isMinimized ? 'Expand sidebar' : 'Minimize sidebar'}
+    >
+      {isMinimized ? <PanelLeft className="w-4 h-4" /> : <PanelLeftClose className="w-4 h-4" />}
+    </motion.button>
+  );
+
   return (
     <motion.aside
       aria-label="Course contents"
@@ -76,18 +89,12 @@ export function Sidebar({
       <div className="pointer-events-none absolute -top-16 -left-16 w-56 h-56 rounded-full bg-orange-300/30 dark:bg-orange-600/10 blur-3xl" />
       <div className="pointer-events-none absolute bottom-0 -right-10 w-48 h-48 rounded-full bg-amber-300/25 dark:bg-amber-500/10 blur-3xl" />
 
-      <div className="relative px-2 py-1 border-b border-orange-200/60 dark:border-gray-700 flex justify-end">
-        <motion.button
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
-          onClick={onToggleMinimize}
-          className="p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400"
-          title={isMinimized ? 'Expand sidebar' : 'Minimize sidebar'}
-          aria-label={isMinimized ? 'Expand sidebar' : 'Minimize sidebar'}
-        >
-          {isMinimized ? <PanelLeft className="w-4 h-4" /> : <PanelLeftClose className="w-4 h-4" />}
-        </motion.button>
-      </div>
+      {/* Collapsed rail: the toggle stands alone. Expanded, it lives on the COURSE label row. */}
+      {isMinimized && (
+        <div className="relative px-2 py-1 border-b border-orange-200/60 dark:border-gray-700 flex justify-end">
+          {toggleButton}
+        </div>
+      )}
 
       <div className="flex-1 overflow-y-auto custom-scrollbar">
         <AnimatePresence>
@@ -101,6 +108,7 @@ export function Sidebar({
               <div className="flex items-center gap-1.5 mb-2 px-1">
                 <Layers className="w-3.5 h-3.5 text-orange-500" />
                 <h2 className="font-bold text-[11px] text-gray-800 dark:text-gray-200 uppercase tracking-wider">Course</h2>
+                <span className="ml-auto">{toggleButton}</span>
               </div>
 
               {courses

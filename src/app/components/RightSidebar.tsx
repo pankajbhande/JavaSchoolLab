@@ -291,6 +291,19 @@ export function RightSidebar({ course, topic, topicName, isMinimized, onToggleMi
     [topic, course],
   );
 
+  const toggleButton = (
+    <motion.button
+      whileHover={{ scale: 1.1 }}
+      whileTap={{ scale: 0.9 }}
+      onClick={onToggleMinimize}
+      className="shrink-0 grid place-items-center w-8 h-8 rounded-lg bg-indigo-600 text-white shadow-md shadow-indigo-500/30 hover:bg-indigo-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400"
+      title={isMinimized ? 'Expand sidebar' : 'Minimize sidebar'}
+      aria-label={isMinimized ? 'Expand sidebar' : 'Minimize sidebar'}
+    >
+      {isMinimized ? <PanelRight className="w-4 h-4" /> : <PanelRightClose className="w-4 h-4" />}
+    </motion.button>
+  );
+
   return (
     <motion.aside
       aria-label="Notes and interview questions"
@@ -303,18 +316,13 @@ export function RightSidebar({ course, topic, topicName, isMinimized, onToggleMi
       <div className="pointer-events-none absolute -top-16 -right-16 w-56 h-56 rounded-full bg-orange-300/30 dark:bg-orange-600/10 blur-3xl" />
       <div className="pointer-events-none absolute bottom-0 -left-10 w-48 h-48 rounded-full bg-amber-300/25 dark:bg-amber-500/10 blur-3xl" />
 
-      <div className="relative px-2 py-1 border-b border-orange-200/60 dark:border-gray-700 flex justify-start">
-        <motion.button
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
-          onClick={onToggleMinimize}
-          className="p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400"
-          title={isMinimized ? 'Expand sidebar' : 'Minimize sidebar'}
-          aria-label={isMinimized ? 'Expand sidebar' : 'Minimize sidebar'}
-        >
-          {isMinimized ? <PanelRight className="w-4 h-4" /> : <PanelRightClose className="w-4 h-4" />}
-        </motion.button>
-      </div>
+      {/* The toggle only gets its own bar when it can't ride along on the tab row: while
+          collapsed, or before a topic is selected (no tabs yet). */}
+      {(isMinimized || topicQuestions.length === 0) && (
+        <div className="relative px-2 py-1 border-b border-orange-200/60 dark:border-gray-700 flex justify-start">
+          {toggleButton}
+        </div>
+      )}
 
       <div className="flex-1 overflow-y-auto custom-scrollbar" style={{ zoom: 0.95 }}>
         {/* Rail units sit outside the AnimatePresence block: they must not be unmounted
@@ -438,10 +446,10 @@ export function RightSidebar({ course, topic, topicName, isMinimized, onToggleMi
 
               {/* Tabs - only shown when topic is selected */}
               {topicQuestions.length > 0 && (
-              <div className="flex gap-1 mb-2.5">
+              <div className="flex items-center gap-1 mb-2.5">
                 <button
                   onClick={() => setActiveTab('keypoints')}
-                  className={`flex-1 flex items-center justify-center gap-1 px-1.5 py-1.5 rounded-lg whitespace-nowrap transition-all ${
+                  className={`flex-1 min-w-0 flex items-center justify-center gap-1 px-1 py-1.5 rounded-lg whitespace-nowrap transition-all ${
                     activeTab === 'keypoints'
                       ? 'bg-orange-500 text-white shadow-md'
                       : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
@@ -452,7 +460,7 @@ export function RightSidebar({ course, topic, topicName, isMinimized, onToggleMi
                 </button>
                 <button
                   onClick={() => setActiveTab('cheatsheet')}
-                  className={`flex-1 flex items-center justify-center px-1.5 py-1.5 rounded-lg whitespace-nowrap transition-all ${
+                  className={`flex-1 min-w-0 flex items-center justify-center px-1 py-1.5 rounded-lg whitespace-nowrap transition-all ${
                     activeTab === 'cheatsheet'
                       ? 'bg-orange-500 text-white shadow-md'
                       : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
@@ -462,7 +470,7 @@ export function RightSidebar({ course, topic, topicName, isMinimized, onToggleMi
                 </button>
                 <button
                   onClick={() => { setActiveTab('interview'); setRevealedAnswers(new Set()); }}
-                  className={`flex-1 flex items-center justify-center px-1.5 py-1.5 rounded-lg whitespace-nowrap transition-all ${
+                  className={`flex-1 min-w-0 flex items-center justify-center px-1 py-1.5 rounded-lg whitespace-nowrap transition-all ${
                     activeTab === 'interview'
                       ? 'bg-orange-500 text-white shadow-md'
                       : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
@@ -470,6 +478,7 @@ export function RightSidebar({ course, topic, topicName, isMinimized, onToggleMi
                 >
                   <span className="text-xs font-medium">MCQ</span>
                 </button>
+                {toggleButton}
               </div>
               )}
 

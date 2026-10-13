@@ -134,7 +134,7 @@ export function TopicsBar({ courses, onCourseSelect, selectedCourseId }: TopicsB
                   <motion.span
                     layoutId="course-pill"
                     transition={reduceMotion ? { duration: 0 } : { type: 'spring', stiffness: 420, damping: 34 }}
-                    className="absolute inset-0 rounded-xl border border-orange-400/55 bg-gradient-to-b from-orange-500/30 to-orange-600/10 shadow-[0_0_22px_rgba(249,115,22,0.35),inset_0_1px_0_rgba(255,255,255,0.14)]"
+                    className="absolute inset-0 rounded-xl bg-orange-500 shadow-[0_4px_14px_rgba(249,115,22,0.45)]"
                   />
                 )}
                 {/* hover wash for inactive tabs */}
@@ -145,7 +145,7 @@ export function TopicsBar({ courses, onCourseSelect, selectedCourseId }: TopicsB
                 <span
                   className={`relative grid place-items-center w-6 h-6 rounded-lg transition-colors ${
                     isActive
-                      ? 'bg-orange-500/40 text-orange-100 shadow-[0_0_10px_rgba(249,115,22,0.5)]'
+                      ? 'bg-white/25 text-white'
                       : 'bg-white/[0.06] text-gray-400 group-hover:text-orange-300 group-hover:bg-orange-500/15'
                   }`}
                 >

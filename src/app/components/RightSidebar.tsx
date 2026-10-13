@@ -450,7 +450,7 @@ export function RightSidebar({ course, topic, topicName, isMinimized, onToggleMi
                 {toggleButton}
                 <button
                   onClick={() => setActiveTab('keypoints')}
-                  className={`flex-1 min-w-0 flex items-center justify-center gap-1 px-1 py-1.5 rounded-lg whitespace-nowrap transition-all ${
+                  className={`flex-none flex items-center justify-center gap-1 px-3 py-1.5 rounded-lg whitespace-nowrap transition-all ${
                     activeTab === 'keypoints'
                       ? 'bg-orange-500 text-white shadow-md'
                       : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
@@ -461,7 +461,7 @@ export function RightSidebar({ course, topic, topicName, isMinimized, onToggleMi
                 </button>
                 <button
                   onClick={() => setActiveTab('cheatsheet')}
-                  className={`flex-1 min-w-0 flex items-center justify-center px-1 py-1.5 rounded-lg whitespace-nowrap transition-all ${
+                  className={`flex-none flex items-center justify-center px-3 py-1.5 rounded-lg whitespace-nowrap transition-all ${
                     activeTab === 'cheatsheet'
                       ? 'bg-orange-500 text-white shadow-md'
                       : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
@@ -471,7 +471,7 @@ export function RightSidebar({ course, topic, topicName, isMinimized, onToggleMi
                 </button>
                 <button
                   onClick={() => { setActiveTab('interview'); setRevealedAnswers(new Set()); }}
-                  className={`flex-1 min-w-0 flex items-center justify-center px-1 py-1.5 rounded-lg whitespace-nowrap transition-all ${
+                  className={`flex-none flex items-center justify-center px-3 py-1.5 rounded-lg whitespace-nowrap transition-all ${
                     activeTab === 'interview'
                       ? 'bg-orange-500 text-white shadow-md'
                       : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'

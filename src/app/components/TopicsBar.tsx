@@ -76,7 +76,7 @@ export function TopicsBar({ courses, onCourseSelect, selectedCourseId }: TopicsB
   const mask = `linear-gradient(to right, ${canScrollLeft ? 'transparent' : 'black'} 0, black ${canScrollLeft ? EDGE : 0}px, black calc(100% - ${canScrollRight ? EDGE : 0}px), ${canScrollRight ? 'transparent' : 'black'} 100%)`;
 
   const arrowClass =
-    'absolute top-1/2 -translate-y-1/2 z-10 grid place-items-center w-8 h-8 rounded-full ' +
+    'shrink-0 grid place-items-center w-8 h-8 rounded-full ' +
     'bg-gray-900/90 border border-white/10 text-gray-300 shadow-lg shadow-black/40 backdrop-blur ' +
     'hover:text-white hover:border-orange-400/50 hover:bg-gray-800 ' +
     'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400/70 transition-colors';
@@ -91,28 +91,25 @@ export function TopicsBar({ courses, onCourseSelect, selectedCourseId }: TopicsB
       <span aria-hidden="true" className="pointer-events-none absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-orange-400/70 to-transparent" />
       <span aria-hidden="true" className="pointer-events-none absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/15 to-transparent" />
 
-      <div className="relative">
-        {/* Left arrow */}
-        <motion.button
-          type="button"
-          initial={false}
-          animate={{ opacity: canScrollLeft ? 1 : 0, scale: canScrollLeft ? 1 : 0.8 }}
-          transition={{ duration: reduceMotion ? 0 : 0.18 }}
-          onClick={() => scroll('left')}
-          aria-label="Scroll courses left"
-          disabled={!canScrollLeft}
-          tabIndex={canScrollLeft ? 0 : -1}
-          className={`${arrowClass} left-2 ${canScrollLeft ? '' : 'pointer-events-none'}`}
-        >
-          <ChevronLeft className="w-4 h-4" aria-hidden="true" />
-        </motion.button>
+      <div className="relative flex items-center">
+        {/* Left arrow — its own slot beside the tabs, so it never covers a course button */}
+        {canScrollLeft && (
+          <button
+            type="button"
+            onClick={() => scroll('left')}
+            aria-label="Scroll courses left"
+            className={`${arrowClass} ml-2`}
+          >
+            <ChevronLeft className="w-4 h-4" aria-hidden="true" />
+          </button>
+        )}
 
         {/* Scrollable course tabs */}
         <div
           ref={scrollRef}
           onScroll={checkScroll}
           style={{ maskImage: mask, WebkitMaskImage: mask }}
-          className="flex items-center gap-1.5 overflow-x-auto px-4 py-2 scrollbar-hide scroll-smooth"
+          className="flex flex-1 min-w-0 items-center gap-1.5 overflow-x-auto px-3 py-2 scrollbar-hide scroll-smooth"
         >
           {courses.map((course) => {
             const isActive = selectedCourseId === course.id;
@@ -158,19 +155,16 @@ export function TopicsBar({ courses, onCourseSelect, selectedCourseId }: TopicsB
         </div>
 
         {/* Right arrow */}
-        <motion.button
-          type="button"
-          initial={false}
-          animate={{ opacity: canScrollRight ? 1 : 0, scale: canScrollRight ? 1 : 0.8 }}
-          transition={{ duration: reduceMotion ? 0 : 0.18 }}
-          onClick={() => scroll('right')}
-          aria-label="Scroll courses right"
-          disabled={!canScrollRight}
-          tabIndex={canScrollRight ? 0 : -1}
-          className={`${arrowClass} right-2 ${canScrollRight ? '' : 'pointer-events-none'}`}
-        >
-          <ChevronRight className="w-4 h-4" aria-hidden="true" />
-        </motion.button>
+        {canScrollRight && (
+          <button
+            type="button"
+            onClick={() => scroll('right')}
+            aria-label="Scroll courses right"
+            className={`${arrowClass} mr-2`}
+          >
+            <ChevronRight className="w-4 h-4" aria-hidden="true" />
+          </button>
+        )}
       </div>
     </nav>
   );

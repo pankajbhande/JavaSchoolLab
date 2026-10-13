@@ -2,6 +2,7 @@ import { useState, useMemo, useEffect } from 'react';
 import { PanelRightClose, PanelRight, CheckCircle, Users, Globe, Award, TrendingUp, BookOpen, Sparkles, Lightbulb } from 'lucide-react';
 import { Course, Topic } from '../data/coursesData';
 import { buildKeypoints } from '../services/keypoints';
+import { incrementVisitor, getVisitorCount } from '../services/api';
 import { motion, AnimatePresence } from 'motion/react';
 import { AdSlot } from './ads/AdSlot';
 import { AD_SLOTS } from './ads/adsense';
@@ -183,26 +184,26 @@ function useCountUp(value: number, duration = 1200) {
   return display;
 }
 
-// Visitor counter using localStorage
+// Visitor counter that refreshes from the server on each website visit.
 function useVisitorCount() {
   const [count, setCount] = useState(0);
 
   useEffect(() => {
-    const STORAGE_KEY = 'javaschoollab_visitors';
-    const VISIT_KEY = 'javaschoollab_visited';
-    const BASE_COUNT = 51340; // Base visitor count
+    const trackVisit = async () => {
+      try {
+        const { count: nextCount } = await incrementVisitor();
+        setCount(nextCount);
+      } catch {
+        try {
+          const { count: currentCount } = await getVisitorCount();
+          setCount(currentCount);
+        } catch {
+          setCount(0);
+        }
+      }
+    };
 
-    const stored = localStorage.getItem(STORAGE_KEY);
-    let currentCount = stored ? parseInt(stored, 10) : BASE_COUNT;
-
-    // Increment only once per session
-    if (!sessionStorage.getItem(VISIT_KEY)) {
-      currentCount += 1;
-      localStorage.setItem(STORAGE_KEY, currentCount.toString());
-      sessionStorage.setItem(VISIT_KEY, 'true');
-    }
-
-    setCount(currentCount);
+    trackVisit();
   }, []);
 
   return count;
@@ -320,7 +321,7 @@ export function RightSidebar({ course, topic, topicName, isMinimized, onToggleMi
             and remounted by the panel's enter/exit animation, which would burn an ad
             request on every keypoint re-render. */}
         {!isMinimized && (
-          <div className="px-2 pt-3">
+          <div className="px-2 pt-1">
             <AdSlot slot={AD_SLOTS.railTop} width={300} height={250} format="rectangle" />
           </div>
         )}
@@ -330,7 +331,7 @@ export function RightSidebar({ course, topic, topicName, isMinimized, onToggleMi
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className={topicQuestions.length === 0 ? "p-2" : "p-4"}
+              className={topicQuestions.length === 0 ? "p-2" : "px-3 pt-2 pb-3"}
             >
               {/* Branding Panel - shown when no topic selected */}
               {topicQuestions.length === 0 && (
@@ -437,10 +438,10 @@ export function RightSidebar({ course, topic, topicName, isMinimized, onToggleMi
 
               {/* Tabs - only shown when topic is selected */}
               {topicQuestions.length > 0 && (
-              <div className="flex gap-1.5 mb-4">
+              <div className="flex gap-1 mb-2.5">
                 <button
                   onClick={() => setActiveTab('keypoints')}
-                  className={`flex-1 flex items-center justify-center gap-1 px-2 py-2 rounded-lg transition-all ${
+                  className={`flex-1 flex items-center justify-center gap-1 px-1.5 py-1.5 rounded-lg whitespace-nowrap transition-all ${
                     activeTab === 'keypoints'
                       ? 'bg-orange-500 text-white shadow-md'
                       : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
@@ -451,7 +452,7 @@ export function RightSidebar({ course, topic, topicName, isMinimized, onToggleMi
                 </button>
                 <button
                   onClick={() => setActiveTab('cheatsheet')}
-                  className={`flex-1 flex items-center justify-center px-2 py-2 rounded-lg transition-all ${
+                  className={`flex-1 flex items-center justify-center px-1.5 py-1.5 rounded-lg whitespace-nowrap transition-all ${
                     activeTab === 'cheatsheet'
                       ? 'bg-orange-500 text-white shadow-md'
                       : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
@@ -461,7 +462,7 @@ export function RightSidebar({ course, topic, topicName, isMinimized, onToggleMi
                 </button>
                 <button
                   onClick={() => { setActiveTab('interview'); setRevealedAnswers(new Set()); }}
-                  className={`flex-1 flex items-center justify-center px-2 py-2 rounded-lg transition-all ${
+                  className={`flex-1 flex items-center justify-center px-1.5 py-1.5 rounded-lg whitespace-nowrap transition-all ${
                     activeTab === 'interview'
                       ? 'bg-orange-500 text-white shadow-md'
                       : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
@@ -478,8 +479,8 @@ export function RightSidebar({ course, topic, topicName, isMinimized, onToggleMi
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                 >
-                  <div className="mb-4">
-                    <div className="flex items-center gap-1.5 mb-1.5 px-1">
+                  <div className="mb-2.5">
+                    <div className="flex items-center gap-1.5 mb-1 px-1">
                       <Sparkles className="w-3.5 h-3.5 text-orange-500" />
                       <p className="text-[10px] font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">Quick Revision Notes</p>
                     </div>

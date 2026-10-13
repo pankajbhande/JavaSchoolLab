@@ -344,23 +344,9 @@ export function ContentArea({
         {/* Stacked deliberately: level tabs first, Robo Guru second, topic heading third.
             All three previously shared one wrapping row, where they collided - the test
             CTA overlapped the Robo card and "Robo Guru" broke onto two clipped lines. */}
-        <div className="mb-6 pb-3 border-b border-gray-200 dark:border-gray-700 flex flex-col gap-3">
+        <div className="mb-4 pb-3 border-b border-gray-200 dark:border-gray-700 flex flex-col gap-2">
 
-          {/* Row 1 — the test CTA */}
-          <div className="flex flex-wrap items-center justify-between gap-3">
-          {/* MCQ Test Button */}
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => setShowMCQ(true)}
-            className="shrink-0 px-6 py-2.5 bg-gradient-to-r from-orange-600 to-amber-500 text-white rounded-lg flex items-center gap-2 font-display font-semibold text-sm tracking-tight shadow-md hover:shadow-lg transition-all"
-          >
-            <Award className="w-5 h-5" />
-            {testAvailable ? "Take Test & Get Certificate" : "Assessment coming soon"}
-          </motion.button>
-          </div>
-
-          {/* Row 2 — Robo Guru, given the full width so nothing has to be truncated */}
+          {/* Row 1 — Robo Guru, given the full width so nothing has to be truncated */}
           {/* Robo Guru — Indian voice teacher (kept outside contentRef so its own labels aren't read aloud) */}
           {onToggleSpeech && (
             <motion.div
@@ -431,6 +417,19 @@ export function ContentArea({
               </div>
             </motion.div>
           )}
+
+          {/* Row 2 — the test CTA, below Robo Guru and aligned right */}
+          <div className="flex justify-end">
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => setShowMCQ(true)}
+              className="shrink-0 px-4 py-2 bg-gradient-to-r from-orange-600 to-amber-500 text-white rounded-lg flex items-center gap-2 font-display font-semibold text-sm tracking-tight shadow-md hover:shadow-lg transition-all"
+            >
+              <Award className="w-5 h-5" />
+              {testAvailable ? "Take Test & Get Certificate" : "Assessment coming soon"}
+            </motion.button>
+          </div>
         </div>
 
 

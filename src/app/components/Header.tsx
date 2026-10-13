@@ -10,7 +10,7 @@ import { headerBox, headerBadge, headerIconBtn } from './headerStyles';
 import { useAuth } from '../context/AuthContext';
 import { LoginModal } from './LoginModal';
 import { motion } from 'motion/react';
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Bell } from "lucide-react";
 import { Timer as TimerIcon } from "lucide-react";
 
@@ -30,6 +30,27 @@ export function Header({ onToggleSpeech, isSpeaking, onSearch, showSearch = true
   const [showTimer, setShowTimer] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
+  const alarmRef = useRef<HTMLDivElement>(null);
+  const timerRef = useRef<HTMLDivElement>(null);
+
+  // Close the alarm / timer panels when the user clicks anywhere else or presses Escape.
+  useEffect(() => {
+    if (!showAlarm && !showTimer) return;
+    const onPointerDown = (e: PointerEvent) => {
+      const target = e.target as Node;
+      if (showAlarm && !alarmRef.current?.contains(target)) setShowAlarm(false);
+      if (showTimer && !timerRef.current?.contains(target)) setShowTimer(false);
+    };
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") { setShowAlarm(false); setShowTimer(false); }
+    };
+    document.addEventListener("pointerdown", onPointerDown);
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("pointerdown", onPointerDown);
+      document.removeEventListener("keydown", onKeyDown);
+    };
+  }, [showAlarm, showTimer]);
 
   return (
     <>
@@ -67,7 +88,7 @@ export function Header({ onToggleSpeech, isSpeaking, onSearch, showSearch = true
             <StudyTimeTracker />
 
             {/* Alarm — kept mounted so reminders still ring while the panel is closed */}
-            <div className="relative">
+            <div className="relative" ref={alarmRef}>
               <button
                 onClick={() => setShowAlarm(!showAlarm)}
                 className={headerIconBtn}
@@ -82,7 +103,7 @@ export function Header({ onToggleSpeech, isSpeaking, onSearch, showSearch = true
             </div>
 
             {/* Timer */}
-            <div className="relative">
+            <div className="relative" ref={timerRef}>
               <button
                 onClick={() => setShowTimer(!showTimer)}
                 className={headerIconBtn}

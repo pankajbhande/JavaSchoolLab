@@ -328,9 +328,60 @@
     white-space: pre-wrap;
     word-break: break-word;
     overflow: auto;
-    background:
-      repeating-linear-gradient(transparent, transparent 20px, rgba(255,255,255,0.012) 21px);
+    background: #1b1d23; /* Eclipse-dark console */
   }
+
+  /* ---- Eclipse / STS style console ---- */
+  .con-head {
+    font-size: 12px;
+    padding-bottom: 8px;
+    margin-bottom: 8px;
+    border-bottom: 1px solid #2f323b;
+    color: #8b949e;
+  }
+  .con-head .con-tag { font-weight: 700; }
+  .con-head.con-running .con-tag { color: #6bd968; }
+  .con-head.con-terminated .con-tag { color: #e5c07b; }
+  .con-head.con-failed .con-tag { color: #ff6b6b; }
+  .con-head .con-stamp { color: #6e7681; }
+  .con-head .con-exit { margin-left: 8px; padding: 0 7px; border-radius: 999px; font-size: 11px; font-weight: 700; }
+  .con-head .con-exit.ok { color: #6bd968; background: rgba(107,217,104,0.12); }
+  .con-head .con-exit.bad { color: #ff6b6b; background: rgba(255,107,107,0.12); }
+
+  .con-line { white-space: pre-wrap; word-break: break-word; min-height: 1.6em; color: #d4d4d4; }
+  .con-line.err { color: #ff6b6b; }
+  .con-line.sys { color: #8b949e; font-style: italic; }
+  .con-line .lvl-error { color: #ff6b6b; font-weight: 700; }
+  .con-line .lvl-warn  { color: #e5c07b; font-weight: 700; }
+  .con-line .lvl-info  { color: #6bd968; font-weight: 700; }
+  .con-line .lvl-debug { color: #7aa2f7; font-weight: 700; }
+  .con-line .tok-time  { color: #8b949e; }
+  .con-line .tok-num   { color: #79c0ff; }
+  .con-line .tok-kw    { color: #d2a8ff; }
+  .con-line .tok-brk   { color: #56d4dd; }
+  .con-line .con-link  { color: #589df6; text-decoration: underline; text-underline-offset: 2px; }
+  .con-line.trace      { color: #9aa0a6; padding-left: 2px; }
+  .con-line .con-strong { font-weight: 700; }
+  .con-line.caret      { color: #e5c07b; }
+
+  .con-cursor {
+    display: inline-block;
+    width: 8px;
+    height: 15px;
+    background: #6bd968;
+    vertical-align: text-bottom;
+    animation: blink 1s steps(1) infinite;
+  }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  .btn-stop {
+    background: rgba(241,76,76,0.12);
+    color: var(--red);
+    border: 1px solid rgba(241,76,76,0.4);
+  }
+  .btn-stop:hover:not(:disabled) { background: rgba(241,76,76,0.22); }
+  .btn-stop:disabled { opacity: 0.35; cursor: not-allowed; }
+  .lang-pill.con-pill { color: #6bd968; background: rgba(107,217,104,0.1); border-color: rgba(107,217,104,0.3); }
   @media (min-width: 901px) { .output-area { min-height: 0; } }
 
   .output-placeholder {
@@ -499,7 +550,24 @@
           <span class="tl-yellow"></span>
           <span class="tl-green"></span>
         </div>
-        <div class="panel-filename"><span class="file-dot" style="background:#3fb950;"></span>Console Output</div>
+        <div class="panel-filename"><span class="file-dot" style="background:#3fb950;"></span>Console</div>
+      </div>
+
+      <div class="toolbar">
+        <button class="btn btn-stop" id="stopBtn" onclick="stopRun()" disabled title="Terminate">
+          <svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="1.5"/></svg>
+          Stop
+        </button>
+        <button class="btn btn-copy" onclick="copyConsole()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>
+          Copy
+        </button>
+        <button class="btn btn-copy" onclick="clearConsole()" title="Clear console">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg>
+          Clear
+        </button>
+        <div class="toolbar-spacer"></div>
+        <span class="lang-pill con-pill">CONSOLE</span>
       </div>
 
       <!-- No whitespace around the placeholder: .output-area uses white-space: pre-wrap, which
@@ -537,6 +605,7 @@
   const outputPlaceholder = document.getElementById("outputPlaceholder");
   const gutter = document.getElementById("gutter");
   const runBtn = document.getElementById("runBtn");
+  const stopBtn = document.getElementById("stopBtn");
   const statusIndicator = document.getElementById("statusIndicator");
   const execTimeEl = document.getElementById("execTime");
   const charCountEl = document.getElementById("charCount");
@@ -625,21 +694,126 @@
       .replace(/>/g, "&gt;");
   }
 
-  function renderOutput({ banner, bannerType, stdout, stderr }) {
-    let html = "";
-    if (banner) {
-      html += `<div class="output-line-${bannerType === "error" ? "error" : "success"}-banner">${banner}</div>`;
+  // ---- Eclipse / STS style console -------------------------------------------------
+  let streamTimer = null;
+  let currentController = null;
+  let userStopped = false;
+
+  function stamp() {
+    return new Date().toLocaleString("en-GB", {
+      day: "2-digit", month: "short", year: "numeric",
+      hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false
+    });
+  }
+
+  // "<running> Main [Java Application] ..." header, exactly like the Eclipse Console tab.
+  function consoleHeader(state, exitCode) {
+    const tag = state === "running" ? "&lt;running&gt;" : "&lt;terminated&gt;";
+    const exit = (exitCode === undefined || exitCode === null) ? "" :
+      `<span class="con-exit ${String(exitCode) === "0" ? "ok" : "bad"}">exit ${escapeHtml(String(exitCode))}</span>`;
+    return `<div class="con-head con-${state}"><span class="con-tag">${tag}</span> Main [Java Application] OpenJDK 22 <span class="con-stamp">(${stamp()})</span>${exit}</div>`;
+  }
+
+  // Colours one console line: log levels, timestamps, numbers, literals, [brackets],
+  // stack-trace links and javac diagnostics.
+  function colorizeLine(raw, kind) {
+    const s = escapeHtml(raw);
+    if (kind === "sys") return { html: s, cls: "sys" };
+    if (kind === "err") {
+      if (/^\s+at\s/.test(raw)) {
+        return { html: s.replace(/\(([^)]+\.java:\d+)\)/, '(<span class="con-link">$1</span>)'), cls: "err trace" };
+      }
+      if (/^\s*\^+\s*$/.test(raw)) return { html: s, cls: "caret" };
+      const diag = s.match(/^([\w$.\/\-]+\.java:\d+)(: )(error|warning)(:)(.*)$/);
+      if (diag) {
+        return {
+          html: `<span class="con-link">${diag[1]}</span>${diag[2]}<span class="con-strong">${diag[3]}</span>${diag[4]}${diag[5]}`,
+          cls: "err"
+        };
+      }
+      if (/^(Exception in thread|Caused by:)/.test(raw)) return { html: `<span class="con-strong">${s}</span>`, cls: "err" };
+      return { html: s, cls: "err" };
     }
-    if (stdout) {
-      html += `<div class="output-line-stdout">${escapeHtml(stdout)}</div>`;
-    }
-    if (stderr) {
-      html += `<div class="output-line-stderr">${escapeHtml(stderr)}</div>`;
-    }
-    if (!stdout && !stderr && !banner) {
-      html = `<div class="output-line-stdout" style="color:#6e7681;">(no output)</div>`;
-    }
-    outputArea.innerHTML = html;
+    const html = s.replace(
+      /(\b\d{4}-\d{2}-\d{2}[ T]\d{2}:\d{2}:\d{2}(?:[.,]\d+)?\b)|(\b(?:ERROR|FATAL|SEVERE)\b)|(\bWARN(?:ING)?\b)|(\bINFO\b)|(\b(?:DEBUG|TRACE)\b)|(\b(?:true|false|null)\b)|(\[[^\]\n]{1,40}\])|((?<![\w.])-?\d+(?:\.\d+)?(?![\w.]))/g,
+      (m, time, error, warn, info, debug, kw, brk, num) =>
+        time  ? `<span class="tok-time">${m}</span>`  :
+        error ? `<span class="lvl-error">${m}</span>` :
+        warn  ? `<span class="lvl-warn">${m}</span>`  :
+        info  ? `<span class="lvl-info">${m}</span>`  :
+        debug ? `<span class="lvl-debug">${m}</span>` :
+        kw    ? `<span class="tok-kw">${m}</span>`    :
+        brk   ? `<span class="tok-brk">${m}</span>`   :
+                `<span class="tok-num">${m}</span>`
+    );
+    return { html, cls: "" };
+  }
+
+  function toLines(text, kind) {
+    if (!text) return [];
+    const lines = text.replace(/\r\n/g, "\n").replace(/\n+$/, "").split("\n");
+    return lines.map(t => ({ text: t, kind }));
+  }
+
+  function stopStream() {
+    if (streamTimer) { clearTimeout(streamTimer); streamTimer = null; }
+  }
+
+  // Prints lines one after another (auto-scrolling) so output appears live, like a real
+  // console. The batch size grows for long output so it never takes more than ~1.5s.
+  function streamLines(lines, onDone) {
+    stopStream();
+    const body = document.createElement("div");
+    outputArea.appendChild(body);
+    if (!lines.length) { onDone && onDone(); return; }
+    const batch = Math.max(1, Math.ceil(lines.length / 80));
+    const delay = Math.max(10, Math.min(60, 1500 / Math.ceil(lines.length / batch)));
+    let i = 0;
+    const tick = () => {
+      const stop = Math.min(lines.length, i + batch);
+      for (; i < stop; i++) {
+        const { html, cls } = colorizeLine(lines[i].text, lines[i].kind);
+        const div = document.createElement("div");
+        div.className = "con-line " + cls;
+        div.innerHTML = html || "&nbsp;";
+        body.appendChild(div);
+      }
+      outputArea.scrollTop = outputArea.scrollHeight;
+      if (i < lines.length) streamTimer = setTimeout(tick, delay);
+      else { streamTimer = null; onDone && onDone(); }
+    };
+    tick();
+  }
+
+  function renderOutput({ banner, bannerType, stdout, stderr, exitCode }) {
+    const lines = [];
+    if (banner && bannerType === "error") lines.push({ text: banner, kind: "err" });
+    lines.push(...toLines(stdout, "out"), ...toLines(stderr, "err"));
+    if (!lines.length) lines.push({ text: "(no output)", kind: "sys" });
+    const failed = bannerType === "error";
+    outputArea.innerHTML = consoleHeader("terminated", exitCode)
+      .replace("con-terminated", failed ? "con-failed" : "con-terminated");
+    streamLines(lines);
+  }
+
+  function stopRun() {
+    if (!currentController) return;
+    userStopped = true;
+    currentController.abort();
+  }
+
+  function clearConsole() {
+    stopStream();
+    setOutputPlaceholder();
+    setStatus("ready");
+    execTimeEl.textContent = "";
+  }
+
+  function copyConsole() {
+    const text = Array.from(outputArea.querySelectorAll(".con-head, .con-line"))
+      .map(el => el.textContent).join("\n");
+    if (!text.trim()) return;
+    navigator.clipboard.writeText(text).then(() => showToast("Console copied!")).catch(() => {});
   }
 
   // NOTE: The public Piston API (emkc.org) went whitelist-only and now
@@ -662,10 +836,14 @@
       return;
     }
 
+    stopStream();
     runBtn.disabled = true;
+    stopBtn.disabled = false;
+    userStopped = false;
     setStatus("running");
     execTimeEl.textContent = "";
-    outputArea.innerHTML = `<div class="running-indicator"><span class="spinner"></span>Compiling and running your code…</div>`;
+    outputArea.innerHTML = consoleHeader("running") +
+      `<div class="con-line sys">Compiling Main.java …</div><div class="con-line"><span class="con-cursor"></span></div>`;
 
     const startedAt = performance.now();
 
@@ -682,6 +860,7 @@
 
     // Without a timeout a stalled request would leave Run disabled forever.
     const controller = new AbortController();
+    currentController = controller;
     const timeoutId = setTimeout(() => controller.abort(), 30000);
 
     try {
@@ -722,14 +901,19 @@
           renderOutput({ banner: "✕ Compilation failed", bannerType: "error", stderr: compileError });
         } else if (!succeeded || runtimeError) {
           setStatus("error", "Runtime Error");
-          renderOutput({ banner: "✕ Program exited with an error", bannerType: "error", stdout, stderr: runtimeError });
+          renderOutput({ banner: "✕ Program exited with an error", bannerType: "error", stdout, stderr: runtimeError, exitCode: data.status });
         } else {
           setStatus("success", "Success");
-          renderOutput({ banner: "✓ Program finished successfully", bannerType: "success", stdout });
+          renderOutput({ banner: "✓ Program finished successfully", bannerType: "success", stdout, exitCode: 0 });
         }
       });
     } catch (err) {
       finish(() => {
+        if (userStopped) {
+          setStatus("error", "Terminated");
+          renderOutput({ banner: "■ Terminated by user", bannerType: "error" });
+          return;
+        }
         setStatus("error", "Connection Error");
         renderOutput({
           banner: "✕ Could not reach the compiler service",
@@ -743,6 +927,8 @@
 
     function finish(render) {
       clearTimeout(timeoutId);
+      currentController = null;
+      stopBtn.disabled = true;
       const elapsed = ((performance.now() - startedAt) / 1000).toFixed(2);
       execTimeEl.textContent = elapsed + "s";
       runBtn.disabled = false;

@@ -69,7 +69,7 @@ export function Sidebar({
       whileHover={{ scale: 1.1 }}
       whileTap={{ scale: 0.9 }}
       onClick={onToggleMinimize}
-      className="p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400"
+      className="shrink-0 grid place-items-center w-8 h-8 rounded-lg bg-indigo-600 text-white shadow-md shadow-indigo-500/30 hover:bg-indigo-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400"
       title={isMinimized ? 'Expand sidebar' : 'Minimize sidebar'}
       aria-label={isMinimized ? 'Expand sidebar' : 'Minimize sidebar'}
     >

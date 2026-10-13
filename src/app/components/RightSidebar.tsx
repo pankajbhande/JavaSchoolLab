@@ -447,6 +447,7 @@ export function RightSidebar({ course, topic, topicName, isMinimized, onToggleMi
               {/* Tabs - only shown when topic is selected */}
               {topicQuestions.length > 0 && (
               <div className="flex items-center gap-1 mb-2.5">
+                {toggleButton}
                 <button
                   onClick={() => setActiveTab('keypoints')}
                   className={`flex-1 min-w-0 flex items-center justify-center gap-1 px-1 py-1.5 rounded-lg whitespace-nowrap transition-all ${
@@ -478,7 +479,6 @@ export function RightSidebar({ course, topic, topicName, isMinimized, onToggleMi
                 >
                   <span className="text-xs font-medium">MCQ</span>
                 </button>
-                {toggleButton}
               </div>
               )}
 

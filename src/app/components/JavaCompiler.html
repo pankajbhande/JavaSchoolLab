@@ -6,6 +6,7 @@
 <title>Java Compiler</title>
 <style>
   :root {
+    color-scheme: dark; /* dark scrollbars and form controls */
     --bg: #1e1e1e;
     --bg-panel: #252526;
     --bg-titlebar: #323233;
@@ -114,8 +115,17 @@
     align-items: stretch;
   }
 
+  /* Desktop: both panels share one fixed height, so long code or long output scrolls
+     inside its panel instead of stretching the whole page. */
+  @media (min-width: 901px) {
+    .workspace { height: calc(100vh - 150px); min-height: 480px; }
+    .panel { min-height: 0; }
+  }
+
   @media (max-width: 900px) {
     .workspace { grid-template-columns: 1fr; }
+    .page { padding: 18px 14px 28px; }
+    .output-area { max-height: 420px; }
   }
 
   .panel {
@@ -239,9 +249,10 @@
     position: relative;
     flex: 1;
     display: flex;
-    min-height: 420px;
+    min-height: 320px;
     background: var(--bg);
   }
+  @media (min-width: 901px) { .editor-wrap { min-height: 0; } }
 
   .gutter {
     flex-shrink: 0;
@@ -252,7 +263,9 @@
     font-size: 13px;
     line-height: 21px;
     text-align: right;
-    padding: 14px 8px 14px 0;
+    /* Extra bottom padding mirrors the textarea's horizontal scrollbar so the last line
+       numbers stay aligned with the code when it scrolls to the end. */
+    padding: 14px 8px 30px 0;
     user-select: none;
     overflow: hidden;
     border-right: 1px solid var(--border);
@@ -277,6 +290,20 @@
 
   #code::selection { background: rgba(0,122,204,0.4); }
 
+  .btn:focus-visible, #code:focus-visible {
+    outline: 2px solid var(--blue-hover);
+    outline-offset: 2px;
+  }
+  kbd {
+    font-family: inherit;
+    font-size: 10.5px;
+    opacity: 0.75;
+    border: 1px solid rgba(255,255,255,0.25);
+    border-radius: 4px;
+    padding: 0 4px;
+    margin-left: 2px;
+  }
+
   .status-bar {
     display: flex;
     align-items: center;
@@ -293,7 +320,7 @@
 
   .output-area {
     flex: 1;
-    min-height: 420px;
+    min-height: 320px;
     padding: 16px;
     font-family: ui-monospace, SFMono-Regular, "JetBrains Mono", Menlo, Consolas, monospace;
     font-size: 13px;
@@ -304,13 +331,13 @@
     background:
       repeating-linear-gradient(transparent, transparent 20px, rgba(255,255,255,0.012) 21px);
   }
+  @media (min-width: 901px) { .output-area { min-height: 0; } }
 
   .output-placeholder {
     color: var(--text-dim);
     display: flex;
     align-items: center;
     gap: 8px;
-    height: 100%;
   }
 
   .output-placeholder svg { width: 15px; height: 15px; opacity: 0.7; }
@@ -434,9 +461,9 @@
       </div>
 
       <div class="toolbar">
-        <button class="btn btn-run" id="runBtn" onclick="runCode()">
+        <button class="btn btn-run" id="runBtn" onclick="runCode()" title="Run (Ctrl+Enter)">
           <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-          Run
+          Run <kbd>Ctrl&#8629;</kbd>
         </button>
         <button class="btn btn-copy" onclick="copyCode()">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>
@@ -452,7 +479,7 @@
 
       <div class="editor-wrap">
         <div class="gutter" id="gutter">1</div>
-        <textarea id="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off"></textarea>
+        <textarea id="code" aria-label="Java source code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off"></textarea>
       </div>
 
       <div class="status-bar">
@@ -475,12 +502,12 @@
         <div class="panel-filename"><span class="file-dot" style="background:#3fb950;"></span>Console Output</div>
       </div>
 
-      <div class="output-area" id="output">
-        <div class="output-placeholder" id="outputPlaceholder">
+      <!-- No whitespace around the placeholder: .output-area uses white-space: pre-wrap, which
+           would render the newlines as blank lines above it. -->
+      <div class="output-area" id="output" role="log" aria-live="polite"><div class="output-placeholder" id="outputPlaceholder">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 5v14l11-7z"/></svg>
-          Click <b style="color:#d4d4d4; margin: 0 4px;">Run ▶</b> to see the output here
-        </div>
-      </div>
+          <span>Click <b style="color:#d4d4d4; margin: 0 2px;">Run ▶</b> to see the output here</span>
+        </div></div>
 
       <div class="status-bar">
         <div class="status-left">
@@ -522,7 +549,7 @@
   function updateGutter() {
     const lineCount = codeArea.value.split("\n").length;
     let lines = "";
-    for (let i = 1; i <= lineCount; i++) lines += i + "\n";
+    for (let i = 1; i <= lineCount; i++) lines += (i < lineCount ? i + "\n" : i);
     gutter.textContent = lines;
     charCountEl.textContent = codeArea.value.length + " characters";
   }
@@ -537,7 +564,7 @@
   });
   codeArea.addEventListener("scroll", syncScroll);
 
-  // Tab key -> insert 4 spaces instead of losing focus
+  // Tab key -> insert 4 spaces instead of losing focus. Ctrl/Cmd+Enter runs the code.
   codeArea.addEventListener("keydown", (e) => {
     if (e.key === "Tab") {
       e.preventDefault();
@@ -546,6 +573,10 @@
       codeArea.value = codeArea.value.substring(0, start) + "    " + codeArea.value.substring(end);
       codeArea.selectionStart = codeArea.selectionEnd = start + 4;
       updateGutter();
+      localStorage.setItem("java_try_code", codeArea.value);
+    } else if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
+      e.preventDefault();
+      if (!runBtn.disabled) runCode();
     }
   });
 
@@ -649,9 +680,14 @@
       "$2"
     );
 
+    // Without a timeout a stalled request would leave Run disabled forever.
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 30000);
+
     try {
       const response = await fetch(WANDBOX_COMPILE_URL, {
         method: "POST",
+        signal: controller.signal,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           code: sanitizedCode,
@@ -698,12 +734,15 @@
         renderOutput({
           banner: "✕ Could not reach the compiler service",
           bannerType: "error",
-          stderr: (err && err.message) ? err.message : "Please check your internet connection and try again."
+          stderr: (err && err.name === "AbortError")
+            ? "The compiler took longer than 30 seconds to respond. Please try again."
+            : (err && err.message) ? err.message : "Please check your internet connection and try again."
         });
       });
     }
 
     function finish(render) {
+      clearTimeout(timeoutId);
       const elapsed = ((performance.now() - startedAt) / 1000).toFixed(2);
       execTimeEl.textContent = elapsed + "s";
       runBtn.disabled = false;

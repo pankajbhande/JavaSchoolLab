@@ -368,21 +368,14 @@ export function Dashboard({ onCourseSelect, searchQuery = '' }: DashboardProps) 
   const [visitorLoading, setVisitorLoading] = useState(true);
 
   useEffect(() => {
-    const VISITED_KEY = 'javaschoollab_visited';
-    const hasVisited = sessionStorage.getItem(VISITED_KEY);
-
-    if (!hasVisited) {
-      sessionStorage.setItem(VISITED_KEY, 'true');
-      incrementVisitor()
-        .then(data => setVisitorCount(data.count))
-        .catch(() => {})
-        .finally(() => setVisitorLoading(false));
-    } else {
-      getVisitorCount()
-        .then(data => setVisitorCount(data.count))
-        .catch(() => {})
-        .finally(() => setVisitorLoading(false));
-    }
+    incrementVisitor()
+      .then(data => setVisitorCount(data.count))
+      .catch(() => {
+        getVisitorCount()
+          .then(data => setVisitorCount(data.count))
+          .catch(() => {});
+      })
+      .finally(() => setVisitorLoading(false));
   }, []);
 
   return (

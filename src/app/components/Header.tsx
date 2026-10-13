@@ -6,6 +6,7 @@ import { Timer } from './Timer';
 import { LiveClock } from './LiveClock';
 import { StudyTimeTracker } from './StudyTimeTracker';
 import { useTheme } from './ThemeProvider';
+import { headerBox, headerBadge, headerIconBtn } from './headerStyles';
 import { useAuth } from '../context/AuthContext';
 import { LoginModal } from './LoginModal';
 import { motion } from 'motion/react';
@@ -17,11 +18,12 @@ interface HeaderProps {
   onToggleSpeech: () => void;
   isSpeaking: boolean;
   onSearch?: (query: string) => void;
+  showSearch?: boolean;
   voiceGender: 'male' | 'female';
   onVoiceChange: (gender: 'male' | 'female') => void;
 }
 
-export function Header({ onToggleSpeech, isSpeaking, onSearch, voiceGender, onVoiceChange }: HeaderProps) {
+export function Header({ onToggleSpeech, isSpeaking, onSearch, showSearch = true, voiceGender, onVoiceChange }: HeaderProps) {
   const { theme, toggleTheme } = useTheme();
   const { user, isLoggedIn, isGuest, logout } = useAuth();
   const [showAlarm, setShowAlarm] = useState(false);
@@ -31,8 +33,8 @@ export function Header({ onToggleSpeech, isSpeaking, onSearch, voiceGender, onVo
 
   return (
     <>
-      <header className="bg-gradient-to-r from-orange-600 to-amber-500 dark:from-orange-800 dark:to-amber-700 text-white shadow-lg sticky top-0 z-50">
-        <div className="container mx-auto px-3 sm:px-4 py-3 sm:py-4 flex flex-wrap items-center justify-between gap-y-2">
+      <header className="bg-gradient-to-r from-[#ff5500] to-[#ff9a0a] dark:from-orange-800 dark:to-amber-700 text-white shadow-lg sticky top-0 z-50">
+        <div className="container mx-auto max-w-[1200px] px-3 sm:px-4 py-3 sm:py-3.5 flex flex-wrap items-center justify-between gap-y-2">
           <motion.div
             className="flex items-center gap-2 sm:gap-4 min-w-0"
             initial={{ opacity: 0, x: -20 }}
@@ -46,16 +48,17 @@ export function Header({ onToggleSpeech, isSpeaking, onSearch, voiceGender, onVo
           </motion.div>
 
           <div className="flex flex-wrap items-center justify-end gap-2 sm:gap-3">
-            <div className="hidden md:flex items-center bg-white/20 backdrop-blur-sm rounded-lg px-3 xl:px-4 h-11 w-48 lg:w-56 xl:w-64">
-              <Search className="w-5 h-5 mr-2" />
+            {showSearch && <label className={`hidden md:flex w-56cursor-text focus-within:bg-white/25 focus-within:ring-white/60 ${headerBox}`}>
+              <span className={headerBadge}><Search className="w-4 h-4" /></span>
               <input
                 id="global-search-input"
                 type="text"
                 placeholder="Search topics... (Press /)"
                 className="bg-transparent border-none outline-none text-sm text-white placeholder-orange-100 w-full min-w-0"
+                aria-label="Search topics"
                 onChange={(e) => onSearch?.(e.target.value)}
               />
-            </div>
+            </label>}
 
             {/* Live current time */}
             <LiveClock />
@@ -67,7 +70,7 @@ export function Header({ onToggleSpeech, isSpeaking, onSearch, voiceGender, onVo
             <div className="relative">
               <button
                 onClick={() => setShowAlarm(!showAlarm)}
-                className="p-3 rounded-full bg-white/20 hover:bg-white/30 transition-all"
+                className={headerIconBtn}
                 title="Alarms"
                 aria-label="Alarms"
               >
@@ -82,7 +85,7 @@ export function Header({ onToggleSpeech, isSpeaking, onSearch, voiceGender, onVo
             <div className="relative">
               <button
                 onClick={() => setShowTimer(!showTimer)}
-                className="p-3 rounded-full bg-white/20 hover:bg-white/30 transition-all"
+                className={headerIconBtn}
                 title="Timer"
                 aria-label="Timer"
               >
@@ -97,7 +100,7 @@ export function Header({ onToggleSpeech, isSpeaking, onSearch, voiceGender, onVo
 
             {/* Voice Gender Selection. Hidden on phones: it pushed the header to a third
                 wrapped row, and the reading pane carries its own voice picker anyway. */}
-            <div className="hidden 2xl:flex items-center bg-white/20 backdrop-blur-sm rounded-lg p-1">
+            <div className="hidden 2xl:flex items-center h-12 bg-white/15 ring-1 ring-white/25 backdrop-blur-md rounded-xl p-1">
               <button
                 onClick={() => onVoiceChange('female')}
                 className={`px-3 py-1 rounded text-sm transition-all ${voiceGender === 'female'
@@ -157,9 +160,9 @@ export function Header({ onToggleSpeech, isSpeaking, onSearch, voiceGender, onVo
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
                 onClick={onToggleSpeech}
-                className={`p-3 rounded-full transition-all ${isSpeaking
-                  ? 'bg-white text-orange-600 animate-pulse'
-                  : 'bg-white/20 hover:bg-white/30'
+                className={`${headerIconBtn} ${isSpeaking
+                  ? '!bg-white text-orange-600 animate-pulse'
+                  : ''
                   }`}
                 title={isSpeaking ? 'Stop Robo Voice' : 'Listen with Indian Robo Voice'}
                 aria-label={isSpeaking ? 'Stop Robo Voice' : 'Listen with Indian Robo Voice'}
@@ -172,7 +175,7 @@ export function Header({ onToggleSpeech, isSpeaking, onSearch, voiceGender, onVo
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
               onClick={toggleTheme}
-              className="p-3 rounded-full bg-white/20 hover:bg-white/30 transition-all"
+              className={headerIconBtn}
               title="Toggle Theme"
               aria-label="Toggle Theme"
             >
@@ -184,7 +187,8 @@ export function Header({ onToggleSpeech, isSpeaking, onSearch, voiceGender, onVo
               <div className="relative">
                 <button
                   onClick={() => setShowUserMenu(!showUserMenu)}
-                  className="flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-lg px-3 py-2 hover:bg-white/30 transition-all"
+                  className="flex items-center gap-2 h-12 bg-white/15 ring-1 ring-white/25 backdrop-blur-md rounded-xl px-3 hover:bg-white/25 transition-colors"
+                  aria-label="Account menu"
                 >
                   <div className="w-7 h-7 bg-white text-orange-600 rounded-full flex items-center justify-center font-bold text-sm">
                     {user?.fullName?.charAt(0).toUpperCase()}
@@ -213,7 +217,7 @@ export function Header({ onToggleSpeech, isSpeaking, onSearch, voiceGender, onVo
             ) : isGuest ? (
               <button
                 onClick={() => setShowLogin(true)}
-                className="flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-lg px-3 py-2 hover:bg-white/30 transition-all"
+                className="flex items-center gap-2 h-12 bg-white/15 ring-1 ring-white/25 backdrop-blur-md rounded-xl px-3 hover:bg-white/25 transition-colors"
               >
                 <User className="w-5 h-5" />
                 <span className="text-sm font-medium hidden lg:block">Guest</span>
@@ -221,7 +225,7 @@ export function Header({ onToggleSpeech, isSpeaking, onSearch, voiceGender, onVo
             ) : (
               <button
                 onClick={() => setShowLogin(true)}
-                className="flex items-center gap-2 bg-white text-orange-600 rounded-lg px-4 py-2 font-semibold hover:bg-orange-50 transition-all text-sm"
+                className="flex items-center gap-2 bg-white text-orange-600 rounded-lg px-4 h-10 font-semibold hover:bg-orange-50 transition-all text-sm"
               >
                 <LogIn className="w-4 h-4" /> Login
               </button>

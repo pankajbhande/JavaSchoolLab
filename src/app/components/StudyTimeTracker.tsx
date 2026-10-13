@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { GraduationCap } from 'lucide-react';
 import { useProgress } from '../context/ProgressContext';
+import { headerBox, headerBadge } from './headerStyles';
 
 const todayKey = () => `jsl_study_seconds_${new Date().toISOString().slice(0, 10)}`;
 
@@ -50,13 +51,13 @@ export function StudyTimeTracker() {
 
   return (
     <div
-      className="hidden xl:flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-lg px-3 h-11 min-w-[9.5rem]"
+      className={`hidden xl:flex ${headerBox}`}
       title="Time spent studying today (auto-tracked)"
     >
-      <GraduationCap className="w-4 h-4 shrink-0" />
-      <div className="leading-tight">
-        <div className="font-mono font-semibold text-sm tabular-nums">{formatDuration(seconds)}</div>
-        <div className="text-[10px] text-orange-100">Study time today</div>
+      <span className={headerBadge}><GraduationCap className="w-4 h-4" /></span>
+      <div className="leading-tight min-w-0">
+        <div className="font-mono font-bold text-xs tabular-nums whitespace-nowrap">{formatDuration(seconds)}</div>
+        <div className="text-[11px] text-orange-100">Study time today</div>
       </div>
     </div>
   );

@@ -444,6 +444,7 @@ export default function CourseWorkspace() {
         onToggleSpeech={toggleSpeech}
         isSpeaking={isSpeaking}
         onSearch={handleSearch}
+        showSearch={false}
         voiceGender={voiceGender}
         onVoiceChange={setVoiceGender}
       />

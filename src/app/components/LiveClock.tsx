@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Clock } from 'lucide-react';
+import { headerBox, headerBadge } from './headerStyles';
 
 export function LiveClock() {
   const [now, setNow] = useState(new Date());
@@ -22,13 +23,13 @@ export function LiveClock() {
 
   return (
     <div
-      className="hidden lg:flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-lg px-3 h-11 min-w-[9.5rem]"
+      className={`hidden lg:flex ${headerBox}`}
       title="Current Time"
     >
-      <Clock className="w-4 h-4 shrink-0" />
-      <div className="leading-tight">
-        <div className="font-mono font-semibold text-sm tabular-nums">{time}</div>
-        <div className="text-[10px] text-orange-100">{date}</div>
+      <span className={headerBadge}><Clock className="w-4 h-4" /></span>
+      <div className="leading-tight min-w-0">
+        <div className="font-mono font-bold text-xs tabular-nums whitespace-nowrap">{time}</div>
+        <div className="text-[11px] text-orange-100">{date}</div>
       </div>
     </div>
   );

@@ -133,6 +133,7 @@ function DashboardPage() {
         onToggleSpeech={() => {}}
         isSpeaking={false}
         onSearch={setSearch}
+        showSearch={false}
         voiceGender={voiceGender}
         onVoiceChange={setVoiceGender}
       />

@@ -17,6 +17,10 @@ export interface User {
   email: string | null;
   mobile: string | null;
   loginType: 'email' | 'mobile';
+  gender?: string | null;
+  dob?: string | null;
+  organization?: string | null;
+  createdAt?: string;
 }
 
 export interface AuthResponse {
@@ -85,6 +89,51 @@ export async function fetchCurrentUser(): Promise<User> {
   return res.json();
 }
 
+async function jsonOrThrow<T>(res: Response, fallback: string): Promise<T> {
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error || fallback);
+  }
+  return res.json();
+}
+
+// Profile
+export async function updateProfile(data: { fullName: string; gender?: string; dob?: string; organization?: string }): Promise<void> {
+  await jsonOrThrow(await fetch(`${API_BASE}/auth/profile`, { method: 'PATCH', headers: authHeaders(), body: JSON.stringify(data) }), 'Failed to update profile');
+}
+
+export async function changePassword(data: { currentPassword: string; newPassword: string }): Promise<void> {
+  await jsonOrThrow(await fetch(`${API_BASE}/auth/change-password`, { method: 'POST', headers: authHeaders(), body: JSON.stringify(data) }), 'Failed to change password');
+}
+
+// Bookmarks & notes
+export interface TopicRef { courseId: string; moduleId: string; topicId: string; topicName: string }
+export interface Bookmark extends TopicRef { createdAt: string }
+export interface Note extends TopicRef { body: string; updatedAt: string }
+
+export async function fetchBookmarks(): Promise<Bookmark[]> {
+  return jsonOrThrow(await fetch(`${API_BASE}/bookmarks`, { headers: authHeaders() }), 'Failed to load bookmarks');
+}
+export async function addBookmark(ref: TopicRef): Promise<void> {
+  await jsonOrThrow(await fetch(`${API_BASE}/bookmarks`, { method: 'POST', headers: authHeaders(), body: JSON.stringify(ref) }), 'Failed to save bookmark');
+}
+export async function removeBookmark(ref: { courseId: string; topicId: string }): Promise<void> {
+  await jsonOrThrow(await fetch(`${API_BASE}/bookmarks`, { method: 'DELETE', headers: authHeaders(), body: JSON.stringify(ref) }), 'Failed to remove bookmark');
+}
+export async function fetchNotes(): Promise<Note[]> {
+  return jsonOrThrow(await fetch(`${API_BASE}/notes`, { headers: authHeaders() }), 'Failed to load notes');
+}
+export async function saveNote(ref: TopicRef & { body: string }): Promise<void> {
+  await jsonOrThrow(await fetch(`${API_BASE}/notes`, { method: 'PUT', headers: authHeaders(), body: JSON.stringify(ref) }), 'Failed to save note');
+}
+
+// Leaderboard
+export interface LeaderboardEntry { rank: number; name: string; xp: number; modulesPassed: number; isMe: boolean }
+export interface Leaderboard { top: LeaderboardEntry[]; me: { rank: number; xp: number } | null; total: number }
+export async function fetchLeaderboard(): Promise<Leaderboard> {
+  return jsonOrThrow(await fetch(`${API_BASE}/leaderboard`, { headers: authHeaders() }), 'Failed to load leaderboard');
+}
+
 // Certificates
 export async function issueCertificate(data: { courseName: string; topicName: string; score: number; totalQuestions: number }): Promise<CertificateData> {
   const res = await fetch(`${API_BASE}/certificates`, { method: 'POST', headers: authHeaders(), body: JSON.stringify(data) });
@@ -103,6 +152,20 @@ export async function incrementVisitor(): Promise<{ count: number }> {
   const res = await fetch(`${API_BASE}/visitors/increment`, { method: 'POST', headers: { 'Content-Type': 'application/json' } });
   if (!res.ok) throw new Error('Failed');
   return res.json();
+}
+
+// Counts this page load exactly once, no matter how many components ask or how often they
+// remount (React StrictMode, navigating between pages). Every full page load / return visit
+// is a new module instance, so it adds +1 again: 100 visits -> 100 on the counter.
+let visitPromise: Promise<{ count: number }> | null = null;
+export function registerVisit(): Promise<{ count: number }> {
+  if (!visitPromise) {
+    visitPromise = incrementVisitor().catch(async (err) => {
+      // Server unreachable: show the current number, and still count nothing twice.
+      try { return await getVisitorCount(); } catch { throw err; }
+    });
+  }
+  return visitPromise;
 }
 
 export async function getVisitorCount(): Promise<{ count: number }> {

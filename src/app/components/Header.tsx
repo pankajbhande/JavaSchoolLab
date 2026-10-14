@@ -1,4 +1,5 @@
 import { Volume2, VolumeX, Search, Moon, Sun, LogIn, LogOut, User, Bot } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import logo from '../../assets/logo1.jpg';
 import { Alarm } from './Alarm';
@@ -24,6 +25,7 @@ interface HeaderProps {
 }
 
 export function Header({ onToggleSpeech, isSpeaking, onSearch, showSearch = true, voiceGender, onVoiceChange }: HeaderProps) {
+  const navigate = useNavigate();
   const { theme, toggleTheme } = useTheme();
   const { user, isLoggedIn, isGuest, logout } = useAuth();
   const [showAlarm, setShowAlarm] = useState(false);
@@ -64,7 +66,7 @@ export function Header({ onToggleSpeech, isSpeaking, onSearch, showSearch = true
             <img src={logo} alt="JavaSchoolLab Logo" className="h-9 w-9 sm:h-12 sm:w-12 object-contain" />
             <div>
               <h1 className="font-bold text-lg sm:text-2xl">JavaSchoolLab</h1>
-              <p className="text-sm text-orange-100">Learn Java, Python, React & More</p>
+              <p className="text-sm text-orange-100">Learn to code, step by step</p>
             </div>
           </motion.div>
 
@@ -225,6 +227,12 @@ export function Header({ onToggleSpeech, isSpeaking, onSearch, showSearch = true
                         <p className="font-semibold text-gray-800 dark:text-gray-200">{user?.fullName}</p>
                         <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{user?.email || user?.mobile}</p>
                       </div>
+                      <button
+                        onClick={() => { navigate('/account'); setShowUserMenu(false); }}
+                        className="w-full flex items-center gap-2 px-4 py-3 text-gray-700 dark:text-gray-200 hover:bg-orange-50 dark:hover:bg-gray-700 transition-all text-sm"
+                      >
+                        <User className="w-4 h-4" /> My Account
+                      </button>
                       <button
                         onClick={() => { logout(); setShowUserMenu(false); toast('Logged out'); }}
                         className="w-full flex items-center gap-2 px-4 py-3 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all text-sm"

@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect } from 'react';
 import { PanelRightClose, PanelRight, CheckCircle, Users, Globe, Award, TrendingUp, BookOpen, Sparkles, Lightbulb } from 'lucide-react';
 import { Course, Topic } from '../data/coursesData';
 import { buildKeypoints } from '../services/keypoints';
-import { incrementVisitor, getVisitorCount } from '../services/api';
+import { registerVisit } from '../services/api';
 import { motion, AnimatePresence } from 'motion/react';
 import { AdSlot } from './ads/AdSlot';
 import { AD_SLOTS } from './ads/adsense';
@@ -189,21 +189,9 @@ function useVisitorCount() {
   const [count, setCount] = useState(0);
 
   useEffect(() => {
-    const trackVisit = async () => {
-      try {
-        const { count: nextCount } = await incrementVisitor();
-        setCount(nextCount);
-      } catch {
-        try {
-          const { count: currentCount } = await getVisitorCount();
-          setCount(currentCount);
-        } catch {
-          setCount(0);
-        }
-      }
-    };
-
-    trackVisit();
+    registerVisit()
+      .then(({ count: nextCount }) => setCount(nextCount))
+      .catch(() => setCount(0));
   }, []);
 
   return count;

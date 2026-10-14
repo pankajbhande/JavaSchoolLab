@@ -8,6 +8,8 @@ interface AuthContextType {
   login: (token: string, user: User) => void;
   loginAsGuest: () => void;
   logout: () => void;
+  /** Re-reads the profile from the server, e.g. after the user edits it. */
+  refreshUser: () => Promise<void>;
   loading: boolean;
 }
 
@@ -56,8 +58,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setIsGuest(false);
   };
 
+  const refreshUser = async () => {
+    try { setUser(await fetchCurrentUser()); } catch { /* keep the current profile */ }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, isGuest, isLoggedIn: !!user, login, loginAsGuest, logout, loading }}>
+    <AuthContext.Provider value={{ user, isGuest, isLoggedIn: !!user, login, loginAsGuest, logout, refreshUser, loading }}>
       {children}
     </AuthContext.Provider>
   );

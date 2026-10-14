@@ -8,6 +8,7 @@ import { ImageWithFallback } from './figma/ImageWithFallback';
 import { TopicVisual } from './TopicVisual';
 import { transformContentTables } from '../lib/qaTables';
 import { hasBank } from '../data/quiz';
+import { TopicToolbar } from './TopicToolbar';
 interface ContentAreaProps {
   course: Course | null;
   topic: Topic | null;
@@ -421,15 +422,25 @@ export function ContentArea({
 
         {/* Test CTA — sits on the topic-title row, floated right. Kept outside contentRef so
             its label isn't read aloud. */}
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={() => setShowMCQ(true)}
-          className="float-right mt-1 ml-3 px-4 py-2 bg-gradient-to-r from-orange-600 to-amber-500 text-white rounded-lg flex items-center gap-2 font-display font-semibold text-sm tracking-tight shadow-md hover:shadow-lg transition-all"
-        >
-          <Award className="w-5 h-5" />
-          {testAvailable ? "Take Test & Get Certificate" : "Assessment coming soon"}
-        </motion.button>
+        <div className="float-right mt-1 ml-3 flex items-center gap-2">
+          <TopicToolbar
+            topicRef={{
+              courseId: course.id,
+              moduleId: course.subTopics.find(st => st.topics.some(t => t.id === topic.id))?.id ?? course.id,
+              topicId: topic.id,
+              topicName: topic.name,
+            }}
+          />
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => setShowMCQ(true)}
+            className="px-4 py-2 bg-gradient-to-r from-orange-600 to-amber-500 text-white rounded-lg flex items-center gap-2 font-display font-semibold text-sm tracking-tight shadow-md hover:shadow-lg transition-all"
+          >
+            <Award className="w-5 h-5" />
+            {testAvailable ? "Take Test & Get Certificate" : "Assessment coming soon"}
+          </motion.button>
+        </div>
 
         {/* Everything the Robo Guru reads aloud lives inside this ref — title + actual topic content only */}
         <div ref={contentRef}>

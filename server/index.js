@@ -385,10 +385,14 @@ app.post('/api/auth/login', async (req, res) => {
 // Get current user
 app.get('/api/auth/me', authenticateToken, async (req, res) => {
   try {
-    const [rows] = await pool.query('SELECT id, full_name, email, mobile, login_type, created_at FROM users WHERE id = ?', [req.user.id]);
+    const [rows] = await pool.query('SELECT id, full_name, email, mobile, login_type, gender, dob, organization, created_at FROM users WHERE id = ?', [req.user.id]);
     if (rows.length === 0) return res.status(404).json({ error: 'User not found' });
     const u = rows[0];
-    res.json({ id: u.id, fullName: u.full_name, email: u.email, mobile: u.mobile, loginType: u.login_type, createdAt: u.created_at });
+    res.json({
+      id: u.id, fullName: u.full_name, email: u.email, mobile: u.mobile, loginType: u.login_type,
+      gender: u.gender, dob: u.dob ? toLocalDateString(u.dob) : null, organization: u.organization,
+      createdAt: u.created_at,
+    });
   } catch (err) {
     res.status(500).json({ error: 'Failed to fetch user' });
   }
@@ -431,10 +435,20 @@ app.post('/api/certificates', authenticateToken, async (req, res) => {
 app.get('/api/certificates', authenticateToken, async (req, res) => {
   try {
     const [rows] = await pool.query(
-      'SELECT * FROM certificates WHERE user_id = ? ORDER BY issued_at DESC',
+      'SELECT c.*, u.full_name FROM certificates c JOIN users u ON u.id = c.user_id WHERE c.user_id = ? ORDER BY c.issued_at DESC',
       [req.user.id]
     );
-    res.json(rows);
+    // camelCase, matching the CertificateData type the client declares.
+    res.json(rows.map(r => ({
+      id: r.id,
+      certificateUid: r.certificate_uid,
+      studentName: r.full_name,
+      courseName: r.course_name,
+      topicName: r.topic_name,
+      score: r.score,
+      totalQuestions: r.total_questions,
+      issuedAt: r.issued_at,
+    })));
   } catch (err) {
     res.status(500).json({ error: 'Failed to fetch certificates' });
   }
@@ -692,6 +706,177 @@ app.get('/api/progress/review', authenticateToken, async (req, res) => {
   } catch (err) {
     console.error('progress/review error:', err);
     res.status(500).json({ error: 'Failed to load review queue' });
+  }
+});
+
+// ==================== PROFILE ====================
+
+app.patch('/api/auth/profile', authenticateToken, async (req, res) => {
+  try {
+    const fullName = String(req.body?.fullName ?? '').trim();
+    if (fullName.length < 2 || fullName.length > 100) {
+      return res.status(400).json({ error: 'Name must be 2-100 characters' });
+    }
+    const gender = req.body?.gender ? String(req.body.gender).slice(0, 20) : null;
+    const organization = req.body?.organization ? String(req.body.organization).trim().slice(0, 150) : null;
+    const dob = /^\d{4}-\d{2}-\d{2}$/.test(req.body?.dob || '') ? req.body.dob : null;
+    await pool.query(
+      'UPDATE users SET full_name = ?, gender = ?, dob = ?, organization = ? WHERE id = ?',
+      [fullName, gender, dob, organization, req.user.id]
+    );
+    res.json({ ok: true });
+  } catch (err) {
+    console.error('profile error:', err);
+    res.status(500).json({ error: 'Failed to update profile' });
+  }
+});
+
+app.post('/api/auth/change-password', authenticateToken, async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body || {};
+    if (!newPassword || String(newPassword).length < 6) {
+      return res.status(400).json({ error: 'New password must be at least 6 characters' });
+    }
+    const [rows] = await pool.query('SELECT password_hash FROM users WHERE id = ?', [req.user.id]);
+    if (rows.length === 0) return res.status(404).json({ error: 'User not found' });
+    const ok = await bcrypt.compare(String(currentPassword || ''), rows[0].password_hash);
+    if (!ok) return res.status(400).json({ error: 'Current password is incorrect' });
+    const hash = await bcrypt.hash(String(newPassword), 10);
+    await pool.query('UPDATE users SET password_hash = ? WHERE id = ?', [hash, req.user.id]);
+    res.json({ ok: true });
+  } catch (err) {
+    console.error('change-password error:', err);
+    res.status(500).json({ error: 'Failed to change password' });
+  }
+});
+
+// ==================== BOOKMARKS & NOTES ====================
+
+function topicRef(body) {
+  const { courseId, moduleId, topicId, topicName } = body || {};
+  if (!courseId || !moduleId || !topicId) return null;
+  return [String(courseId), String(moduleId), String(topicId), String(topicName || topicId).slice(0, 200)];
+}
+
+app.get('/api/bookmarks', authenticateToken, async (req, res) => {
+  try {
+    const [rows] = await pool.query(
+      'SELECT course_id, module_id, topic_id, topic_name, created_at FROM bookmarks WHERE user_id = ? ORDER BY created_at DESC LIMIT 500',
+      [req.user.id]
+    );
+    res.json(rows.map(r => ({
+      courseId: r.course_id, moduleId: r.module_id, topicId: r.topic_id,
+      topicName: r.topic_name, createdAt: r.created_at,
+    })));
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to load bookmarks' });
+  }
+});
+
+app.post('/api/bookmarks', authenticateToken, async (req, res) => {
+  try {
+    const ref = topicRef(req.body);
+    if (!ref) return res.status(400).json({ error: 'courseId, moduleId and topicId are required' });
+    await pool.query(
+      `INSERT INTO bookmarks (user_id, course_id, module_id, topic_id, topic_name) VALUES (?, ?, ?, ?, ?)
+       ON DUPLICATE KEY UPDATE topic_name = VALUES(topic_name)`,
+      [req.user.id, ...ref]
+    );
+    res.status(201).json({ ok: true });
+  } catch (err) {
+    console.error('bookmark add error:', err);
+    res.status(500).json({ error: 'Failed to save bookmark' });
+  }
+});
+
+app.delete('/api/bookmarks', authenticateToken, async (req, res) => {
+  try {
+    const { courseId, topicId } = req.body || {};
+    if (!courseId || !topicId) return res.status(400).json({ error: 'courseId and topicId are required' });
+    await pool.query('DELETE FROM bookmarks WHERE user_id = ? AND course_id = ? AND topic_id = ?',
+      [req.user.id, String(courseId), String(topicId)]);
+    res.json({ ok: true });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to remove bookmark' });
+  }
+});
+
+app.get('/api/notes', authenticateToken, async (req, res) => {
+  try {
+    const [rows] = await pool.query(
+      'SELECT course_id, module_id, topic_id, topic_name, body, updated_at FROM notes WHERE user_id = ? ORDER BY updated_at DESC LIMIT 500',
+      [req.user.id]
+    );
+    res.json(rows.map(r => ({
+      courseId: r.course_id, moduleId: r.module_id, topicId: r.topic_id,
+      topicName: r.topic_name, body: r.body, updatedAt: r.updated_at,
+    })));
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to load notes' });
+  }
+});
+
+// Upsert one note; an empty body deletes it so the notes list never holds blanks.
+app.put('/api/notes', authenticateToken, async (req, res) => {
+  try {
+    const ref = topicRef(req.body);
+    if (!ref) return res.status(400).json({ error: 'courseId, moduleId and topicId are required' });
+    const body = String(req.body?.body ?? '').slice(0, 10000);
+    if (body.trim() === '') {
+      await pool.query('DELETE FROM notes WHERE user_id = ? AND course_id = ? AND topic_id = ?',
+        [req.user.id, ref[0], ref[2]]);
+      return res.json({ ok: true, deleted: true });
+    }
+    await pool.query(
+      `INSERT INTO notes (user_id, course_id, module_id, topic_id, topic_name, body) VALUES (?, ?, ?, ?, ?, ?)
+       ON DUPLICATE KEY UPDATE body = VALUES(body), topic_name = VALUES(topic_name), module_id = VALUES(module_id)`,
+      [req.user.id, ...ref, body]
+    );
+    res.json({ ok: true });
+  } catch (err) {
+    console.error('note save error:', err);
+    res.status(500).json({ error: 'Failed to save note' });
+  }
+});
+
+// ==================== LEADERBOARD ====================
+
+function shortName(full) {
+  const parts = String(full || 'Student').trim().split(/\s+/);
+  return parts.length > 1 ? `${parts[0]} ${parts[parts.length - 1][0].toUpperCase()}.` : parts[0];
+}
+
+// Ranked by the same XP formula as the dashboard, computed server-side. Names are shortened
+// because this list is visible to every signed-in student.
+app.get('/api/leaderboard', authenticateToken, async (req, res) => {
+  try {
+    const [rows] = await pool.query(
+      `SELECT u.id, u.full_name,
+         (SELECT COUNT(*) FROM topic_progress t WHERE t.user_id = u.id) AS topics,
+         (SELECT COUNT(DISTINCT CONCAT(q.course_id, '/', q.module_id)) FROM quiz_attempts q
+            WHERE q.user_id = u.id AND q.passed = TRUE) AS modules,
+         (SELECT COUNT(*) FROM study_days d WHERE d.user_id = u.id) AS study_days
+       FROM users u LIMIT 5000`
+    );
+    const ranked = rows
+      .map(r => ({
+        id: r.id,
+        name: shortName(r.full_name),
+        xp: computeXp({ topicsSeen: Number(r.topics), modulesPassed: Number(r.modules), studyDays: Number(r.study_days) }),
+        modulesPassed: Number(r.modules),
+      }))
+      .filter(r => r.xp > 0 || r.id === req.user.id)
+      .sort((a, b) => b.xp - a.xp || a.id - b.id)
+      .map((r, i) => ({ ...r, rank: i + 1 }));
+    const me = ranked.find(r => r.id === req.user.id) || null;
+    res.json({
+      top: ranked.slice(0, 20).map(r => ({ rank: r.rank, name: r.name, xp: r.xp, modulesPassed: r.modulesPassed, isMe: r.id === req.user.id })),
+      me: me && { rank: me.rank, xp: me.xp },
+      total: ranked.length,
+    });
+  } catch (err) {
+    console.error('leaderboard error:', err);
+    res.status(500).json({ error: 'Failed to load leaderboard' });
   }
 });
 

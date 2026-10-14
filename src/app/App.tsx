@@ -7,6 +7,7 @@ import { ThemeProvider, useTheme } from './components/ThemeProvider';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ProgressProvider } from './context/ProgressContext';
 import { LoginModal } from './components/LoginModal';
+import { AccountPage } from './components/AccountPage';
 import { Toaster } from './components/ui/sonner';
 import { slugify } from './lib/slug';
 import { useDocumentMeta } from './hooks/useDocumentMeta';
@@ -153,6 +154,26 @@ function DashboardPage() {
   );
 }
 
+// Signed-in home for bookmarks, notes, certificates, leaderboard and profile. Guests are
+// sent back to the dashboard; the auth check has already finished by the time this renders.
+function AccountRoute() {
+  const { isLoggedIn } = useAuth();
+  if (!isLoggedIn) return <Navigate to="/dashboard" replace />;
+  return (
+    <div className="h-screen flex flex-col bg-gray-100 dark:bg-gray-900">
+      <Header
+        onToggleSpeech={() => {}}
+        isSpeaking={false}
+        onSearch={() => {}}
+        showSearch={false}
+        voiceGender="female"
+        onVoiceChange={() => {}}
+      />
+      <AccountPage />
+    </div>
+  );
+}
+
 function WorkspaceFallback() {
   return (
     <div className="h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900">
@@ -184,6 +205,7 @@ export default function App() {
               <Route path="/" element={<Navigate to="/dashboard" replace />} />
               <Route path="/dashboard" element={<DashboardPage />} />
               <Route path="/login" element={<LoginPage />} />
+              <Route path="/account" element={<AccountRoute />} />
               <Route path="/signup" element={<SignupPage />} />
               <Route path="/course/:courseId" element={<CoursePage />} />
               <Route path="/course/:courseId/:topicId" element={<CoursePage />} />

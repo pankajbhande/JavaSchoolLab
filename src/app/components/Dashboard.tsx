@@ -415,7 +415,7 @@ export function Dashboard({ onCourseSelect, searchQuery = '' }: DashboardProps) 
             >
               <Sparkles className="w-3.5 h-3.5" />
             </motion.span>
-            Learn to code, step by step
+            Learn Java, Python, React &amp; More
           </motion.div>
           <motion.h1
             className="font-display text-4xl md:text-5xl font-extrabold mb-3 bg-gradient-to-r from-orange-600 via-amber-500 to-orange-500 bg-clip-text text-transparent tracking-tight bg-[length:200%_auto]"

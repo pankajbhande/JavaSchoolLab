@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { GraduationCap } from 'lucide-react';
 import { useProgress } from '../context/ProgressContext';
-import { headerBox, headerBadge } from './headerStyles';
 
 const todayKey = () => `jsl_study_seconds_${new Date().toISOString().slice(0, 10)}`;
 
@@ -49,15 +48,21 @@ export function StudyTimeTracker() {
     return () => clearInterval(interval);
   }, [addStudySeconds]);
 
+  // Rendered inside the LiveClock panel, so it shares one frame with the time.
   return (
     <div
-      className={`hidden xl:flex ${headerBox}`}
+      className="hidden xl:flex items-center gap-2 border-l border-cyan-400/30 pl-2.5"
       title="Time spent studying today (auto-tracked)"
     >
-      <span className={headerBadge}><GraduationCap className="w-4 h-4" /></span>
+      <GraduationCap className="w-4 h-4 shrink-0 text-cyan-300" />
       <div className="leading-tight min-w-0">
-        <div className="font-mono font-bold text-xs tabular-nums whitespace-nowrap">{formatDuration(seconds)}</div>
-        <div className="text-[11px] text-orange-100">Study time today</div>
+        <div
+          className="font-['Orbitron',monospace] font-bold text-[12px] tabular-nums whitespace-nowrap text-cyan-200"
+          style={{ textShadow: '0 0 6px rgba(103,232,249,.7)' }}
+        >
+          {formatDuration(seconds)}
+        </div>
+        <div className="text-[9px] font-medium text-cyan-100/80 whitespace-nowrap">Study time today</div>
       </div>
     </div>
   );

@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import { headerBox } from './headerStyles';
+import { StudyTimeTracker } from './StudyTimeTracker';
 
 const pad = (n: number) => String(n).padStart(2, '0');
 
-// Futuristic digital readout: a dark HUD panel with neon-cyan digits, a faint scanline
+// Futuristic digital readout (clock + study time in one frame): a dark HUD panel with neon-cyan digits, a faint scanline
 // texture, a live LED and a seconds bar that fills across each minute.
 export function LiveClock() {
   const [now, setNow] = useState(new Date());
@@ -51,6 +52,7 @@ export function LiveClock() {
           <div className="font-['Orbitron',monospace] text-[10px] font-bold text-cyan-300">{meridiem}</div>
           <div className="text-[9px] font-medium text-cyan-100/80 whitespace-nowrap">{date}</div>
         </div>
+        <StudyTimeTracker />
         {/* Seconds bar: fills over the minute, then restarts. */}
         <span
           className="absolute left-0 bottom-0 h-[2px] bg-gradient-to-r from-cyan-400 to-fuchsia-400 transition-[width] duration-1000 ease-linear"

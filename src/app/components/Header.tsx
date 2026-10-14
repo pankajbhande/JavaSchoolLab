@@ -5,7 +5,6 @@ import logo from '../../assets/logo1.jpg';
 import { Alarm } from './Alarm';
 import { Timer } from './Timer';
 import { LiveClock } from './LiveClock';
-import { StudyTimeTracker } from './StudyTimeTracker';
 import { useTheme } from './ThemeProvider';
 import { headerBox, headerBadge, headerIconBtn } from './headerStyles';
 import { useAuth } from '../context/AuthContext';
@@ -83,11 +82,8 @@ export function Header({ onToggleSpeech, isSpeaking, onSearch, showSearch = true
               />
             </label>}
 
-            {/* Live current time */}
+            {/* Live current time + auto-tracked study time, one frame */}
             <LiveClock />
-
-            {/* Auto-tracked study time */}
-            <StudyTimeTracker />
 
             {/* Alarm — kept mounted so reminders still ring while the panel is closed */}
             <div className="relative" ref={alarmRef}>

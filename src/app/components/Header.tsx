@@ -66,7 +66,7 @@ export function Header({ onToggleSpeech, isSpeaking, onSearch, showSearch = true
             <img src={logo} alt="JavaSchoolLab Logo" className="h-9 w-9 sm:h-12 sm:w-12 object-contain" />
             <div>
               <h1 className="font-bold text-lg sm:text-2xl">JavaSchoolLab</h1>
-              <p className="text-sm text-orange-100">Learn Code. Build Career.</p>
+              <p className="text-sm text-orange-100">Learn Java, Python, React & More</p>
             </div>
           </motion.div>
 

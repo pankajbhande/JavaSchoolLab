@@ -1,3 +1,13 @@
 @import './fonts.css';
 @import './tailwind.css';
 @import './theme.css';
+
+/* Blinking colons for the digital header clock; steady for reduced-motion users. */
+@keyframes digital-blink { 0%, 49% { opacity: 1; } 50%, 100% { opacity: .25; } }
+.digital-colon { animation: digital-blink 1s steps(1) infinite; }
+@media (prefers-reduced-motion: reduce) { .digital-colon { animation: none; } }
+
+/* Pulsing "live" LED on the header clock. */
+@keyframes digital-led { 0%, 100% { opacity: 1; box-shadow: 0 0 8px 2px rgba(103,232,249,.9); } 50% { opacity: .35; box-shadow: 0 0 2px 0 rgba(103,232,249,.4); } }
+.digital-led { animation: digital-led 2s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) { .digital-led { animation: none; } }

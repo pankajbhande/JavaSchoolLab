@@ -19,3 +19,5 @@ docker/.env
 
 # Unfinished file (truncated template literal) that breaks `tsc`; not imported anywhere.
 src/app/data/topics/ml/RmseEvaluation.tsx
+
+server-spring/target

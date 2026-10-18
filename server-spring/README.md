@@ -1,0 +1,115 @@
+# JavaSchoolLab server (Spring Boot)
+
+The Spring Boot version of the API in `../server` (Node/Express), plus hosting for the built React site.
+**All 35 endpoints of the Node server are ported**, with the same URLs, JSON and messages, so the React app needs no change.
+
+Java 21, Spring Boot 3.4, Spring Security, JdbcTemplate, Flyway, MySQL, JJWT.
+
+## What is ported
+
+| Endpoint | Status |
+|---|---|
+| `POST /api/otp/send`, `POST /api/otp/verify` | ported |
+| `POST /api/auth/register`, `/register-otp`, `/login`, `/login-otp` | ported |
+| `GET /api/auth/me`, `POST /api/auth/change-password` | ported |
+| `GET /api/visitors/count`, `POST /api/visitors/increment` | ported |
+| `PATCH /api/auth/profile`, `PUT`/`DELETE /api/profile/avatar` | ported |
+| `POST /api/progress/topic`, `/import`, `/study`; `GET /api/progress/summary`, `/topics`, `/review`; `PUT /api/progress/goal` | ported |
+| `POST`/`GET /api/quiz/attempts` | ported (the summary and review queue are built from them) |
+| `GET`/`POST`/`DELETE /api/bookmarks`, `GET`/`PUT /api/notes` | ported |
+| `POST`/`GET /api/certificates`, public `GET /api/certificates/verify/{id}` (rate limited) | ported |
+| `GET /api/leaderboard` | ported |
+| `GET /api/profiles/{handle}` (public), `GET`/`PUT /api/profile/settings`, `GET /api/profile/handle-available` | ported (opt-in, rate limited) |
+
+Because nothing is left on the Node side, you can switch the whole API over at once. See "Switching over" below.
+
+## Same users, same logins
+
+- **Same MySQL database.** No data moves: `users`, `otp_codes`, `visitor_count`... are read in place.
+- **Passwords:** bcrypt cost 10, the same as bcryptjs, so existing hashes verify. Nobody resets a password.
+- **Tokens:** HS256 with `JWT_SECRET`, same claims as Node. Use the **same `JWT_SECRET`** and logged-in users stay logged in.
+  (`CompatibilityTest` proves both directions with a token and a hash made by the Node code.)
+- **Same URLs, JSON and messages**, so the React app needs no change.
+
+## Run it
+
+Needs JDK 21 and Maven (or use Docker below). Configuration is by environment variables, the same names as `../server/.env.example`:
+
+| Variable | Meaning |
+|---|---|
+| `JWT_SECRET` | **Required**, 32+ characters. The app refuses to start without it. |
+| `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, `DB_NAME` | MySQL (defaults: localhost, 3306, root, empty, javaschoollab) |
+| `PORT` | default 3001, the same as Node |
+| `CORS_ORIGIN` | comma-separated front-end origins; empty = allow any (development only) |
+| `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `SMTP_FROM`, `SMTP_SECURE` | email OTP. Unset in development = the code is printed in the log |
+| `VERIFY_RATE_LIMIT`, `PROFILE_RATE_LIMIT`, `HANDLE_RATE_LIMIT` | per-minute limits per visitor address for certificate checks (60), public profile pages (60) and handle checks (40) |
+| `FORWARD_HEADERS_STRATEGY=native` | set it behind nginx or a load balancer so the rate limit sees real visitor addresses (the Node server used `TRUST_PROXY`) |
+| `OTP_DEV_ECHO=true` | returns the OTP in the response (development only; ignored in production) |
+| `SPRING_PROFILES_ACTIVE=prod` | production mode: no OTP in logs or responses, mobile OTP refused until an SMS provider exists |
+
+```
+# PowerShell
+$env:JWT_SECRET = '<32+ random characters>'
+$env:DB_PASSWORD = '<your mysql password>'
+mvn spring-boot:run
+```
+
+Flyway creates and updates the tables on startup (`src/main/resources/db/migration`, mirrors `../server/migrations`).
+On a database the Node migrations already built, it adopts it without changing any data.
+Keep the two folders in step until the Node server is retired.
+
+## Serve the website from the same app
+
+```
+# from app/
+npm run build:fast                      # builds ../dist (the React site)
+cd server-spring
+mvn -Pwith-site package                 # copies dist/ into the jar
+java -jar target/javaschoollab-server-0.1.0.jar
+```
+
+Then `http://localhost:3001/` is the site and `http://localhost:3001/api/...` is the API. Refreshing or sharing a
+React route such as `/course/java/basics/Constructor_in_java` loads the app (any path that is not `/api` and has no
+file extension gets `index.html`); a missing `.js`/`.png` is a real 404. Hashed files under `/assets` are cached for
+a year, everything else is revalidated so a new deploy shows up immediately.
+
+Build the React app with `VITE_API_BASE_URL=/api` (the Dockerfile does) so the browser calls its own origin.
+
+## Docker
+
+```
+# from app/
+docker build -f server-spring/Dockerfile -t javaschoollab .
+docker run -p 3001:3001 --env-file /srv/javaschoollab/.env javaschoollab
+```
+
+The image contains no user data. Keep MySQL outside it (managed MySQL, or the `db_data` volume in `../docker`) and the
+`.env` outside the code folder, so replacing the code never touches users, visitor count or secrets.
+
+## Tests
+
+`mvn test` runs 103 tests: validation rules, Node-token and bcrypt compatibility, the streak/XP/review maths
+(the same cases as `../server/lib/progress.test.js`), and the whole flow against the real Spring context: sign-in
+(OTP, register, password and OTP login, change password, 401/403 rules), progress (topics, import, study time clamps,
+summary, weekly goal, quiz grading, review queue), profile and avatar checks, bookmarks and notes, certificate issuing and public verification, public profiles (opt-in, privacy, handle rules and ownership), the leaderboard, the 429 limits, the visitor counter, and site hosting with the React-route fallback. The tests use H2 in MySQL mode; the
+MySQL-only Flyway scripts have **not** been run in CI yet, so run the app once against a real MySQL before relying on them.
+
+## Testing against a real MySQL
+
+The two scripts in `scripts/` (Node 18+, no install) check a running server over real HTTP:
+
+- `node scripts/smoke.mjs http://localhost:3001` walks the whole API (sign-up by OTP, progress, quizzes, certificates, notes,
+  profile, leaderboard, visitors, the React site) with 54 checks. Needs `OTP_DEV_ECHO=true` on the server.
+- `node scripts/compare-with-node.mjs` calls the same endpoints on the Node server (3012) and on Spring (3013), both on **one**
+  database and one `JWT_SECRET`, with a token issued by Node, and reports any difference.
+
+A throwaway MySQL is enough: `docker run -d --rm -e MYSQL_ROOT_PASSWORD=... -p 3307:3306 mysql:8.4`, then start the app with
+`DB_PORT=3307`. Last run: fresh database migrated by Flyway (6 migrations), a database built by the Node `migrate.js` adopted by
+Flyway without touching its data, 54/54 smoke checks, and 18/18 Node-vs-Spring responses identical.
+
+## Switching over
+
+1. Run `mvn test`, then run the two scripts above against **your own** MySQL (they have passed on a throwaway MySQL 8.4).
+2. Use the same `JWT_SECRET` as the Node server so nobody is logged out.
+3. Point the proxy (or the React app's `VITE_API_BASE_URL`) at Spring Boot, keep Node stopped but available for a few days as a fallback.
+4. When you are happy, delete `../server`. Until then keep `src/main/resources/db/migration` and `../server/migrations` in step.

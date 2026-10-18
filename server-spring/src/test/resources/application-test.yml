@@ -1,0 +1,18 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:jsl;MODE=MySQL;DB_CLOSE_DELAY=-1
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+  flyway:
+    enabled: false          # the MySQL migrations use MySQL-only syntax; the test schema below stands in for them
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:test-schema.sql
+
+app:
+  jwt:
+    secret: test-secret-test-secret-test-secret-1234
+  otp:
+    dev-echo: true

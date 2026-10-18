@@ -28,8 +28,9 @@ WORKDIR /build
 COPY server-spring/pom.xml .
 RUN --mount=type=cache,target=/root/.m2 mvn -B -q dependency:go-offline
 COPY server-spring/src src
+# The site was already built in the web stage; this stage has no React project, so the Maven frontend step is skipped.
 COPY --from=web /app/dist /site
-RUN --mount=type=cache,target=/root/.m2 mvn -B -q -Pwith-site -Dfrontend.dist=/site -DskipTests package
+RUN --mount=type=cache,target=/root/.m2 mvn -B -q -Pwith-site -Dfrontend.skip=true -Dfrontend.dist=/site -DskipTests package
 
 # ---- Stage 3: run ---------------------------------------------------------------------
 FROM eclipse-temurin:21-jre

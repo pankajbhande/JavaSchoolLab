@@ -4,7 +4,8 @@
   "type": "module",
   "scripts": {
     "start": "node index.js",
-    "dev": "node --watch index.js"
+    "dev": "node --watch index.js",
+    "migrate": "node migrate.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",

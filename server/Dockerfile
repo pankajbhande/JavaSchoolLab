@@ -9,8 +9,9 @@ ENV NODE_ENV=production
 WORKDIR /app
 
 COPY --from=deps /app/node_modules ./node_modules
-COPY package.json index.js ./
+COPY package.json index.js migrate.js ./
 COPY lib ./lib
+COPY migrations ./migrations
 
 # Run as the unprivileged user that ships with the node image.
 USER node

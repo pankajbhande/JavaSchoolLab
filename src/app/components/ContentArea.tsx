@@ -42,7 +42,7 @@ interface ContentAreaProps {
 
 const handleAction = (code: string) => {
   localStorage.setItem("java_try_code", code);
-  window.open("/src/app/components/JavaCompiler.html", "_blank");
+  window.open("/java-compiler.html", "_blank");   // served from public/, so it also exists in production builds
 };
 
 // Eclipse/STS-style Java syntax highlighting

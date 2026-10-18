@@ -60,13 +60,18 @@ Keep the two folders in step until the Node server is retired.
 
 ## Serve the website from the same app
 
+One command builds the React site and the API into a single jar:
+
 ```
-# from app/
-npm run build:fast                      # builds ../dist (the React site)
 cd server-spring
-mvn -Pwith-site package                 # copies dist/ into the jar
+mvn -Pwith-site -DskipTests package
 java -jar target/javaschoollab-server-0.1.0.jar
 ```
+
+The `with-site` profile downloads its own Node (into `target/`, nothing to install), runs `npm install` and `npm run build`
+(sitemap, type-check, production build) in the React project, then copies `dist/` into the jar. The first run takes about four minutes;
+use `-Dfrontend.skip=true` to reuse the existing `dist/` and package in seconds. Without `-Pwith-site` you get the API only.
+Stop any running copy of the jar first: Windows will not let Maven replace a jar that is in use.
 
 Then `http://localhost:3001/` is the site and `http://localhost:3001/api/...` is the API. Refreshing or sharing a
 React route such as `/course/java/basics/Constructor_in_java` loads the app (any path that is not `/api` and has no

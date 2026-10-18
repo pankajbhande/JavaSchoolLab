@@ -21,6 +21,9 @@
     <jjwt.version>0.12.6</jjwt.version>
     <!-- Folder holding the built React site (npm run build:fast). Used by -Pwith-site. -->
     <frontend.dist>${project.basedir}/../dist</frontend.dist>
+    <!-- mvn -Pwith-site -Dfrontend.skip=true  reuses the existing dist/ instead of rebuilding the React site. -->
+    <frontend.skip>false</frontend.skip>
+    <node.version>v22.11.0</node.version>
   </properties>
 
   <dependencies>
@@ -98,11 +101,55 @@
   </build>
 
   <profiles>
-    <!-- mvn -Pwith-site package: bakes the built React site into the jar, so one java -jar serves both. -->
+    <!--
+      mvn -Pwith-site package: builds the React site (npm install + npm run build, with its own Node so nothing needs
+      installing) and bakes it into the jar, so one java -jar serves both the API and the website.
+    -->
     <profile>
       <id>with-site</id>
       <build>
         <plugins>
+          <plugin>
+            <groupId>com.github.eirslett</groupId>
+            <artifactId>frontend-maven-plugin</artifactId>
+            <version>1.15.1</version>
+            <configuration>
+              <!-- The React project is the parent folder; Node is downloaded into target/ so nothing is added to it. -->
+              <workingDirectory>${project.basedir}/..</workingDirectory>
+              <installDirectory>${project.build.directory}/frontend-tools</installDirectory>
+              <skip>${frontend.skip}</skip>
+            </configuration>
+            <executions>
+              <execution>
+                <id>install-node</id>
+                <goals><goal>install-node-and-npm</goal></goals>
+                <configuration>
+                  <nodeVersion>${node.version}</nodeVersion>
+                </configuration>
+              </execution>
+              <execution>
+                <id>npm-install</id>
+                <goals><goal>npm</goal></goals>
+                <configuration>
+                  <!-- Install scripts are skipped: an unused dependency (doppiojvm) would otherwise try to download a JDK. -->
+                  <arguments>install --ignore-scripts --no-audit --no-fund --prefer-offline</arguments>
+                </configuration>
+              </execution>
+              <execution>
+                <id>npm-build</id>
+                <goals><goal>npm</goal></goals>
+                <configuration>
+                  <!-- Sitemap, type-check and production build: the same as npm run build. -->
+                  <arguments>run build</arguments>
+                  <environmentVariables>
+                    <!-- The site is served by this same app, so the browser calls the API on its own address. -->
+                    <VITE_API_BASE_URL>/api</VITE_API_BASE_URL>
+                    <NODE_OPTIONS>--max-old-space-size=4096</NODE_OPTIONS>
+                  </environmentVariables>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-resources-plugin</artifactId>

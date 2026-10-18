@@ -1,0 +1,18 @@
+# Local settings for the Spring Boot server. Spring loads this file automatically when the app runs from this
+# folder (STS / mvn spring-boot:run) and it overrides src/main/resources/application.yml.
+# It holds secrets, so it is git-ignored. Never commit it. Copy application.properties.example to recreate it.
+
+# --- MySQL ---------------------------------------------------------------------------------------------------
+spring.datasource.url=jdbc:mysql://localhost:3306/javaschoollab?createDatabaseIfNotExist=true&useUnicode=true&characterEncoding=utf8
+spring.datasource.username=root
+# TYPE YOUR MYSQL PASSWORD ON THE NEXT LINE (after the = sign), then save:
+spring.datasource.password=
+
+# --- Login tokens --------------------------------------------------------------------------------------------
+# At least 32 characters. To keep people who are logged in through the Node server logged in, replace this with
+# the same JWT_SECRET value that server/.env uses. A different value is fine for local testing (everyone just signs in again).
+app.jwt.secret=put-a-random-string-of-at-least-32-characters-here
+
+# --- Development conveniences (remove for production) -----------------------------------------------------------
+# Returns the one-time code in the API response and prints it in the console, so you can sign up without email.
+app.otp.dev-echo=true

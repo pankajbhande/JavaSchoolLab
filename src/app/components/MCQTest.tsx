@@ -7,6 +7,9 @@ import { buildRetakeSet } from '../lib/quizReview';
 import type { PreparedQuestion } from '../services/quizEngine';
 import { Certificate } from './Certificate';
 import { buildQuiz, PASS_PERCENTAGE } from '../services/quizEngine';
+import { allBanks } from '../data/quiz';
+import { useDataset } from '../hooks/useDataset';
+import type { QuizBank } from '../data/quiz/types';
 import { useProgress } from '../context/ProgressContext';
 import { useAuth } from '../context/AuthContext';
 
@@ -33,7 +36,8 @@ export function MCQTest({ moduleId, courseId, moduleName, courseName, onClose }:
   // Whether this attempt's result has been recorded for a signed-in user
   const savedRef = useRef(false);
   const [attempt, setAttempt] = useState(() => Date.now());
-  const quiz = useMemo(() => buildQuiz(moduleId, courseId, attempt), [moduleId, courseId, attempt]);
+  const { data: banks } = useDataset<QuizBank[]>('quiz-banks', allBanks);
+  const quiz = useMemo(() => buildQuiz(moduleId, courseId, attempt, banks ?? []), [moduleId, courseId, attempt, banks]);
   const questions = quiz.questions;
   const totalQuestions = questions.length;
   const passScore = Math.ceil(totalQuestions * PASS_PERCENTAGE / 100);

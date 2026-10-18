@@ -1,7 +1,7 @@
 // One question source shared by flashcards and mock interviews: the authored study packs
 // (keypoints and interview Q&A) plus each topic's own interviewQA once its course is loaded.
 
-import { allStudyPacks } from '../data/studyPacks';
+import { allStudyPacks, type StudyPack } from '../data/studyPacks';
 import { courseIndex } from '../data/courseIndex';
 import type { Course } from '../data/types';
 
@@ -43,9 +43,9 @@ export function topicNameOf(courseId: string, topicId: string): string {
 }
 
 /** Cards from the hand-written study packs. */
-export function packCards(): QCard[] {
+export function packCards(packs: Record<string, StudyPack> = allStudyPacks): QCard[] {
   const out: QCard[] = [];
-  for (const [key, pack] of Object.entries(allStudyPacks)) {
+  for (const [key, pack] of Object.entries(packs)) {
     const slash = key.indexOf('/');
     const courseId = key.slice(0, slash);
     const topicId = key.slice(slash + 1);

@@ -54,6 +54,39 @@ npm run dev               # http://localhost:5173
 No front-end `.env` is needed locally; the API base defaults to `http://localhost:3001/api`.
 For a deployed build set `VITE_API_BASE_URL` (see `.env.example`).
 
+### Course content from the API (optional)
+
+By default course content is compiled into the front end (lazy per-course chunks). To read it from
+the Spring server instead, build or run with `VITE_CONTENT_SOURCE=api`:
+
+```bash
+VITE_CONTENT_SOURCE=api npm run dev     # Spring must be running on :3001
+```
+
+Courses are fetched from `GET {API_BASE}/content/courses/{id}` (ETag revalidated) and images from
+`/content-assets/*` (proxied to :3001 in dev). The service worker keeps visited courses readable
+offline. Any other value, or unset, keeps the bundled content. Docker builds are unchanged, so pass
+the variable as a build arg/env yourself if an image should use the API.
+
+The same switch also moves four smaller data sets out of the bundle. Each is one public JSON
+`GET` (ETag revalidated), loaded once per visit by `src/app/data/datasetLoader.ts`:
+
+| Endpoint (`{API_BASE}/content/datasets/...`) | Data | TypeScript source (kept for bundle mode) |
+| --- | --- | --- |
+| `quiz-banks` | array of quiz banks (`key`, `label`, `questions[]`) | `data/quiz` |
+| `predict-output` | array of "predict the output" challenges | `data/predictOutput.ts` |
+| `study-packs` | object keyed like `java/operators` | `data/studyPacks` |
+| `learning-paths` | array of learning paths | `data/learningPaths.ts` |
+
+In api mode the certificate button reads "Checking assessment..." (disabled) until the quiz banks
+arrive, then becomes "Take Test & Get Certificate" or "Assessment coming soon"; the predict-output
+section, study-pack extras and learning paths simply appear once loaded. Bundle mode is unchanged and
+fully synchronous.
+
+Deliberately left in TypeScript, because it is presentation and not content: icons, Tailwind class
+names and gradients, UI text and labels, topic visuals/animations, and course stats/index used for
+layout.
+
 ## Scripts
 
 | Command              | What it does                                        |

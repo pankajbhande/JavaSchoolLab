@@ -10,6 +10,8 @@
 
 import type { QuizQuestion } from '../data/quiz/types';
 import { findBank } from '../data/quiz';
+import type { QuizBank } from '../data/quiz/types';
+import { findBankIn } from '../lib/quizBanks';
 
 export type QuizMode = 'certified' | 'unavailable';
 
@@ -106,9 +108,10 @@ export function reshuffleQuestions(questions: readonly PreparedQuestion[], seed:
  * @param moduleKey subTopic id of the module under test (most specific match).
  * @param courseKey course id, used as the fallback bank.
  * @param seed      one value per attempt — change it to reshuffle ("Try Again").
+ * @param banks     banks to search (e.g. loaded from the server); defaults to the bundled registry.
  */
-export function buildQuiz(moduleKey: string | undefined, courseKey: string | undefined, seed: number): PreparedQuiz {
-  const bank = findBank(moduleKey, courseKey);
+export function buildQuiz(moduleKey: string | undefined, courseKey: string | undefined, seed: number, banks?: readonly QuizBank[]): PreparedQuiz {
+  const bank = banks ? findBankIn(banks, moduleKey, courseKey) : findBank(moduleKey, courseKey);
 
   if (!bank || bank.questions.length === 0) {
     return { questions: [], mode: 'unavailable', bankLabel: '', passPercentage: PASS_PERCENTAGE, poolSize: 0 };

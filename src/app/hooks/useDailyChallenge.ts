@@ -4,12 +4,15 @@ import {
   type DailyHistory, type DailyQuestion, type RawQuestion,
 } from '../lib/dailyChallenge';
 import { localDay } from '../lib/localDate';
+import { loadDataset } from '../data/datasetLoader';
+import type { QuizBank } from '../data/quiz/types';
+import type { StudyPack } from '../data/studyPacks';
 
 /** Loads the authored banks lazily so the dashboard's first paint does not wait on them. */
 async function loadPool(): Promise<RawQuestion[]> {
-  const [{ allBanks }, { allStudyPacks }] = await Promise.all([
-    import('../data/quiz'),
-    import('../data/studyPacks'),
+  const [allBanks, allStudyPacks] = await Promise.all([
+    loadDataset<QuizBank[]>('quiz-banks'),
+    loadDataset<Record<string, StudyPack>>('study-packs'),
   ]);
   const pool: RawQuestion[] = [];
   for (const bank of allBanks) {

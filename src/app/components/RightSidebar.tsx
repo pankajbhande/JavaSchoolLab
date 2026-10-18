@@ -3,7 +3,8 @@ import { PanelRightClose, PanelRight, CheckCircle, Users, Globe, Award, Trending
 import type { Course, Topic } from '../data/types';
 import { buildKeypoints } from '../services/keypoints';
 import { questionsForTopic } from '../lib/topicQuestions';
-import { getStudyPack } from '../data/studyPacks';
+import { allStudyPacks, type StudyPack } from '../data/studyPacks';
+import { useDataset } from '../hooks/useDataset';
 import { useVisitorCount } from '../hooks/useVisitorCount';
 import { motion, AnimatePresence, useReducedMotion } from 'motion/react';
 import { AdSlot } from './ads/AdSlot';
@@ -209,7 +210,11 @@ export function RightSidebar({ course, topic, topicName, isMinimized, onToggleMi
   };
 
   // Hand-written study material for this topic (keypoints, interview Q&A, MCQs), if any.
-  const pack = useMemo(() => getStudyPack(course?.id, topic?.id), [course?.id, topic?.id]);
+  const { data: packs } = useDataset<Record<string, StudyPack>>('study-packs', allStudyPacks);
+  const pack = useMemo(
+    () => (course?.id && topic?.id ? packs?.[`${course.id}/${topic.id}`] : undefined),
+    [packs, course?.id, topic?.id],
+  );
 
   // Authored questions come first (they have model answers), then any other question the
   // course data holds for this topic.

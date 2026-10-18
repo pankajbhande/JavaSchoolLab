@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useId, useMemo, useRef, useState, type ReactNode } from 'react';
 import { CheckCircle2, XCircle, ChevronRight, RotateCcw, Lightbulb, Trophy, Target } from 'lucide-react';
-import { challengesForTopic } from '../../data/predictOutput';
-import { firstUnansweredIndex, loadState, optionsFor, saveState, scoreFor, type PredictState } from '../../lib/predictOutput';
+import { predictChallenges, type PredictChallenge } from '../../data/predictOutput';
+import { useDataset } from '../../hooks/useDataset';
+import { challengesForTopicIn, firstUnansweredIndex, loadState, optionsFor, saveState, scoreFor, type PredictState } from '../../lib/predictOutput';
 
 // ── tiny Java highlighter (same palette as the lesson code blocks, no innerHTML) ──
 const KEYWORDS = new Set(
@@ -35,7 +36,8 @@ function highlight(code: string): ReactNode[] {
 }
 
 export function PredictOutputSection({ topicId }: { topicId: string }) {
-  const challenges = useMemo(() => challengesForTopic(topicId), [topicId]);
+  const { data: all } = useDataset<PredictChallenge[]>('predict-output', predictChallenges);
+  const challenges = useMemo(() => challengesForTopicIn(all ?? [], topicId), [all, topicId]);
   const uid = useId();
   const headingId = `${uid}-h`;
   const questionId = `${uid}-q`;

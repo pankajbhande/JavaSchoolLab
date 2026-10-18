@@ -8,7 +8,10 @@ import { ImageWithFallback } from './figma/ImageWithFallback';
 import { TopicVisual } from './TopicVisual';
 import { transformContentTables } from '../lib/qaTables';
 import { formatNotes } from '../lib/notes';
-import { hasBank } from '../data/quiz';
+import { allBanks } from '../data/quiz';
+import { findBankIn } from '../lib/quizBanks';
+import { useDataset } from '../hooks/useDataset';
+import type { QuizBank } from '../data/quiz/types';
 import { TopicToolbar } from './TopicToolbar';
 import { withJavaPackage } from '../lib/javaPackage';
 import { ReadingControls } from './shell/ReadingControls';
@@ -331,7 +334,11 @@ export function ContentArea({
 
   // Only modules with a reviewed question bank can award a certificate, so the button
   // says what it will actually do rather than promising one everywhere.
-  const testAvailable = hasBank(currentModule?.id, course?.id);
+  // In api mode the banks arrive from the server: until they do, the button is disabled and says so,
+  // so it never flips from "coming soon" to "Take Test". Bundle mode is synchronous, as before.
+  const { data: banks, status: banksStatus } = useDataset<QuizBank[]>('quiz-banks', allBanks);
+  const testAvailable = !!banks && !!findBankIn(banks, currentModule?.id, course?.id);
+  const testLoading = banksStatus === 'loading';
 
 
   const copyToClipboard = (text: string, index: number) => {
@@ -541,10 +548,12 @@ export function ContentArea({
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={() => setShowMCQ(true)}
-            className="px-4 py-2 bg-gradient-to-r from-orange-600 to-amber-500 text-white rounded-lg flex items-center gap-2 font-display font-semibold text-sm tracking-tight shadow-md hover:shadow-lg transition-all"
+            disabled={testLoading}
+            aria-busy={testLoading || undefined}
+            className="px-4 py-2 bg-gradient-to-r from-orange-600 to-amber-500 text-white rounded-lg flex items-center gap-2 font-display font-semibold text-sm tracking-tight shadow-md hover:shadow-lg transition-all disabled:opacity-60 disabled:cursor-wait"
           >
             <Award className="w-5 h-5" />
-            {testAvailable ? "Take Test & Get Certificate" : "Assessment coming soon"}
+            {testLoading ? "Checking assessment…" : testAvailable ? "Take Test & Get Certificate" : "Assessment coming soon"}
           </motion.button>
         </div>
 

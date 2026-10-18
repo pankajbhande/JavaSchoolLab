@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { Check, Map as MapIcon, ArrowRight } from 'lucide-react';
-import { learningPaths } from '../../data/learningPaths';
+import { learningPaths, type LearningPath } from '../../data/learningPaths';
+import { useDataset } from '../../hooks/useDataset';
 import { courseStats } from '../../data/courseStats';
 import { effortLabel, pathProgress } from '../../lib/pathProgress';
 
@@ -13,10 +14,12 @@ interface Props {
 const totals = Object.fromEntries(Object.entries(courseStats).map(([id, s]) => [id, s.topics]));
 
 export function LearningPaths({ seenByCourse, courseNames, onCourseSelect }: Props) {
+  const { data: all } = useDataset<LearningPath[]>('learning-paths', learningPaths);
   const paths = useMemo(
-    () => learningPaths.map(p => ({ path: p, prog: pathProgress(p, seenByCourse, totals) })),
-    [seenByCourse],
+    () => (all ?? []).map(p => ({ path: p, prog: pathProgress(p, seenByCourse, totals) })),
+    [all, seenByCourse],
   );
+  if (!all) return null; // api mode, still loading (or failed): the section appears once the paths arrive
 
   return (
     <section aria-labelledby="paths-title" className="mb-8">

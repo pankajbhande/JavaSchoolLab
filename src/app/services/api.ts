@@ -1,6 +1,6 @@
 // Points at the local API by default so `npm run dev` works with no config.
 // Set VITE_API_BASE_URL at build time to target a deployed backend.
-const API_BASE = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:3001/api';
+export const API_BASE = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:3001/api';
 
 function getToken(): string | null {
   return localStorage.getItem('jsl_token');

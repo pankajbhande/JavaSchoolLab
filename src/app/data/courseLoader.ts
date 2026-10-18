@@ -9,17 +9,22 @@ import type { Course } from './types';
 import type { Extra } from './topics/mysql/extras/extra';
 import type { Deep } from './topics/mysql/extras/deep';
 import { courseIndex } from './courseIndex';
-import { courseLoadMap } from './courseLoadMap';
-import { courseModules } from './courseModules';
-import { extrasModules } from './topics/courseExtras/extrasModules';
-import { applyExtrasWith } from './topics/courseExtras/applyExtras';
+import { API_BASE } from '../services/api';
+
+// Content source: VITE_CONTENT_SOURCE=api reads each course from the server
+// (GET {API_BASE}/content/courses/{id}); anything else uses the bundled TypeScript data.
+// Read per call so tests can switch it. The bundled modules are only ever dynamically imported,
+// so an api-only build never loads them at runtime.
+function useApi(): boolean {
+  return import.meta.env.VITE_CONTENT_SOURCE === 'api';
+}
 
 const cache = new Map<string, Promise<Course>>();
 
 export function loadCourse(id: string): Promise<Course> {
   let p = cache.get(id);
   if (!p) {
-    p = fetchCourse(id);
+    p = useApi() ? fetchCourseFromApi(id) : fetchCourse(id);
     cache.set(id, p);
     // a failed download must be retryable, not cached forever
     p.catch(() => cache.delete(id));
@@ -27,7 +32,29 @@ export function loadCourse(id: string): Promise<Course> {
   return p;
 }
 
+async function fetchCourseFromApi(id: string): Promise<Course> {
+  const res = await fetch(`${API_BASE}/content/courses/${encodeURIComponent(id)}`);
+  if (!res.ok) throw new Error(`Could not load course "${id}" (HTTP ${res.status})`);
+  let body: unknown;
+  try {
+    body = await res.json();
+  } catch {
+    throw new Error(`Course "${id}" response was not valid JSON`);
+  }
+  const c = body as Partial<Course> | null;
+  if (!c || typeof c !== 'object' || c.id !== id || !Array.isArray(c.subTopics)) {
+    throw new Error(`Course "${id}" response has an unexpected shape`);
+  }
+  return c as Course;
+}
+
 async function fetchCourse(id: string): Promise<Course> {
+  const [{ courseLoadMap }, { courseModules }, { extrasModules }, { applyExtrasWith }] = await Promise.all([
+    import('./courseLoadMap'),
+    import('./courseModules'),
+    import('./topics/courseExtras/extrasModules'),
+    import('./topics/courseExtras/applyExtras'),
+  ]);
   const entry = courseLoadMap[id];
   if (!entry) throw new Error(`Unknown course: ${id}`);
   const [courses, files, overviews] = await Promise.all([

@@ -5,15 +5,19 @@
  *  - /assets/* (hashed): stale-while-revalidate (this also covers lazy course chunks, so a
  *                      course opened once keeps working offline)
  *  - images / fonts:   cache-first (Google Fonts are the only cross-origin hosts allowed)
- *  - /api and everything else cross-origin: never touched, never cached
+ *  - /api/content/* (GET): stale-while-revalidate in its own cache, so courses already opened
+ *                      stay readable offline (the server sends ETags; the refresh keeps it current)
+ *  - /content-assets/*: cache-first (file names are content-hashed)
+ *  - every other /api path and everything else cross-origin: never touched, never cached
  *
  * Bump VERSION to drop every old cache on the next activation.
  */
-const VERSION = 'v1';
+const VERSION = 'v2';
 const SHELL_CACHE = `jsl-shell-${VERSION}`;
 const ASSET_CACHE = `jsl-assets-${VERSION}`;
 const STATIC_CACHE = `jsl-static-${VERSION}`;
-const CURRENT = [SHELL_CACHE, ASSET_CACHE, STATIC_CACHE];
+const CONTENT_CACHE = `jsl-content-${VERSION}`;
+const CURRENT = [SHELL_CACHE, ASSET_CACHE, STATIC_CACHE, CONTENT_CACHE];
 const SHELL_KEY = '/index.html';
 const FONT_HOSTS = ['fonts.googleapis.com', 'fonts.gstatic.com'];
 
@@ -51,7 +55,15 @@ self.addEventListener('fetch', (event) => {
     if (FONT_HOSTS.includes(url.hostname)) event.respondWith(cacheFirst(req, STATIC_CACHE));
     return; // all other cross-origin: browser default, uncached
   }
-  if (url.pathname.startsWith('/api/') || url.pathname === '/api') return; // never cache the API
+  if (url.pathname.startsWith('/api/content/')) {
+    event.respondWith(staleWhileRevalidate(req, CONTENT_CACHE));
+    return;
+  }
+  if (url.pathname.startsWith('/api/') || url.pathname === '/api') return; // never cache the rest of the API
+  if (url.pathname.startsWith('/content-assets/')) {
+    event.respondWith(cacheFirst(req, STATIC_CACHE));
+    return;
+  }
   if (req.headers.has('range')) return;
 
   if (req.mode === 'navigate') {

@@ -3,6 +3,8 @@
 interface ImportMetaEnv {
   /** Base URL of the JavaSchoolLab API, e.g. https://api.javaschoollab.com/api */
   readonly VITE_API_BASE_URL?: string;
+  /** Where course content comes from: 'bundle' (default, compiled in) or 'api' (GET {API_BASE}/content/courses/{id}). */
+  readonly VITE_CONTENT_SOURCE?: 'api' | 'bundle';
 
   /**
    * AdSense publisher id, e.g. ca-pub-1234567890123456. Unset disables every ad slot,

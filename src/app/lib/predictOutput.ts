@@ -1,6 +1,11 @@
 // Pure helpers for the "Predict the output" feature (no React, no DOM except guarded storage).
 import type { PredictChallenge } from '../data/predictOutput';
 
+/** Challenges for one topic, in authoring order, from any list (bundled or loaded from the server). */
+export function challengesForTopicIn(all: readonly PredictChallenge[], topicId: string): PredictChallenge[] {
+  return all.filter((c) => c.topicId === topicId);
+}
+
 export const PREDICT_STORAGE_KEY = 'jsl_predict_v1';
 
 /** Deterministic 32-bit hash of a string (FNV-1a). */

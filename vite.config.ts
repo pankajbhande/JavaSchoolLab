@@ -16,6 +16,12 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
+  server: {
+    proxy: {
+      // Images referenced by API-delivered course HTML (VITE_CONTENT_SOURCE=api); served by Spring.
+      '/content-assets': 'http://localhost:3001',
+    },
+  },
   build: {
     rollupOptions: {
       output: {

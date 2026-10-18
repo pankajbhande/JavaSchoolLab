@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Course, Topic, ContentBlock } from '../data/coursesData';
+import type { Course, Topic, ContentBlock } from '../data/types';
 import { Copy, Check, Award, Image as ImageIcon, Layers, Code, ChevronRight, ChevronDown, Bot, Volume2, VolumeX, Clock, Lightbulb } from 'lucide-react';
 import { MCQTest } from './MCQTest';
 import { motion, AnimatePresence } from 'motion/react';
@@ -7,8 +7,13 @@ import { toast } from 'sonner';
 import { ImageWithFallback } from './figma/ImageWithFallback';
 import { TopicVisual } from './TopicVisual';
 import { transformContentTables } from '../lib/qaTables';
+import { formatNotes } from '../lib/notes';
 import { hasBank } from '../data/quiz';
 import { TopicToolbar } from './TopicToolbar';
+import { withJavaPackage } from '../lib/javaPackage';
+import { ReadingControls } from './shell/ReadingControls';
+import { useReadingPrefs } from '../hooks/useReadingPrefs';
+import { FONT_SCALES } from '../lib/readingPrefs';
 interface ContentAreaProps {
   course: Course | null;
   topic: Topic | null;
@@ -25,6 +30,11 @@ interface ContentAreaProps {
   onToggleSpeech?: () => void;
   voiceGender?: 'male' | 'female';
   onVoiceChange?: (gender: 'male' | 'female') => void;
+  /** Focus mode hides both side panes (owned by the workspace). */
+  focusMode?: boolean;
+  onToggleFocus?: () => void;
+  /** Optional mount point rendered directly below the lesson notes, above Previous/Next. */
+  extraBelowNotes?: React.ReactNode;
 }
 
 const handleAction = (code: string) => {
@@ -216,6 +226,48 @@ function codeTitle(code: string, index: number): string {
   return 'Example ' + (index + 1);
 }
 
+/**
+ * Proper names for a block's examples: when the text above them is a list with exactly one item per
+ * example ("Sum of array elements", "Reverse an array", ...), those items are the names.
+ */
+function listedExampleNames(html: string, count: number): string[] | null {
+  const list = html.match(/<ol\b[^>]*>([\s\S]*?)<\/ol>/i);
+  if (!list) return null;
+  const items = [...list[1].matchAll(/<li\b[^>]*>([\s\S]*?)<\/li>/gi)]
+    .map(m => m[1].replace(/<[^>]+>/g, '').replace(/&amp;/g, '&').replace(/\s+/g, ' ').trim());
+  return items.length === count && items.every(Boolean) ? items : null;
+}
+
+/** "Example 1: Count Even Odd" - the number plus the derived name (just "Example 1" when there is no name). */
+function exampleLabel(title: string, index: number): string {
+  const generic = 'Example ' + (index + 1);
+  return title === generic ? generic : `${generic}: ${title}`;
+}
+
+/** A block with exactly one example puts its show/hide button at the top right, over the block's heading row (the heading leaves room, the text below runs full width), instead of a title row. */
+const hasSingleExample = (c: { codeExamples?: unknown[] }) => c.codeExamples?.length === 1;
+
+/**
+ * The top-right button only makes sense when the code sits right under it: a short block (heading plus a
+ * line or two, no diagram or list in between). A long block just shows its code, with no button.
+ */
+const hasInlineToggle = (c: { content: string; codeExamples?: unknown[] }) =>
+  hasSingleExample(c) && !/<(pre|ul|ol|table)\b/i.test(c.content) && c.content.replace(/<[^>]+>/g, '').length <= 400;
+
+function ExampleToggle({ open, onClick, className = '' }: { open: boolean; onClick: () => void; className?: string }) {
+  return (
+    <button
+      onClick={onClick}
+      className={`shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-orange-50 dark:bg-orange-900/20 border border-orange-300 dark:border-orange-700/50 text-orange-800 dark:text-orange-300 text-xs font-semibold hover:bg-orange-100 dark:hover:bg-orange-900/40 transition-colors ${className}`}
+      aria-expanded={open}
+    >
+      <Code className="w-3.5 h-3.5" />
+      {open ? 'Hide Example' : 'Example With Proof'}
+      <ChevronDown className={`w-3.5 h-3.5 transition-transform ${open ? 'rotate-180' : ''}`} />
+    </button>
+  );
+}
+
 export function ContentArea({
   course,
   topic,
@@ -231,14 +283,41 @@ export function ContentArea({
   isSpeaking = false,
   onToggleSpeech,
   voiceGender = 'female',
-  onVoiceChange
+  onVoiceChange,
+  focusMode = false,
+  onToggleFocus,
+  extraBelowNotes,
 }: ContentAreaProps) {
+  const [reading, setReading] = useReadingPrefs();
+
+  // Esc leaves focus mode (unless a dialog or popover is open and wants the key first).
+  useEffect(() => {
+    if (!focusMode || !onToggleFocus) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape' || e.defaultPrevented) return;
+      if (document.querySelector('[aria-modal="true"], [aria-label="Reading controls"][role="dialog"]')) return;
+      onToggleFocus();
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [focusMode, onToggleFocus]);
+  const progressRef = useRef<HTMLDivElement>(null);
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
   const [showMCQ, setShowMCQ] = useState(false);
   const [openExplanations, setOpenExplanations] = useState<Set<string>>(new Set());
 
   const toggleExplanation = (key: string) => {
     setOpenExplanations(prev => {
+      const next = new Set(prev);
+      if (next.has(key)) next.delete(key); else next.add(key);
+      return next;
+    });
+  };
+
+  // "Example With Proof": every example starts open. `flippedExamples` holds the ones the reader has hidden.
+  const [flippedExamples, setFlippedExamples] = useState<Set<string>>(new Set());
+  const toggleExample = (key: string) => {
+    setFlippedExamples(prev => {
       const next = new Set(prev);
       if (next.has(key)) next.delete(key); else next.add(key);
       return next;
@@ -339,8 +418,34 @@ export function ContentArea({
 
 
   return (
-    <div className="flex-1 overflow-y-auto bg-gradient-to-b from-orange-50/50 via-white to-amber-50/30 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 custom-scrollbar">
-      <div className="container mx-auto px-6 py-1" ref={topRef}>
+    <div
+      onScroll={(e) => {
+        const el = e.currentTarget;
+        const max = el.scrollHeight - el.clientHeight;
+        if (progressRef.current) progressRef.current.style.transform = `scaleX(${max > 0 ? Math.min(1, el.scrollTop / max) : 0})`;
+      }}
+      data-tour="notes"
+      data-rd-theme={reading.theme}
+      data-rd-width={reading.width}
+      data-rd-scale={reading.fontStep === 1 ? undefined : String(reading.fontStep)}
+      style={{ '--rd-scale': FONT_SCALES[reading.fontStep] } as React.CSSProperties}
+      className="reading-root flex-1 overflow-y-auto overflow-x-hidden bg-gradient-to-b from-orange-50/50 via-white to-amber-50/30 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 custom-scrollbar"
+    >
+      <div className="sticky top-0 z-30 h-1 -mb-1 pointer-events-none" aria-hidden="true">
+        <div ref={progressRef} className="h-full origin-left bg-gradient-to-r from-orange-600 to-amber-400" style={{ transform: 'scaleX(0)' }} />
+      </div>
+      {focusMode && onToggleFocus && (
+        <div className="sticky top-2 z-30 h-0 flex justify-end pr-3">
+          <button
+            type="button"
+            onClick={onToggleFocus}
+            className="h-9 rounded-full bg-gray-900/85 px-4 text-xs font-semibold text-white shadow-lg backdrop-blur hover:bg-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400 dark:bg-white/90 dark:text-gray-900 dark:hover:bg-white"
+          >
+            Exit focus mode <span className="opacity-70">(Esc)</span>
+          </button>
+        </div>
+      )}
+      <div className="container mx-auto px-4 sm:px-6 py-1" ref={topRef}>
         {/* Difficulty Tabs + Robo Guru + Take Test — merged into a single responsive row */}
         {/* Stacked deliberately: level tabs first, Robo Guru second, topic heading third.
             All three previously shared one wrapping row, where they collided - the test
@@ -422,7 +527,8 @@ export function ContentArea({
 
         {/* Test CTA — sits on the topic-title row, floated right. Kept outside contentRef so
             its label isn't read aloud. */}
-        <div className="float-right mt-1 ml-3 flex items-center gap-2">
+        <div className="mt-1 mb-3 flex flex-wrap items-center justify-end gap-2 sm:float-right sm:ml-3 sm:mb-0 sm:flex-nowrap">
+          <ReadingControls prefs={reading} onChange={setReading} focusMode={focusMode} onToggleFocus={onToggleFocus} />
           <TopicToolbar
             topicRef={{
               courseId: course.id,
@@ -467,7 +573,7 @@ export function ContentArea({
               initial={{ opacity: 0, x: -24 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.4, ease: 'easeOut' }}
-              className="relative mb-8 pl-5 border-l-2 border-orange-200 dark:border-orange-800/40"
+              className="relative mb-3 pl-5 border-l-2 border-orange-200 dark:border-orange-800/40"
             >
               {/* Point marker — helps students track "one point at a time" */}
               <motion.span
@@ -478,9 +584,10 @@ export function ContentArea({
               />
 
               {/* Content Text */}
-              <div className="prose max-w-none mb-4 topic-content">
+              <div className={hasInlineToggle(content) ? 'relative [&_.topic-content>div>:first-child]:pr-44' : undefined}>
+              <div className="prose max-w-none mb-1 topic-content">
                 {/<[a-z][\s\S]*>/i.test(content.content) ? (
-                  <div dangerouslySetInnerHTML={{ __html: transformContentTables(content.content) }} />
+                  <div dangerouslySetInnerHTML={{ __html: formatNotes(transformContentTables(content.content)) }} />
                 ) : (
                   content.content.split('\n\n').map((paragraph, index) => {
                     // Same paragraph parsing logic
@@ -551,16 +658,26 @@ export function ContentArea({
                   })
                 )}
               </div>
+              {hasInlineToggle(content) && (
+                <ExampleToggle
+                  open={!flippedExamples.has(`${topic?.id}-${idx}-0`)}
+                  onClick={() => toggleExample(`${topic?.id}-${idx}-0`)}
+                  className="absolute top-1 right-0"
+                />
+              )}
+              </div>
 
               {/* Code Examples */}
               {content.codeExamples && content.codeExamples.length > 0 && (
                 <div className="space-y-4">
-                  <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-200 mb-4">Code Examples</h2>
                   {content.codeExamples.map((rawCode, codeIdx) => {
-                    const code = formatCode(rawCode);
+                    const code = withJavaPackage(formatCode(rawCode), course.id, topic.id);
                     const explanation = content.codeExplanations?.[codeIdx];
                     const explanationKey = `${idx}-${codeIdx}`;
                     const isExplanationOpen = openExplanations.has(explanationKey);
+                    const exampleKey = `${topic?.id}-${idx}-${codeIdx}`;
+                    // a long single-example block has no button, so its code is always shown
+                    const isExampleOpen = !flippedExamples.has(exampleKey) || (hasSingleExample(content) && !hasInlineToggle(content));
                     return (
                     <motion.div
                       key={codeIdx}
@@ -572,15 +689,25 @@ export function ContentArea({
                       {/* Every sample gets a heading derived from the code itself, so a
                           page of many programs reads as a labelled list rather than an
                           undifferentiated wall of code. */}
+                      {!hasSingleExample(content) && (
                       <div className="flex items-center gap-2 mb-2">
-                        <span className="shrink-0 w-6 h-6 rounded-md bg-orange-100 dark:bg-orange-900/40 text-orange-700 dark:text-orange-300 text-xs font-bold flex items-center justify-center tabular-nums">
-                          {codeIdx + 1}
-                        </span>
-                        <h3 className="font-display font-semibold text-base text-gray-800 dark:text-gray-200">
-                          {codeTitle(code, codeIdx)}
+                        <h3 className="font-display font-semibold text-base text-gray-800 dark:text-gray-200 min-w-0 flex-1">
+                          {exampleLabel(listedExampleNames(content.content, content.codeExamples!.length)?.[codeIdx] ?? codeTitle(code, codeIdx), codeIdx)}
                         </h3>
+                        <ExampleToggle open={isExampleOpen} onClick={() => toggleExample(exampleKey)} />
                       </div>
+                      )}
 
+                      <AnimatePresence initial={false}>
+                      {isExampleOpen && (
+                      <motion.div
+                        key="example"
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        exit={{ opacity: 0, height: 0 }}
+                        transition={{ duration: 0.25 }}
+                        className={`overflow-hidden${hasSingleExample(content) ? ' mt-2' : ''}`}
+                      >
                       <div className="relative">
                       <div className="absolute top-2 right-2 z-10 flex gap-2">
                         {/* Copy button */}
@@ -635,6 +762,9 @@ export function ContentArea({
                           </AnimatePresence>
                         </div>
                       )}
+                      </motion.div>
+                      )}
+                      </AnimatePresence>
                     </motion.div>
                     );
                   })}
@@ -664,6 +794,10 @@ export function ContentArea({
         />
       )}
 
+      {extraBelowNotes && (
+        <div className="container mx-auto px-4 sm:px-6">{extraBelowNotes}</div>
+      )}
+
      {/* Previous / Next Topic Navigation */}
 <div className="mt-12 flex justify-between items-center border-t pt-4 gap-4 p-2">
 
@@ -671,7 +805,7 @@ export function ContentArea({
   <button
     onClick={onPrevTopic}
     disabled={!hasPrev}
-    className={`stext-center px-6 py-4 rounded-xl transition
+    className={`text-center px-6 py-4 rounded-xl transition
       ${hasPrev
         ? 'bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600'
         : 'opacity-40 cursor-not-allowed bg-gray-100 dark:bg-gray-800'}

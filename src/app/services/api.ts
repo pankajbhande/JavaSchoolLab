@@ -6,6 +6,11 @@ function getToken(): string | null {
   return localStorage.getItem('jsl_token');
 }
 
+/** The signed-in user's token, for work that must outlive the sign-out that clears it. */
+export function getAuthToken(): string | null {
+  return getToken();
+}
+
 function authHeaders(): Record<string, string> {
   const token = getToken();
   return token ? { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' } : { 'Content-Type': 'application/json' };
@@ -20,6 +25,8 @@ export interface User {
   gender?: string | null;
   dob?: string | null;
   organization?: string | null;
+  /** Profile photo as a data URL; null/absent means none. */
+  avatar?: string | null;
   createdAt?: string;
 }
 
@@ -102,6 +109,19 @@ export async function updateProfile(data: { fullName: string; gender?: string; d
   await jsonOrThrow(await fetch(`${API_BASE}/auth/profile`, { method: 'PATCH', headers: authHeaders(), body: JSON.stringify(data) }), 'Failed to update profile');
 }
 
+export async function uploadAvatar(image: string): Promise<void> {
+  await jsonOrThrow(await fetch(`${API_BASE}/profile/avatar`, { method: 'PUT', headers: authHeaders(), body: JSON.stringify({ image }) }), 'Failed to save your photo');
+}
+
+/** Pass null to clear the weekly goal. */
+export async function saveWeeklyGoal(minutes: number | null): Promise<void> {
+  await jsonOrThrow(await fetch(`${API_BASE}/progress/goal`, { method: 'PUT', headers: authHeaders(), body: JSON.stringify({ minutes }) }), 'Failed to save your goal');
+}
+
+export async function removeAvatar(): Promise<void> {
+  await jsonOrThrow(await fetch(`${API_BASE}/profile/avatar`, { method: 'DELETE', headers: authHeaders() }), 'Failed to remove your photo');
+}
+
 export async function changePassword(data: { currentPassword: string; newPassword: string }): Promise<void> {
   await jsonOrThrow(await fetch(`${API_BASE}/auth/change-password`, { method: 'POST', headers: authHeaders(), body: JSON.stringify(data) }), 'Failed to change password');
 }
@@ -138,6 +158,27 @@ export async function fetchLeaderboard(): Promise<Leaderboard> {
 export async function issueCertificate(data: { courseName: string; topicName: string; score: number; totalQuestions: number }): Promise<CertificateData> {
   const res = await fetch(`${API_BASE}/certificates`, { method: 'POST', headers: authHeaders(), body: JSON.stringify(data) });
   if (!res.ok) { const err = await res.json(); throw new Error(err.error); }
+  return res.json();
+}
+
+export interface VerifiedCertificate {
+  valid: true;
+  certificateUid: string;
+  studentName: string;
+  courseName: string;
+  topicName: string;
+  score: number;
+  totalQuestions: number;
+  percentage: number;
+  issuedAt: string;
+}
+
+/** Public lookup behind the QR code. Resolves to null when no such certificate exists. */
+export async function verifyCertificate(uid: string): Promise<VerifiedCertificate | null> {
+  const res = await fetch(`${API_BASE}/certificates/verify/${encodeURIComponent(uid)}`);
+  if (res.status === 404) return null;
+  if (res.status === 429) throw new Error('Too many checks in a short time. Please wait a minute and try again.');
+  if (!res.ok) throw new Error('The verification service is not reachable right now. Please try again shortly.');
   return res.json();
 }
 
@@ -187,12 +228,21 @@ export interface ProgressSummary {
   xp: number;
   currentStreak: number;
   longestStreak: number;
+  /** One missed day per Monday-week is forgiven automatically; `usedDates` are recent saved days. */
+  streakFreeze: { available: boolean; usedDates: string[] };
+  studiedToday: boolean;
+  /** A live streak exists and nothing has been studied yet today. */
+  streakAtRisk: boolean;
   topicsSeen: number;
   modulesPassed: number;
   studySecondsToday: number;
   studySecondsTotal: number;
   /** Most recent 60 studied days, newest first, as YYYY-MM-DD. */
   studiedDates: string[];
+  /** About a year of per-day study seconds, newest first, for the heatmap and weekly goal. */
+  studyDays: { date: string; seconds: number }[];
+  /** Weekly study goal in minutes, or null when none is set. */
+  weeklyGoalMinutes: number | null;
   /** courseId -> number of topics opened in that course. */
   byCourse: Record<string, number>;
   passedModules: { courseId: string; moduleId: string; best: number }[];
@@ -232,8 +282,20 @@ export async function importProgress(topics: VisitedTopic[]): Promise<{ imported
   return res.json();
 }
 
-export async function recordStudySeconds(seconds: number): Promise<void> {
-  await fetch(`${API_BASE}/progress/study`, { method: 'POST', headers: authHeaders(), body: JSON.stringify({ seconds }) });
+/**
+ * Adds study time to the signed-in user's total. `token` lets the final flush on sign-out use the
+ * token the time was earned under; by then the stored one has already been cleared.
+ */
+export async function recordStudySeconds(seconds: number, token: string | null = getToken()): Promise<void> {
+  if (!token) return; // signed out: there is nobody to credit
+  const res = await fetch(`${API_BASE}/progress/study`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ seconds }),
+  });
+  // An expired token will never succeed, so drop that time instead of retrying it forever;
+  // anything else (server down, 5xx) throws so the caller keeps the seconds for the next flush.
+  if (!res.ok && res.status !== 401) throw new Error('Failed to record study time');
 }
 
 export async function fetchProgressSummary(): Promise<ProgressSummary> {
@@ -265,5 +327,61 @@ export async function fetchQuizAttempts(): Promise<QuizAttempt[]> {
 export async function fetchReviewQueue(): Promise<ReviewItem[]> {
   const res = await fetch(`${API_BASE}/progress/review`, { headers: authHeaders() });
   if (!res.ok) throw new Error('Failed to load review queue');
+  return res.json();
+}
+
+// ==================== PUBLIC PROFILES ====================
+
+export interface ProfileSettings {
+  isPublic: boolean;
+  handle: string;
+  displayName: string;
+  bio: string;
+  showCertificates: boolean;
+  showStats: boolean;
+  showBadges: boolean;
+  showProgress: boolean;
+}
+
+export interface PublicProfile {
+  handle: string;
+  displayName: string;
+  bio: string;
+  memberSince: string | null;
+  avatar?: string;
+  show: { certificates: boolean; stats: boolean; badges: boolean; progress: boolean };
+  certificates?: {
+    certificateUid: string; courseName: string; topicName: string; score: number;
+    totalQuestions: number; percentage: number; issuedAt: string;
+  }[];
+  stats?: {
+    xp: number; currentStreak: number; longestStreak: number; topicsSeen: number;
+    modulesPassed: number; studyDays: number; studySecondsTotal: number;
+  };
+  badges?: { id: string; name: string; hint: string }[];
+  courses?: { courseId: string; topicsSeen: number }[];
+}
+
+export async function fetchProfileSettings(): Promise<ProfileSettings> {
+  return jsonOrThrow(await fetch(`${API_BASE}/profile/settings`, { headers: authHeaders() }), 'Failed to load profile settings');
+}
+
+export async function saveProfileSettings(data: Partial<ProfileSettings>): Promise<ProfileSettings> {
+  return jsonOrThrow(await fetch(`${API_BASE}/profile/settings`, { method: 'PUT', headers: authHeaders(), body: JSON.stringify(data) }), 'Failed to save profile settings');
+}
+
+export async function checkHandleAvailable(handle: string, signal?: AbortSignal): Promise<{ handle: string; available: boolean; reason: string | null }> {
+  return jsonOrThrow(
+    await fetch(`${API_BASE}/profile/handle-available?handle=${encodeURIComponent(handle)}`, { headers: authHeaders(), signal }),
+    'Could not check that handle'
+  );
+}
+
+/** Public page data. Resolves to null for an unknown OR unpublished handle (the server cannot tell them apart). */
+export async function fetchPublicProfile(handle: string): Promise<PublicProfile | null> {
+  const res = await fetch(`${API_BASE}/profiles/${encodeURIComponent(handle)}`);
+  if (res.status === 404) return null;
+  if (res.status === 429) throw new Error('Too many requests in a short time. Please wait a minute and try again.');
+  if (!res.ok) throw new Error('This profile could not be loaded right now. Please try again shortly.');
   return res.json();
 }

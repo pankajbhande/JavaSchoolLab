@@ -21,6 +21,8 @@ export interface PreparedQuestion {
   /** Index into `options` above — already remapped through the shuffle. */
   answerIndex: number;
   explanation: string;
+  /** Optional authored concept label (banks may carry `topic` or `concept`). */
+  topic?: string;
 }
 
 export interface PreparedQuiz {
@@ -72,15 +74,30 @@ function prepareQuestion(q: QuizQuestion, random: () => number): PreparedQuestio
   const shuffled = shuffle(tagged, random);
   const answerIndex = shuffled.findIndex(o => o.isAnswer);
 
+  const tag = q as QuizQuestion & { topic?: string; concept?: string };
   return {
     id: q.id,
     question: q.question,
+    topic: tag.topic || tag.concept || undefined,
     options: shuffled.map(o => o.text),
     // A bank whose correctAnswer is out of range would otherwise silently mark
     // every response wrong; fail loudly in dev instead.
     answerIndex: answerIndex >= 0 ? answerIndex : 0,
     explanation: q.explanation,
   };
+}
+
+/**
+ * Practice helper: the same questions in a fresh question order with freshly shuffled options.
+ * The answer index is re-tracked through the shuffle. Never used for an official attempt.
+ */
+export function reshuffleQuestions(questions: readonly PreparedQuestion[], seed: number): PreparedQuestion[] {
+  const random = createRandom(seed || 1);
+  return shuffle(questions, random).map(q => {
+    const tagged = q.options.map((text, index) => ({ text, isAnswer: index === q.answerIndex }));
+    const options = shuffle(tagged, random);
+    return { ...q, options: options.map(o => o.text), answerIndex: Math.max(0, options.findIndex(o => o.isAnswer)) };
+  });
 }
 
 /**

@@ -3,11 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import logo from '../../assets/logo1.jpg';
 import { Alarm } from './Alarm';
-import { Timer } from './Timer';
+import { Timer, useStudyTimer, formatTimer } from './Timer';
 import { LiveClock } from './LiveClock';
+import { StudyTimeTracker } from './StudyTimeTracker';
 import { useTheme } from './ThemeProvider';
 import { headerBox, headerBadge, headerIconBtn } from './headerStyles';
 import { useAuth } from '../context/AuthContext';
+import { Avatar } from './Avatar';
 import { LoginModal } from './LoginModal';
 import { motion } from 'motion/react';
 import { useState, useRef, useEffect } from "react";
@@ -21,9 +23,13 @@ interface HeaderProps {
   showSearch?: boolean;
   voiceGender: 'male' | 'female';
   onVoiceChange: (gender: 'male' | 'female') => void;
+  /** Opens the command palette; when given, the header shows the Search button. */
+  onOpenSearch?: () => void;
 }
 
-export function Header({ onToggleSpeech, isSpeaking, onSearch, showSearch = true, voiceGender, onVoiceChange }: HeaderProps) {
+const isMac = typeof navigator !== 'undefined' && /Mac|iPhone|iPad/i.test(navigator.platform || navigator.userAgent);
+
+export function Header({ onToggleSpeech, isSpeaking, onSearch, showSearch = true, voiceGender, onVoiceChange, onOpenSearch }: HeaderProps) {
   const navigate = useNavigate();
   const { theme, toggleTheme } = useTheme();
   const { user, isLoggedIn, isGuest, logout } = useAuth();
@@ -31,6 +37,9 @@ export function Header({ onToggleSpeech, isSpeaking, onSearch, showSearch = true
   const [showTimer, setShowTimer] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
+  // Owned here, not by the panel, so the timer keeps running while the panel is closed.
+  const studyTimer = useStudyTimer();
+  const timerActive = studyTimer.isRunning || studyTimer.seconds > 0;
   const alarmRef = useRef<HTMLDivElement>(null);
   const timerRef = useRef<HTMLDivElement>(null);
 
@@ -62,28 +71,51 @@ export function Header({ onToggleSpeech, isSpeaking, onSearch, showSearch = true
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
           >
-            <img src={logo} alt="JavaSchoolLab Logo" className="h-9 w-9 sm:h-12 sm:w-12 object-contain" />
-            <div>
-              <h1 className="font-bold text-lg sm:text-2xl">JavaSchoolLab</h1>
-              <p className="text-sm text-orange-100">Learn Java, Python, React & More</p>
+            <img src={logo} alt="JavaSchoolLab Logo" className="h-9 w-9 sm:h-12 sm:w-12 object-contain rounded-xl bg-white/90 p-0.5 shadow-md shadow-black/15 ring-1 ring-white/40" />
+            <div className="min-w-0 leading-tight">
+              <h1 className="font-bold text-lg sm:text-2xl tracking-tight truncate drop-shadow-sm">JavaSchoolLab</h1>
+              <p className="hidden sm:block text-[13px] text-white/90 truncate">Learn Java, Python, React & More</p>
             </div>
           </motion.div>
 
           <div className="flex flex-wrap items-center justify-end gap-2 sm:gap-3">
-            {showSearch && <label className={`hidden md:flex w-56cursor-text focus-within:bg-white/25 focus-within:ring-white/60 ${headerBox}`}>
+            {showSearch && <label className={`hidden md:flex w-56 cursor-text focus-within:bg-white/25 focus-within:ring-white/60 ${headerBox}`}>
               <span className={headerBadge}><Search className="w-4 h-4" /></span>
               <input
                 id="global-search-input"
                 type="text"
                 placeholder="Search topics... (Press /)"
-                className="bg-transparent border-none outline-none text-sm text-white placeholder-orange-100 w-full min-w-0"
+                className="bg-transparent border-none outline-none text-sm text-white placeholder-white/80 w-full min-w-0"
                 aria-label="Search topics"
                 onChange={(e) => onSearch?.(e.target.value)}
               />
             </label>}
 
-            {/* Live current time + auto-tracked study time, one frame */}
+            {/* Command palette trigger: replaces the old inline search box. One button so the
+                tour has a single target; the label collapses to an icon on phones. */}
+            {onOpenSearch && (
+              <button
+                type="button"
+                data-tour="search"
+                onClick={onOpenSearch}
+                aria-label="Search courses and lessons"
+                aria-keyshortcuts="Control+K Meta+K"
+                title="Search (Ctrl K)"
+                className={`${headerBox} !px-0 w-10 justify-center md:!px-3 md:w-auto md:min-w-[11rem] md:justify-between cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white`}
+              >
+                <span className="flex items-center gap-2">
+                  <Search className="w-4 h-4" aria-hidden="true" />
+                  <span className="hidden md:inline text-sm text-white/90">Search</span>
+                </span>
+                <kbd className="hidden md:inline rounded-md bg-white/20 px-1.5 py-0.5 text-[11px] font-semibold text-white/95">{isMac ? '⌘ K' : 'Ctrl K'}</kbd>
+              </button>
+            )}
+
+            {/* Live current time */}
             <LiveClock />
+
+            {/* Auto-tracked study time, own frame */}
+            <StudyTimeTracker />
 
             {/* Alarm — kept mounted so reminders still ring while the panel is closed */}
             <div className="relative" ref={alarmRef}>
@@ -92,6 +124,7 @@ export function Header({ onToggleSpeech, isSpeaking, onSearch, showSearch = true
                 className={headerIconBtn}
                 title="Alarms"
                 aria-label="Alarms"
+                aria-expanded={showAlarm}
               >
                 <Bell className="w-5 h-5" />
               </button>
@@ -104,25 +137,35 @@ export function Header({ onToggleSpeech, isSpeaking, onSearch, showSearch = true
             <div className="relative" ref={timerRef}>
               <button
                 onClick={() => setShowTimer(!showTimer)}
-                className={headerIconBtn}
-                title="Timer"
-                aria-label="Timer"
+                className={`${headerIconBtn} relative`}
+                title={timerActive ? `Timer ${studyTimer.isRunning ? 'running' : 'paused'}: ${formatTimer(studyTimer.seconds)}` : 'Timer'}
+                aria-label={timerActive ? `Timer, ${studyTimer.isRunning ? 'running' : 'paused'} at ${formatTimer(studyTimer.seconds)}` : 'Timer'}
+                aria-expanded={showTimer}
               >
                 <TimerIcon className="w-5 h-5" />
+                {/* A running timer is visible even with the panel closed */}
+                {timerActive && (
+                  <span
+                    aria-hidden="true"
+                    className={`absolute -bottom-1.5 left-1/2 -translate-x-1/2 rounded-full px-1.5 py-px font-mono text-[9px] font-bold leading-none shadow ring-1 ring-black/10 ${studyTimer.isRunning ? 'bg-emerald-500 text-white' : 'bg-white text-orange-700'}`}
+                  >
+                    {formatTimer(studyTimer.seconds).replace(/^00:/, '')}
+                  </span>
+                )}
               </button>
               {showTimer && (
                 <div className="absolute right-0 mt-3 w-72">
-                  <Timer />
+                  <Timer timer={studyTimer} />
                 </div>
               )}
             </div>
 
             {/* Voice Gender Selection. Hidden on phones: it pushed the header to a third
                 wrapped row, and the reading pane carries its own voice picker anyway. */}
-            <div className="hidden 2xl:flex items-center h-12 bg-white/15 ring-1 ring-white/25 backdrop-blur-md rounded-xl p-1">
+            <div className="hidden 2xl:flex items-center h-11 bg-white/15 ring-1 ring-white/25 backdrop-blur-md rounded-xl p-1">
               <button
                 onClick={() => onVoiceChange('female')}
-                className={`px-3 py-1 rounded text-sm transition-all ${voiceGender === 'female'
+                className={`px-3 py-1 rounded-lg text-sm transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white ${voiceGender === 'female'
                   ? 'bg-white text-orange-600 font-semibold'
                   : 'text-white hover:bg-white/10'
                   }`}
@@ -133,7 +176,7 @@ export function Header({ onToggleSpeech, isSpeaking, onSearch, showSearch = true
               </button>
               <button
                 onClick={() => onVoiceChange('male')}
-                className={`px-3 py-1 rounded text-sm transition-all ${voiceGender === 'male'
+                className={`px-3 py-1 rounded-lg text-sm transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white ${voiceGender === 'male'
                   ? 'bg-white text-orange-600 font-semibold'
                   : 'text-white hover:bg-white/10'
                   }`}
@@ -206,12 +249,12 @@ export function Header({ onToggleSpeech, isSpeaking, onSearch, showSearch = true
               <div className="relative">
                 <button
                   onClick={() => setShowUserMenu(!showUserMenu)}
-                  className="flex items-center gap-2 h-12 bg-white/15 ring-1 ring-white/25 backdrop-blur-md rounded-xl px-3 hover:bg-white/25 transition-colors"
+                  className="flex items-center gap-2 h-11 bg-white/15 ring-1 ring-white/25 backdrop-blur-md rounded-xl px-3 hover:bg-white/25 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
                   aria-label="Account menu"
+                  aria-haspopup="menu"
+                  aria-expanded={showUserMenu}
                 >
-                  <div className="w-7 h-7 bg-white text-orange-600 rounded-full flex items-center justify-center font-bold text-sm">
-                    {user?.fullName?.charAt(0).toUpperCase()}
-                  </div>
+                  <Avatar src={user?.avatar} name={user?.fullName ?? ''} className="w-7 h-7 text-sm" />
                   <span className="text-sm font-medium hidden lg:block">{user?.fullName?.split(' ')[0]}</span>
                 </button>
 
@@ -242,7 +285,7 @@ export function Header({ onToggleSpeech, isSpeaking, onSearch, showSearch = true
             ) : isGuest ? (
               <button
                 onClick={() => setShowLogin(true)}
-                className="flex items-center gap-2 h-12 bg-white/15 ring-1 ring-white/25 backdrop-blur-md rounded-xl px-3 hover:bg-white/25 transition-colors"
+                className="flex items-center gap-2 h-11 bg-white/15 ring-1 ring-white/25 backdrop-blur-md rounded-xl px-3 hover:bg-white/25 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
               >
                 <User className="w-5 h-5" />
                 <span className="text-sm font-medium hidden lg:block">Guest</span>
@@ -250,7 +293,7 @@ export function Header({ onToggleSpeech, isSpeaking, onSearch, showSearch = true
             ) : (
               <button
                 onClick={() => setShowLogin(true)}
-                className="flex items-center gap-2 bg-white text-orange-600 rounded-lg px-4 h-10 font-semibold hover:bg-orange-50 transition-all text-sm"
+                className="flex items-center gap-2 bg-white text-orange-600 rounded-xl px-4 h-11 font-semibold shadow-sm hover:bg-orange-50 transition-all text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-orange-600"
               >
                 <LogIn className="w-4 h-4" /> Login
               </button>

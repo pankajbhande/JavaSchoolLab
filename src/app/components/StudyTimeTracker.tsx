@@ -1,8 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
 import { GraduationCap } from 'lucide-react';
 import { useProgress } from '../context/ProgressContext';
+import { headerBox, headerBadge } from './headerStyles';
+import { localDay } from '../lib/localDate';
 
-const todayKey = () => `jsl_study_seconds_${new Date().toISOString().slice(0, 10)}`;
+const keyFor = (day: string) => `jsl_study_seconds_${day}`;
+const todayKey = () => keyFor(localDay());
 
 function formatDuration(totalSeconds: number) {
   const hours = Math.floor(totalSeconds / 3600);
@@ -22,6 +25,8 @@ export function StudyTimeTracker() {
   });
   const secondsRef = useRef(seconds);
   secondsRef.current = seconds;
+  // The day the running count belongs to, so it can start over at local midnight.
+  const dayRef = useRef(localDay());
 
   // The server is the source of truth for a signed-in student, so that time studied on
   // a phone shows up on a laptop. Adopt its count whenever it is ahead of this tab.
@@ -36,9 +41,12 @@ export function StudyTimeTracker() {
   useEffect(() => {
     const interval = setInterval(() => {
       if (document.visibilityState === 'visible') {
+        const day = localDay();
+        const newDay = day !== dayRef.current;
+        dayRef.current = day;
         setSeconds(s => {
-          const next = s + 1;
-          localStorage.setItem(todayKey(), String(next));
+          const next = (newDay ? 0 : s) + 1;
+          try { localStorage.setItem(keyFor(day), String(next)); } catch { /* quota or private mode */ }
           return next;
         });
         // Batched by ProgressContext and flushed about once a minute.
@@ -48,21 +56,15 @@ export function StudyTimeTracker() {
     return () => clearInterval(interval);
   }, [addStudySeconds]);
 
-  // Rendered inside the LiveClock panel, so it shares one frame with the time.
   return (
     <div
-      className="hidden xl:flex items-center gap-2 border-l border-cyan-400/30 pl-2.5"
+      className={`hidden xl:flex ${headerBox}`}
       title="Time spent studying today (auto-tracked)"
     >
-      <GraduationCap className="w-4 h-4 shrink-0 text-cyan-300" />
+      <span className={headerBadge}><GraduationCap className="w-4 h-4" /></span>
       <div className="leading-tight min-w-0">
-        <div
-          className="font-['Orbitron',monospace] font-bold text-[12px] tabular-nums whitespace-nowrap text-cyan-200"
-          style={{ textShadow: '0 0 6px rgba(103,232,249,.7)' }}
-        >
-          {formatDuration(seconds)}
-        </div>
-        <div className="text-[9px] font-medium text-cyan-100/80 whitespace-nowrap">Study time today</div>
+        <div className="font-mono font-bold text-xs tabular-nums whitespace-nowrap">{formatDuration(seconds)}</div>
+        <div className="text-[11px] text-orange-100">Study time today</div>
       </div>
     </div>
   );

@@ -1,15 +1,17 @@
 import { useEffect, useRef, useState } from 'react';
-import { motion, useMotionValue, useTransform, useInView, animate } from 'motion/react';
+import { motion, MotionConfig, useMotionValue, useTransform, useInView, animate } from 'motion/react';
 import { ImageWithFallback } from './figma/ImageWithFallback';
-import { registerVisit } from '../services/api';
+import { useVisitorCount } from '../hooks/useVisitorCount';
+import { Avatar } from './Avatar';
 import { ProgressPanel } from './ProgressPanel';
 import { useProgress } from '../context/ProgressContext';
 import { courseStats } from '../data/courseStats';
+import { useAuth } from '../context/AuthContext';
 import {
   Users, Sparkles, GraduationCap, BookOpen, Award,
   FileCode2, Coffee, Boxes, Puzzle, Database, Plug, Globe, Link2, Workflow, Rocket, Atom, Network,
   Braces, Shield, Wind, AppWindow, Terminal, BrainCircuit, BarChart3, Binary,
-  Compass, Cpu,
+  Compass, Cpu, Play, Layers, FileText,
 } from 'lucide-react';
 
 interface DashboardProps {
@@ -25,7 +27,7 @@ const iconAnimations: Record<string, { animate: Record<string, any>; transition:
     animate: { rotate: [0, -14, 14, 0] },
     transition: { duration: 2, repeat: Infinity, repeatDelay: 0.6, ease: 'easeInOut' },
   },
-  // Java - coffee cup jitter/bob
+  // Java - coffee cup jitter/baji
   brew: {
     animate: { y: [0, -3, 0, -1, 0], rotate: [0, -6, 6, 0] },
     transition: { duration: 1.6, repeat: Infinity, ease: 'easeInOut' },
@@ -265,7 +267,7 @@ const courseCards = [
     category: 'Java Enterprise & Backend'
   },
   {
-    id: 'microservices',
+    id: 'microservices-fundamentals',
     name: 'Microservices',
     icon: Network,
     color: 'from-rose-500 via-pink-500 to-fuchsia-600',
@@ -276,6 +278,105 @@ const courseCards = [
     category: 'Java Enterprise & Backend'
   },
 
+  {
+    id: 'spring-core',
+    name: 'Spring Core',
+    icon: Boxes,
+    color: 'from-green-600 via-emerald-600 to-teal-700',
+    glow: 'group-hover:shadow-green-500/30',
+    description: 'IoC container, beans and dependency injection',
+    query: 'spring core ioc',
+    anim: 'stack',
+    category: 'Java Enterprise & Backend'
+  },
+  {
+    id: 'java-memory-jvm',
+    name: 'Java Memory & JVM',
+    icon: Cpu,
+    color: 'from-sky-600 via-blue-600 to-indigo-700',
+    glow: 'group-hover:shadow-sky-500/30',
+    description: 'Heap, stack, garbage collection and JVM internals',
+    query: 'jvm memory garbage collection',
+    anim: 'pulse',
+    category: 'Core Java'
+  },
+  {
+    id: 'enterprise-patterns-1',
+    name: 'Enterprise Design Patterns',
+    icon: Layers,
+    color: 'from-violet-600 via-purple-600 to-fuchsia-700',
+    glow: 'group-hover:shadow-violet-500/30',
+    description: 'Patterns for enterprise application architecture',
+    query: 'enterprise patterns',
+    anim: 'stack',
+    category: 'Java Enterprise & Backend'
+  },
+  {
+    id: 'microservices-patterns-1',
+    name: 'Microservices Design Patterns',
+    icon: Network,
+    color: 'from-pink-500 via-rose-500 to-red-600',
+    glow: 'group-hover:shadow-pink-500/30',
+    description: 'Decomposition, data and resilience patterns',
+    query: 'microservices patterns',
+    anim: 'ping',
+    category: 'Java Enterprise & Backend'
+  },
+  {
+    id: 'messaging-patterns-1',
+    name: 'Integration & Messaging Patterns',
+    icon: Workflow,
+    color: 'from-cyan-500 via-teal-500 to-emerald-600',
+    glow: 'group-hover:shadow-cyan-500/30',
+    description: 'Queues, events and enterprise integration',
+    query: 'messaging integration patterns',
+    anim: 'ping',
+    category: 'Java Enterprise & Backend'
+  },
+  {
+    id: 'architectural-patterns',
+    name: 'Architectural Patterns',
+    icon: Puzzle,
+    color: 'from-orange-500 via-amber-500 to-yellow-600',
+    glow: 'group-hover:shadow-orange-500/30',
+    description: 'Layered, hexagonal, event-driven and more',
+    query: 'architectural patterns',
+    anim: 'gear',
+    category: 'Java Enterprise & Backend'
+  },
+  {
+    id: 'cloud-native-patterns',
+    name: 'Cloud-Native Patterns',
+    icon: Globe,
+    color: 'from-blue-500 via-sky-500 to-cyan-600',
+    glow: 'group-hover:shadow-blue-500/30',
+    description: 'Patterns for building and running apps in the cloud',
+    query: 'cloud native patterns',
+    anim: 'ping',
+    category: 'Java Enterprise & Backend'
+  },
+  {
+    id: 'digital-image-analysis',
+    name: 'Digital Image Analysis',
+    icon: Sparkles,
+    color: 'from-fuchsia-600 via-purple-600 to-indigo-700',
+    glow: 'group-hover:shadow-fuchsia-500/30',
+    description: 'Image processing and computer vision basics',
+    query: 'digital image analysis',
+    anim: 'pulse',
+    category: 'Data Science & AI'
+  },
+  {
+    id: 'math-foundations-cs',
+    name: 'Math for Computer Science',
+    icon: BarChart3,
+    color: 'from-teal-600 via-cyan-600 to-sky-700',
+    glow: 'group-hover:shadow-teal-500/30',
+    description: 'Logic, sets, graphs and discrete mathematics',
+    query: 'mathematics computer science',
+    anim: 'pulse',
+    category: 'Data Science & AI'
+  },
   {
     id: 'javafx',
     name: 'JavaFX',
@@ -322,6 +423,9 @@ const courseCards = [
   },
 ];
 
+const totalCourses = Object.keys(courseStats).length;
+const totalTopics = Object.values(courseStats).reduce((n, c) => n + c.topics, 0);
+
 // Scroll-triggered stagger reveal for each category grid + its cards.
 const sectionVariants = {
   hidden: {},
@@ -364,17 +468,16 @@ export function Dashboard({ onCourseSelect, searchQuery = '' }: DashboardProps) 
         const haystack = `${course.name} ${course.description} ${course.category} ${course.query}`.toLowerCase();
         return terms.every((t) => haystack.includes(t));
       });
-  const [visitorCount, setVisitorCount] = useState(0);
-  const [visitorLoading, setVisitorLoading] = useState(true);
-
-  useEffect(() => {
-    registerVisit()
-      .then(data => setVisitorCount(data.count))
-      .catch(() => {})
-      .finally(() => setVisitorLoading(false));
-  }, []);
+  const { isLoggedIn, user } = useAuth();
+  const displayName = user?.fullName?.trim();
+  const { visited } = useProgress();
+  const resume = summary?.resume ?? null;
+  const resumeCourse = resume ? courseCards.find((c) => c.id === resume.courseId) : undefined;
+  // One visit is counted when the application opens; the number then keeps itself current.
+  const { count: visitorCount, loading: visitorLoading } = useVisitorCount();
 
   return (
+    <MotionConfig reducedMotion="user">
     <div className="relative flex-1 overflow-y-auto bg-gradient-to-br from-orange-50 via-white to-amber-50 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950 p-4 sm:p-6 lg:p-8">
       {/* Ambient background glow — slow drifting blobs for a living, premium backdrop */}
       <div className="pointer-events-none fixed inset-0 overflow-hidden">
@@ -407,7 +510,7 @@ export function Dashboard({ onCourseSelect, searchQuery = '' }: DashboardProps) 
             animate={{ opacity: 1, scale: 1 }}
             whileHover={{ scale: 1.05 }}
             transition={{ duration: 0.3 }}
-            className="inline-flex items-center gap-1.5 px-3 py-1 mb-4 rounded-full bg-orange-100/80 dark:bg-orange-500/10 border border-orange-200 dark:border-orange-500/20 text-orange-600 dark:text-orange-400 text-xs font-semibold"
+            className="inline-flex items-center gap-1.5 px-3 py-1 mb-4 rounded-full bg-orange-100/80 dark:bg-orange-500/10 border border-orange-200 dark:border-orange-500/20 text-orange-700 dark:text-orange-300 text-xs font-semibold"
           >
             <motion.span
               animate={{ rotate: [0, 15, -10, 0], scale: [1, 1.15, 1] }}
@@ -417,6 +520,19 @@ export function Dashboard({ onCourseSelect, searchQuery = '' }: DashboardProps) 
             </motion.span>
             Learn Java, Python, React &amp; More
           </motion.div>
+          {isLoggedIn && displayName && (
+            <motion.div
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4 }}
+              className="mb-3 inline-flex items-center gap-3 rounded-full bg-white/80 dark:bg-gray-800/70 border border-orange-200 dark:border-orange-500/30 shadow-sm backdrop-blur-sm py-1.5 pl-1.5 pr-5"
+            >
+              <Avatar src={user?.avatar} name={displayName} className="w-10 h-10 text-lg" fallbackClassName="bg-gradient-to-br from-orange-500 to-amber-500 text-white" />
+              <p className="font-display text-lg md:text-xl font-bold text-gray-800 dark:text-gray-100 tracking-tight">
+                Hi, <span className="text-orange-600 dark:text-orange-400">{displayName}</span>
+              </p>
+            </motion.div>
+          )}
           <motion.h1
             className="font-display text-4xl md:text-5xl font-extrabold mb-3 bg-gradient-to-r from-orange-600 via-amber-500 to-orange-500 bg-clip-text text-transparent tracking-tight bg-[length:200%_auto]"
             initial={{ opacity: 0, scale: 0.9, backgroundPositionX: '0%' }}
@@ -433,21 +549,35 @@ export function Dashboard({ onCourseSelect, searchQuery = '' }: DashboardProps) 
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: 0.15 }}
-            className="text-sm md:text-base text-gray-600 dark:text-gray-300"
+            className="text-sm md:text-base text-gray-700 dark:text-gray-300"
           >
             Choose a course to begin your learning journey
           </motion.p>
+          {resumeCourse && (
+            <motion.button
+              type="button"
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 0.25 }}
+              onClick={() => onCourseSelect(resumeCourse.id)}
+              className="mt-5 inline-flex items-center gap-2 rounded-full bg-orange-600 hover:bg-orange-700 text-white text-sm font-semibold px-5 py-2.5 shadow-lg shadow-orange-500/25 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600"
+            >
+              <Play className="w-4 h-4" aria-hidden="true" />
+              Continue learning: {resumeCourse.name}
+            </motion.button>
+          )}
         </div>
 
         <ProgressPanel />
 
+
         {terms.length > 0 && visibleCards.length === 0 && (
-          <p className="text-center text-gray-500 dark:text-gray-400 py-12">
+          <p role="status" className="text-center text-gray-600 dark:text-gray-300 py-12">
             No course matches &ldquo;{searchQuery.trim()}&rdquo;. Try another word, e.g. Python, MySQL or React.
           </p>
         )}
 
-        <div className="space-y-10">
+        <div id="course-catalog" className="space-y-10 scroll-mt-4">
           {CATEGORY_ORDER.map((category) => {
             const coursesInCategory = visibleCards.filter((course) => course.category === category);
             if (coursesInCategory.length === 0) return null;
@@ -474,22 +604,24 @@ export function Dashboard({ onCourseSelect, searchQuery = '' }: DashboardProps) 
                 </motion.div>
 
                 <motion.div
-                  className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4"
+                  className="grid grid-cols-1 min-[420px]:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4"
                   variants={sectionVariants}
                   initial="hidden"
                   whileInView="show"
                   viewport={{ once: true, amount: 0.15 }}
                 >
                   {coursesInCategory.map((course) => (
-                    <motion.div
+                    <motion.button
+                      type="button"
                       key={course.id}
+                      aria-label={`${course.name}: ${course.description}${courseStats[course.id] ? `, ${courseStats[course.id].modules} modules, ${courseStats[course.id].topics} topics` : ''}`}
                       variants={cardVariants}
                       whileHover={{ scale: 1.05, y: -6, transition: { type: 'spring', stiffness: 320, damping: 18 } }}
                       whileTap={{ scale: 0.96 }}
                       onClick={() => onCourseSelect(course.id)}
-                      className="group cursor-pointer"
+                      className="group cursor-pointer block w-full text-left rounded-2xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-orange-600"
                     >
-                      <div className={`bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-sm hover:shadow-2xl ${course.glow} transition-shadow duration-300 overflow-hidden border border-gray-200/70 dark:border-gray-700/70`}>
+                      <div className={`bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-sm hover:shadow-2xl group-focus-visible:shadow-2xl group-hover:border-orange-300 dark:group-hover:border-orange-500/60 ${course.glow} transition-shadow duration-300 overflow-hidden border border-gray-200/70 dark:border-gray-700/70`}>
                         <div className={`h-24 bg-gradient-to-br ${course.color} relative overflow-hidden`}>
                           <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.35),transparent_60%)]" />
                           <div className="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-all duration-300" />
@@ -518,11 +650,11 @@ export function Dashboard({ onCourseSelect, searchQuery = '' }: DashboardProps) 
                             const pct = Math.min(100, Math.round((seen / total) * 100));
                             return (
                               <div className="mb-1.5">
-                                <div className="flex justify-between text-[10px] text-gray-500 dark:text-gray-400 mb-0.5">
+                                <div className="flex justify-between text-[11px] text-gray-600 dark:text-gray-300 mb-0.5">
                                   <span>{seen}/{total} topics</span>
                                   <span className="tabular-nums">{pct}%</span>
                                 </div>
-                                <div className="w-full h-1 rounded-full bg-gray-200 dark:bg-gray-700 overflow-hidden">
+                                <div role="progressbar" aria-label={`${course.name} progress`} aria-valuemin={0} aria-valuemax={100} aria-valuenow={pct} className="w-full h-1 rounded-full bg-gray-200 dark:bg-gray-700 overflow-hidden">
                                   <div
                                     className={pct === 100
                                       ? 'h-1 rounded-full bg-gradient-to-r from-emerald-500 to-teal-500'
@@ -533,18 +665,21 @@ export function Dashboard({ onCourseSelect, searchQuery = '' }: DashboardProps) 
                               </div>
                             );
                           })()}
-                          <p className="text-xs text-gray-600 dark:text-gray-300 line-clamp-1">
+                          <p className="text-xs text-gray-700 dark:text-gray-300 line-clamp-2 min-h-[2rem]">
                             {course.description}
                           </p>
-                          <motion.button
-                            whileHover={{ x: 4 }}
-                            className="mt-1.5 text-xs text-orange-600 dark:text-orange-400 font-semibold flex items-center gap-1 py-0.5"
-                          >
-                            Start Learning →
-                          </motion.button>
+                          {courseStats[course.id] && (
+                            <p className="mt-1.5 flex items-center gap-3 text-[11px] text-gray-600 dark:text-gray-400 tabular-nums">
+                              <span className="inline-flex items-center gap-1"><Layers className="w-3 h-3" aria-hidden="true" />{courseStats[course.id].modules} modules</span>
+                              <span className="inline-flex items-center gap-1"><FileText className="w-3 h-3" aria-hidden="true" />{courseStats[course.id].topics} topics</span>
+                            </p>
+                          )}
+                          <span className="mt-1.5 text-xs text-orange-700 dark:text-orange-300 font-semibold flex items-center gap-1 py-0.5 group-hover:translate-x-1 transition-transform motion-reduce:transition-none">
+                            Start Learning <span aria-hidden="true">→</span>
+                          </span>
                         </div>
                       </div>
-                    </motion.div>
+                    </motion.button>
                   ))}
                 </motion.div>
               </div>
@@ -593,7 +728,7 @@ export function Dashboard({ onCourseSelect, searchQuery = '' }: DashboardProps) 
               <BookOpen className="w-7 h-7 text-white" />
             </motion.div>
             <div className="text-4xl font-bold bg-gradient-to-r from-orange-600 to-red-500 bg-clip-text text-transparent mb-2">
-              <AnimatedCounter value={22} suffix="+" />
+              <AnimatedCounter value={totalCourses} />
             </div>
             <div className="text-gray-600 dark:text-gray-300 text-sm font-medium">Comprehensive Courses</div>
           </motion.div>
@@ -610,7 +745,7 @@ export function Dashboard({ onCourseSelect, searchQuery = '' }: DashboardProps) 
               <GraduationCap className="w-7 h-7 text-white" />
             </motion.div>
             <div className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-cyan-500 bg-clip-text text-transparent mb-2">
-              <AnimatedCounter value={100} suffix="+" />
+              <AnimatedCounter value={totalTopics} />
             </div>
             <div className="text-gray-600 dark:text-gray-300 text-sm font-medium">Topics Covered</div>
           </motion.div>
@@ -636,11 +771,12 @@ export function Dashboard({ onCourseSelect, searchQuery = '' }: DashboardProps) 
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
-          className="text-center text-xs text-gray-400 dark:text-gray-500 mt-10"
+          className="text-center text-xs text-gray-600 dark:text-gray-400 mt-10"
         >
           JavaSchoolLab is an official product of DHIPAN Software Technologies Private Limited.
         </motion.p>
       </motion.div>
     </div>
+    </MotionConfig>
   );
 }

@@ -1,9 +1,8 @@
 // The course workspace: header + course strip + sidebars + content area.
 //
-// This lives in its own module so it can be lazy-loaded. It statically imports
-// coursesData, which pulls in every one of the 474 topics and their HTML bodies -
-// several megabytes. Keeping that out of the entry chunk means /dashboard, where every
-// visitor lands, no longer pays for content it does not render.
+// This lives in its own module so it can be lazy-loaded. It works from the course index
+// (names only) and fetches a course's content when that course is opened (see useCourses),
+// so neither /dashboard nor the first lesson pays for the whole library.
 
 import { useState, useRef, useEffect, useMemo } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
@@ -15,7 +14,7 @@ import { CornerAd } from './components/ads/CornerAd';
 import { Dashboard } from './components/Dashboard';
 import { TopicsBar } from './components/TopicsBar';
 import { SearchResults } from './components/SearchResults';
-import { coursesData } from './data/coursesData';
+import { useCourses, skeletonCourses } from './hooks/useCourses';
 import { slugify } from './lib/slug';
 import { useProgress } from './context/ProgressContext';
 import { useMediaQuery, DESKTOP_QUERY } from './hooks/useMediaQuery';
@@ -23,17 +22,48 @@ import { useFocusTrap } from './hooks/useFocusTrap';
 import { useDocumentMeta, toDescription } from './hooks/useDocumentMeta';
 import { PanelLeft, PanelRight, X, Search } from 'lucide-react';
 import { courseStats } from './data/courseStats';
+import { buildSpeechScript, prosody } from './lib/speechScript';
+import { useTheme } from './components/ThemeProvider';
+import { CommandPalette, type PaletteAction } from './components/shell/CommandPalette';
+import { ShortcutsSheet } from './components/shell/ShortcutsSheet';
+import { OnboardingTour, isTourDone } from './components/shell/OnboardingTour';
+import { resolveShortcut, isTypingTarget, type ShortcutAction } from './lib/shortcuts';
+import { pushRecent } from './lib/recentTopics';
 
 // courseStats.ts is generated (npm run gen:course-stats) and feeds the dashboard rings.
-// The dashboard cannot import coursesData without undoing the code split, so this is the
+// The dashboard cannot import the course data without undoing the code split, so this is the
 // one place both are in scope - assert they agree rather than let the rings drift.
 if (import.meta.env.DEV) {
-  for (const course of coursesData) {
+  for (const course of skeletonCourses) {
     const expected = course.subTopics.reduce((a, s) => a + s.topics.length, 0);
     const actual = courseStats[course.id];
     if (!actual) console.error('[courseStats] missing course:', course.id, '- run npm run gen:course-stats');
     else if (actual.topics !== expected) console.error('[courseStats] stale count for', course.id, actual.topics, '!=', expected, '- run npm run gen:course-stats');
   }
+}
+
+/** Shown while a course (or, for search, every course) is being downloaded. */
+function LoadingPane({ label, error, onRetry }: { label: string; error: string | null; onRetry: () => void }) {
+  return (
+    <div className="flex-1 grid place-items-center p-8 text-center" role="status" aria-live="polite">
+      {error ? (
+        <div className="max-w-sm">
+          <p className="text-sm font-semibold text-red-700 dark:text-red-300" role="alert">{error}</p>
+          <button
+            onClick={onRetry}
+            className="mt-3 px-4 py-2 rounded-lg bg-orange-600 text-white text-sm font-semibold hover:bg-orange-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400"
+          >
+            Try again
+          </button>
+        </div>
+      ) : (
+        <div className="flex flex-col items-center gap-3 text-gray-600 dark:text-gray-300">
+          <span className="h-8 w-8 rounded-full border-4 border-orange-200 border-t-orange-500 motion-safe:animate-spin" aria-hidden="true" />
+          <span className="text-sm font-medium">{label}</span>
+        </div>
+      )}
+    </div>
+  );
 }
 
 export default function CourseWorkspace() {
@@ -42,10 +72,10 @@ export default function CourseWorkspace() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [selectedCourseId, setSelectedCourseId] = useState<string | null>(() => {
     if (!courseId) return null;
-    return coursesData.find(c => c.id === courseId || slugify(c.id) === courseId)?.id || null;
+    return skeletonCourses.find(c => c.id === courseId || slugify(c.id) === courseId)?.id || null;
   });
   const [selectedSubTopicId, setSelectedSubTopicId] = useState<string | null>(() => {
-    const course = coursesData.find(c => c.id === courseId || slugify(c.id) === courseId);
+    const course = skeletonCourses.find(c => c.id === courseId || slugify(c.id) === courseId);
     if (!course || !topicIdParam) return null;
     const directMatch = course.subTopics.find(st => st.id === subTopicIdParam || slugify(st.id) === subTopicIdParam);
     const parentSubTopic = directMatch?.topics.some(t => t.id === topicIdParam || slugify(t.id) === topicIdParam)
@@ -54,7 +84,7 @@ export default function CourseWorkspace() {
     return parentSubTopic?.id || null;
   });
   const [selectedTopicId, setSelectedTopicId] = useState<string | null>(() => {
-    const course = coursesData.find(c => c.id === courseId || slugify(c.id) === courseId);
+    const course = skeletonCourses.find(c => c.id === courseId || slugify(c.id) === courseId);
     if (!course || !topicIdParam) return null;
     for (const st of course.subTopics) {
       const topic = st.topics.find(t => t.id === topicIdParam || slugify(t.id) === topicIdParam);
@@ -64,6 +94,8 @@ export default function CourseWorkspace() {
   });
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  // Content for the open course; every course once the reader searches lesson text.
+  const catalog = useCourses(selectedCourseId, searchQuery.trim().length >= 2);
   const [voiceGender, setVoiceGender] = useState<'male' | 'female'>('female');
   const [leftSidebarMinimized, setLeftSidebarMinimized] = useState(false);
   const [rightSidebarMinimized, setRightSidebarMinimized] = useState(false);
@@ -79,9 +111,17 @@ export default function CourseWorkspace() {
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
   const mobileSearchRef = useRef<HTMLInputElement>(null);
 
+  const { toggleTheme } = useTheme();
+  const [paletteOpen, setPaletteOpen] = useState(false);
+  const [helpOpen, setHelpOpen] = useState(false);
+  const [tourRun, setTourRun] = useState(false);
+  const [focusMode, setFocusMode] = useState(false);
+
   const contentRef = useRef<HTMLDivElement>(null);
   const topRef = useRef<HTMLDivElement>(null);
   const speechSynthesisRef = useRef<SpeechSynthesisUtterance | null>(null);
+  const speechRunRef = useRef(0);
+  const speechPauseRef = useRef<number | null>(null);
 
   // Sync URL param to state — matched via slugify() since the URL segment may be a slug
   // (spaces -> underscores) rather than the real id.
@@ -90,7 +130,7 @@ export default function CourseWorkspace() {
       setSelectedCourseId(null);
       return;
     }
-    const course = coursesData.find(c => c.id === courseId || slugify(c.id) === courseId);
+    const course = skeletonCourses.find(c => c.id === courseId || slugify(c.id) === courseId);
     if (course && course.id !== selectedCourseId) setSelectedCourseId(course.id);
   }, [courseId]);
 
@@ -98,7 +138,7 @@ export default function CourseWorkspace() {
   // visit/refresh on a deep topic URL, and browser back/forward navigation between topics.
   useEffect(() => {
     if (!topicIdParam) return;
-    const course = coursesData.find(c => c.id === courseId || slugify(c.id) === courseId);
+    const course = skeletonCourses.find(c => c.id === courseId || slugify(c.id) === courseId);
     if (!course) return;
     // Trust the subTopicId segment in the URL if it actually contains the topic; otherwise
     // (e.g. an old-style /course/:courseId/:topicId link, or a stale segment) fall back to
@@ -115,7 +155,7 @@ export default function CourseWorkspace() {
   }, [topicIdParam, subTopicIdParam, courseId]);
 
   const selectedCourse = selectedCourseId
-    ? coursesData.find(c => c.id === selectedCourseId) || null
+    ? catalog.courses.find(c => c.id === selectedCourseId) || null
     : null;
 
   const selectedSubTopic = selectedCourse && selectedSubTopicId
@@ -208,32 +248,53 @@ export default function CourseWorkspace() {
     html.replace(/(<h[1-6][^>]*>|<br\s*\/?>|<li[^>]*>|<td[^>]*>|<strong[^>]*>|^)(\d{1,3})\.\s+/gim,
       (_match, lead, num) => `${lead}${numberToOrdinalWord(Number(num))}, `);
 
-  // Strips HTML tags/entities so speech reads plain, natural sentences instead of markup
-  const stripHtml = (html: string) =>
-    humanizeListNumbers(html)
-      .replace(/<(script|style)[^>]*>[\s\S]*?<\/\1>/gi, ' ')
-      .replace(/<\/(p|div|li|h[1-6]|tr|br)>/gi, '. ')
-      .replace(/<[^>]+>/g, ' ')
-      .replace(/&nbsp;/g, ' ')
-      .replace(/&amp;/g, 'and')
-      .replace(/&lt;/g, '')
-      .replace(/&gt;/g, '')
-      .replace(/&quot;/g, '"')
-      .replace(/•/g, '. ')
-      .replace(/\s+/g, ' ')
-      .replace(/\.\s*\./g, '.')
-      .trim();
+  // Picks the Indian-English voice that matches the chosen gender, else the best fallback.
+  const pickVoice = (): SpeechSynthesisVoice | undefined => {
+    const voices = window.speechSynthesis.getVoices();
 
-  // Text-to-speech — reads from the topic's actual content data (explanatory text only),
-  // never the raw DOM: skips UI labels like "9 min read" and skips code blocks entirely,
-  // since reading Java syntax (braces/semicolons) aloud sounds robotic, not human.
+    // Prefer a voice whose locale is explicitly Indian English (en-IN)
+    const localeIndianVoices = voices.filter(v => v.lang?.toLowerCase() === 'en-in');
+    const byName = (v: SpeechSynthesisVoice) => v.name.toLowerCase();
+
+    // Known Indian English voice names shipped by Windows/Edge/Chrome/Google TTS
+    const knownFemaleNames = ['heera', 'neerja', 'kalpana', 'lekha', 'veena', 'raveena', 'prataprao'];
+    const knownMaleNames = ['raoji', 'prabhat', 'hemant', 'rishi', 'madhur', 'arjun'];
+
+    const matchesGender = (v: SpeechSynthesisVoice) => {
+      const vn = byName(v);
+      if (knownFemaleNames.some(n => vn.includes(n))) return voiceGender === 'female';
+      if (knownMaleNames.some(n => vn.includes(n))) return voiceGender === 'male';
+      return voiceGender === 'female'
+        ? vn.includes('female') || vn.includes('woman') || vn.includes('girl') || (!vn.includes('male'))
+        : vn.includes('male') || vn.includes('man') || vn.includes('boy');
+    };
+
+    return (
+      localeIndianVoices.find(matchesGender) ||
+      localeIndianVoices[0] ||
+      voices.find(v => {
+        const vn = byName(v);
+        const isIndian = vn.includes('indian') || vn.includes('hindi') || vn.includes('en-in');
+        return isIndian && matchesGender(v);
+      }) ||
+      voices.find(matchesGender)
+    );
+  };
+
+  // Stops the voice AND the pending pause timer, and invalidates the running script so a
+  // late onend callback cannot start the next sentence.
+  const stopSpeaking = () => {
+    speechRunRef.current++;
+    if (speechPauseRef.current) { clearTimeout(speechPauseRef.current); speechPauseRef.current = null; }
+    if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+    setIsSpeaking(false);
+  };
+
+  // Robo Guru speaks the topic one sentence at a time with natural pauses (see
+  // lib/speechScript.ts), instead of one long utterance read in a single breath.
   const toggleSpeech = () => {
-    if (isSpeaking) {
-      window.speechSynthesis.cancel();
-      setIsSpeaking(false);
-      return;
-    }
-    if (!selectedTopic) return;
+    if (isSpeaking) { stopSpeaking(); return; }
+    if (!selectedTopic || !('speechSynthesis' in window)) return;
 
     // Levels were merged, so Robo Guru reads the entire topic in order.
     const contentBlocks = [
@@ -241,61 +302,44 @@ export default function CourseWorkspace() {
       ...(selectedTopic.intermediate || []),
       ...(selectedTopic.expert || []),
     ];
+    const script = buildSpeechScript(selectedTopic.name, contentBlocks.map(b => humanizeListNumbers(b.content || '')));
+    if (script.length <= 2) return;
 
-    const spokenText = [
-      selectedTopic.name + '.',
-      ...contentBlocks.map(block => stripHtml(block.content || '')),
-    ].filter(Boolean).join(' ');
+    const run = ++speechRunRef.current;
+    const voice = pickVoice();
+    let index = 0;
 
-    if (!spokenText.trim()) return;
+    const speakNext = () => {
+      if (run !== speechRunRef.current) return;           // stopped or replaced
+      if (index >= script.length) { setIsSpeaking(false); return; }
 
-    if ('speechSynthesis' in window) {
-        const utterance = new SpeechSynthesisUtterance(spokenText);
-        utterance.lang = 'en-IN';
-        utterance.rate = 0.92;
-        utterance.pitch = 1.05;
-        utterance.volume = 1;
-        const voices = window.speechSynthesis.getVoices();
+      const seg = script[index];
+      const { rate, pitch } = prosody(seg, index);
+      index++;
 
-        // Prefer a voice whose locale is explicitly Indian English (en-IN)
-        const localeIndianVoices = voices.filter(v => v.lang?.toLowerCase() === 'en-in');
-        const byName = (v: SpeechSynthesisVoice) => v.name.toLowerCase();
+      const utterance = new SpeechSynthesisUtterance(seg.text);
+      utterance.lang = 'en-IN';
+      utterance.rate = rate;
+      utterance.pitch = pitch;
+      utterance.volume = 1;
+      if (voice) { utterance.voice = voice; utterance.lang = voice.lang || 'en-IN'; }
 
-        // Known Indian English voice names shipped by Windows/Edge/Chrome/Google TTS
-        const knownFemaleNames = ['heera', 'neerja', 'kalpana', 'lekha', 'veena', 'raveena', 'priya'];
-        const knownMaleNames = ['ravi', 'prabhat', 'hemant', 'rishi', 'madhur', 'arjun'];
+      const afterPause = () => {
+        if (run !== speechRunRef.current) return;
+        speechPauseRef.current = window.setTimeout(speakNext, seg.pause);
+      };
+      utterance.onend = afterPause;
+      utterance.onerror = (e) => {
+        // cancel() raises 'canceled'/'interrupted'; anything else, skip to the next sentence.
+        if (e.error === 'canceled' || e.error === 'interrupted') return;
+        afterPause();
+      };
+      speechSynthesisRef.current = utterance;
+      window.speechSynthesis.speak(utterance);
+    };
 
-        const matchesGender = (v: SpeechSynthesisVoice) => {
-          const vn = byName(v);
-          if (knownFemaleNames.some(n => vn.includes(n))) return voiceGender === 'female';
-          if (knownMaleNames.some(n => vn.includes(n))) return voiceGender === 'male';
-          return voiceGender === 'female'
-            ? vn.includes('female') || vn.includes('woman') || vn.includes('girl') || (!vn.includes('male'))
-            : vn.includes('male') || vn.includes('man') || vn.includes('boy');
-        };
-
-        const indianVoice =
-          localeIndianVoices.find(matchesGender) ||
-          localeIndianVoices[0] ||
-          voices.find(v => {
-            const vn = byName(v);
-            const isIndian = vn.includes('indian') || vn.includes('hindi') || vn.includes('en-in');
-            return isIndian && matchesGender(v);
-          });
-
-        if (indianVoice) {
-          utterance.voice = indianVoice;
-          utterance.lang = indianVoice.lang || 'en-IN';
-        } else {
-          const genderVoice = voices.find(matchesGender);
-          if (genderVoice) utterance.voice = genderVoice;
-        }
-        utterance.onend = () => setIsSpeaking(false);
-        utterance.onerror = () => setIsSpeaking(false);
-        speechSynthesisRef.current = utterance;
-        window.speechSynthesis.speak(utterance);
-        setIsSpeaking(true);
-    }
+    setIsSpeaking(true);
+    speakNext();
   };
 
   useEffect(() => {
@@ -306,20 +350,28 @@ export default function CourseWorkspace() {
   }, []);
 
   useEffect(() => {
-    if (isSpeaking) { window.speechSynthesis.cancel(); setIsSpeaking(false); }
+    if (isSpeaking) stopSpeaking();
   }, [selectedTopicId]);
 
-  useEffect(() => { return () => { window.speechSynthesis.cancel(); }; }, []);
+  useEffect(() => { return () => { speechRunRef.current++; window.speechSynthesis.cancel(); }; }, []);
 
-  // Keyboard shortcut: "/" focuses the search box (unless already typing somewhere)
+  // Global keyboard shortcuts (see lib/shortcuts.ts). The handler reads the latest
+  // closures through a ref so the listener is attached once.
+  const shortcutRef = useRef<(a: ShortcutAction) => void>(() => {});
+  const pendingGRef = useRef<number | null>(null);
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key !== '/') return;
-      const target = e.target as HTMLElement;
-      const isTyping = target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable;
-      if (isTyping) return;
+      const modalOpen = !!document.querySelector('[aria-modal="true"]');
+      const res = resolveShortcut(e, {
+        pendingG: pendingGRef.current !== null,
+        typing: isTypingTarget(e.target as HTMLElement),
+        modalOpen,
+      });
+      if (pendingGRef.current !== null) { window.clearTimeout(pendingGRef.current); pendingGRef.current = null; }
+      if (res.pendingG) pendingGRef.current = window.setTimeout(() => { pendingGRef.current = null; }, 1200);
+      if (res.action === 'none') return;
       e.preventDefault();
-      document.getElementById('global-search-input')?.focus();
+      shortcutRef.current(res.action);
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
@@ -328,6 +380,13 @@ export default function CourseWorkspace() {
   const handleCourseSelect = (cId: string) => {
     setSelectedCourseId(cId);
     setSelectedSubTopicId(null);
+    setSelectedTopicId(null);
+    navigate(`/course/${slugify(cId)}`);
+  };
+
+  const handleModuleSelect = (cId: string, moduleId: string) => {
+    setSelectedCourseId(cId);
+    setSelectedSubTopicId(moduleId);
     setSelectedTopicId(null);
     navigate(`/course/${slugify(cId)}`);
   };
@@ -363,7 +422,7 @@ export default function CourseWorkspace() {
   const handleTopicSelect = (topicId: string) => {
     let parentCourseId: string | null = null;
     let parentSubTopicId: string | null = null;
-    for (const course of coursesData) {
+    for (const course of skeletonCourses) {
       for (const subTopic of course.subTopics) {
         if (subTopic.topics.some(topic => topic.id === topicId)) {
           parentCourseId = course.id;
@@ -383,6 +442,7 @@ export default function CourseWorkspace() {
     }
     if (parentCourseId && parentSubTopicId) {
       markVisited(parentCourseId, parentSubTopicId, topicId);
+      pushRecent(topicId);
     }
     setTimeout(() => {
       if (topRef.current) topRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -398,15 +458,48 @@ export default function CourseWorkspace() {
 
   const handleSearch = (query: string) => setSearchQuery(query);
 
+  shortcutRef.current = (action) => {
+    switch (action) {
+      case 'palette': setHelpOpen(false); setPaletteOpen(o => !o); break;
+      case 'help': setHelpOpen(true); break;
+      case 'dashboard': navigate('/dashboard'); break;
+      case 'theme': toggleTheme(); break;
+      case 'prev': if (selectedTopic) handlePrevTopic(); break;
+      case 'next': if (selectedTopic) handleNextTopic(); break;
+      case 'sidebar':
+        if (!selectedCourseId) break;
+        if (isDesktop) setLeftSidebarMinimized(v => !v);
+        else setMobileDrawer(d => (d === 'contents' ? null : 'contents'));
+        break;
+    }
+  };
+
+  const paletteActions: PaletteAction[] = [
+    { id: 'dashboard', label: 'Dashboard', hint: 'Go to your dashboard', run: () => navigate('/dashboard') },
+    { id: 'flashcards', label: 'Flashcards', hint: 'Practice with flashcards', run: () => navigate('/flashcards') },
+    { id: 'interview', label: 'Mock interview', hint: 'Interview practice', run: () => navigate('/interview-practice') },
+    { id: 'theme', label: 'Toggle theme', hint: 'Switch light / dark', run: () => toggleTheme() },
+  ];
+
+  // First visit to a course page: start the tour once the course has rendered.
+  const courseReady = !!selectedCourseId && catalog.isLoaded(selectedCourseId);
+  useEffect(() => {
+    if (!courseReady || isTourDone()) return;
+    const t = window.setTimeout(() => {
+      if (!document.querySelector('[aria-modal="true"]')) setTourRun(true);
+    }, 1500);
+    return () => window.clearTimeout(t);
+  }, [courseReady]);
+
   const filteredCourses = searchQuery
-    ? coursesData.filter(course =>
+    ? skeletonCourses.filter(course =>
         course.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         course.subTopics.some(subTopic =>
           subTopic.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
           subTopic.topics.some(topic => topic.name.toLowerCase().includes(searchQuery.toLowerCase()))
         )
       )
-    : coursesData;
+    : skeletonCourses;
 
   const showDashboard = !selectedCourseId;
 
@@ -447,6 +540,7 @@ export default function CourseWorkspace() {
         showSearch={false}
         voiceGender={voiceGender}
         onVoiceChange={setVoiceGender}
+        onOpenSearch={() => setPaletteOpen(true)}
       />
 
       {!showDashboard && (
@@ -518,7 +612,7 @@ export default function CourseWorkspace() {
       )}
 
       <div className="flex flex-1 overflow-hidden">
-        {!showDashboard && isDesktop && sidebarEl}
+        {!showDashboard && isDesktop && !focusMode && sidebarEl}
 
         {/* The skip link targets this. min-w-0 stops a wide code block or table from
             forcing the whole flex row wider than the viewport. */}
@@ -528,11 +622,17 @@ export default function CourseWorkspace() {
         ) : searchQuery.trim().length >= 2 ? (
           // A real query searches every lesson body, not just titles. Picking a result
           // clears the query so the reader lands on the topic rather than back in results.
-          <SearchResults
-            courses={coursesData}
-            query={searchQuery}
-            onSelectTopic={(topicId) => { setSearchQuery(''); handleTopicSelect(topicId); }}
-          />
+          catalog.allLoaded ? (
+            <SearchResults
+              courses={catalog.courses}
+              query={searchQuery}
+              onSelectTopic={(topicId) => { setSearchQuery(''); handleTopicSelect(topicId); }}
+            />
+          ) : (
+            <LoadingPane label="Preparing search across all courses…" error={catalog.error} onRetry={catalog.retry} />
+          )
+        ) : selectedCourseId && !catalog.isLoaded(selectedCourseId) ? (
+          <LoadingPane label="Loading course…" error={catalog.error} onRetry={catalog.retry} />
         ) : (
           <ContentArea
             course={selectedCourse}
@@ -550,11 +650,13 @@ export default function CourseWorkspace() {
             onToggleSpeech={toggleSpeech}
             voiceGender={voiceGender}
             onVoiceChange={setVoiceGender}
+            focusMode={focusMode}
+            onToggleFocus={() => setFocusMode(f => !f)}
           />
         )}
         </main>
 
-        {!showDashboard && isDesktop && rightSidebarEl}
+        {!showDashboard && isDesktop && !focusMode && rightSidebarEl}
       </div>
 
       {/* Mobile drawers. Rendered only when open so the panes do not run their
@@ -594,6 +696,21 @@ export default function CourseWorkspace() {
       {/* Sits above the layout but below the mobile drawers (z-50), so opening the
           contents drawer never leaves an ad floating over it. */}
       <CornerAd />
+
+      <CommandPalette
+        open={paletteOpen}
+        onClose={() => setPaletteOpen(false)}
+        actions={paletteActions}
+        onSelectCourse={handleCourseSelect}
+        onSelectModule={handleModuleSelect}
+        onSelectTopic={(id) => { setSearchQuery(''); handleTopicSelect(id); }}
+      />
+      <ShortcutsSheet
+        open={helpOpen}
+        onClose={() => setHelpOpen(false)}
+        onReplayTour={() => setTourRun(true)}
+      />
+      <OnboardingTour run={tourRun} onDone={() => setTourRun(false)} />
     </div>
   );
 }

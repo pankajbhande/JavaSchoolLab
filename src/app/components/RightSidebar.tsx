@@ -1,9 +1,11 @@
-import { useState, useMemo, useEffect } from 'react';
-import { PanelRightClose, PanelRight, CheckCircle, Users, Globe, Award, TrendingUp, BookOpen, Sparkles, Lightbulb } from 'lucide-react';
-import { Course, Topic } from '../data/coursesData';
+import { useState, useMemo, useEffect, useRef } from 'react';
+import { PanelRightClose, PanelRight, CheckCircle, Users, Globe, Award, TrendingUp, BookOpen, Sparkles, Lightbulb, XCircle, Inbox } from 'lucide-react';
+import type { Course, Topic } from '../data/types';
 import { buildKeypoints } from '../services/keypoints';
-import { registerVisit } from '../services/api';
-import { motion, AnimatePresence } from 'motion/react';
+import { questionsForTopic } from '../lib/topicQuestions';
+import { getStudyPack } from '../data/studyPacks';
+import { useVisitorCount } from '../hooks/useVisitorCount';
+import { motion, AnimatePresence, useReducedMotion } from 'motion/react';
 import { AdSlot } from './ads/AdSlot';
 import { AD_SLOTS } from './ads/adsense';
 
@@ -162,19 +164,23 @@ function generateMCQs(questions: string[], topicName: string): MCQQuestion[] {
   return mcqs.map(withShuffledOptions);
 }
 
-// Animates a number counting up from 0 to `value` whenever `value` changes
+// Counts up to `value`: from 0 the first time, and from the number already on screen after that,
+// so a live refresh of the visitor total ticks up by a few instead of flashing back to 0.
 function useCountUp(value: number, duration = 1200) {
   const [display, setDisplay] = useState(0);
+  const shown = useRef(0);
+  shown.current = display;
 
   useEffect(() => {
     if (value <= 0) { setDisplay(0); return; }
+    const from = shown.current > 0 && shown.current <= value ? shown.current : 0;
     let start: number | null = null;
     let frame: number;
     const step = (timestamp: number) => {
       if (start === null) start = timestamp;
       const progress = Math.min((timestamp - start) / duration, 1);
       const eased = 1 - Math.pow(1 - progress, 3); // ease-out cubic
-      setDisplay(Math.round(eased * value));
+      setDisplay(Math.round(from + eased * (value - from)));
       if (progress < 1) frame = requestAnimationFrame(step);
     };
     frame = requestAnimationFrame(step);
@@ -184,23 +190,12 @@ function useCountUp(value: number, duration = 1200) {
   return display;
 }
 
-// Visitor counter that refreshes from the server on each website visit.
-function useVisitorCount() {
-  const [count, setCount] = useState(0);
-
-  useEffect(() => {
-    registerVisit()
-      .then(({ count: nextCount }) => setCount(nextCount))
-      .catch(() => setCount(0));
-  }, []);
-
-  return count;
-}
-
 export function RightSidebar({ course, topic, topicName, isMinimized, onToggleMinimize }: RightSidebarProps) {
   const [activeTab, setActiveTab] = useState<'cheatsheet' | 'interview' | 'keypoints'>('keypoints');
   const [revealedAnswers, setRevealedAnswers] = useState<Set<number>>(new Set());
-  const visitorCount = useVisitorCount();
+  const reduceMotion = useReducedMotion();
+  const [picked, setPicked] = useState<Record<number, number>>({});
+  const { count: visitorCount } = useVisitorCount();
   const animatedVisitorCount = useCountUp(visitorCount);
 
   const toggleReveal = (index: number) => {
@@ -213,77 +208,49 @@ export function RightSidebar({ course, topic, topicName, isMinimized, onToggleMi
     setRevealedAnswers(newRevealed);
   };
 
-  // Every interview question for this topic, across all companies.
+  // Hand-written study material for this topic (keypoints, interview Q&A, MCQs), if any.
+  const pack = useMemo(() => getStudyPack(course?.id, topic?.id), [course?.id, topic?.id]);
+
+  // Authored questions come first (they have model answers), then any other question the
+  // course data holds for this topic.
+  const noteQA = topic?.interviewQA;
+  const answerByQuestion = useMemo(() => new Map([...(noteQA ?? []), ...(pack?.interview ?? [])].filter(([, a]) => a)), [pack, noteQA]);
   const topicQuestions = useMemo(() => {
-    if (!course) return [];
-    let allQuestions: string[] = [];
+    const authored = [...(pack?.interview ?? []), ...(noteQA ?? [])].map(([q]) => q).filter((q, i, all) => all.indexOf(q) === i);
+    const seen = new Set(authored.map(q => q.toLowerCase()));
+    const derived = questionsForTopic(course, topicName).filter(q => !seen.has(q.toLowerCase()));
+    return [...authored, ...derived];
+  }, [pack, noteQA, course, topicName]);
+  const [revealedInterview, setRevealedInterview] = useState<Set<string>>(new Set());
 
-    if (!topicName) {
-      return [];
-    } else {
-      const topicLower = topicName.toLowerCase();
-      const commonWords = new Set(['in', 'of', 'and', 'the', 'a', 'an', 'to', 'is', 'for', 'with', 'between', 'difference', 'java', 'what', 'how', 'why']);
-      const topicKeywords = topicLower.split(/[\s,\-&]+/).filter(w => w.length > 1 && !commonWords.has(w));
-
-      // Try to find a matching interview question section by company name
-      let bestMatch: typeof course.interviewQuestions[0] | null = null;
-      let bestScore = 0;
-
-      course.interviewQuestions.forEach(item => {
-        const companyLower = item.company.toLowerCase();
-        const matchCount = topicKeywords.filter(kw => companyLower.includes(kw)).length;
-        if (matchCount > bestScore && matchCount >= Math.min(topicKeywords.length, 2)) {
-          bestScore = matchCount;
-          bestMatch = item;
-        }
-      });
-
-      if (bestMatch) {
-        (bestMatch as typeof course.interviewQuestions[0]).questions.forEach(q => allQuestions.push(q));
-      } else {
-        // Fallback: keyword match
-        course.interviewQuestions.forEach(item => {
-          item.questions.forEach(q => {
-            const qLower = q.toLowerCase();
-            if (qLower.includes(topicLower) || topicKeywords.some(kw => qLower.includes(kw))) {
-              allQuestions.push(q);
-            }
-          });
-        });
-
-        // Previously this dumped EVERY question in the course when the topic matched
-        // nothing, which is how unrelated questions reached the Interview and MCQ tabs.
-        // An empty panel is better than a misleading one.
-      }
-    }
-
-    // Levels were merged. The old split showed the first 10 questions under Basic and
-    // only the remainder under Expert, so neither view ever listed them all - a topic
-    // with 12 questions showed 10 or 2, never 12. Now every question is returned.
-    return allQuestions;
-  }, [course, topicName]);
-
-  // Generate MCQs from the questions
+  // Real MCQs when the topic has them; otherwise the generic ones built from the questions.
   const mcqQuestions = useMemo(() => {
+    if (pack?.mcq?.length) {
+      return pack.mcq.map(([question, options, reason]) =>
+        withShuffledOptions({ question, options: [...options], correctIndex: 0, reason }));
+    }
     if (!course || topicQuestions.length === 0) return [];
     return generateMCQs(topicQuestions, topicName || course.name);
-  }, [topicQuestions, topicName, course]);
+  }, [pack, topicQuestions, topicName, course]);
 
   // Keypoints filtered down to just the ones relevant to the current topic
   // Scoped to the topic on screen. The previous implementation matched keywords against
   // the COURSE-wide cheat notes and, when nothing matched, returned the entire list - so
   // "Features of Java" showed sealed class, permits, record and HttpClient. There is now
   // deliberately no whole-course fallback.
-  const topicKeypoints = useMemo(
-    () => buildKeypoints(topic, course?.cheatNotes ?? [], course?.name, course?.subTopics.flatMap(st => st.topics.map(t => t.name)) ?? []),
-    [topic, course],
-  );
+  const topicKeypoints = useMemo(() => {
+    const derived = buildKeypoints(topic, course?.cheatNotes ?? [], course?.name, course?.subTopics.flatMap(st => st.topics.map(t => t.name)) ?? []);
+    const authored = (pack?.keypoints ?? []).map(([term, detail]) => ({ term, detail }));
+    const seen = new Set(authored.map(k => k.term.toLowerCase()));
+    return [...authored, ...derived.filter(k => !seen.has(k.term.toLowerCase()))];
+  }, [topic, course, pack]);
 
   const toggleButton = (
     <motion.button
-      whileHover={{ scale: 1.1 }}
-      whileTap={{ scale: 0.9 }}
+      whileHover={reduceMotion ? undefined : { scale: 1.1 }}
+      whileTap={reduceMotion ? undefined : { scale: 0.9 }}
       onClick={onToggleMinimize}
+      aria-expanded={!isMinimized}
       className="shrink-0 grid place-items-center w-8 h-8 rounded-lg bg-indigo-600 text-white shadow-md shadow-indigo-500/30 hover:bg-indigo-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400"
       title={isMinimized ? 'Expand sidebar' : 'Minimize sidebar'}
       aria-label={isMinimized ? 'Expand sidebar' : 'Minimize sidebar'}
@@ -297,7 +264,7 @@ export function RightSidebar({ course, topic, topicName, isMinimized, onToggleMi
       aria-label="Notes and interview questions"
       initial={false}
       animate={{ width: isMinimized ? 60 : 304 }}
-      transition={{ duration: 0.3 }}
+      transition={{ duration: reduceMotion ? 0 : 0.3 }}
       className="relative bg-gradient-to-br from-orange-100/90 via-amber-50 to-orange-50 dark:from-gray-900 dark:via-orange-950/25 dark:to-gray-900 border-l border-orange-200/70 dark:border-orange-900/40 overflow-hidden h-[calc(100vh-80px)] flex flex-col"
     >
       {/* Decorative premium glow accents — purely visual, sits behind all content */}
@@ -434,213 +401,289 @@ export function RightSidebar({ course, topic, topicName, isMinimized, onToggleMi
 
               {/* Tabs - only shown when topic is selected */}
               {topicQuestions.length > 0 && (
-              <div className="flex items-center gap-1 mb-2.5">
+              <div className="flex items-center gap-1.5 mb-3">
                 {toggleButton}
-                <button
-                  onClick={() => setActiveTab('keypoints')}
-                  className={`flex-none flex items-center justify-center gap-1 px-3 py-1.5 rounded-lg whitespace-nowrap transition-all ${
-                    activeTab === 'keypoints'
-                      ? 'bg-orange-500 text-white shadow-md'
-                      : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
-                  }`}
-                >
-                  <Lightbulb className="w-3 h-3" />
-                  <span className="text-xs font-medium">Keypoints</span>
-                </button>
-                <button
-                  onClick={() => setActiveTab('cheatsheet')}
-                  className={`flex-none flex items-center justify-center px-3 py-1.5 rounded-lg whitespace-nowrap transition-all ${
-                    activeTab === 'cheatsheet'
-                      ? 'bg-orange-500 text-white shadow-md'
-                      : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
-                  }`}
-                >
-                  <span className="text-xs font-medium">Interview Qs</span>
-                </button>
-                <button
-                  onClick={() => { setActiveTab('interview'); setRevealedAnswers(new Set()); }}
-                  className={`flex-none flex items-center justify-center px-3 py-1.5 rounded-lg whitespace-nowrap transition-all ${
-                    activeTab === 'interview'
-                      ? 'bg-orange-500 text-white shadow-md'
-                      : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
-                  }`}
-                >
-                  <span className="text-xs font-medium">MCQ</span>
-                </button>
+                <div role="tablist" aria-label="Study panel sections" className="grid flex-1 min-w-0 grid-cols-3 gap-1 p-1 rounded-xl bg-white/70 dark:bg-gray-800/70 border border-orange-200/70 dark:border-white/10">
+                  {([
+                    { id: 'keypoints', label: 'Keypoints', icon: Lightbulb },
+                    { id: 'cheatsheet', label: 'Interview Qs', icon: BookOpen },
+                    { id: 'interview', label: 'MCQ', icon: CheckCircle },
+                  ] as const).map(({ id, label, icon: Icon }) => {
+                    const active = activeTab === id;
+                    return (
+                      <button
+                        key={id}
+                        type="button"
+                        role="tab"
+                        id={`study-tab-${id}`}
+                        aria-selected={active}
+                        aria-controls="study-tabpanel"
+                        tabIndex={active ? 0 : -1}
+                        onClick={() => { setActiveTab(id); if (id === 'interview') setRevealedAnswers(new Set()); }}
+                        onKeyDown={(e) => {
+                          const order = ['keypoints', 'cheatsheet', 'interview'] as const;
+                          const i = order.indexOf(activeTab);
+                          if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+                            e.preventDefault();
+                            const n = order[(i + (e.key === 'ArrowRight' ? 1 : order.length - 1)) % order.length];
+                            setActiveTab(n);
+                            document.getElementById(`study-tab-${n}`)?.focus();
+                          }
+                        }}
+                        className={`flex flex-col items-center justify-center gap-0.5 px-1 py-1.5 rounded-lg whitespace-nowrap text-[11px] leading-tight font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-600 dark:focus-visible:ring-orange-300 ${
+                          active
+                            ? 'bg-orange-600 text-white shadow-md'
+                            : 'text-gray-700 dark:text-gray-200 hover:bg-orange-100 dark:hover:bg-gray-700'
+                        }`}
+                      >
+                        <Icon className="w-3.5 h-3.5" aria-hidden="true" />
+                        {label}
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
               )}
 
+              <div id="study-tabpanel" role="tabpanel" aria-labelledby={`study-tab-${activeTab}`}>
               {/* Keypoints / Notes Tab */}
               {activeTab === 'keypoints' && course && (
                 <motion.div
-                  initial={{ opacity: 0, y: 10 }}
+                  initial={reduceMotion ? false : { opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                 >
-                  <div className="mb-2.5">
+                  <div className="mb-3">
                     <div className="flex items-center gap-1.5 mb-1 px-1">
-                      <Sparkles className="w-3.5 h-3.5 text-orange-500" />
-                      <p className="text-[10px] font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">Quick Revision Notes</p>
+                      <Sparkles className="w-3.5 h-3.5 text-orange-600 dark:text-orange-400" aria-hidden="true" />
+                      <p className="text-[11px] font-bold uppercase tracking-wider text-gray-600 dark:text-gray-300">Quick Revision Notes</p>
                     </div>
-                    <div className="border-l-4 border-orange-500 pl-3 py-1.5 bg-white/60 dark:bg-gray-800/60 rounded-r-lg">
-                      <h3 className="font-display font-bold text-base text-gray-800 dark:text-gray-200">{topicName || course.name}</h3>
-                      <p className="text-[11px] text-gray-500 dark:text-gray-400">{topicKeypoints.length} keypoints</p>
+                    <div className="border-l-4 border-orange-500 pl-3 py-1.5 bg-white/70 dark:bg-gray-800/60 rounded-r-lg">
+                      <h3 className="font-display font-bold text-base text-gray-900 dark:text-gray-100">{topicName || course.name}</h3>
+                      <p className="text-xs text-gray-600 dark:text-gray-400">{topicKeypoints.length} keypoints</p>
                     </div>
                   </div>
 
-                  <div className="space-y-2.5 pb-16">
+                  <ul className="space-y-2.5 pb-16 list-none p-0 m-0">
                     {topicKeypoints.length > 0 ? (
                       topicKeypoints.map((note, index) => {
                         const { term, detail: explanation } = note;
                         return (
-                          <motion.div
+                          <motion.li
                             key={index}
-                            initial={{ opacity: 0, x: 10 }}
+                            initial={reduceMotion ? false : { opacity: 0, x: 10 }}
                             animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: Math.min(index, 20) * 0.02 }}
-                            className="group relative overflow-hidden bg-white dark:bg-gray-800/70 rounded-xl p-3 pl-4 border border-amber-200/80 dark:border-white/10 shadow-sm flex gap-2.5 transition-all hover:-translate-y-0.5 hover:border-emerald-400 hover:shadow-md dark:hover:shadow-[0_0_16px_rgba(16,185,129,0.25)]"
+                            transition={{ delay: reduceMotion ? 0 : Math.min(index, 20) * 0.02 }}
+                            className="relative overflow-hidden bg-white dark:bg-gray-800/70 rounded-xl p-3 pl-4 border border-amber-200/80 dark:border-white/10 shadow-sm"
                           >
-                            <span className="absolute left-0 top-0 bottom-0 w-[3px] bg-gradient-to-b from-emerald-400 to-cyan-500" />
-                            <CheckCircle className="w-4 h-4 text-emerald-500 dark:text-emerald-400 shrink-0 mt-0.5" />
-                            <p className="text-xs text-gray-600 dark:text-gray-300 leading-relaxed">
-                              <span className="font-semibold text-gray-900 dark:text-white">{term}</span>
-                              {explanation && <span className="text-gray-500 dark:text-gray-400"> - {explanation}</span>}
-                            </p>
-                          </motion.div>
+                            <span className="absolute left-0 top-0 bottom-0 w-[3px] bg-gradient-to-b from-emerald-400 to-cyan-500" aria-hidden="true" />
+                            <span className="inline-block px-2 py-0.5 rounded-md bg-emerald-50 dark:bg-emerald-500/15 border border-emerald-300 dark:border-emerald-400/30 text-[13px] font-bold text-emerald-900 dark:text-emerald-200 leading-snug">{term}</span>
+                            {explanation && <p className="mt-1.5 text-[13px] text-gray-700 dark:text-gray-300 leading-relaxed">{explanation}</p>}
+                          </motion.li>
                         );
                       })
                     ) : (
-                      <p className="text-sm text-gray-400 text-center py-4">
+                      <li className="flex flex-col items-center gap-1.5 text-sm text-gray-600 dark:text-gray-400 text-center py-8">
+                        <Inbox className="w-6 h-6" aria-hidden="true" />
                         No keypoints for this topic yet
-                      </p>
+                      </li>
                     )}
-                  </div>
+                  </ul>
                 </motion.div>
               )}
 
               {/* Interview Questions Tab */}
               {activeTab === 'cheatsheet' && course && (
                 <motion.div
-                  initial={{ opacity: 0, y: 10 }}
+                  initial={reduceMotion ? false : { opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                 >
                   {topicName && (
-                    <div className="mb-4">
+                    <div className="mb-3">
                       <div className="flex items-center gap-1.5 mb-1.5 px-1">
-                        <Lightbulb className="w-3.5 h-3.5 text-orange-500" />
-                        <p className="text-[10px] font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                        <Lightbulb className="w-3.5 h-3.5 text-orange-600 dark:text-orange-400" aria-hidden="true" />
+                        <p className="text-[11px] font-bold uppercase tracking-wider text-gray-600 dark:text-gray-300">
                           Interview Questions
                         </p>
                       </div>
-                      <div className="border-l-4 border-orange-500 pl-3 py-1.5 bg-white/60 dark:bg-gray-800/60 rounded-r-lg">
-                        <h3 className="font-display font-bold text-base text-gray-800 dark:text-gray-200">{topicName}</h3>
-                        <p className="text-[11px] text-gray-400">{topicQuestions.length} questions</p>
+                      <div className="border-l-4 border-orange-500 pl-3 py-1.5 bg-white/70 dark:bg-gray-800/60 rounded-r-lg">
+                        <h3 className="font-display font-bold text-base text-gray-900 dark:text-gray-100">{topicName}</h3>
+                        <p className="text-xs text-gray-600 dark:text-gray-400">{topicQuestions.length} questions</p>
                       </div>
                     </div>
                   )}
 
-                  <div className="space-y-2.5 pb-16">
-                    {topicQuestions.map((question, index) => (
-                      <div
+                  <ol className="space-y-3 pb-16 list-none p-0 m-0">
+                    {topicQuestions.map((question, index) => {
+                      const open = revealedInterview.has(question);
+                      const hasAnswer = answerByQuestion.has(question);
+                      return (
+                      <li
                         key={index}
-                        className="group relative overflow-hidden bg-white dark:bg-gray-800/70 rounded-xl p-3 pl-4 border border-amber-200/80 dark:border-white/10 shadow-sm flex gap-2.5 transition-all hover:-translate-y-0.5 hover:border-orange-400 hover:shadow-md dark:hover:shadow-[0_0_16px_rgba(249,115,22,0.25)]"
+                        className="relative overflow-hidden bg-white dark:bg-gray-800/70 rounded-xl p-3 pl-4 border border-amber-200/80 dark:border-white/10 shadow-sm flex gap-2.5"
                       >
-                        <span className="absolute left-0 top-0 bottom-0 w-[3px] bg-gradient-to-b from-orange-400 to-amber-500" />
-                        <span className="shrink-0 w-6 h-6 rounded-md bg-orange-50 dark:bg-black/60 border border-orange-300 dark:border-orange-400/40 text-orange-600 dark:text-orange-300 font-mono text-[11px] font-bold flex items-center justify-center">
+                        <span className="absolute left-0 top-0 bottom-0 w-[3px] bg-gradient-to-b from-orange-400 to-amber-500" aria-hidden="true" />
+                        <span className="shrink-0 w-7 h-7 rounded-md bg-orange-50 dark:bg-black/60 border border-orange-300 dark:border-orange-400/40 text-orange-700 dark:text-orange-300 font-mono text-xs font-bold flex items-center justify-center" aria-hidden="true">
                           {String(index + 1).padStart(2, '0')}
                         </span>
-                        <p className="text-xs text-gray-700 dark:text-gray-300 leading-relaxed pt-0.5">{question}</p>
-                      </div>
-                    ))}
+                        <div className="min-w-0 flex-1">
+                          <p className="text-[13px] font-medium text-gray-900 dark:text-gray-100 leading-relaxed pt-0.5">{question}</p>
+                          {hasAnswer && (
+                            <>
+                              <button
+                                type="button"
+                                onClick={() => setRevealedInterview(prev => {
+                                  const next = new Set(prev);
+                                  if (next.has(question)) next.delete(question); else next.add(question);
+                                  return next;
+                                })}
+                                aria-expanded={open}
+                                aria-controls={`qa-answer-${index}`}
+                                className="mt-2 text-xs font-semibold px-2.5 py-1 rounded-md bg-orange-50 dark:bg-orange-500/15 text-orange-800 dark:text-orange-200 border border-orange-300 dark:border-orange-400/40 hover:bg-orange-100 dark:hover:bg-orange-500/25 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-600 dark:focus-visible:ring-orange-300"
+                              >
+                                {open ? 'Hide answer' : 'Show answer'}
+                              </button>
+                              {open && (
+                                <div id={`qa-answer-${index}`} className="mt-2 px-2.5 py-2 rounded-lg bg-cyan-50 dark:bg-cyan-500/10 border border-cyan-300 dark:border-cyan-400/30 text-[13px] leading-relaxed text-cyan-950 dark:text-cyan-100">
+                                  <span className="block mb-0.5 text-[11px] font-bold uppercase tracking-wide text-cyan-800 dark:text-cyan-300">Answer</span>
+                                  {renderAnswer(answerByQuestion.get(question) ?? '')}
+                                </div>
+                              )}
+                            </>
+                          )}
+                        </div>
+                      </li>
+                      );
+                    })}
 
                     {topicQuestions.length === 0 && (
-                      <p className="text-sm text-gray-400 text-center py-4">
+                      <li className="text-sm text-gray-600 dark:text-gray-400 text-center py-4">
                         Select a topic to view interview questions
-                      </p>
+                      </li>
                     )}
-                  </div>
+                  </ol>
                 </motion.div>
               )}
 
               {/* MCQ Interview Tab */}
               {activeTab === 'interview' && course && (
                 <motion.div
-                  initial={{ opacity: 0, y: 10 }}
+                  initial={reduceMotion ? false : { opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                 >
                   {topicName && (
-                    <div className="mb-4">
+                    <div className="mb-3">
                       <div className="flex items-center gap-1.5 mb-1.5 px-1">
-                        <CheckCircle className="w-3.5 h-3.5 text-orange-500" />
-                        <p className="text-[10px] font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">MCQ Practice</p>
+                        <CheckCircle className="w-3.5 h-3.5 text-orange-600 dark:text-orange-400" aria-hidden="true" />
+                        <p className="text-[11px] font-bold uppercase tracking-wider text-gray-600 dark:text-gray-300">MCQ Practice</p>
                       </div>
-                      <div className="border-l-4 border-orange-500 pl-3 py-1.5 bg-white/60 dark:bg-gray-800/60 rounded-r-lg">
-                        <h3 className="font-display font-bold text-base text-gray-800 dark:text-gray-200">{topicName}</h3>
-                        <p className="text-[11px] text-gray-400">{mcqQuestions.length} questions</p>
+                      <div className="border-l-4 border-orange-500 pl-3 py-1.5 bg-white/70 dark:bg-gray-800/60 rounded-r-lg">
+                        <h3 className="font-display font-bold text-base text-gray-900 dark:text-gray-100">{topicName}</h3>
+                        <p className="text-xs text-gray-600 dark:text-gray-400">{mcqQuestions.length} questions</p>
                       </div>
                     </div>
                   )}
 
+                  {mcqQuestions.length > 0 && (() => {
+                    const answered = Object.keys(picked).filter(k => Number(k) < mcqQuestions.length).length;
+                    const right = mcqQuestions.reduce((n, m, i) => n + (picked[i] === m.correctIndex ? 1 : 0), 0);
+                    return (
+                      <div role="status" aria-live="polite" className="mb-3 flex items-center justify-between gap-2 px-3 py-2 rounded-xl bg-white dark:bg-gray-800/70 border border-amber-200/80 dark:border-white/10 text-xs text-gray-800 dark:text-gray-200">
+                        <span className="font-semibold">Score: {right} / {mcqQuestions.length}</span>
+                        <span className="text-gray-600 dark:text-gray-400">{answered} of {mcqQuestions.length} answered</span>
+                        {answered > 0 && (
+                          <button type="button" onClick={() => { setPicked({}); setRevealedAnswers(new Set()); }} className="font-semibold text-purple-800 dark:text-purple-300 underline underline-offset-2 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-600">
+                            Reset
+                          </button>
+                        )}
+                      </div>
+                    );
+                  })()}
+
                   <div className="space-y-4 pb-16">
-                    {mcqQuestions.map((mcq, index) => (
+                    {mcqQuestions.map((mcq, index) => {
+                      const choice = picked[index];
+                      const hasChoice = choice !== undefined;
+                      const isRevealed = revealedAnswers.has(index) || hasChoice;
+                      const gotIt = hasChoice && choice === mcq.correctIndex;
+                      return (
                       <div
                         key={index}
-                        className="relative overflow-hidden bg-white dark:bg-gray-800/70 rounded-xl p-3 border border-amber-200/80 dark:border-white/10 shadow-sm hover:border-purple-400 transition-all"
+                        role="group"
+                        aria-labelledby={`mcq-q-${index}`}
+                        className="relative overflow-hidden bg-white dark:bg-gray-800/70 rounded-xl p-3 border border-amber-200/80 dark:border-white/10 shadow-sm"
                       >
-                        <span className="absolute left-0 top-0 bottom-0 w-[3px] bg-gradient-to-b from-purple-400 to-fuchsia-500" />
-                        <p className="text-xs font-semibold text-gray-900 dark:text-white mb-2 flex gap-1.5 pl-1">
-                          <span className="shrink-0 w-5 h-5 rounded-md bg-purple-50 dark:bg-black/60 border border-purple-300 dark:border-purple-400/40 text-purple-600 dark:text-purple-300 font-mono text-[10px] font-bold flex items-center justify-center">{String(index + 1).padStart(2, '0')}</span>
+                        <span className="absolute left-0 top-0 bottom-0 w-[3px] bg-gradient-to-b from-purple-400 to-fuchsia-500" aria-hidden="true" />
+                        <p id={`mcq-q-${index}`} className="text-[13px] font-semibold text-gray-900 dark:text-white mb-2.5 flex gap-2 pl-1 leading-relaxed">
+                          <span className="shrink-0 w-6 h-6 rounded-md bg-purple-50 dark:bg-black/60 border border-purple-300 dark:border-purple-400/40 text-purple-700 dark:text-purple-300 font-mono text-[11px] font-bold flex items-center justify-center">{String(index + 1).padStart(2, '0')}</span>
                           <span>{mcq.question}</span>
                         </p>
 
                         <div className="space-y-1.5 pl-1">
                           {mcq.options.map((option, oIndex) => {
                             const isCorrect = oIndex === mcq.correctIndex;
-                            const isRevealed = revealedAnswers.has(index);
-
+                            const isChosen = choice === oIndex;
+                            const showRight = isRevealed && isCorrect;
+                            const showWrong = isChosen && !isCorrect;
                             return (
-                              <div
+                              <button
+                                type="button"
                                 key={oIndex}
-                                className={`flex items-start gap-2 px-2 py-1.5 rounded-lg text-xs transition-all ${
-                                  isRevealed && isCorrect
-                                    ? 'bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-400 dark:border-emerald-400/50'
-                                    : 'bg-amber-50/60 dark:bg-white/5 border border-amber-100 dark:border-white/5'
+                                onClick={() => setPicked(prev => (prev[index] === undefined ? { ...prev, [index]: oIndex } : prev))}
+                                disabled={hasChoice}
+                                aria-pressed={isChosen}
+                                className={`w-full text-left flex items-start gap-2 px-2.5 py-2 rounded-lg text-[13px] leading-snug border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-600 dark:focus-visible:ring-purple-300 disabled:cursor-default ${
+                                  showRight
+                                    ? 'bg-emerald-50 dark:bg-emerald-500/10 border-emerald-500 dark:border-emerald-400/60'
+                                    : showWrong
+                                    ? 'bg-red-50 dark:bg-red-500/10 border-red-500 dark:border-red-400/60'
+                                    : 'bg-amber-50/60 dark:bg-white/5 border-amber-200 dark:border-white/10 enabled:hover:border-purple-400 enabled:hover:bg-purple-50 dark:enabled:hover:bg-purple-500/10'
                                 }`}
                               >
-                                <span className={`font-mono font-bold shrink-0 mt-px ${
-                                  isRevealed && isCorrect
-                                    ? 'text-emerald-600 dark:text-emerald-400'
-                                    : 'text-gray-400 dark:text-gray-500'
+                                <span className={`font-mono font-bold shrink-0 ${
+                                  showRight ? 'text-emerald-700 dark:text-emerald-300' : showWrong ? 'text-red-700 dark:text-red-300' : 'text-gray-600 dark:text-gray-400'
                                 }`}>
                                   {String.fromCharCode(65 + oIndex)}.
                                 </span>
-                                <span className={`${
-                                  isRevealed && isCorrect
-                                    ? 'text-emerald-700 dark:text-emerald-300 font-semibold'
-                                    : 'text-gray-600 dark:text-gray-400'
+                                <span className={`flex-1 ${
+                                  showRight ? 'text-emerald-900 dark:text-emerald-200 font-semibold' : showWrong ? 'text-red-900 dark:text-red-200 font-semibold' : 'text-gray-800 dark:text-gray-200'
                                 }`}>
                                   {option}
                                 </span>
-                                {isRevealed && isCorrect && (
-                                  <CheckCircle className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0 mt-px ml-auto" />
+                                {showRight && (
+                                  <span className="shrink-0 flex items-center gap-0.5 text-[11px] font-bold text-emerald-700 dark:text-emerald-300">
+                                    <CheckCircle className="w-4 h-4" aria-hidden="true" />Correct
+                                  </span>
                                 )}
-                              </div>
+                                {showWrong && (
+                                  <span className="shrink-0 flex items-center gap-0.5 text-[11px] font-bold text-red-700 dark:text-red-300">
+                                    <XCircle className="w-4 h-4" aria-hidden="true" />Your pick
+                                  </span>
+                                )}
+                              </button>
                             );
                           })}
                         </div>
 
+                        {hasChoice && (
+                          <p role="status" className={`mt-2 ml-1 flex items-center gap-1 text-xs font-bold ${gotIt ? 'text-emerald-700 dark:text-emerald-300' : 'text-red-700 dark:text-red-300'}`}>
+                            {gotIt ? <CheckCircle className="w-4 h-4" aria-hidden="true" /> : <XCircle className="w-4 h-4" aria-hidden="true" />}
+                            {gotIt ? 'Correct!' : 'Not quite - see the correct answer above.'}
+                          </p>
+                        )}
+
                         <AnimatePresence>
-                          {revealedAnswers.has(index) && (
+                          {isRevealed && (
                             <motion.div
-                              initial={{ opacity: 0, height: 0 }}
+                              initial={reduceMotion ? false : { opacity: 0, height: 0 }}
                               animate={{ opacity: 1, height: 'auto' }}
-                              exit={{ opacity: 0, height: 0 }}
-                              transition={{ duration: 0.25 }}
+                              exit={reduceMotion ? { opacity: 0 } : { opacity: 0, height: 0 }}
+                              transition={{ duration: reduceMotion ? 0 : 0.25 }}
                               className="overflow-hidden"
                             >
-                              <div className="mt-2 ml-1 flex items-start gap-1.5 px-2 py-1.5 rounded-lg bg-cyan-50 dark:bg-cyan-500/10 border border-cyan-300 dark:border-cyan-400/30">
-                                <Lightbulb className="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400 shrink-0 mt-px" />
-                                <span className="text-[11px] text-cyan-900 dark:text-cyan-200">
-                                  <span className="font-semibold text-cyan-700 dark:text-cyan-300">Why: </span>
+                              <div className="mt-2 ml-1 flex items-start gap-1.5 px-2.5 py-2 rounded-lg bg-cyan-50 dark:bg-cyan-500/10 border border-cyan-300 dark:border-cyan-400/30">
+                                <Lightbulb className="w-4 h-4 text-cyan-700 dark:text-cyan-400 shrink-0 mt-px" aria-hidden="true" />
+                                <span className="text-xs leading-relaxed text-cyan-950 dark:text-cyan-100">
+                                  <span className="font-bold text-cyan-800 dark:text-cyan-300">Why: </span>
                                   {mcq.reason}
                                 </span>
                               </div>
@@ -648,27 +691,34 @@ export function RightSidebar({ course, topic, topicName, isMinimized, onToggleMi
                           )}
                         </AnimatePresence>
 
-                        <button
-                          onClick={() => toggleReveal(index)}
-                          className={`mt-2 ml-1 font-mono text-[10px] font-medium px-2 py-1 rounded-md transition-all ${
-                            revealedAnswers.has(index)
-                              ? 'bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-white/10'
-                              : 'bg-purple-50 dark:bg-purple-500/15 text-purple-700 dark:text-purple-300 border border-purple-300 dark:border-purple-400/30 hover:bg-purple-100 dark:hover:bg-purple-500/25'
-                          }`}
-                        >
-                          {revealedAnswers.has(index) ? 'HIDE_ANSWER' : 'SHOW_ANSWER'}
-                        </button>
+                        {!hasChoice && (
+                          <button
+                            type="button"
+                            onClick={() => toggleReveal(index)}
+                            aria-expanded={revealedAnswers.has(index)}
+                            className={`mt-2 ml-1 text-xs font-semibold px-2.5 py-1 rounded-md transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-600 dark:focus-visible:ring-purple-300 ${
+                              revealedAnswers.has(index)
+                                ? 'bg-gray-100 dark:bg-white/10 text-gray-800 dark:text-gray-200 border border-gray-300 dark:border-white/10'
+                                : 'bg-purple-50 dark:bg-purple-500/15 text-purple-800 dark:text-purple-200 border border-purple-300 dark:border-purple-400/40 hover:bg-purple-100 dark:hover:bg-purple-500/25'
+                            }`}
+                          >
+                            {revealedAnswers.has(index) ? 'Hide answer' : 'Show answer'}
+                          </button>
+                        )}
                       </div>
-                    ))}
+                      );
+                    })}
 
                     {mcqQuestions.length === 0 && (
-                      <p className="text-sm text-gray-400 text-center py-4">
+                      <div className="flex flex-col items-center gap-1.5 text-sm text-gray-600 dark:text-gray-400 text-center py-8">
+                        <Inbox className="w-6 h-6" aria-hidden="true" />
                         No MCQ practice for this topic yet
-                      </p>
+                      </div>
                     )}
                   </div>
                 </motion.div>
               )}
+              </div>
 
               {!course && (
                 <p className="text-gray-500 dark:text-gray-400 text-center text-sm">
@@ -686,5 +736,14 @@ export function RightSidebar({ course, topic, topicName, isMinimized, onToggleMi
         )}
       </div>
     </motion.aside>
+  );
+}
+
+// Renders an answer, turning `backticked` terms into highlighted code chips.
+function renderAnswer(text: string) {
+  return text.split(/(`[^`]+`)/g).map((part, i) =>
+    part.length > 2 && part.startsWith('`') && part.endsWith('`')
+      ? <code key={i} className="px-1 py-px rounded bg-cyan-100 dark:bg-cyan-400/20 text-cyan-900 dark:text-cyan-100 font-mono text-[12px] font-semibold">{part.slice(1, -1)}</code>
+      : <span key={i}>{part}</span>
   );
 }

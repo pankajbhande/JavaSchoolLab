@@ -4,8 +4,8 @@
 // "hashmap collision" or "IllegalMonitorStateException" found nothing unless the phrase
 // happened to be in a title - even though it is in the content of several topics.
 //
-// The index is built once, lazily, from data the workspace chunk has already downloaded,
-// so searching costs no extra network. Building it walks ~3.4 MB of HTML, which is why it
+// The index is built once, lazily, from the course content (every course is fetched the first time
+// the reader searches). Building it walks many MB of HTML, which is why it
 // happens off the first keystroke rather than at module load.
 
 import type { Course } from '../data/types';

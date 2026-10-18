@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { toast } from 'sonner';
 import alarmSound from "./sounds/loud_alarm_sound.mp3";
 import { useState, useEffect, useRef } from "react";
+import { localDay, alarmIsDue } from "../lib/localDate";
 
 interface AlarmType {
   id: string;
@@ -10,13 +11,15 @@ interface AlarmType {
   label: string;
   active: boolean;
   lastRungDate: string | null;
+  /** Epoch ms a snoozed alarm rings again. Separate from `time`, so snoozing never moves the daily alarm. */
+  snoozeUntil?: number | null;
 }
 
 interface AlarmProps {
   isOpen: boolean;
 }
 
-const todayStr = () => new Date().toISOString().slice(0, 10);
+const todayStr = () => localDay();
 
 export function Alarm({ isOpen }: AlarmProps) {
   const [alarms, setAlarms] = useState<AlarmType[]>([]);
@@ -34,40 +37,45 @@ export function Alarm({ isOpen }: AlarmProps) {
 
   // Load alarms when component mounts (migrate legacy hasRang field if present)
   useEffect(() => {
-    const saved = localStorage.getItem("alarms");
-    if (saved) {
-      const parsed = JSON.parse(saved);
-      const migrated: AlarmType[] = parsed.map((a: any) => ({
-        id: a.id,
-        time: a.time,
-        label: a.label,
-        active: a.active,
-        lastRungDate: a.lastRungDate ?? (a.hasRang ? todayStr() : null),
-      }));
-      setAlarms(migrated);
-    }
+    try {
+      const saved = localStorage.getItem("alarms");
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        const migrated: AlarmType[] = (Array.isArray(parsed) ? parsed : []).map((a: any) => ({
+          id: String(a.id),
+          time: String(a.time),
+          label: a.label || 'Study Reminder',
+          active: a.active !== false,
+          lastRungDate: a.lastRungDate ?? (a.hasRang ? todayStr() : null),
+          snoozeUntil: typeof a.snoozeUntil === 'number' ? a.snoozeUntil : null,
+        }));
+        setAlarms(migrated);
+      }
+    } catch { /* corrupted saved alarms: start with none rather than crash the header */ }
   }, []);
 
   // Save alarms whenever they change
   useEffect(() => {
-    localStorage.setItem("alarms", JSON.stringify(alarms));
+    try { localStorage.setItem("alarms", JSON.stringify(alarms)); } catch { /* quota or private mode */ }
   }, [alarms]);
 
   // Check every second whether any active alarm should ring (repeats daily)
   useEffect(() => {
     const interval = setInterval(() => {
       const now = new Date();
-      const current = now.toTimeString().slice(0, 5);
       const today = todayStr();
 
       setAlarms(prev => {
         let didRing = false;
         const next = prev.map(a => {
-          if (a.active && a.time === current && a.lastRungDate !== today) {
+          // daily time reached (with a short grace for throttled background tabs), or a snooze ran out
+          const dailyDue = alarmIsDue(a.time, now) && a.lastRungDate !== today;
+          const snoozeDue = a.snoozeUntil != null && now.getTime() >= a.snoozeUntil;
+          if (a.active && (dailyDue || snoozeDue)) {
             didRing = true;
             audioRef.current?.play().catch(() => {});
             setRingingAlarm(a);
-            return { ...a, lastRungDate: today };
+            return { ...a, lastRungDate: today, snoozeUntil: null };
           }
           return a;
         });
@@ -86,9 +94,10 @@ export function Alarm({ isOpen }: AlarmProps) {
 
   const snoozeAlarm = () => {
     if (!ringingAlarm) return;
-    const snoozeTime = new Date(Date.now() + 5 * 60 * 1000).toTimeString().slice(0, 5);
+    // Ring again in 5 minutes without touching the alarm's own daily time
+    const until = Date.now() + 5 * 60 * 1000;
     setAlarms(prev => prev.map(a =>
-      a.id === ringingAlarm.id ? { ...a, time: snoozeTime, lastRungDate: null } : a
+      a.id === ringingAlarm.id ? { ...a, snoozeUntil: until } : a
     ));
     toast('Snoozed for 5 minutes');
     stopRinging();
@@ -117,7 +126,7 @@ export function Alarm({ isOpen }: AlarmProps) {
 
   const toggleAlarm = (id: string) => {
     setAlarms(alarms.map(a =>
-      a.id === id ? { ...a, active: !a.active } : a
+      a.id === id ? { ...a, active: !a.active, snoozeUntil: null } : a
     ));
   };
 
@@ -131,6 +140,9 @@ export function Alarm({ isOpen }: AlarmProps) {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4"
+            role="alertdialog"
+            aria-modal="true"
+            aria-label={`Alarm: ${ringingAlarm.label}`}
           >
             <motion.div
               initial={{ scale: 0.85, y: -20 }}
@@ -155,6 +167,7 @@ export function Alarm({ isOpen }: AlarmProps) {
                 </button>
                 <button
                   onClick={stopRinging}
+                  autoFocus
                   className="flex-1 px-4 py-2 rounded-lg bg-purple-600 text-white font-semibold hover:bg-purple-700 transition-colors flex items-center justify-center gap-2"
                 >
                   <AlarmClockOff className="w-4 h-4" /> Dismiss

@@ -1,6 +1,7 @@
 
 import { useState, useEffect, lazy, Suspense } from 'react';
-import { BrowserRouter, Routes, Route, useNavigate, useParams, useSearchParams, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useNavigate, useParams, useSearchParams, useLocation, Navigate } from 'react-router-dom';
+import { ErrorBoundary } from './components/study/ErrorBoundary';
 import { Header } from './components/Header';
 import { Dashboard } from './components/Dashboard';
 import { ThemeProvider, useTheme } from './components/ThemeProvider';
@@ -17,6 +18,12 @@ import { TOTAL_TOPICS } from './data/courseStats';
 // landing on /dashboard never download it; clicking into a course fetches it once.
 const loadCourseWorkspace = () => import('./CourseWorkspace');
 const CourseWorkspace = lazy(loadCourseWorkspace);
+// Public page the QR code on a certificate opens
+const VerifyCertificate = lazy(() => import('./components/VerifyCertificate'));
+const ProfilePage = lazy(() => import('./pages/ProfilePage'));
+const FlashcardsPage = lazy(() => import('./pages/FlashcardsPage'));
+const InterviewPracticePage = lazy(() => import('./pages/InterviewPracticePage'));
+const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
 
 // Starts the same dynamic import ahead of the click. The browser and the module cache
 // dedupe it, so the later lazy() resolves instantly instead of the student waiting on a
@@ -37,7 +44,23 @@ function prefetchCourseWorkspace() {
 // Renders the toast container themed to match the app's own light/dark mode
 function AppToaster() {
   const { theme } = useTheme();
-  return <Toaster theme={theme} position="top-center" richColors closeButton />;
+  // Bottom-centre so a message never sits on top of the header's search, clock and tabs.
+  return (
+    <Toaster
+      theme={theme}
+      position="bottom-center"
+      richColors
+      closeButton
+      toastOptions={{
+        classNames: {
+          toast: 'rounded-xl! shadow-xl! text-sm! gap-3!',
+          title: 'font-semibold!',
+          description: 'opacity-80!',
+          actionButton: 'bg-orange-600! text-white! rounded-lg! font-semibold! px-3!',
+        },
+      }}
+    />
+  );
 }
 
 // Skeleton splash shown only while the initial auth check (token verification) is in flight,
@@ -201,21 +224,39 @@ export default function App() {
           <ProgressProvider>
           <AppToaster />
           <AuthGate>
-            <Routes>
-              <Route path="/" element={<Navigate to="/dashboard" replace />} />
-              <Route path="/dashboard" element={<DashboardPage />} />
-              <Route path="/login" element={<LoginPage />} />
-              <Route path="/account" element={<AccountRoute />} />
-              <Route path="/signup" element={<SignupPage />} />
-              <Route path="/course/:courseId" element={<CoursePage />} />
-              <Route path="/course/:courseId/:topicId" element={<CoursePage />} />
-              <Route path="/course/:courseId/:subTopicId/:topicId" element={<CoursePage />} />
-              <Route path="*" element={<Navigate to="/dashboard" replace />} />
-            </Routes>
+            <AppRoutes />
           </AuthGate>
           </ProgressProvider>
         </AuthProvider>
       </ThemeProvider>
     </BrowserRouter>
+  );
+}
+
+// Routes inside an error boundary: a render crash shows a friendly screen, never a blank page.
+// The boundary resets when the path changes so navigating away recovers.
+function AppRoutes() {
+  const { pathname } = useLocation();
+  return (
+    <ErrorBoundary resetKey={pathname}>
+            <Routes>
+              <Route path="/" element={<Navigate to="/dashboard" replace />} />
+              <Route path="/flashcards" element={<Suspense fallback={<WorkspaceFallback />}><FlashcardsPage /></Suspense>} />
+              <Route path="/flashcards/:courseId" element={<Suspense fallback={<WorkspaceFallback />}><FlashcardsPage /></Suspense>} />
+              <Route path="/interview-practice" element={<Suspense fallback={<WorkspaceFallback />}><InterviewPracticePage /></Suspense>} />
+              <Route path="/dashboard" element={<DashboardPage />} />
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/account" element={<AccountRoute />} />
+              <Route path="/signup" element={<SignupPage />} />
+              <Route path="/verify" element={<Suspense fallback={<WorkspaceFallback />}><VerifyCertificate /></Suspense>} />
+              <Route path="/verify/:uid" element={<Suspense fallback={<WorkspaceFallback />}><VerifyCertificate /></Suspense>} />
+              <Route path="/u/:handle" element={<Suspense fallback={<WorkspaceFallback />}><ProfilePage /></Suspense>} />
+              <Route path="/course" element={<Navigate to="/dashboard" replace />} />
+              <Route path="/course/:courseId" element={<CoursePage />} />
+              <Route path="/course/:courseId/:topicId" element={<CoursePage />} />
+              <Route path="/course/:courseId/:subTopicId/:topicId" element={<CoursePage />} />
+              <Route path="*" element={<Suspense fallback={<WorkspaceFallback />}><NotFoundPage /></Suspense>} />
+            </Routes>
+    </ErrorBoundary>
   );
 }

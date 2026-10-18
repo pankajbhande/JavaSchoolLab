@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, useEffect, useCallback, useRef, ReactNode } from 'react';
 import {
   VisitedTopic, ProgressSummary,
-  recordTopicVisit, importProgress, recordStudySeconds,
+  recordTopicVisit, importProgress, recordStudySeconds, getAuthToken,
   fetchProgressSummary, fetchVisitedTopics, recordQuizAttempt,
 } from '../services/api';
 import { useAuth } from './AuthContext';
@@ -114,11 +114,15 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (!isLoggedIn) return;
-    const flush = () => {
+    // Captured now: the cleanup flush below runs after sign-out has cleared the stored token.
+    const token = getAuthToken();
+    // `retry` keeps the seconds for the next flush when the save fails. The final flush on sign-out
+    // does not, so one student's unsaved time is never credited to whoever signs in next.
+    const flush = (retry = true) => {
       const n = pendingSeconds.current;
       if (n <= 0) return;
       pendingSeconds.current = 0;
-      recordStudySeconds(n).catch(() => { pendingSeconds.current += n; });
+      recordStudySeconds(n, token).catch(() => { if (retry) pendingSeconds.current += n; });
     };
     const id = setInterval(flush, 60000);
     // Also flush when the tab is hidden or closed, so a short session still counts.
@@ -127,7 +131,7 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
     return () => {
       clearInterval(id);
       document.removeEventListener('visibilitychange', onHide);
-      flush();
+      flush(false);
     };
   }, [isLoggedIn]);
 

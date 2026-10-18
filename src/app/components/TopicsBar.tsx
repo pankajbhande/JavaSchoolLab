@@ -1,6 +1,6 @@
 import { useRef, useState, useEffect, useCallback } from 'react';
 import { ChevronLeft, ChevronRight, Code, BookOpen, FileText, Database, Server, Layers, Layout } from 'lucide-react';
-import { Course } from '../data/coursesData';
+import type { Course } from '../data/types';
 import { motion, useReducedMotion } from 'motion/react';
 
 interface TopicsBarProps {
@@ -67,6 +67,18 @@ export function TopicsBar({ courses, onCourseSelect, selectedCourseId }: TopicsB
     el.scrollBy({ left: dir === 'left' ? -step : step, behavior: reduceMotion ? 'auto' : 'smooth' });
   };
 
+  // Arrow / Home / End move focus between course tabs
+  const onKeyNav = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(e.key)) return;
+    const btns = Array.from(e.currentTarget.querySelectorAll<HTMLButtonElement>('[data-course-id]'));
+    const cur = btns.indexOf(document.activeElement as HTMLButtonElement);
+    if (cur < 0) return;
+    e.preventDefault();
+    const next = e.key === 'Home' ? 0 : e.key === 'End' ? btns.length - 1
+      : Math.min(btns.length - 1, Math.max(0, cur + (e.key === 'ArrowRight' ? 1 : -1)));
+    btns[next]?.focus();
+  };
+
   const getIcon = (name: string) => {
     const Icon = iconMap[name] || Code;
     return <Icon className="w-3.5 h-3.5" strokeWidth={2} />;
@@ -76,7 +88,7 @@ export function TopicsBar({ courses, onCourseSelect, selectedCourseId }: TopicsB
   const mask = `linear-gradient(to right, ${canScrollLeft ? 'transparent' : 'black'} 0, black ${canScrollLeft ? EDGE : 0}px, black calc(100% - ${canScrollRight ? EDGE : 0}px), ${canScrollRight ? 'transparent' : 'black'} 100%)`;
 
   const arrowClass =
-    'shrink-0 grid place-items-center w-8 h-8 rounded-full ' +
+    'shrink-0 grid place-items-center w-9 h-9 rounded-full ' +
     'bg-gray-900/90 border border-white/10 text-gray-300 shadow-lg shadow-black/40 backdrop-blur ' +
     'hover:text-white hover:border-orange-400/50 hover:bg-gray-800 ' +
     'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400/70 transition-colors';
@@ -84,7 +96,7 @@ export function TopicsBar({ courses, onCourseSelect, selectedCourseId }: TopicsB
   return (
     <nav
       aria-label="Courses"
-      className="relative sticky top-[80px] z-40 border-b border-white/10 bg-gray-950/85 backdrop-blur-xl shadow-[0_8px_30px_-12px_rgba(0,0,0,0.7)]"
+      className="sticky top-[80px] z-40 border-b border-white/10 bg-gray-950/85 backdrop-blur-xl shadow-[0_8px_30px_-12px_rgba(0,0,0,0.7)]"
     >
       {/* ambient glow + hairline highlights */}
       <span aria-hidden="true" className="pointer-events-none absolute inset-0 bg-[radial-gradient(60%_140%_at_50%_-40%,rgba(249,115,22,0.16),transparent_70%)]" />
@@ -109,6 +121,7 @@ export function TopicsBar({ courses, onCourseSelect, selectedCourseId }: TopicsB
           ref={scrollRef}
           onScroll={checkScroll}
           style={{ maskImage: mask, WebkitMaskImage: mask }}
+          onKeyDown={onKeyNav}
           className="flex flex-1 min-w-0 items-center gap-1.5 overflow-x-auto px-3 py-2 scrollbar-hide scroll-smooth"
         >
           {courses.map((course) => {
@@ -122,8 +135,8 @@ export function TopicsBar({ courses, onCourseSelect, selectedCourseId }: TopicsB
                 whileHover={reduceMotion ? undefined : { y: -1 }}
                 whileTap={reduceMotion ? undefined : { scale: 0.97 }}
                 onClick={() => onCourseSelect(course.id)}
-                className={`group relative flex items-center gap-2 pl-1.5 pr-3.5 py-1.5 rounded-xl whitespace-nowrap shrink-0 text-[13px] font-semibold tracking-tight transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400/70 ${
-                  isActive ? 'text-white' : 'text-gray-400 hover:text-gray-100'
+                className={`group relative flex items-center gap-2 pl-1.5 pr-3.5 py-1.5 rounded-xl whitespace-nowrap shrink-0 text-[13px] font-semibold tracking-tight transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400 focus-visible:ring-offset-1 focus-visible:ring-offset-gray-950 ${
+                  isActive ? 'text-white' : 'text-gray-300 hover:text-white'
                 }`}
               >
                 {/* sliding active pill */}

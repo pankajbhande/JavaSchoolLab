@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, Fragment } from 'react';
 import { Code, BookOpen, FileText, Database, PanelLeftClose, PanelLeft, Layers, CheckCircle2 } from 'lucide-react';
-import { Course } from '../data/coursesData';
+import type { Course } from '../data/types';
 import { displayTopicName } from '../lib/topicName';
 import { motion, AnimatePresence } from 'motion/react';
 
@@ -69,7 +69,8 @@ export function Sidebar({
       whileHover={{ scale: 1.1 }}
       whileTap={{ scale: 0.9 }}
       onClick={onToggleMinimize}
-      className="shrink-0 grid place-items-center w-8 h-8 rounded-lg bg-indigo-600 text-white shadow-md shadow-indigo-500/30 hover:bg-indigo-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400"
+      className="shrink-0 grid place-items-center w-8 h-8 rounded-lg bg-orange-600 text-white shadow-md shadow-orange-500/30 hover:bg-orange-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400 focus-visible:ring-offset-2 focus-visible:ring-offset-orange-50 dark:focus-visible:ring-offset-gray-900"
+      aria-expanded={!isMinimized}
       title={isMinimized ? 'Expand sidebar' : 'Minimize sidebar'}
       aria-label={isMinimized ? 'Expand sidebar' : 'Minimize sidebar'}
     >
@@ -121,7 +122,7 @@ export function Sidebar({
                         <h3 className="font-bold text-sm text-gray-800 dark:text-gray-200">
                           <Highlight text={course.name} query={query} />
                         </h3>
-                        <p className="text-[10px] text-gray-400">
+                        <p className="text-[11px] text-gray-600 dark:text-gray-400">
                           {topicCount(course.subTopics)} topics · Select a topic to start learning
                         </p>
                       </div>
@@ -135,8 +136,8 @@ export function Sidebar({
                           if (query && visibleTopics.length === 0) return null;
                           return (
                           <div key={subTopic.id}>
-                            <div className="px-2 pb-0.5 pt-0.5">
-                              <h4 className="text-[10px] font-bold uppercase tracking-wider text-orange-500/80 dark:text-orange-400/80">
+                            <div className="px-2 pb-1 pt-2 mt-1 border-t border-orange-200/50 dark:border-white/5 first:border-t-0">
+                              <h4 className="text-[11px] font-bold uppercase tracking-wider text-orange-700 dark:text-orange-400">
                                 <Highlight text={subTopic.name} query={query} />
                               </h4>
                             </div>
@@ -151,24 +152,27 @@ export function Sidebar({
                                     key={topic.id}
                                     ref={isActive ? activeTopicRef : null}
                                     onClick={() => onTopicSelect(topic.id)}
-                                    className={`w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-left transition-all ${
+                                    aria-current={isActive ? 'page' : undefined}
+                                    title={displayTopicName(topic.name, course.name)}
+                                    className={`relative w-full flex items-center gap-2 px-2 min-h-[34px] py-1.5 rounded-lg text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 ${
                                       isActive
-                                        ? 'bg-white/80 dark:bg-orange-900/20 shadow-sm ring-1 ring-orange-200/70 dark:ring-orange-800/40'
+                                        ? 'bg-white dark:bg-orange-500/15 shadow-sm ring-1 ring-orange-200/70 dark:ring-orange-800/40'
                                         : 'hover:bg-white/60 dark:hover:bg-gray-700/50'
                                     }`}
                                   >
+                                    {isActive && <span aria-hidden="true" className="absolute left-0 top-1.5 bottom-1.5 w-1 rounded-full bg-orange-500" />}
                                     <span className={`text-[11px] font-mono w-5 text-right shrink-0 ${
-                                      isActive ? 'text-orange-500 font-semibold' : 'text-gray-400'
+                                      isActive ? 'text-orange-700 dark:text-orange-400 font-semibold' : 'text-gray-600 dark:text-gray-400'
                                     }`}>{num}.</span>
                                     <span className={`text-[13px] truncate flex-1 ${
                                       isActive
-                                        ? 'text-orange-600 dark:text-orange-400 font-semibold'
+                                        ? 'text-orange-800 dark:text-orange-300 font-semibold'
                                         : 'text-gray-700 dark:text-gray-300'
                                     }`}>
                                       <Highlight text={displayTopicName(topic.name, course.name)} query={query} />
                                     </span>
                                     {isVisited && (
-                                      <CheckCircle2 className="w-3 h-3 text-green-500 shrink-0" aria-label="Visited" />
+                                      <CheckCircle2 className="w-3.5 h-3.5 text-green-600 dark:text-green-400 shrink-0" aria-label="Visited" role="img" />
                                     )}
                                   </button>
                                 );
@@ -194,13 +198,14 @@ export function Sidebar({
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
                 onClick={() => onCourseSelect(course.id)}
-                className={`w-full p-3 rounded-lg transition-colors ${
+                className={`w-full p-3 rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 ${
                   selectedCourse === course.id
                     ? 'bg-orange-500 text-white'
                     : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600'
                 }`}
                 title={course.name}
                 aria-label={course.name}
+                aria-current={selectedCourse === course.id ? 'true' : undefined}
               >
                 {getIcon(course.icon)}
               </motion.button>

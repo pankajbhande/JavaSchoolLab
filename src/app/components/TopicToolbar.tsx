@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
-import { Bookmark, StickyNote, X } from 'lucide-react';
+import { Bookmark, StickyNote, X, Lock } from 'lucide-react';
 import { toast } from 'sonner';
 import { useAuth } from '../context/AuthContext';
+import { LoginModal } from './LoginModal';
 import {
   TopicRef, fetchBookmarks, addBookmark, removeBookmark, fetchNotes, saveNote,
 } from '../services/api';
@@ -20,6 +21,7 @@ export function TopicToolbar({ topicRef }: { topicRef: TopicRef }) {
   const [draft, setDraft] = useState('');
   const [open, setOpen] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [showLogin, setShowLogin] = useState(false);
 
   const { courseId, topicId } = topicRef;
 
@@ -38,7 +40,14 @@ export function TopicToolbar({ topicRef }: { topicRef: TopicRef }) {
     return () => { cancelled = true; };
   }, [isLoggedIn, courseId, topicId]);
 
-  const needLogin = () => { toast('Log in to save bookmarks and notes'); };
+  const needLogin = () => {
+    toast('Login required', {
+      id: 'need-login',
+      icon: <Lock className="w-4 h-4 text-orange-600" />,
+      description: 'Log in to save bookmarks and notes for this topic.',
+      action: { label: 'Log in', onClick: () => setShowLogin(true) },
+    });
+  };
 
   const toggleBookmark = async () => {
     if (!isLoggedIn) return needLogin();
@@ -138,6 +147,8 @@ export function TopicToolbar({ topicRef }: { topicRef: TopicRef }) {
           </div>
         </div>
       )}
+
+      {showLogin && <LoginModal onClose={() => setShowLogin(false)} message="Log in to save bookmarks and notes" />}
     </>
   );
 }

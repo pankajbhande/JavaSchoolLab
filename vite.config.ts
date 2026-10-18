@@ -19,21 +19,18 @@ export default defineConfig({
   build: {
     rollupOptions: {
       output: {
-        // The course content is by far the largest thing here (474 topics, 3,430 HTML
-        // blocks). Splitting it away from component code means editing a component does
-        // not invalidate megabytes of cached content for returning students, and the two
-        // download in parallel. Vendor chunking is left to Rollup on purpose: it already
-        // keeps jspdf and html2canvas in their own lazy chunks, and a blanket vendor
-        // group would drag them into the initial load.
+        // Course content is NOT grouped here: every course is a dynamic import (see
+        // src/app/data/courseModules.ts), so Rollup gives each course, and each extras file, its
+        // own chunk and a reader downloads only what they open. Forcing it into one chunk would
+        // undo that. Only the quiz banks stay grouped. Vendor chunking is left to Rollup on
+        // purpose: it already keeps jspdf and html2canvas in their own lazy chunks.
         manualChunks(id) {
-          if (id.includes('src/app/data/topics/')) return 'course-topics'
           if (id.includes('src/app/data/quiz/')) return 'quiz-banks'
-          if (id.includes('src/app/data/')) return 'course-data'
         },
       },
     },
-    // The course-content chunks are legitimately large and are lazy-loaded, so the
-    // default 500 kB warning is pure noise. Anything above this is worth a look.
+    // Individual course chunks are large and lazy-loaded, so the default 500 kB warning is
+    // noise. Anything above this is worth a look.
     chunkSizeWarningLimit: 1500,
   },
 })

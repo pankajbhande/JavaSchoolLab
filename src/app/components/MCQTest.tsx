@@ -1,9 +1,14 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { CheckCircle, XCircle, Award, RotateCcw } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { QuizResults } from './quiz/QuizResults';
+import { PracticeRetake } from './quiz/PracticeRetake';
+import { buildRetakeSet } from '../lib/quizReview';
+import type { PreparedQuestion } from '../services/quizEngine';
 import { Certificate } from './Certificate';
 import { buildQuiz, PASS_PERCENTAGE } from '../services/quizEngine';
 import { useProgress } from '../context/ProgressContext';
+import { useAuth } from '../context/AuthContext';
 
 interface MCQTestProps {
   /** subTopic id of the module under test - selects the authored question bank. */
@@ -24,6 +29,9 @@ export function MCQTest({ moduleId, courseId, moduleName, courseName, onClose }:
   // One seed per attempt. Keeping it in state means React re-renders do not reshuffle
   // the quiz under the student, while Try Again deliberately draws a fresh order.
   const { saveAttempt } = useProgress();
+  const { isLoggedIn } = useAuth();
+  // Whether this attempt's result has been recorded for a signed-in user
+  const savedRef = useRef(false);
   const [attempt, setAttempt] = useState(() => Date.now());
   const quiz = useMemo(() => buildQuiz(moduleId, courseId, attempt), [moduleId, courseId, attempt]);
   const questions = quiz.questions;
@@ -34,6 +42,10 @@ export function MCQTest({ moduleId, courseId, moduleName, courseName, onClose }:
   const [selectedAnswers, setSelectedAnswers] = useState<number[]>(new Array(totalQuestions).fill(-1));
   const [showResults, setShowResults] = useState(false);
   const [showCertificate, setShowCertificate] = useState(false);
+  const navigate = useNavigate();
+  const [practice, setPractice] = useState<PreparedQuestion[] | null>(null);
+  const startedAt = useRef(Date.now());
+  const [durationMs, setDurationMs] = useState(0);
 
   // Esc closes the test modal
   useEffect(() => {
@@ -63,9 +75,11 @@ export function MCQTest({ moduleId, courseId, moduleName, courseName, onClose }:
   };
 
   const submitTest = () => {
+    setDurationMs(Date.now() - startedAt.current);
     setShowResults(true);
     // Recorded for every attempt, pass or fail: the failures are what drive the review
     // queue. No-op for guests, and a failed write never blocks the results screen.
+    savedRef.current = isLoggedIn;
     void saveAttempt({
       courseId: courseId || '',
       moduleId: moduleId || '',
@@ -85,6 +99,13 @@ export function MCQTest({ moduleId, courseId, moduleName, courseName, onClose }:
     return correct;
   };
 
+  // A guest can finish the test and log in afterwards from the certificate screen; record the result then
+  useEffect(() => {
+    if (!showResults || !isLoggedIn || savedRef.current) return;
+    savedRef.current = true;
+    void saveAttempt({ courseId: courseId || '', moduleId: moduleId || '', moduleName, score: calculateScore(), totalQuestions });
+  }, [showResults, isLoggedIn]);
+
   const score = showResults ? calculateScore() : 0;
   const percentage = totalQuestions > 0 ? Math.round((score / totalQuestions) * 100) : 0;
   const passed = percentage >= PASS_PERCENTAGE;
@@ -95,13 +116,16 @@ export function MCQTest({ moduleId, courseId, moduleName, courseName, onClose }:
     setCurrentQuestion(0);
     setShowResults(false);
     setShowCertificate(false);
+    savedRef.current = false;
+    setPractice(null);
+    startedAt.current = Date.now();
   };
 
   // No authored bank for this module yet. Serving a synthesised quiz here would put a
   // certificate behind questions nobody wrote, so we say so plainly instead.
   if (totalQuestions === 0) {
     return (
-      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+      <div role="dialog" aria-modal="true" aria-label="Module test" className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -135,7 +159,7 @@ export function MCQTest({ moduleId, courseId, moduleName, courseName, onClose }:
   }
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+    <div role="dialog" aria-modal="true" aria-label="Module test" className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
@@ -188,7 +212,8 @@ export function MCQTest({ moduleId, courseId, moduleName, courseName, onClose }:
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
                         onClick={() => handleAnswer(index)}
-                        className={`w-full text-left p-4 rounded-lg border-2 transition-all ${
+                        aria-pressed={selectedAnswers[currentQuestion] === index}
+                        className={`w-full text-left p-4 rounded-lg border-2 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-600 ${
                           selectedAnswers[currentQuestion] === index
                             ? 'border-orange-500 bg-orange-50 dark:bg-orange-900/20'
                             : 'border-gray-300 dark:border-gray-600 hover:border-orange-300 dark:hover:border-orange-700'
@@ -247,111 +272,24 @@ export function MCQTest({ moduleId, courseId, moduleName, courseName, onClose }:
               </motion.div>
             </AnimatePresence>
           ) : (
-            /* Results */
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="text-center"
-            >
-              <div className={`inline-flex items-center justify-center w-24 h-24 rounded-full mb-6 ${
-                passed ? 'bg-green-100 dark:bg-green-900/20' : 'bg-red-100 dark:bg-red-900/20'
-              }`}>
-                {passed ? (
-                  <CheckCircle className="w-16 h-16 text-green-600 dark:text-green-400" />
-                ) : (
-                  <XCircle className="w-16 h-16 text-red-600 dark:text-red-400" />
-                )}
-              </div>
-
-              <h3 className="text-3xl font-bold text-gray-800 dark:text-gray-200 mb-2">
-                {passed ? 'Congratulations!' : 'Keep Learning!'}
-              </h3>
-
-              <p className="text-lg text-gray-600 dark:text-gray-400 mb-1">
-                Module: <span className="font-semibold">{moduleName}</span>
-              </p>
-              <p className="text-xl text-gray-600 dark:text-gray-400 mb-6">
-                You scored {score} out of {totalQuestions} ({percentage}%)
-              </p>
-
-              <div className="bg-gray-50 dark:bg-gray-900 p-6 rounded-xl mb-6">
-                <div className="text-sm text-gray-600 dark:text-gray-400 mb-2">Your Performance</div>
-                <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-4">
-                  <motion.div
-                    className={`h-4 rounded-full ${
-                      passed
-                        ? 'bg-gradient-to-r from-green-600 to-emerald-600'
-                        : 'bg-gradient-to-r from-red-600 to-orange-600'
-                    }`}
-                    initial={{ width: 0 }}
-                    animate={{ width: `${percentage}%` }}
-                    transition={{ duration: 1, delay: 0.3 }}
-                  />
-                </div>
-                <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-1">
-                  <span>0%</span>
-                  <span className="text-orange-500 font-semibold">{PASS_PERCENTAGE}% Pass</span>
-                  <span>100%</span>
-                </div>
-              </div>
-
-              {/* Question-by-question review. An assessment that only reports a score
-                  teaches nothing; the explanation is the part that does the work. */}
-              <div className="text-left space-y-3 mb-6">
-                <div className="text-sm font-semibold text-gray-700 dark:text-gray-300">Review your answers</div>
-                {questions.map((q, i) => {
-                  const chosen = selectedAnswers[i];
-                  const right = chosen === q.answerIndex;
-                  return (
-                    <div key={q.id} className="rounded-xl border border-gray-200 dark:border-gray-700 p-4">
-                      <div className="flex items-start gap-2">
-                        {right
-                          ? <CheckCircle className="w-5 h-5 text-green-600 dark:text-green-400 shrink-0 mt-0.5" />
-                          : <XCircle className="w-5 h-5 text-red-600 dark:text-red-400 shrink-0 mt-0.5" />}
-                        <div className="min-w-0">
-                          <p className="font-medium text-gray-800 dark:text-gray-200">Q{i + 1}. {q.question}</p>
-                          {!right && (
-                            <p className="text-sm text-red-600 dark:text-red-400 mt-1">
-                              You chose: {chosen === -1 ? "nothing" : q.options[chosen]}
-                            </p>
-                          )}
-                          <p className="text-sm text-green-700 dark:text-green-400 mt-1">
-                            Correct: {q.options[q.answerIndex]}
-                          </p>
-                          <p className="text-sm text-gray-600 dark:text-gray-400 mt-2 leading-relaxed">{q.explanation}</p>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-              {passed ? (
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => setShowCertificate(true)}
-                  className="px-8 py-4 bg-gradient-to-r from-orange-600 to-amber-500 text-white rounded-lg text-lg font-semibold flex items-center gap-2 mx-auto"
-                >
-                  <Award className="w-6 h-6" />
-                  Get Your Certificate
-                </motion.button>
-              ) : (
-                <div className="space-y-3">
-                  <p className="text-gray-600 dark:text-gray-400">
-                    You need at least {PASS_PERCENTAGE}% ({passScore}/{totalQuestions}) to pass and earn your certificate.
-                  </p>
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={resetTest}
-                    className="px-8 py-3 bg-gradient-to-r from-orange-600 to-amber-500 text-white rounded-lg flex items-center gap-2 mx-auto"
-                  >
-                    <RotateCcw className="w-5 h-5" />
-                    Retry Test
-                  </motion.button>
-                </div>
-              )}
-            </motion.div>
+            practice ? (
+              <PracticeRetake questions={practice} onBack={() => setPractice(null)} />
+            ) : (
+              <QuizResults
+                moduleName={moduleName}
+                courseId={courseId}
+                moduleId={moduleId}
+                bankLabel={quiz.bankLabel}
+                questions={questions}
+                answers={selectedAnswers}
+                durationMs={durationMs}
+                passPercentage={PASS_PERCENTAGE}
+                onCertificate={() => setShowCertificate(true)}
+                onRetryFull={resetTest}
+                onPractice={() => setPractice(buildRetakeSet(questions, selectedAnswers, Date.now()))}
+                onOpenLesson={(href) => { onClose(); navigate(href); }}
+              />
+            )
           )}
         </div>
 

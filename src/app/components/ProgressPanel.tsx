@@ -7,6 +7,8 @@ import { useProgress } from '../context/ProgressContext';
 import { fetchReviewQueue, ReviewItem } from '../services/api';
 import { TOTAL_TOPICS } from '../data/courseStats';
 import { slugify } from '../lib/slug';
+import { StudyActivity } from './StudyActivity';
+import { StreakBanner } from './StreakBanner';
 
 function formatDuration(totalSeconds: number) {
   const h = Math.floor(totalSeconds / 3600);
@@ -75,11 +77,13 @@ export function ProgressPanel() {
         </p>
       </div>
 
+      <StreakBanner />
+
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-5">
         <Stat
           icon={<Flame className="w-5 h-5 text-white" />}
           value={summary.currentStreak === 0 ? 'Start today' : `${summary.currentStreak} day${summary.currentStreak === 1 ? '' : 's'}`}
-          label={summary.longestStreak > summary.currentStreak ? `Best: ${summary.longestStreak} days` : 'Current streak'}
+          label={`${summary.longestStreak > summary.currentStreak ? `Best: ${summary.longestStreak} days` : 'Current streak'} · freeze ${summary.streakFreeze.available ? 'ready' : 'used'}`}
           tone="bg-gradient-to-br from-orange-500 to-red-500"
         />
         <Stat
@@ -117,6 +121,8 @@ export function ProgressPanel() {
           />
         </div>
       </div>
+
+      <StudyActivity />
 
       <div className="flex flex-col lg:flex-row gap-3">
         {summary.resume && (

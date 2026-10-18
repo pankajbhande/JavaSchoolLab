@@ -1,11 +1,15 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { motion } from 'motion/react';
-import { Award, Download, LogIn } from 'lucide-react';
-import { jsPDF } from 'jspdf';
+import { Download, Linkedin, Link2, LogIn, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { useAuth } from '../context/AuthContext';
+import { useFocusTrap } from '../hooks/useFocusTrap';
 import { issueCertificate } from '../services/api';
 import { LoginModal } from './LoginModal';
+import { CertificateSheet } from './CertificateSheet';
+import type { CertificateInput } from '../lib/certificate/design';
+import { certificateVerifyUrl } from '../lib/siteUrl';
+import { linkedInAddUrl } from '../lib/certificate/linkedin';
 
 interface CertificateProps {
   moduleName: string;
@@ -15,295 +19,180 @@ interface CertificateProps {
   onClose: () => void;
 }
 
+/** Shown on the preview until the server issues a real, stored ID at download time. */
+const PENDING_ID = 'ISSUED ON DOWNLOAD';
+
 export function Certificate({ moduleName, courseName, score, totalQuestions, onClose }: CertificateProps) {
   const { user, isLoggedIn } = useAuth();
   const [showLogin, setShowLogin] = useState(false);
   const [downloading, setDownloading] = useState(false);
-  const [certUid, setCertUid] = useState(`JSL-${Date.now().toString(36).toUpperCase()}`);
+  const [sharing, setSharing] = useState(false);
+  // Set once the server has issued (and stored) the certificate: that is when it gets its real ID, date and QR code
+  const [issued, setIssued] = useState<{ uid: string; at: Date } | null>(null);
+  const [openedAt] = useState(() => new Date());
+  const dialogRef = useFocusTrap<HTMLDivElement>(!showLogin);
 
-  const currentDate = new Date().toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
-  });
-
-  const percentage = Math.round((score / totalQuestions) * 100);
-  const studentName = user?.fullName || 'Guest';
-
-  const generatePDF = () => {
-    const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
-    const w = doc.internal.pageSize.getWidth();
-    const h = doc.internal.pageSize.getHeight();
-
-    // Background
-    doc.setFillColor(255, 250, 240);
-    doc.rect(0, 0, w, h, 'F');
-
-    // Border
-    doc.setDrawColor(234, 88, 12);
-    doc.setLineWidth(3);
-    doc.rect(10, 10, w - 20, h - 20);
-    doc.setLineWidth(1);
-    doc.rect(14, 14, w - 28, h - 28);
-
-    // Corner decorations
-    const cornerSize = 15;
-    doc.setLineWidth(2);
-    [[18, 18, 1, 1], [w - 18, 18, -1, 1], [18, h - 18, 1, -1], [w - 18, h - 18, -1, -1]].forEach(([x, y, dx, dy]) => {
-      doc.line(x as number, y as number, (x as number) + cornerSize * (dx as number), y as number);
-      doc.line(x as number, y as number, x as number, (y as number) + cornerSize * (dy as number));
-    });
-
-    // Award icon circle
-    doc.setFillColor(234, 88, 12);
-    doc.circle(w / 2, 40, 12, 'F');
-    doc.setTextColor(255, 255, 255);
-    doc.setFontSize(16);
-    doc.setFont('helvetica', 'bold');
-    doc.text('\u2605', w / 2, 44, { align: 'center' });
-
-    // Title
-    doc.setTextColor(30, 30, 30);
-    doc.setFontSize(32);
-    doc.setFont('helvetica', 'bold');
-    doc.text('Certificate of Completion', w / 2, 65, { align: 'center' });
-
-    // Subtitle
-    doc.setFontSize(14);
-    doc.setFont('helvetica', 'normal');
-    doc.setTextColor(100, 100, 100);
-    doc.text('This is to certify that', w / 2, 78, { align: 'center' });
-
-    // Student Name
-    doc.setFontSize(28);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(234, 88, 12);
-    doc.text(studentName, w / 2, 93, { align: 'center' });
-
-    // Underline
-    const nameWidth = doc.getTextWidth(studentName);
-    doc.setDrawColor(234, 88, 12);
-    doc.setLineWidth(1);
-    doc.line(w / 2 - nameWidth / 2 - 5, 96, w / 2 + nameWidth / 2 + 5, 96);
-
-    // Module text
-    doc.setFontSize(13);
-    doc.setFont('helvetica', 'normal');
-    doc.setTextColor(100, 100, 100);
-    doc.text('has successfully completed the module', w / 2, 108, { align: 'center' });
-
-    // Module Name
-    doc.setFontSize(22);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(30, 30, 30);
-    doc.text(moduleName, w / 2, 120, { align: 'center' });
-
-    // Course
-    doc.setFontSize(13);
-    doc.setFont('helvetica', 'normal');
-    doc.setTextColor(100, 100, 100);
-    doc.text(`from the course: ${courseName}`, w / 2, 130, { align: 'center' });
-
-    // Score box
-    doc.setFillColor(240, 253, 244);
-    doc.setDrawColor(34, 197, 94);
-    doc.setLineWidth(0.5);
-    doc.roundedRect(w / 2 - 30, 137, 60, 18, 3, 3, 'FD');
-    doc.setFontSize(11);
-    doc.setTextColor(100, 100, 100);
-    doc.text('Score Achieved', w / 2, 144, { align: 'center' });
-    doc.setFontSize(14);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(22, 163, 74);
-    doc.text(`${score}/${totalQuestions} (${percentage}%)`, w / 2, 152, { align: 'center' });
-
-    // Footer line
-    doc.setDrawColor(234, 88, 12);
-    doc.setLineWidth(0.5);
-    doc.line(30, 165, w - 30, 165);
-
-    // Date
-    doc.setFontSize(10);
-    doc.setFont('helvetica', 'normal');
-    doc.setTextColor(120, 120, 120);
-    doc.text('Date', 35, 172);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(30, 30, 30);
-    doc.text(currentDate, 35, 178);
-
-    // Signature
-    doc.setLineWidth(0.5);
-    doc.setDrawColor(100, 100, 100);
-    doc.line(w / 2 - 25, 175, w / 2 + 25, 175);
-    doc.setFontSize(11);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(30, 30, 30);
-    doc.text('JavaSchoolLab', w / 2, 181, { align: 'center' });
-    doc.setFontSize(8);
-    doc.setFont('helvetica', 'normal');
-    doc.setTextColor(120, 120, 120);
-    doc.text('An Official Product of DHIPAN Software Technologies Private Limited', w / 2, 186, { align: 'center' });
-
-    // Certificate ID
-    doc.setFontSize(10);
-    doc.setFont('helvetica', 'normal');
-    doc.setTextColor(120, 120, 120);
-    doc.text('Certificate ID', w - 35, 172, { align: 'right' });
-    doc.setFontSize(8);
-    doc.setFont('courier', 'bold');
-    doc.setTextColor(30, 30, 30);
-    doc.text(certUid, w - 35, 178, { align: 'right' });
-
-    doc.save(`JavaSchoolLab_Certificate_${moduleName.replace(/\s+/g, '_')}.pdf`);
+  const input: CertificateInput = {
+    studentName: user?.fullName || 'Guest',
+    moduleName,
+    courseName,
+    score,
+    totalQuestions,
+    issuedAt: issued?.at ?? openedAt,
+    certificateUid: issued?.uid ?? PENDING_ID,
+    verifyUrl: issued ? certificateVerifyUrl(issued.uid) : undefined,
   };
+
+  useEffect(() => {
+    if (showLogin) return;
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [onClose, showLogin]);
+
+  // The ID is issued and stored by the server first, so every certificate that leaves this screen (PDF
+  // or LinkedIn) can be matched to a record. Asking again for the same pass returns the same certificate.
+  const issue = async (): Promise<CertificateInput> => {
+    const record = await issueCertificate({ courseName, topicName: moduleName, score, totalQuestions });
+    // What is printed is what the server stored: its score, its date, its ID
+    const final: CertificateInput = {
+      ...input,
+      score: record.score,
+      totalQuestions: record.totalQuestions,
+      issuedAt: new Date(record.issuedAt),
+      certificateUid: record.certificateUid,
+      verifyUrl: certificateVerifyUrl(record.certificateUid),
+    };
+    setIssued({ uid: record.certificateUid, at: final.issuedAt });
+    return final;
+  };
+
+  const failed = (err: unknown) => toast.error(
+    err instanceof Error && err.message ? err.message : "Could not issue your certificate. Check your connection and try again."
+  );
 
   const downloadCertificate = async () => {
     if (!isLoggedIn) {
       setShowLogin(true);
       return;
     }
-
     setDownloading(true);
     try {
-      const certData = await issueCertificate({ courseName, topicName: moduleName, score, totalQuestions });
-      setCertUid(certData.certificateUid);
-      generatePDF();
+      const final = await issue();
+      const { downloadCertificatePdf } = await import('../lib/certificate/pdf');
+      await downloadCertificatePdf(final);
     } catch (err) {
-      // Previously this fell through to generatePDF(), producing a certificate whose id
-      // existed nowhere in the database and could never be verified. A certificate that
-      // cannot be checked is worse than none, so fail visibly instead.
-      toast.error(
-        err instanceof Error && err.message
-          ? err.message
-          : "Could not issue your certificate. Check your connection and try again."
-      );
+      failed(err);
     } finally {
       setDownloading(false);
     }
   };
 
+  const addToLinkedIn = async () => {
+    // Opened first, inside the click, so the browser does not treat it as a blocked pop-up
+    const tab = window.open('', '_blank');
+    setSharing(true);
+    try {
+      const final = await issue();
+      const url = linkedInAddUrl({ moduleName, courseName, issuedAt: final.issuedAt, certificateUid: final.certificateUid, verifyUrl: final.verifyUrl! });
+      if (tab) { tab.opener = null; tab.location.href = url; } else window.open(url, '_blank', 'noopener');
+    } catch (err) {
+      tab?.close();
+      failed(err);
+    } finally {
+      setSharing(false);
+    }
+  };
+
+  const copyVerifyLink = async () => {
+    setSharing(true);
+    try {
+      const final = await issue();
+      await navigator.clipboard.writeText(final.verifyUrl!);
+      toast.success('Verification link copied');
+    } catch (err) {
+      failed(err);
+    } finally {
+      setSharing(false);
+    }
+  };
+
+  const primary = 'px-6 sm:px-8 py-3 bg-gradient-to-r from-orange-600 to-amber-500 text-white rounded-lg flex items-center gap-2 font-semibold shadow-md hover:shadow-lg transition-shadow focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600 disabled:opacity-60';
+
   return (
     <>
-      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-label="Certificate of completion"
+        className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-start sm:items-center justify-center z-50 p-2 sm:p-4 overflow-y-auto"
+        onMouseDown={(e) => { if (e.target === e.currentTarget) onClose(); }}
+      >
         <motion.div
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-4xl w-full p-8"
+          ref={dialogRef}
+          initial={{ opacity: 0, scale: 0.94, y: 12 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          className="relative bg-white dark:bg-gray-900 rounded-2xl shadow-2xl max-w-5xl w-full p-3 sm:p-6 my-auto"
         >
-          <div className="relative bg-gradient-to-br from-orange-50 to-amber-50 dark:from-orange-900/20 dark:to-amber-900/20 border-8 border-double border-orange-400 dark:border-orange-600 rounded-xl p-12">
-            {/* Decorative corners */}
-            <div className="absolute top-4 left-4 w-16 h-16 border-t-4 border-l-4 border-orange-400 dark:border-orange-600 rounded-tl-lg" />
-            <div className="absolute top-4 right-4 w-16 h-16 border-t-4 border-r-4 border-orange-400 dark:border-orange-600 rounded-tr-lg" />
-            <div className="absolute bottom-4 left-4 w-16 h-16 border-b-4 border-l-4 border-orange-400 dark:border-orange-600 rounded-bl-lg" />
-            <div className="absolute bottom-4 right-4 w-16 h-16 border-b-4 border-r-4 border-orange-400 dark:border-orange-600 rounded-br-lg" />
+          <button
+            onClick={onClose}
+            aria-label="Close certificate"
+            className="absolute -top-3 -right-3 z-10 grid place-items-center w-9 h-9 rounded-full bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 shadow-lg ring-1 ring-black/10 hover:bg-orange-50 dark:hover:bg-gray-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-orange-600"
+          >
+            <X className="w-5 h-5" aria-hidden="true" />
+          </button>
 
-            <div className="text-center">
-              <motion.div
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ delay: 0.2, type: "spring" }}
-                className="inline-flex items-center justify-center w-24 h-24 bg-gradient-to-br from-orange-600 to-amber-500 rounded-full mb-6"
-              >
-                <Award className="w-14 h-14 text-white" />
-              </motion.div>
-
-              <motion.h1
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 }}
-                className="text-5xl font-bold text-gray-800 dark:text-gray-200 mb-4"
-              >
-                Certificate of Completion
-              </motion.h1>
-
-              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }}
-                className="text-xl text-gray-600 dark:text-gray-400 mb-8">
-                This is to certify that
-              </motion.div>
-
-              <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.5 }}
-                className="text-4xl font-bold text-orange-600 dark:text-orange-400 mb-8 border-b-4 border-orange-400 dark:border-orange-600 pb-2 inline-block px-8"
-              >
-                {studentName}
-              </motion.div>
-
-              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6 }}
-                className="text-xl text-gray-600 dark:text-gray-400 mb-4">
-                has successfully completed the module
-              </motion.div>
-
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.7 }}
-                className="text-3xl font-bold text-gray-800 dark:text-gray-200 mb-2"
-              >
-                {moduleName}
-              </motion.div>
-
-              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.8 }}
-                className="text-xl text-gray-600 dark:text-gray-400 mb-6">
-                from the course <span className="font-semibold text-orange-600 dark:text-orange-400">{courseName}</span>
-              </motion.div>
-
-              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.9 }}
-                className="bg-white dark:bg-gray-800 rounded-lg p-4 inline-block mb-6">
-                <div className="text-sm text-gray-500 dark:text-gray-400">Score Achieved</div>
-                <div className="text-3xl font-bold text-green-600 dark:text-green-400">{score}/{totalQuestions} ({percentage}%)</div>
-              </motion.div>
-
-              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1 }}
-                className="flex justify-between items-center mt-12 pt-6 border-t-2 border-orange-300 dark:border-orange-700">
-                <div className="text-left">
-                  <div className="text-sm text-gray-500 dark:text-gray-400">Date</div>
-                  <div className="font-semibold text-gray-800 dark:text-gray-200">{currentDate}</div>
-                </div>
-                <div className="text-center">
-                  <div className="w-48 border-t-2 border-gray-400 dark:border-gray-600 mb-2" />
-                  <div className="font-semibold text-gray-800 dark:text-gray-200">JavaSchoolLab</div>
-                  <div className="text-sm text-gray-500 dark:text-gray-400">Online Learning Platform</div>
-                </div>
-                <div className="text-right">
-                  <div className="text-sm text-gray-500 dark:text-gray-400">Certificate ID</div>
-                  <div className="font-semibold text-gray-800 dark:text-gray-200 font-mono text-xs">{certUid}</div>
-                </div>
-              </motion.div>
-            </div>
+          {/* The certificate itself: the same drawing the PDF is made from */}
+          <div className="rounded-lg overflow-hidden shadow-[0_10px_40px_-12px_rgba(124,45,18,0.45)] ring-1 ring-black/10">
+            <CertificateSheet input={input} />
           </div>
 
-          {/* Action Buttons */}
-          <div className="flex justify-center gap-4 mt-8">
+          {!isLoggedIn && (
+            <p className="mt-4 text-center text-sm text-gray-600 dark:text-gray-300">
+              This preview shows "Guest". Log in so the certificate carries your name and a verifiable ID.
+            </p>
+          )}
+
+          <div className="flex flex-wrap justify-center gap-3 sm:gap-4 mt-5">
             {isLoggedIn ? (
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={downloadCertificate}
-                disabled={downloading}
-                className="px-8 py-3 bg-gradient-to-r from-orange-600 to-amber-500 text-white rounded-lg flex items-center gap-2 font-semibold disabled:opacity-50"
-              >
-                <Download className="w-5 h-5" />
-                {downloading ? 'Generating...' : 'Download PDF'}
-              </motion.button>
+              <>
+                <motion.button whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }} onClick={downloadCertificate} disabled={downloading || sharing} className={primary}>
+                  <Download className="w-5 h-5" aria-hidden="true" />
+                  {downloading ? 'Generating...' : 'Download PDF'}
+                </motion.button>
+                <motion.button
+                  whileHover={{ scale: 1.04 }}
+                  whileTap={{ scale: 0.96 }}
+                  onClick={addToLinkedIn}
+                  disabled={downloading || sharing}
+                  className="px-6 sm:px-8 py-3 bg-[#0A66C2] text-white rounded-lg flex items-center gap-2 font-semibold shadow-md hover:bg-[#004182] transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0A66C2] disabled:opacity-60"
+                >
+                  <Linkedin className="w-5 h-5" aria-hidden="true" />
+                  Add to LinkedIn
+                </motion.button>
+                <motion.button
+                  whileHover={{ scale: 1.04 }}
+                  whileTap={{ scale: 0.96 }}
+                  onClick={copyVerifyLink}
+                  disabled={downloading || sharing}
+                  className="px-5 py-3 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 ring-1 ring-gray-300 dark:ring-gray-600 rounded-lg flex items-center gap-2 font-semibold hover:bg-orange-50 dark:hover:bg-gray-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600 disabled:opacity-60"
+                >
+                  <Link2 className="w-5 h-5" aria-hidden="true" />
+                  Copy verify link
+                </motion.button>
+              </>
             ) : (
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => setShowLogin(true)}
-                className="px-8 py-3 bg-gradient-to-r from-orange-600 to-amber-500 text-white rounded-lg flex items-center gap-2 font-semibold"
-              >
-                <LogIn className="w-5 h-5" />
+              <motion.button whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }} onClick={() => setShowLogin(true)} className={primary}>
+                <LogIn className="w-5 h-5" aria-hidden="true" />
                 Login to Download PDF
               </motion.button>
             )}
 
             <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+              whileHover={{ scale: 1.04 }}
+              whileTap={{ scale: 0.96 }}
               onClick={onClose}
-              className="px-8 py-3 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-lg font-semibold"
+              className="px-6 sm:px-8 py-3 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-lg font-semibold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600"
             >
               Close
             </motion.button>

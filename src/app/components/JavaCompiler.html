@@ -510,7 +510,7 @@
           <span class="tl-yellow"></span>
           <span class="tl-green"></span>
         </div>
-        <div class="panel-filename"><span class="file-dot"></span>Main.java</div>
+        <div class="panel-filename"><span class="file-dot"></span><span id="fileName">Main.java</span></div>
       </div>
 
       <div class="toolbar">
@@ -623,6 +623,18 @@
     for (let i = 1; i <= lineCount; i++) lines += (i < lineCount ? i + "\n" : i);
     gutter.textContent = lines;
     charCountEl.textContent = codeArea.value.length + " characters";
+    const fileNameEl = document.getElementById("fileName");
+    if (fileNameEl) fileNameEl.textContent = mainClassName(codeArea.value) + ".java";
+  }
+
+  // The class that holds main(): the last top-level type declared before it. Eclipse titles
+  // its console with this name, so the console does too.
+  function mainClassName(code) {
+    const m = /\bpublic\s+static\s+void\s+main\s*\(/.exec(code);
+    const re = /\b(?:class|interface|enum|record)\s+([A-Za-z_$][\w$]*)/g;
+    let name = null, hit;
+    while ((hit = re.exec(code)) && (!m || hit.index < m.index)) name = hit[1];
+    return name || "Main";
   }
 
   function syncScroll() {
@@ -697,6 +709,7 @@
   }
 
   // ---- Eclipse / STS style console -------------------------------------------------
+  let consoleClass = "Main";
   let streamTimer = null;
   let currentController = null;
   let userStopped = false;
@@ -709,11 +722,11 @@
   }
 
   // "<running> Main [Java Application] ..." header, exactly like the Eclipse Console tab.
-  function consoleHeader(state, exitCode) {
+  function consoleHeader(state, exitCode, cls) {
     const tag = state === "running" ? "&lt;running&gt;" : "&lt;terminated&gt;";
     const exit = (exitCode === undefined || exitCode === null) ? "" :
       `<span class="con-exit ${String(exitCode) === "0" ? "ok" : "bad"}">exit ${escapeHtml(String(exitCode))}</span>`;
-    return `<div class="con-head con-${state}"><span class="con-tag">${tag}</span> Main [Java Application] OpenJDK 22 <span class="con-stamp">(${stamp()})</span>${exit}</div>`;
+    return `<div class="con-head con-${state}"><span class="con-tag">${tag}</span> ${escapeHtml(cls || consoleClass)} [Java Application] OpenJDK 22 <span class="con-stamp">(${stamp()})</span>${exit}</div>`;
   }
 
   // Colours one console line: log levels, timestamps, numbers, literals, [brackets],
@@ -843,7 +856,7 @@
     let pending = null; // { kind, text, el }: the line still being written
     const status = document.createElement("div");
     status.className = "con-line sys";
-    status.textContent = "Compiling Main.java …";
+    status.textContent = "Compiling " + consoleClass + ".java …";
     body.appendChild(status);
 
     function paint(line) {
@@ -899,6 +912,7 @@
     }
 
     stopStream();
+    consoleClass = mainClassName(code);
     runBtn.disabled = true;
     stopBtn.disabled = false;
     userStopped = false;
@@ -907,6 +921,10 @@
     const live = createLiveConsole();
 
     const startedAt = performance.now();
+    // Real-time stopwatch: ticks while the program compiles and runs.
+    const tickTimer = setInterval(() => {
+      execTimeEl.textContent = ((performance.now() - startedAt) / 1000).toFixed(1) + "s";
+    }, 100);
 
     // Wandbox always names the submitted file "prog.java". Java only
     // requires the file name to match a PUBLIC top-level class, so we
@@ -914,7 +932,9 @@
     // declaration before sending. Multiple classes in one snippet (e.g. a
     // helper class + a class with main()) keep working exactly as written —
     // no manual file-splitting needed.
-    const sanitizedCode = code.replace(
+    // Wandbox runs a single un-packaged prog.java, so a leading `package ...;` line (which the
+    // lessons now include) is dropped for the run only; the editor keeps it.
+    const sanitizedCode = code.replace(/^\s*package\s+[\w.]+\s*;[ \t]*\r?\n?/m, "").replace(
       /\bpublic(\s+)((?:final\s+|abstract\s+|static\s+)*(?:class|interface|enum)\s+)/g,
       "$2"
     );
@@ -931,7 +951,7 @@
     let sawOutput = false;
 
     const handle = (ev) => {
-      const data = String(ev.data == null ? "" : ev.data).replace(/prog\.java/g, "Main.java");
+      const data = String(ev.data == null ? "" : ev.data).replace(/prog\.java/g, consoleClass + ".java");
       switch (ev.type) {
         case "CompilerMessageE":
           sawCompileError = true;
@@ -1030,6 +1050,7 @@
 
     function finish(render) {
       clearTimeout(timeoutId);
+      clearInterval(tickTimer);
       currentController = null;
       stopBtn.disabled = true;
       const elapsed = ((performance.now() - startedAt) / 1000).toFixed(2);

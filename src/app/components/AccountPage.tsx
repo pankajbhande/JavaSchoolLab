@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { certificateVerifyUrl } from '../lib/siteUrl';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'motion/react';
 import {
@@ -9,12 +10,16 @@ import { toast } from 'sonner';
 import { useAuth } from '../context/AuthContext';
 import { useProgress } from '../context/ProgressContext';
 import { ProgressPanel } from './ProgressPanel';
+import { ProfileSettingsCard } from './profile/ProfileSettingsCard';
 import { slugify } from '../lib/slug';
 import {
   Bookmark, Note, CertificateData, Leaderboard,
   fetchBookmarks, removeBookmark, fetchNotes, saveNote, fetchCertificates, fetchLeaderboard,
-  updateProfile, changePassword,
+  updateProfile, changePassword, uploadAvatar, removeAvatar,
 } from '../services/api';
+import { Avatar } from './Avatar';
+import { AvatarCropDialog } from './AvatarCropDialog';
+import { avatarFileError } from '../lib/avatarImage';
 
 type Tab = 'overview' | 'saved' | 'certificates' | 'leaderboard' | 'profile';
 
@@ -32,7 +37,7 @@ const topicUrl = (b: { courseId: string; moduleId: string; topicId: string }) =>
 
 const card = 'rounded-2xl border border-gray-200 dark:border-gray-700 bg-white/70 dark:bg-gray-900/50 p-5';
 const input =
-  'w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-sm text-gray-800 dark:text-gray-100 px-3 py-2 outline-none focus:ring-2 focus:ring-orange-400';
+  'w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-sm text-gray-800 dark:text-gray-100 px-3 py-2 outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:border-orange-500';
 
 // ---------- Badges (derived from data the server already computes) ----------
 
@@ -70,7 +75,7 @@ function Overview() {
       <div className={card}>
         <h3 className="font-semibold text-gray-800 dark:text-gray-100 mb-3">Topics opened by course</h3>
         {courses.length === 0 ? (
-          <p className="text-sm text-gray-500 dark:text-gray-400">Nothing yet. Open any course to start tracking.</p>
+          <p className="text-sm text-gray-600 dark:text-gray-300">Nothing yet. Open any course to start tracking.</p>
         ) : (
           <ul className="space-y-2">
             {courses.map(([courseId, n]) => (
@@ -105,8 +110,8 @@ function Saved() {
       .catch(() => setError(true));
   }, []);
 
-  if (error) return <p className="text-sm text-gray-500">Could not load your saved items. Is the server running?</p>;
-  if (!bookmarks || !notes) return <p className="text-sm text-gray-500">Loading…</p>;
+  if (error) return <p className="text-sm text-gray-600 dark:text-gray-300">Could not load your saved items. Is the server running?</p>;
+  if (!bookmarks || !notes) return <p className="text-sm text-gray-600 dark:text-gray-300">Loading…</p>;
 
   const dropBookmark = async (b: Bookmark) => {
     setBookmarks(list => list && list.filter(x => !(x.courseId === b.courseId && x.topicId === b.topicId)));
@@ -124,7 +129,7 @@ function Saved() {
           <BookmarkIcon className="w-4 h-4 text-orange-600" /> Bookmarks ({bookmarks.length})
         </h3>
         {bookmarks.length === 0 ? (
-          <p className="text-sm text-gray-500 dark:text-gray-400">Tap the bookmark icon on any topic to save it here.</p>
+          <p className="text-sm text-gray-600 dark:text-gray-300">Tap the bookmark icon on any topic to save it here.</p>
         ) : (
           <ul className="divide-y divide-gray-100 dark:divide-gray-800">
             {bookmarks.map(b => (
@@ -147,7 +152,7 @@ function Saved() {
           <StickyNote className="w-4 h-4 text-orange-600" /> Notes ({notes.length})
         </h3>
         {notes.length === 0 ? (
-          <p className="text-sm text-gray-500 dark:text-gray-400">Use the note icon on any topic to jot something down.</p>
+          <p className="text-sm text-gray-600 dark:text-gray-300">Use the note icon on any topic to jot something down.</p>
         ) : (
           <ul className="space-y-3">
             {notes.map(n => (
@@ -171,45 +176,18 @@ function Saved() {
 }
 
 async function downloadCertificate(c: CertificateData) {
-  const { jsPDF } = await import('jspdf');
-  const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
-  const w = doc.internal.pageSize.getWidth();
-  const h = doc.internal.pageSize.getHeight();
-  doc.setFillColor(255, 250, 240);
-  doc.rect(0, 0, w, h, 'F');
-  doc.setDrawColor(234, 88, 12);
-  doc.setLineWidth(3);
-  doc.rect(10, 10, w - 20, h - 20);
-  doc.setLineWidth(1);
-  doc.rect(14, 14, w - 28, h - 28);
-  doc.setTextColor(30, 30, 30);
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(32);
-  doc.text('Certificate of Completion', w / 2, 55, { align: 'center' });
-  doc.setFont('helvetica', 'normal');
-  doc.setFontSize(14);
-  doc.setTextColor(100, 100, 100);
-  doc.text('This is to certify that', w / 2, 72, { align: 'center' });
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(28);
-  doc.setTextColor(234, 88, 12);
-  doc.text(c.studentName, w / 2, 90, { align: 'center' });
-  doc.setFont('helvetica', 'normal');
-  doc.setFontSize(14);
-  doc.setTextColor(100, 100, 100);
-  doc.text('has successfully completed the assessment for', w / 2, 105, { align: 'center' });
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(20);
-  doc.setTextColor(30, 30, 30);
-  doc.text(c.topicName, w / 2, 120, { align: 'center' });
-  doc.setFont('helvetica', 'normal');
-  doc.setFontSize(13);
-  doc.text(`${c.courseName}  |  Score ${c.score}/${c.totalQuestions} (${Math.round((c.score / c.totalQuestions) * 100)}%)`, w / 2, 132, { align: 'center' });
-  doc.setFontSize(10);
-  doc.setTextColor(120, 120, 120);
-  doc.text(`Issued ${new Date(c.issuedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}   |   ID ${c.certificateUid}`, w / 2, h - 24, { align: 'center' });
-  doc.text('JavaSchoolLab - DHIPAN Software Technologies Private Limited', w / 2, h - 18, { align: 'center' });
-  doc.save(`JavaSchoolLab-${c.certificateUid}.pdf`);
+  // Same design (and QR code) as the certificate shown after a test
+  const { downloadCertificatePdf } = await import('../lib/certificate/pdf');
+  await downloadCertificatePdf({
+    studentName: c.studentName,
+    moduleName: c.topicName,
+    courseName: c.courseName,
+    score: c.score,
+    totalQuestions: c.totalQuestions,
+    issuedAt: new Date(c.issuedAt),
+    certificateUid: c.certificateUid,
+    verifyUrl: certificateVerifyUrl(c.certificateUid),
+  });
 }
 
 function Certificates() {
@@ -220,10 +198,10 @@ function Certificates() {
     fetchCertificates().then(setCerts).catch(() => setError(true));
   }, []);
 
-  if (error) return <p className="text-sm text-gray-500">Could not load certificates. Is the server running?</p>;
-  if (!certs) return <p className="text-sm text-gray-500">Loading…</p>;
+  if (error) return <p className="text-sm text-gray-600 dark:text-gray-300">Could not load certificates. Is the server running?</p>;
+  if (!certs) return <p className="text-sm text-gray-600 dark:text-gray-300">Loading…</p>;
   if (certs.length === 0) {
-    return <div className={card}><p className="text-sm text-gray-500 dark:text-gray-400">No certificates yet. Pass a topic assessment (70% or more) to earn one.</p></div>;
+    return <div className={card}><p className="text-sm text-gray-600 dark:text-gray-300">No certificates yet. Pass a topic assessment (70% or more) to earn one.</p></div>;
   }
 
   return (
@@ -234,7 +212,7 @@ function Certificates() {
             <Award className="w-5 h-5" />
           </div>
           <div className="font-semibold text-gray-800 dark:text-gray-100">{c.topicName}</div>
-          <div className="text-xs text-gray-500 dark:text-gray-400 mb-2">{c.courseName}</div>
+          <div className="text-xs text-gray-600 dark:text-gray-300 mb-2">{c.courseName}</div>
           <div className="text-sm text-gray-700 dark:text-gray-300 tabular-nums">
             Score {c.score}/{c.totalQuestions} ({Math.round((c.score / c.totalQuestions) * 100)}%)
           </div>
@@ -274,13 +252,13 @@ function LeaderboardTab() {
           <Trophy className="w-4 h-4 text-orange-600" /> Leaderboard
         </h3>
         {board?.me && (
-          <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">
+          <p className="text-xs text-gray-600 dark:text-gray-300 mb-3">
             You are #{board.me.rank} of {board.total} with {board.me.xp.toLocaleString()} XP
           </p>
         )}
-        {error ? <p className="text-sm text-gray-500">Could not load the leaderboard.</p>
-          : !board ? <p className="text-sm text-gray-500">Loading…</p>
-          : board.top.length === 0 ? <p className="text-sm text-gray-500">No one has earned XP yet. Be the first!</p>
+        {error ? <p className="text-sm text-gray-600 dark:text-gray-300">Could not load the leaderboard.</p>
+          : !board ? <p className="text-sm text-gray-600 dark:text-gray-300">Loading…</p>
+          : board.top.length === 0 ? <p className="text-sm text-gray-600 dark:text-gray-300">No one has earned XP yet. Be the first!</p>
           : (
             <ol className="space-y-1.5">
               {board.top.map(r => (
@@ -363,12 +341,65 @@ function ProfileTab() {
     }
   };
 
+  const [photoBusy, setPhotoBusy] = useState(false);
+  const [pickedPhoto, setPickedPhoto] = useState<File | null>(null);
+  const pickPhoto = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = ''; // lets the same file be picked again after a failure
+    if (!file) return;
+    const problem = avatarFileError(file);
+    if (problem) { toast.error(problem); return; }
+    setPickedPhoto(file);
+  };
+  const savePhoto = async (dataUrl: string) => {
+    setPhotoBusy(true);
+    try {
+      await uploadAvatar(dataUrl);
+      await refreshUser();
+      setPickedPhoto(null);
+      toast.success('Photo updated');
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Could not update your photo');
+    } finally {
+      setPhotoBusy(false);
+    }
+  };
+  const deletePhoto = async () => {
+    setPhotoBusy(true);
+    try {
+      await removeAvatar();
+      await refreshUser();
+      toast.success('Photo removed');
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Could not remove your photo');
+    } finally {
+      setPhotoBusy(false);
+    }
+  };
+
   const label = 'block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1';
 
   return (
     <div className="grid gap-5 lg:grid-cols-2">
       <form onSubmit={saveProfile} className={`${card} space-y-3`}>
         <h3 className="font-semibold text-gray-800 dark:text-gray-100">Your details</h3>
+        <div className="flex items-center gap-4">
+          <Avatar src={user?.avatar} name={user?.fullName ?? ''} className="w-20 h-20 text-3xl" fallbackClassName="bg-gradient-to-br from-orange-500 to-amber-500 text-white" />
+          <div className="space-y-1.5">
+            <div className="flex flex-wrap gap-2">
+              <label className={`inline-flex cursor-pointer items-center rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-1.5 text-sm font-medium text-gray-800 dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-800 focus-within:ring-2 focus-within:ring-orange-500 ${photoBusy ? 'opacity-60 pointer-events-none' : ''}`}>
+                {photoBusy ? 'Working…' : user?.avatar ? 'Change photo' : 'Add photo'}
+                <input type="file" accept="image/jpeg,image/png,image/webp" className="sr-only" onChange={pickPhoto} disabled={photoBusy} />
+              </label>
+              {user?.avatar && (
+                <button type="button" onClick={deletePhoto} disabled={photoBusy} className="rounded-lg px-3 py-1.5 text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 disabled:opacity-60">
+                  Remove
+                </button>
+              )}
+            </div>
+            <p className="text-xs text-gray-600 dark:text-gray-300">JPG, PNG or WebP. Shown on your public profile if you publish one.</p>
+          </div>
+        </div>
         <div>
           <label className={label} htmlFor="pf-name">Full name</label>
           <input id="pf-name" className={input} value={form.fullName} onChange={e => setForm({ ...form, fullName: e.target.value })} required minLength={2} maxLength={100} />
@@ -392,7 +423,7 @@ function ProfileTab() {
           <label className={label} htmlFor="pf-org">College / company</label>
           <input id="pf-org" className={input} value={form.organization} onChange={e => setForm({ ...form, organization: e.target.value })} maxLength={150} />
         </div>
-        <div className="text-xs text-gray-500">
+        <div className="text-xs text-gray-600 dark:text-gray-300">
           {user?.email || user?.mobile} (sign-in id, cannot be changed here)
         </div>
         <button disabled={savingProfile} className="rounded-lg bg-orange-600 hover:bg-orange-700 disabled:opacity-60 text-white text-sm font-semibold px-5 py-2">
@@ -414,6 +445,10 @@ function ProfileTab() {
           {savingPw ? 'Updating…' : 'Update password'}
         </button>
       </form>
+
+      <ProfileSettingsCard />
+
+      <AvatarCropDialog file={pickedPhoto} busy={photoBusy} onCancel={() => setPickedPhoto(null)} onConfirm={savePhoto} />
     </div>
   );
 }
@@ -428,24 +463,31 @@ export function AccountPage() {
     <main id="main-content" className="flex-1 overflow-y-auto">
       <div className="max-w-6xl mx-auto px-4 py-6">
         <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="mb-5 flex items-center gap-3">
-          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-orange-500 to-amber-500 text-white grid place-items-center text-xl font-bold">
-            {user?.fullName?.charAt(0).toUpperCase()}
-          </div>
+          <Avatar src={user?.avatar} name={user?.fullName ?? ''} className="w-12 h-12 text-xl" fallbackClassName="bg-gradient-to-br from-orange-500 to-amber-500 text-white" />
           <div className="min-w-0">
             <h1 className="font-display text-xl font-bold text-gray-800 dark:text-gray-100 truncate">{user?.fullName}</h1>
-            <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{user?.email || user?.mobile}</p>
+            <p className="text-xs text-gray-600 dark:text-gray-300 truncate">{user?.email || user?.mobile}</p>
           </div>
         </motion.div>
 
-        <div role="tablist" className="flex gap-1 overflow-x-auto mb-5 pb-1">
+        <div role="tablist" aria-label="Account sections" className="flex gap-1 overflow-x-auto mb-5 pb-1">
           {TABS.map(t => (
             <button
               key={t.id}
               role="tab"
               aria-selected={tab === t.id}
+              tabIndex={tab === t.id ? 0 : -1}
+              onKeyDown={e => {
+                const i = TABS.findIndex(x => x.id === t.id);
+                const next = e.key === 'ArrowRight' ? (i + 1) % TABS.length : e.key === 'ArrowLeft' ? (i - 1 + TABS.length) % TABS.length : -1;
+                if (next < 0) return;
+                e.preventDefault();
+                setTab(TABS[next].id);
+                (e.currentTarget.parentElement?.children[next] as HTMLElement | undefined)?.focus();
+              }}
               onClick={() => setTab(t.id)}
-              className={`flex-none inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors ${tab === t.id
-                ? 'bg-orange-500 text-white shadow'
+              className={`flex-none inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600 ${tab === t.id
+                ? 'bg-orange-600 text-white shadow'
                 : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-gray-700 hover:bg-orange-50 dark:hover:bg-gray-700'}`}
             >
               {t.icon}{t.label}

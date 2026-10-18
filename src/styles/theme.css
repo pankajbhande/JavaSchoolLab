@@ -523,6 +523,22 @@
     box-shadow: 0 2px 6px -1px rgba(234, 88, 12, 0.5);
   }
 
+  /* Lead-in sentence that introduces a list ("... because of these points:"), tagged by lib/notes.ts. */
+  .topic-content p.jsl-lead {
+    margin: 1rem 0 0.6rem;
+    padding: 0.65rem 0.9rem;
+    border-left: 4px solid #ea580c;
+    border-radius: 0 0.6rem 0.6rem 0;
+    background: linear-gradient(90deg, rgba(251, 191, 36, 0.28), rgba(251, 191, 36, 0.08));
+    color: #7c2d12;
+    font-weight: 600;
+  }
+
+  .dark .topic-content p.jsl-lead {
+    background: linear-gradient(90deg, rgba(251, 191, 36, 0.22), rgba(251, 191, 36, 0.05));
+    color: #fde68a;
+  }
+
   /* ---- Inline code: 3,141 uses and previously rendered as plain prose,
      so a class name was visually indistinguishable from a sentence. ---- */
   .topic-content code {
@@ -931,3 +947,171 @@
     margin: 0.4rem 0 0;
   }
 }
+
+/* Syntax cards in lesson content: a labelled, monospace code panel with a coloured edge. */
+.syntax-box {
+  margin: 12px 0 16px;
+  border-radius: 12px;
+  border: 1px solid rgba(251, 146, 60, 0.45);
+  border-left: 5px solid #ea580c;
+  background: #fff7ed;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(234, 88, 12, 0.12);
+}
+.syntax-box .syntax-label {
+  padding: 5px 14px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #c2410c;
+  background: rgba(251, 146, 60, 0.18);
+  border-bottom: 1px solid rgba(251, 146, 60, 0.3);
+}
+.syntax-box pre {
+  margin: 0;
+  padding: 14px 16px;
+  background: transparent;
+  overflow-x: auto;
+  font-family: 'JetBrains Mono', 'Fira Code', Consolas, 'Courier New', monospace;
+  font-size: 14px;
+  line-height: 1.7;
+  color: #1f2937;
+  tab-size: 4;
+}
+.syntax-box code { background: transparent; padding: 0; font: inherit; color: inherit; }
+.syntax-box .syn-kw { color: #c2410c; font-weight: 700; }
+.syntax-box .syn-cmt { color: #6b7280; font-style: italic; }
+.dark .syntax-box { background: #1c1917; border-color: rgba(251, 146, 60, 0.4); border-left-color: #fb923c; box-shadow: none; }
+.dark .syntax-box .syntax-label { color: #fdba74; background: rgba(251, 146, 60, 0.14); }
+.dark .syntax-box pre { color: #e7e5e4; }
+.dark .syntax-box .syn-kw { color: #fb923c; }
+.dark .syntax-box .syn-cmt { color: #9ca3af; }
+
+/* ---- Reading polish (final override pass) ---- */
+@layer components {
+  html { scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+  }
+
+  /* Text, lists and headings fill the whole column at any browser zoom, so the heading rules and the
+     text always end at the same edge (a fixed ch cap left a growing empty strip when zoomed out). */
+  .topic-content { overflow-wrap: anywhere; hyphens: auto; max-width: 100%; }
+  .topic-content p { line-height: 1.65; margin: 0.55rem 0; }
+  .topic-content h2, .topic-content h3, .topic-content h4 { scroll-margin-top: 5rem; text-wrap: balance; }
+  .topic-content h2 { margin-top: 0.9rem; margin-bottom: 0.55rem; }
+  .topic-content h3 { margin-top: 1.1rem; margin-bottom: 0.5rem; }
+  .topic-content h2 + h3, .topic-content h3 + h4 { margin-top: 0.5rem; }
+  .topic-content > div > :first-child { margin-top: 0; }
+  .topic-content li > ul, .topic-content li > ol { margin-top: 0.4rem; }
+  .topic-content ul li, .topic-content ol li { margin-bottom: 0.3rem; line-height: 1.6; }
+  .topic-content ul, .topic-content ol { margin-top: 0.4rem; margin-bottom: 0.6rem; }
+  .topic-content ul li::before { top: 0; }
+
+  .topic-content p.jsl-lead { font-size: 1.04rem; line-height: 1.65; }
+  .dark .topic-content p.jsl-lead { color: #fef3c7; border-left-color: #fb923c; }
+
+  .topic-content blockquote {
+    margin: 1.25rem 0;
+    padding: 0.75rem 1rem;
+    border-left: 4px solid #ea580c;
+    border-radius: 0 0.6rem 0.6rem 0;
+    background: rgba(234, 88, 12, 0.06);
+    font-style: italic;
+  }
+  .dark .topic-content blockquote { border-left-color: #fb923c; background: rgba(251, 146, 60, 0.1); }
+
+  .topic-content mark { background: rgba(250, 204, 21, 0.45); color: #1c1917; }
+  .dark .topic-content mark { background: rgba(250, 204, 21, 0.3); color: #fef9c3; }
+
+  .topic-content td, .topic-content th { padding: 0.75rem 1rem; line-height: 1.55; }
+  .topic-content td { font-size: 0.95rem; }
+  .topic-content table { max-width: 100%; }
+  .dark .topic-content em, .dark .topic-content i { color: #d4d4d8; }
+  .dark .topic-content pre { background: #0d1117; border-color: rgba(255, 255, 255, 0.12); }
+
+  .topic-content pre { max-width: 100%; tab-size: 4; -webkit-overflow-scrolling: touch; }
+  .topic-content pre code { overflow-wrap: normal; hyphens: none; }
+  .topic-content pre:focus-visible { outline: 3px solid #ea580c; }
+
+  @media (max-width: 640px) {
+    .topic-content { font-size: 1.02rem; }
+    .topic-content h2 { font-size: 1.32rem; }
+    .topic-content h3 { font-size: 1.12rem; }
+    .topic-content td, .topic-content th { padding: 0.6rem 0.75rem; min-width: 6rem; }
+    .topic-content pre { padding: 0.85rem; font-size: 0.82rem; border-radius: 0.6rem; }
+  }
+}
+
+/* ==========================================================================
+   Shell features: reading controls, keyboard hints (command palette, tour)
+   ========================================================================== */
+.kbd {
+  display: inline-block;
+  min-width: 1.4rem;
+  padding: 0.05rem 0.4rem;
+  border: 1px solid rgba(120, 120, 120, 0.45);
+  border-bottom-width: 2px;
+  border-radius: 0.35rem;
+  background: rgba(120, 120, 120, 0.1);
+  font: 600 0.72rem/1.4 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  text-align: center;
+}
+
+/* Reading width: the default ("wide") keeps the existing layout untouched. */
+.reading-root[data-rd-width="comfortable"] > .container { max-width: 50rem; }
+
+/* Text size: scales the lesson body only. Step 1 (100%) sets no attribute. */
+.reading-root[data-rd-scale] .topic-content { zoom: var(--rd-scale, 1); }
+
+/* Sepia */
+.reading-root[data-rd-theme="sepia"] { background-image: none; background-color: #f4ecd8; }
+.reading-root[data-rd-theme="sepia"] .topic-content p,
+.reading-root[data-rd-theme="sepia"] .topic-content li,
+.reading-root[data-rd-theme="sepia"] .topic-content td,
+.reading-root[data-rd-theme="sepia"] .topic-content h1,
+.reading-root[data-rd-theme="sepia"] .topic-content h2,
+.reading-root[data-rd-theme="sepia"] .topic-content h3,
+.reading-root[data-rd-theme="sepia"] .topic-content h4,
+.reading-root[data-rd-theme="sepia"] .topic-content strong,
+.reading-root[data-rd-theme="sepia"] .topic-content em { color: #433422; }
+.reading-root[data-rd-theme="sepia"] h1 { color: #2e2315; }
+
+/* High contrast: black on white, white on black in dark mode */
+.reading-root[data-rd-theme="contrast"] { background-image: none; background-color: #ffffff; }
+.dark .reading-root[data-rd-theme="contrast"] { background-color: #000000; }
+.reading-root[data-rd-theme="contrast"] .topic-content p,
+.reading-root[data-rd-theme="contrast"] .topic-content li,
+.reading-root[data-rd-theme="contrast"] .topic-content td,
+.reading-root[data-rd-theme="contrast"] .topic-content h1,
+.reading-root[data-rd-theme="contrast"] .topic-content h2,
+.reading-root[data-rd-theme="contrast"] .topic-content h3,
+.reading-root[data-rd-theme="contrast"] .topic-content h4,
+.reading-root[data-rd-theme="contrast"] .topic-content strong,
+.reading-root[data-rd-theme="contrast"] .topic-content em,
+.reading-root[data-rd-theme="contrast"] h1 { color: #000000; }
+.dark .reading-root[data-rd-theme="contrast"] .topic-content p,
+.dark .reading-root[data-rd-theme="contrast"] .topic-content li,
+.dark .reading-root[data-rd-theme="contrast"] .topic-content td,
+.dark .reading-root[data-rd-theme="contrast"] .topic-content h1,
+.dark .reading-root[data-rd-theme="contrast"] .topic-content h2,
+.dark .reading-root[data-rd-theme="contrast"] .topic-content h3,
+.dark .reading-root[data-rd-theme="contrast"] .topic-content h4,
+.dark .reading-root[data-rd-theme="contrast"] .topic-content strong,
+.dark .reading-root[data-rd-theme="contrast"] .topic-content em,
+.dark .reading-root[data-rd-theme="contrast"] h1 { color: #ffffff; }
+
+/* Sepia in dark mode: a warm dark paper with cream text (the light sepia colours
+   would otherwise leave light text on a light page). */
+.dark .reading-root[data-rd-theme="sepia"] { background-image: none; background-color: #231c12; }
+.dark .reading-root[data-rd-theme="sepia"] .topic-content p,
+.dark .reading-root[data-rd-theme="sepia"] .topic-content li,
+.dark .reading-root[data-rd-theme="sepia"] .topic-content td,
+.dark .reading-root[data-rd-theme="sepia"] .topic-content h1,
+.dark .reading-root[data-rd-theme="sepia"] .topic-content h2,
+.dark .reading-root[data-rd-theme="sepia"] .topic-content h3,
+.dark .reading-root[data-rd-theme="sepia"] .topic-content h4,
+.dark .reading-root[data-rd-theme="sepia"] .topic-content strong,
+.dark .reading-root[data-rd-theme="sepia"] .topic-content em,
+.dark .reading-root[data-rd-theme="sepia"] h1 { color: #ecdfc2; }

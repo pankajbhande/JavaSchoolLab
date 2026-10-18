@@ -158,7 +158,10 @@ public class Demo {
 // GET /ping -> 200 pong`],
             ['See the class hierarchy.',
                 r`Class<?> c = DispatcherServlet.class;
-while (c != null) { System.out.println(c.getSimpleName()); c = c.getSuperclass(); }
+while (c != null) {
+    System.out.println(c.getSimpleName());
+    c = c.getSuperclass();
+}
 
 // OUTPUT:
 // DispatcherServlet
@@ -280,9 +283,15 @@ class OrderControllerTest {
         [['Programmatic setup without XML.',
             r`public class WebInit
         extends AbstractAnnotationConfigDispatcherServletInitializer {
-    protected Class<?>[] getRootConfigClasses() { return new Class[]{ RootCfg.class }; }
-    protected Class<?>[] getServletConfigClasses() { return new Class[]{ WebCfg.class }; }
-    protected String[] getServletMappings() { return new String[]{ "/" }; }
+    protected Class<?>[] getRootConfigClasses() {
+        return new Class[]{ RootCfg.class };
+    }
+    protected Class<?>[] getServletConfigClasses() {
+        return new Class[]{ WebCfg.class };
+    }
+    protected String[] getServletMappings() {
+        return new String[]{ "/" };
+    }
 }
 
 // OUTPUT:
@@ -296,9 +305,13 @@ spring.mvc.servlet.load-on-startup=1
 // Servlet initialised during startup, first request is not slower`]],
         [['Verify startup fails on an ambiguous mapping.',
             r`@RestController
-class A { @GetMapping("/x") String a() { return "a"; } }
+class A {
+    @GetMapping("/x") String a() { return "a"; }
+}
 @RestController
-class B { @GetMapping("/x") String b() { return "b"; } }
+class B {
+    @GetMapping("/x") String b() { return "b"; }
+}
 
 // OUTPUT:
 // IllegalStateException: Ambiguous mapping. Cannot map 'b' method
@@ -563,13 +576,13 @@ class LoggingResolver implements HandlerExceptionResolver, Ordered {
 class HomeController {
     @GetMapping("/home")
     String home(Model model) {
-        model.addAttribute("user", "Asha");
+        model.addAttribute("user", "Abaji");
         return "home";          // resolved to templates/home.html
     }
 }
 
 // OUTPUT:
-// GET /home -> renders <h1>Hello Asha</h1> from home.html`],
+// GET /home -> renders <h1>Hello Abaji</h1> from home.html`],
             ['JSP style resolver.',
                 r`@Bean
 ViewResolver jspResolver() {
@@ -585,7 +598,7 @@ ViewResolver jspResolver() {
             r`mvc.perform(get("/home"))
    .andExpect(status().isOk())
    .andExpect(view().name("home"))
-   .andExpect(model().attribute("user", "Asha"));
+   .andExpect(model().attribute("user", "Abaji"));
 
 // OUTPUT:
 // Tests run: 1, Failures: 0, Errors: 0`],
@@ -904,7 +917,8 @@ management.endpoint.health.probes.enabled=true
 spring.main.banner-mode=off
 
 # OUTPUT:
-# GET /actuator/health/readiness -> {"status":"UP"} once initialization ends`],
+# GET /actuator/health/readiness -> {"status":"UP"}
+once initialization ends`],
         [`<p>Scenario: the first user request after deploy takes 5 seconds.</p><ul><li>Cause: lazy servlet init or lazy beans.</li><li>Fix: eager load-on-startup and no lazy initialization.</li><li>Verify with the startup log timestamp.</li></ul>`,
             r`# application.properties
 spring.mvc.servlet.load-on-startup=1
@@ -917,7 +931,10 @@ spring.main.lazy-initialization=false
     'mvc-dispatcherservlet-request-flow': dv(
         [`<p>The steps in doDispatch.</p><ul><li><b>Multipart check:</b> wraps the request if it is multipart.</li><li><b>getHandler:</b> returns the chain from the first matching mapping.</li><li><b>getHandlerAdapter:</b> first adapter whose <code>supports</code> is true.</li><li><b>applyPreHandle:</b> interceptors run in order, and if one returns false the flow stops.</li><li><b>handle:</b> the adapter invokes the method.</li><li><b>applyPostHandle:</b> interceptors run in reverse order.</li><li><b>processDispatchResult:</b> renders the view or resolves the exception, then triggers <code>afterCompletion</code>.</li></ul>`,
             r`HandlerExecutionChain chain = getHandler(req);
-if (chain == null) { noHandlerFound(req, res); return; }
+if (chain == null) {
+    noHandlerFound(req, res);
+    return;
+}
 HandlerAdapter ha = getHandlerAdapter(chain.getHandler());
 if (!chain.applyPreHandle(req, res)) return;
 ModelAndView mv = ha.handle(req, res, chain.getHandler());
@@ -946,7 +963,10 @@ public boolean preHandle(HttpServletRequest q, HttpServletResponse s, Object h) 
 // RIGHT: send a clear error when rejecting
 public boolean preHandle(HttpServletRequest q, HttpServletResponse s, Object h)
         throws IOException {
-    if (q.getHeader("X-Key") == null) { s.sendError(401); return false; }
+    if (q.getHeader("X-Key") == null) {
+        s.sendError(401);
+        return false;
+    }
     return true;
 }
 
@@ -1170,11 +1190,15 @@ class ViewCfg implements WebMvcConfigurer {
         [`<p>Mistakes.</p><ul><li><b>Wrong prefix or suffix:</b> 404 for the template.</li><li><b>Missing starter:</b> without <code>spring-boot-starter-thymeleaf</code> the name is not resolved.</li><li><b>@Controller instead of @RestController:</b> a returned String is read as a view name.</li><li><b>JSP in an executable jar:</b> not supported well; use Thymeleaf or a WAR.</li></ul>`,
             r`// WRONG: returns "Hello" which is looked up as a view named Hello
 @Controller
-class Bad { @GetMapping("/h") String h() { return "Hello"; } }
+class Bad {
+    @GetMapping("/h") String h() { return "Hello"; }
+}
 
 // RIGHT: use @ResponseBody or @RestController for data
 @Controller
-class Good { @GetMapping("/h") @ResponseBody String h() { return "Hello"; } }
+class Good {
+    @GetMapping("/h") @ResponseBody String h() { return "Hello"; }
+}
 
 // OUTPUT:
 // Bad  -> 500 Error resolving template [Hello]
@@ -1192,7 +1216,10 @@ server.compression.enabled=true
             r`@Controller
 class ProductPage {
     @GetMapping(value = "/products", produces = "text/html")
-    String page(Model m) { m.addAttribute("items", List.of("pen")); return "products"; }
+    String page(Model m) {
+        m.addAttribute("items", List.of("pen"));
+        return "products";
+    }
 
     @GetMapping(value = "/products", produces = "application/json")
     @ResponseBody List<String> json() { return List.of("pen"); }

@@ -35,20 +35,20 @@ public class WebConfig implements WebMvcConfigurer {
 // OUTPUT:
 // HTTP/1.1 200
 // Content-Type: application/xml
-// <User><id>1</id><name>Asha</name></User>`],
+// <User><id>1</id><name>Abaji</name></User>`],
             ['Controller that serves both formats.',
                 r`@RestController
 class UserController {
     @GetMapping(value = "/users/{id}",
         produces = {"application/json", "application/xml"})
     User get(@PathVariable long id) {
-        return new User(id, "Asha");
+        return new User(id, "Abaji");
     }
 }
 
 // GET /users/1?format=json
 // OUTPUT:
-// {"id":1,"name":"Asha"}`]],
+// {"id":1,"name":"Abaji"}`]],
         [['Test the parameter with MockMvc.',
             r`@WebMvcTest(UserController.class)
 class FormatTest {
@@ -410,7 +410,7 @@ class ProductController {
                 r`@CrossOrigin(originPatterns = "https://*.shop.com",
               allowCredentials = "true")
 @GetMapping("/api/me")
-String me() { return "asha"; }
+String me() { return "abaji"; }
 
 // OUTPUT:
 // Access-Control-Allow-Origin: https://app.shop.com

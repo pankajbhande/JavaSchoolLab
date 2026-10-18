@@ -303,13 +303,13 @@ except TypeError as e:
 with open("people.csv", "w", newline="", encoding="utf-8") as f:   # newline="" is required
     w = csv.writer(f)
     w.writerow(["name", "age"])
-    w.writerow(["Asha", 30])
+    w.writerow(["Abaji", 30])
     w.writerow(["Li, Wei", 25])        # comma inside a value is quoted
 print(open("people.csv", encoding="utf-8").read())
 
 # OUTPUT:
 # name,age
-# Asha,30
+# Abaji,30
 # "Li, Wei",25`],
         [`Splitting on "," by hand breaks on quoted commas and line breaks inside fields. The module follows the real CSV rules.`,
             r`line = '"Li, Wei",25'
@@ -327,7 +327,7 @@ with open("people.csv", newline="", encoding="utf-8") as f:
         print(row["name"], int(row["age"]) + 1)
 
 # OUTPUT:
-# Asha 31
+# Abaji 31
 # Li, Wei 26`],
         [`<b>Advantages:</b> human readable, universal, streams row by row, works with Excel; <code>DictWriter</code> keeps columns by name.`,
             r`import csv, io
@@ -358,7 +358,7 @@ print(buf.getvalue().strip())
 # tags,"['a', 'b']"`],
         `
    header : name , age
-   row 1  : Asha , 30          reader --> ['Asha','30']
+   row 1  : Abaji , 30          reader --> ['Abaji','30']
    row 2  : "Li, Wei" , 25     DictReader --> {'name':'Li, Wei','age':'25'}
    (rows are streamed one at a time from the file)
 `,
@@ -368,7 +368,7 @@ print(buf.getvalue().strip())
     'JSON Files': dd(
         [`JSON is a text format for nested data (objects, arrays, strings, numbers, booleans, null). <code>json.dump</code>/<code>load</code> work with files, <code>dumps</code>/<code>loads</code> with strings.`,
             r`import json
-data = {"name": "Asha", "skills": ["py", "sql"], "active": True, "boss": None}
+data = {"name": "Abaji", "skills": ["py", "sql"], "active": True, "boss": None}
 with open("p.json", "w", encoding="utf-8") as f:
     json.dump(data, f, indent=2)
 with open("p.json", encoding="utf-8") as f:

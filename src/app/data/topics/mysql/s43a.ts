@@ -316,7 +316,7 @@ try (PreparedStatement ps = conn.prepareStatement(sql)) {
 }
 
 // OUTPUT:
-// Asha`],
+// Abaji`],
         [`String concatenation puts user input into the command language. A value such as <code>' OR '1'='1</code> then changes the meaning of the query (SQL injection).`,
             r`# VULNERABLE
 email = "x' OR '1'='1"
@@ -347,7 +347,7 @@ DEALLOCATE PREPARE find_user;
 
 -- OUTPUT:
 -- id | name
---  7 | Asha`],
+--  7 | Abaji`],
         [`<b>Disadvantages:</b> Connector/J by default emulates prepares client-side; server prepares cost an extra round trip for one-shot queries; a cached plan for a skewed parameter can be suboptimal.`,
             r`// Enable real server-side prepares and a statement cache
 // jdbc:mysql://host/shop?useServerPrepStmts=true&cachePrepStmts=true&prepStmtCacheSize=250&prepStmtCacheSqlLimit=2048

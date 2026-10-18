@@ -39,7 +39,7 @@ that you adapt to your own situation.
             content: `
 <h3>The Gang of Four (GoF)</h3>
 <p>
-In 1994, four authors — <b>Erich Gamma, Richard Helm, Ralph Johnson, and John Vlissides</b> —
+In 1994, four authors — <b>Erich Gamma, Richard Helm, Ralph Johnson, and Jiva Vlissides</b> —
 wrote a book called <i>"Design Patterns: Elements of Reusable Object-Oriented Software"</i>.
 Because there were four authors, they are famously called the <b>"Gang of Four" (GoF)</b>.
 </p>
@@ -144,7 +144,7 @@ Apply a pattern only when the <b>problem it solves</b> is actually present in yo
 <h3>SOLID Principles — The Foundation Behind Good Pattern Usage</h3>
 <p>
 Design patterns work well only when the underlying code follows good object-oriented design principles.
-The most important set of these principles is <b>SOLID</b>, introduced by Robert C. Martin (Uncle Bob).
+The most important set of these principles is <b>SOLID</b>, introduced by Robert C. Martin (Uncle Baji).
 </p>
 
 <h4>S — Single Responsibility Principle (SRP)</h4>
@@ -378,7 +378,7 @@ God Objects and Spaghetti Code is almost always a codebase that ignored SOLID pr
 <tr>
 <td>2</td>
 <td>Who are the Gang of Four (GoF)?</td>
-<td>Erich Gamma, Richard Helm, Ralph Johnson, John Vlissides — authors of the original 23 design patterns book.</td>
+<td>Erich Gamma, Richard Helm, Ralph Johnson, Jiva Vlissides — authors of the original 23 design patterns book.</td>
 </tr>
 <tr>
 <td>3</td>

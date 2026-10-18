@@ -143,8 +143,8 @@ print()
             content: `<h3>break and the Loop else Clause</h3>
 A loop's <code>else</code> block runs only when no <code>break</code> happened. This replaces the "found" flag variable you would need in Java.`,
             codeExamples: [
-                `users = ["asha", "ravi", "meena"]
-target = "kiran"
+                `users = ["abaji", "raoji", "moropant"]
+target = "kanhoji"
 
 # With a flag
 found = False

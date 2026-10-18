@@ -26,8 +26,8 @@ class User:
     def __init__(self, n): self.n = n
 
 cache = weakref.WeakValueDictionary()
-u = User("asha")
-cache["asha"] = u
+u = User("abaji")
+cache["abaji"] = u
 print(len(cache))              # 1
 del u
 print(len(cache))              # entry vanished automatically

@@ -60,7 +60,7 @@ SELECT table_name, is_updatable FROM information_schema.views WHERE table_name I
         [`WITH CHECK OPTION rejects changes that would make a row disappear from the view (LOCAL checks this view, CASCADED also checks underlying views). Multi-table join views can update columns of one base table per statement.`,
             r`UPDATE hr_emp SET dept = 20 WHERE id = 1;
 CREATE VIEW emp_with_dept AS SELECT e.id, e.name, d.name AS dept_name FROM emp e JOIN departments d ON d.id = e.dept;
-UPDATE emp_with_dept SET name = 'Asha R' WHERE id = 1;       -- allowed: only emp columns changed
+UPDATE emp_with_dept SET name = 'Abaji R' WHERE id = 1;       -- allowed: only emp columns changed
 
 -- OUTPUT:
 -- ERROR 1369 (HY000): CHECK OPTION failed 'shop.hr_emp'`],
@@ -79,7 +79,7 @@ UPDATE emp_with_dept SET dept_name = 'X' WHERE id = 1;               -- column o
         [`Real-world: keep an old table name working after a rename or split by exposing an updatable compatibility view, giving old applications time to migrate.`,
             r`RENAME TABLE customers TO customer_accounts;
 CREATE VIEW customers AS SELECT * FROM customer_accounts;
-INSERT INTO customers (name) VALUES ('Asha');       -- still works through the view
+INSERT INTO customers (name) VALUES ('Abaji');       -- still works through the view
 
 -- OUTPUT:
 -- Query OK, 1 row affected`]
@@ -95,7 +95,7 @@ SELECT salary FROM shop.emp;
 
 -- OUTPUT:
 -- id | name
---  1 | Asha
+--  1 | Abaji
 -- ERROR 1142 (42000): SELECT command denied to user 'hr_reader'@'localhost' for table 'emp'`],
         [`Techniques: column hiding, row filtering, data masking with functions, and tenant filters. INVOKER security applies the caller's rights and enables per-user filters using <code>USER()</code>.`,
             r`CREATE VIEW payments_masked AS SELECT id, CONCAT('**** **** **** ', RIGHT(card_no, 4)) AS card, amount FROM payments;
@@ -189,9 +189,9 @@ DELIMITER ;
 CALL emp_by_dept(10);
 
 -- OUTPUT:
--- id | name | salary
---  1 | Asha |  60000
---  2 | Ravi |  45000`],
+-- id | name  | salary
+--  1 | Abaji | 60000
+--  2 | Raoji | 45000`],
         [`Options: characteristics (<code>DETERMINISTIC</code>, <code>READS SQL DATA</code>, <code>MODIFIES SQL DATA</code>), <code>SQL SECURITY</code>, <code>COMMENT</code>, and multiple result sets. Inspect with SHOW CREATE PROCEDURE and the information_schema.routines table.`,
             r`CREATE PROCEDURE transfer(IN p_from INT, IN p_to INT, IN p_amt DECIMAL(10,2))
   MODIFIES SQL DATA SQL SECURITY DEFINER COMMENT 'atomic transfer'
@@ -258,7 +258,7 @@ BEGIN
   SET p_id = LAST_INSERT_ID(), p_status = 'OK';
 END //
 DELIMITER ;
-CALL create_customer('Asha', 'a@x.com', @id, @st); SELECT @id, @st;
+CALL create_customer('Abaji', 'a@x.com', @id, @st); SELECT @id, @st;
 
 -- OUTPUT:
 -- @id | @st
@@ -518,8 +518,8 @@ SELECT dept_name(10), rnd() BETWEEN 0 AND 99 AS in_range;
 SELECT e.name, d.name FROM emp e JOIN departments d ON d.id = e.dept;          -- one join
 
 -- OUTPUT:
--- name | name
--- Asha | HR`],
+-- name  | name
+-- Abaji | HR`],
         [`A function call in WHERE or ORDER BY prevents index use on the argument column and runs for every candidate row. Use generated columns or compute outside the predicate.`,
             r`ALTER TABLE products ADD COLUMN price_with_gst DECIMAL(10,2) AS (price + ROUND(price * 0.18, 2)) STORED, ADD INDEX idx_pwg (price_with_gst);
 SELECT id FROM products WHERE price_with_gst BETWEEN 100 AND 200;
@@ -595,8 +595,8 @@ CALL give_bonus();
 
 -- OUTPUT:
 -- name  | b
--- Asha  | 6000
--- Ravi  | 4500`],
+-- Abaji | 6000
+-- Raoji | 4500`],
         [`Quick rules: need a value in a query → function; need to perform actions, return several rows or manage a transaction → procedure. Privileges differ: EXECUTE is granted per routine type and name.`,
             r`GRANT EXECUTE ON FUNCTION shop.bonus TO 'report'@'%';
 GRANT EXECUTE ON PROCEDURE shop.give_bonus TO 'payroll'@'%';
@@ -637,12 +637,12 @@ BEGIN
   IF NEW.created_at IS NULL THEN SET NEW.created_at = NOW(); END IF;
 END //
 DELIMITER ;
-INSERT INTO users (email) VALUES ('  Asha@Example.COM ');
+INSERT INTO users (email) VALUES ('  Abaji@Example.COM ');
 SELECT email, created_at IS NOT NULL AS has_ts FROM users ORDER BY id DESC LIMIT 1;
 
 -- OUTPUT:
 -- email            | has_ts
--- asha@example.com |      1`],
+-- abaji@example.com |      1`],
         [`Events: BEFORE INSERT/UPDATE/DELETE. Several triggers per event are allowed with <code>FOLLOWS</code>/<code>PRECEDES</code>. List them in information_schema.triggers. Use SIGNAL to reject invalid changes.`,
             r`DELIMITER //
 CREATE TRIGGER trg_acct_bu BEFORE UPDATE ON acct FOR EACH ROW
@@ -739,12 +739,12 @@ CREATE TRIGGER trg_emp_audit AFTER UPDATE ON emp FOR EACH ROW
 INSERT INTO audit_log (tbl, row_id, action, old_data, new_data, db_user, app_user)
 VALUES ('emp', NEW.id, 'UPDATE', JSON_OBJECT('salary', OLD.salary, 'dept', OLD.dept), JSON_OBJECT('salary', NEW.salary, 'dept', NEW.dept), CURRENT_USER(), @app_user); //
 DELIMITER ;
-SET @app_user = 'asha'; UPDATE emp SET salary = 62000 WHERE id = 1;
+SET @app_user = 'abaji'; UPDATE emp SET salary = 62000 WHERE id = 1;
 SELECT action, old_data, new_data, app_user FROM audit_log;
 
 -- OUTPUT:
 -- action | old_data                          | new_data                          | app_user
--- UPDATE | {"dept": 10, "salary": 61000}     | {"dept": 10, "salary": 62000}     | asha`],
+-- UPDATE | {"dept": 10, "salary": 61000}     | {"dept": 10, "salary": 62000}     | abaji`],
         [`Application user: set a session variable on connection checkout (<code>SET @app_user = ...</code>). Log only real changes by comparing OLD and NEW with the NULL-safe operator. Protect the audit table with grants (INSERT only for writers).`,
             r`REVOKE UPDATE, DELETE ON shop.audit_log FROM 'shop_app'@'%';
 GRANT SELECT ON shop.audit_log TO 'auditor'@'%';
@@ -837,7 +837,7 @@ CALL list_names();
 
 -- OUTPUT: (one result set per row)
 -- name
--- Asha`],
+-- Abaji`],
         [`The cursor query can use parameters and variables, joins and ORDER BY. Fetch several columns into several variables in order. The NOT FOUND handler signals the end; reset the flag when reusing it for another cursor.`,
             r`DELIMITER //
 CREATE PROCEDURE pay_report(IN p_dept INT, OUT p_total DECIMAL(14,2))

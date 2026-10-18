@@ -179,8 +179,8 @@ print(len(bits), bits)
 A comprehension should read in one breath. A good rule of thumb: <b>more than two <code>for</code> clauses, or nesting combined with several conditions, belongs in ordinary loops or a helper function</b>.`,
             codeExamples: [
                 `orders = [
-    {"customer": "Asha", "items": [{"sku": "PEN", "qty": 2}, {"sku": "BAG", "qty": 0}]},
-    {"customer": "Ravi", "items": [{"sku": "INK", "qty": 1}]},
+    {"customer": "Abaji", "items": [{"sku": "PEN", "qty": 2}, {"sku": "BAG", "qty": 0}]},
+    {"customer": "Raoji", "items": [{"sku": "INK", "qty": 1}]},
 ]
 
 # Hard to read
@@ -194,7 +194,7 @@ lines = [f"{o['customer']}:{i['sku']}" for o in orders for i in shipped_items(o)
 print(lines)
 
 # OUTPUT:
-# ['Asha:PEN', 'Ravi:INK']`
+# ['Abaji:PEN', 'Raoji:INK']`
             ]
         },
         {

@@ -155,10 +155,10 @@ class EmailValidator(Validator):
             raise ValueError("invalid email")
         return value.lower()
 
-print(EmailValidator().validate("Asha@Mail.com"))
+print(EmailValidator().validate("Abaji@Mail.com"))
 
 # OUTPUT:
-# asha@mail.com`
+# abaji@mail.com`
             ]
         },
         {

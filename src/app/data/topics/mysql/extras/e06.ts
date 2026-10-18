@@ -21,13 +21,13 @@ export const e06: Record<string, Extra> = {
         [['Create one-to-one with shared PK.',
             r`CREATE TABLE accounts (id INT PRIMARY KEY, owner VARCHAR(30));
 CREATE TABLE account_settings (account_id INT PRIMARY KEY, theme VARCHAR(10), FOREIGN KEY (account_id) REFERENCES accounts(id));
-INSERT INTO accounts VALUES (1,'Asha');
+INSERT INTO accounts VALUES (1,'Abaji');
 INSERT INTO account_settings VALUES (1,'dark');
 SELECT a.owner, s.theme FROM accounts a JOIN account_settings s ON s.account_id = a.id;
 
 -- OUTPUT:
 -- owner | theme
--- Asha  | dark`],
+-- Abaji | dark`],
             ['Second settings row is rejected.',
                 r`INSERT INTO account_settings VALUES (1,'light');
 
@@ -38,10 +38,10 @@ SELECT a.owner, s.theme FROM accounts a JOIN account_settings s ON s.account_id 
 
 -- OUTPUT:
 -- owner | theme
--- Asha  | dark`],
+-- Abaji | dark`],
             ['Atomic creation.',
                 r`START TRANSACTION;
-INSERT INTO accounts VALUES (2,'Ravi');
+INSERT INTO accounts VALUES (2,'Raoji');
 INSERT INTO account_settings VALUES (2,'light');
 COMMIT;
 
@@ -121,14 +121,14 @@ SELECT COUNT(*) FROM order_items WHERE order_id = 1;
 CREATE TABLE roles (id INT PRIMARY KEY, name VARCHAR(20));
 CREATE TABLE user_roles (user_id INT, role_id INT, granted_on DATE, PRIMARY KEY (user_id, role_id),
   FOREIGN KEY (user_id) REFERENCES users(id), FOREIGN KEY (role_id) REFERENCES roles(id));
-INSERT INTO users VALUES (1,'Asha'); INSERT INTO roles VALUES (1,'ADMIN'),(2,'EDITOR');
+INSERT INTO users VALUES (1,'Abaji'); INSERT INTO roles VALUES (1,'ADMIN'),(2,'EDITOR');
 INSERT INTO user_roles VALUES (1,1,'2026-01-01'),(1,2,'2026-01-02');
 SELECT u.name, r.name AS role FROM users u JOIN user_roles ur ON ur.user_id=u.id JOIN roles r ON r.id=ur.role_id;
 
 -- OUTPUT:
--- name | role
--- Asha | ADMIN
--- Asha | EDITOR`],
+-- name  | role
+-- Abaji | ADMIN
+-- Abaji | EDITOR`],
             ['Users having both roles.',
                 r`SELECT user_id FROM user_roles WHERE role_id IN (1,2) GROUP BY user_id HAVING COUNT(DISTINCT role_id) = 2;
 
@@ -263,26 +263,26 @@ SELECT id FROM blog WHERE deleted_at IS NULL;
             ['S', 'How can data reveal dependency violations?', 'GROUP BY the determinant and check COUNT(DISTINCT dependent) &gt; 1.']],
         [['Redundant design.',
             r`CREATE TABLE orders_flat (order_id INT, customer VARCHAR(20), customer_city VARCHAR(20), item VARCHAR(20));
-INSERT INTO orders_flat VALUES (1,'Asha','Pune','Pen'),(2,'Asha','Pune','Book'),(3,'Asha','Delhi','Bag');
+INSERT INTO orders_flat VALUES (1,'Abaji','Pune','Pen'),(2,'Abaji','Pune','Book'),(3,'Abaji','Delhi','Bag');
 SELECT customer, COUNT(DISTINCT customer_city) AS cities FROM orders_flat GROUP BY customer;
 
 -- OUTPUT:
 -- customer | cities
--- Asha     | 2        (inconsistent: city depends on customer)`],
+-- Abaji    | 2        (inconsistent: city depends on customer)`],
             ['Fix with a separate table.',
                 r`CREATE TABLE customers_n (name VARCHAR(20) PRIMARY KEY, city VARCHAR(20));
-INSERT INTO customers_n VALUES ('Asha','Pune');
+INSERT INTO customers_n VALUES ('Abaji','Pune');
 SELECT * FROM customers_n;
 
 -- OUTPUT:
--- name | city
--- Asha | Pune`]],
+-- name  | city
+-- Abaji | Pune`]],
         [['Detect a violated dependency.',
             r`SELECT customer FROM orders_flat GROUP BY customer HAVING COUNT(DISTINCT customer_city) > 1;
 
 -- OUTPUT:
 -- customer
--- Asha`],
+-- Abaji`],
             ['Deliberate snapshot is fine.',
                 r`SELECT oi.product_id, oi.unit_price AS price_when_ordered, p.price AS price_now FROM order_items oi JOIN products p ON p.id = oi.product_id;
 
@@ -404,7 +404,7 @@ SELECT i.order_id, p.product_name FROM items_ok i JOIN products2 p USING (produc
             ['S', 'How do you detect transitive dependencies in data?', 'GROUP BY the suspected determinant (dept_id) and check if the dependent column is always unique per group.']],
         [['Transitive dependency.',
             r`CREATE TABLE emp_bad (id INT PRIMARY KEY, name VARCHAR(20), dept_id INT, dept_name VARCHAR(20));
-INSERT INTO emp_bad VALUES (1,'Asha',10,'HR'),(2,'Ravi',10,'HR'),(3,'Meena',20,'IT');
+INSERT INTO emp_bad VALUES (1,'Abaji',10,'HR'),(2,'Raoji',10,'HR'),(3,'Moropant',20,'IT');
 SELECT dept_id, COUNT(*) AS rows_n, COUNT(DISTINCT dept_name) AS names FROM emp_bad GROUP BY dept_id;
 
 -- OUTPUT:
@@ -414,14 +414,14 @@ SELECT dept_id, COUNT(*) AS rows_n, COUNT(DISTINCT dept_name) AS names FROM emp_
                 r`CREATE TABLE dept3 (id INT PRIMARY KEY, name VARCHAR(20));
 CREATE TABLE emp3 (id INT PRIMARY KEY, name VARCHAR(20), dept_id INT, FOREIGN KEY (dept_id) REFERENCES dept3(id));
 INSERT INTO dept3 VALUES (10,'HR'),(20,'IT');
-INSERT INTO emp3 VALUES (1,'Asha',10),(2,'Ravi',10),(3,'Meena',20);
+INSERT INTO emp3 VALUES (1,'Abaji',10),(2,'Raoji',10),(3,'Moropant',20);
 SELECT e.name, d.name AS dept FROM emp3 e JOIN dept3 d ON d.id = e.dept_id;
 
 -- OUTPUT:
--- name  | dept
--- Asha  | HR
--- Ravi  | HR
--- Meena | IT`]],
+-- name     | dept
+-- Abaji    | HR
+-- Raoji    | HR
+-- Moropant | IT`]],
         [['Rename a department once.',
             r`UPDATE dept3 SET name = 'People Ops' WHERE id = 10;
 
@@ -551,11 +551,11 @@ ON DUPLICATE KEY UPDATE revenue = VALUES(revenue);
         [['Primary and alternate keys.',
             r`CREATE TABLE app_users (id BIGINT PRIMARY KEY AUTO_INCREMENT, email VARCHAR(80) NOT NULL, username VARCHAR(30) NOT NULL,
   UNIQUE KEY uq_email (email), UNIQUE KEY uq_username (username));
-INSERT INTO app_users (email, username) VALUES ('a@x.com','asha');
-INSERT INTO app_users (email, username) VALUES ('b@x.com','asha');
+INSERT INTO app_users (email, username) VALUES ('a@x.com','abaji');
+INSERT INTO app_users (email, username) VALUES ('b@x.com','abaji');
 
 -- OUTPUT:
--- ERROR 1062 (23000): Duplicate entry 'asha' for key 'app_users.uq_username'`],
+-- ERROR 1062 (23000): Duplicate entry 'abaji' for key 'app_users.uq_username'`],
             ['Look up by an alternate key.',
                 r`SELECT id FROM app_users WHERE email = 'a@x.com';
 

@@ -93,7 +93,7 @@ public class CollegeWelcome {
 
         // RIGHT: every statement lives inside a method, inside a class
         String collegeName = "Pune Institute of Technology";
-        String studentName = "Ravi Kumar";
+        String studentName = "Raoji Kumar";
         int feesInRupees = 45000;
 
         System.out.println("Welcome to " + collegeName);
@@ -103,7 +103,7 @@ public class CollegeWelcome {
 }
 // OUTPUT:
 // Welcome to Pune Institute of Technology
-// Student: Ravi Kumar
+// Student: Raoji Kumar
 // Fees due: Rs 45000`
                                 ]
                             },
@@ -173,7 +173,7 @@ public class BankTransactionDemo {
 
     public static void main(String[] args) {
 
-        String accountHolder = "Anita Sharma";
+        String accountHolder = "Annaji Sharma";
         double balance = 50000.0;
         double withdrawAmount = 8000.0;
 
@@ -195,7 +195,7 @@ public class BankTransactionDemo {
     }
 }
 // OUTPUT:
-// Account holder: Anita Sharma
+// Account holder: Annaji Sharma
 // Opening balance: Rs 50000.0
 // Withdrawn: Rs 8000.0
 // Closing balance: Rs 42000.0`

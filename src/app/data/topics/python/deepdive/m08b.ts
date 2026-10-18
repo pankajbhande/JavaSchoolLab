@@ -142,12 +142,12 @@ print(time.time() > 1_600_000_000)          # seconds since 1970-01-01 UTC
         [`The <code>json</code> module converts between Python objects and JSON text; the <code>csv</code> module reads and writes delimited tables. Both work on file objects or in-memory text.`,
             r`import json, csv, io
 print(json.dumps({"a": [1, 2], "ok": True}))
-rows = list(csv.reader(io.StringIO("id,name\n1,Ann\n2,Bob\n")))
+rows = list(csv.reader(io.StringIO("id,name\n1,Ann\n2,Baji\n")))
 print(rows)
 
 # OUTPUT:
 # {"a": [1, 2], "ok": true}
-# [['id', 'name'], ['1', 'Ann'], ['2', 'Bob']]`],
+# [['id', 'name'], ['1', 'Ann'], ['2', 'Baji']]`],
         [`Programs exchange data with APIs (JSON) and spreadsheets (CSV). Parsing by hand with split or regex breaks on quotes, nesting and escapes.`,
             r`import json
 raw = '{"name": "Lee, \\"Jr\\"", "n": 1}'      # escaped quotes + comma inside a value

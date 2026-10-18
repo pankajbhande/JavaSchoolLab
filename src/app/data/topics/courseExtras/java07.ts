@@ -39,8 +39,12 @@ System.out.println(Plan.valueOf("PRO").price() + " "
 // 499 true [FREE, PRO, TEAM] 1`],
             ['Constant-specific methods and EnumMap.',
                 r`enum Op {
-    ADD { int apply(int a, int b) { return a + b; } },
-    MUL { int apply(int a, int b) { return a * b; } };
+    ADD {
+        int apply(int a, int b) { return a + b; }
+    },
+    MUL {
+        int apply(int a, int b) { return a * b; }
+    };
     abstract int apply(int a, int b);
 }
 EnumMap<Op, Integer> res = new EnumMap<>(Op.class);
@@ -87,7 +91,11 @@ System.out.println(p + " " + EnumSet.complementOf(EnumSet.copyOf(p))
             ['S', 'Explain PECS.', 'Use extends when a structure produces values you read, and super when it consumes values you write.'],
             ['S', 'Why can you not create new T[]?', 'Because T is erased and arrays need their component type at run time.']],
         [['Generic class and bounded method.',
-            r`class Box<T> { private T v; Box(T v) { this.v = v; } T get() { return v; } }
+            r`class Box<T> {
+    private T v;
+    Box(T v) { this.v = v; }
+    T get() { return v; }
+}
 static <T extends Comparable<T>> T max(List<T> l) {
     T m = l.get(0);
     for (T t : l) if (t.compareTo(m) > 0) m = t;
@@ -104,8 +112,12 @@ System.out.println(new Box<>("hi").get() + " " + max(List.of(3, 9, 4))
     for (Number n : src) s += n.doubleValue();
     return s;
 }
-static void fill(List<? super Integer> dst) { dst.add(1); dst.add(2); }
-List<Object> objs = new ArrayList<>(); fill(objs);
+static void fill(List<? super Integer> dst) {
+    dst.add(1);
+    dst.add(2);
+}
+List<Object> objs = new ArrayList<>();
+fill(objs);
 System.out.println(sum(List.of(1, 2.5)) + " " + objs);
 
 // OUTPUT:
@@ -144,7 +156,10 @@ System.out.println(view.size());
         [['Custom runtime annotation and reader.',
             r`@Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-@interface Audit { String action(); boolean sensitive() default false; }
+@interface Audit {
+    String action();
+    boolean sensitive() default false;
+}
 
 class Service {
     @Audit(action = "transfer", sensitive = true) void transfer() {}
@@ -216,17 +231,21 @@ for (Field f : Form.class.getDeclaredFields()) {
             ['S', 'Why does reflection need configuration in GraalVM native images?', 'Ahead-of-time compilation removes unreachable code, so dynamically accessed members must be declared.'],
             ['S', 'How can you avoid reflection costs?', 'Cache Method/Field objects, use MethodHandles, or generate code at build time.']],
         [['Inspect and call.',
-            r`class User { private String name = "Asha"; public String greet(String g) { return g + " " + name; } }
+            r`class User {
+    private String name = "Abaji";
+    public String greet(String g) { return g + " " + name; }
+}
 Class<?> c = User.class;
 Object u = c.getDeclaredConstructor().newInstance();
 Method m = c.getMethod("greet", String.class);
-Field f = c.getDeclaredField("name"); f.setAccessible(true);
-f.set(u, "Ravi");
+Field f = c.getDeclaredField("name");
+f.setAccessible(true);
+f.set(u, "Raoji");
 System.out.println(m.invoke(u, "Hi") + " "
     + Arrays.stream(c.getDeclaredMethods()).map(Method::getName).toList());
 
 // OUTPUT:
-// Hi Ravi [greet]`],
+// Hi Raoji [greet]`],
             ['Dynamic proxy.',
                 r`interface Greeter { String hi(String n); }
 Greeter g = (Greeter) Proxy.newProxyInstance(
@@ -281,7 +300,10 @@ try {
 
     static class Builder {                 // static nested: no Pizza needed
         private String size = "M";
-        Builder size(String s) { size = s; return this; }
+        Builder size(String s) {
+            size = s;
+            return this;
+        }
         Pizza build() { return new Pizza(this); }
     }
 
@@ -301,7 +323,9 @@ System.out.println(s.label());
         return a.length() - b.length();
     }
 };
-class Local { String hi() { return "local"; } }          // local class
+class Local {
+    String hi() { return "local"; }
+}  // local class
 List<String> l = new ArrayList<>(List.of("ccc", "a", "bb"));
 l.sort(byLen);
 System.out.println(l + " " + new Local().hi());
@@ -408,7 +432,10 @@ System.out.println(new Ok(1) instanceof Result);
         [['Correct override.',
             r`final class Point {
     final int x, y;
-    Point(int x, int y) { this.x = x; this.y = y; }
+    Point(int x, int y) {
+        this.x = x;
+        this.y = y;
+    }
     @Override public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Point p)) return false;
@@ -428,7 +455,8 @@ System.out.println(s.contains(new Point(1, 2)) + " " + new Point(1, 2).equals(nu
     @Override public boolean equals(Object o) { return o instanceof Bad b && b.v == v; }
     // hashCode() not overridden
 }
-Set<Bad> s = new HashSet<>(); s.add(new Bad(1));
+Set<Bad> s = new HashSet<>();
+s.add(new Bad(1));
 System.out.println(s.contains(new Bad(1)));
 
 // OUTPUT:
@@ -448,7 +476,10 @@ System.out.println(p1.equals(p2) + " " + (p1.hashCode() == p2.hashCode()));
 }
 class Q extends P {
     final int y;
-    Q(int x, int y) { super(x); this.y = y; }
+    Q(int x, int y) {
+        super(x);
+        this.y = y;
+    }
     public boolean equals(Object o) {
         return o instanceof Q q && q.x == x && q.y == y;
     }
@@ -481,7 +512,7 @@ System.out.println(new P(1).equals(new Q(1, 2)) + " " + new Q(1, 2).equals(new P
     public int compareTo(Emp o) { return name.compareTo(o.name); }
 }
 List<Emp> l = new ArrayList<>(List.of(
-    new Emp("Ravi", "IT", 90), new Emp("Asha", "IT", 95), new Emp("Meena", "HR", 70)));
+    new Emp("Raoji", "IT", 90), new Emp("Abaji", "IT", 95), new Emp("Moropant", "HR", 70)));
 Collections.sort(l); // natural order: by name
 System.out.println(l.stream().map(Emp::name).toList());
 l.sort(Comparator.comparing(Emp::dept)
@@ -489,8 +520,8 @@ l.sort(Comparator.comparing(Emp::dept)
 System.out.println(l.stream().map(Emp::name).toList());
 
 // OUTPUT:
-// [Asha, Meena, Ravi]
-// [Meena, Asha, Ravi]`],
+// [Abaji, Moropant, Raoji]
+// [Moropant, Abaji, Raoji]`],
             ['Null-safe order.',
                 r`List<String> l = Arrays.asList("b", null, "a");
 l.sort(Comparator.nullsFirst(Comparator.naturalOrder()));
@@ -541,8 +572,12 @@ System.out.println(Integer.compare(Integer.MAX_VALUE, -1) < 0);
     }
 }
 class Person implements Cloneable {
-    String name; Address addr;
-    Person(String n, Address a) { name = n; addr = a; }
+    String name;
+    Address addr;
+    Person(String n, Address a) {
+        name = n;
+        addr = a;
+    }
     protected Person shallow() throws CloneNotSupportedException {
         return (Person) super.clone();
     }
@@ -552,7 +587,7 @@ class Person implements Cloneable {
         return p;
     }
 }
-Person a = new Person("Asha", new Address("Pune"));
+Person a = new Person("Abaji", new Address("Pune"));
 Person s = a.shallow(), d = a.deep();
 a.addr.city = "Delhi";
 System.out.println(s.addr.city + " " + d.addr.city);
@@ -562,7 +597,10 @@ System.out.println(s.addr.city + " " + d.addr.city);
             ['Copy constructor alternative.',
                 r`class Pt {
     final int x, y;
-    Pt(int x, int y) { this.x = x; this.y = y; }
+    Pt(int x, int y) {
+        this.x = x;
+        this.y = y;
+    }
     Pt(Pt o) { this(o.x, o.y); }   // copy constructor
 }
 Pt a = new Pt(1, 2), b = new Pt(a);
@@ -607,9 +645,15 @@ System.out.println(Level.HIGH.getDeclaringClass().getSimpleName() + " "
 // Level Enum`],
         [`Advanced use: state machines (each state defines transitions), strategy per constant, enums implementing interfaces, lookup maps built in a static block, <code>EnumMap</code> / <code>EnumSet</code> for flags, <code>switch</code> expressions with exhaustiveness, and <code>values()</code> caching to avoid repeated array clones. Use <code>@Enumerated(EnumType.STRING)</code> in JPA.`,
             r`enum State {
-    NEW     { State next() { return PAID; } },
-    PAID    { State next() { return SHIPPED; } },
-    SHIPPED { State next() { return this; } };
+    NEW {
+        State next() { return PAID; }
+    },
+    PAID {
+        State next() { return SHIPPED; }
+    },
+    SHIPPED {
+        State next() { return this; }
+    };
 
     abstract State next();
 
@@ -666,7 +710,8 @@ System.out.println(Status.fromCode("S"));
 
     'generics': dv(
         [`Type erasure replaces type variables with their bound (or Object) and inserts casts and bridge methods. At run time the JVM sees raw types; generic information remains in class metadata (Signature attribute) for reflection. Reifiable types (arrays, raw types, unbounded wildcards) keep type info; <code>List&lt;String&gt;</code> does not.`,
-            r`List<String> a = new ArrayList<>(); List<Integer> b = new ArrayList<>();
+            r`List<String> a = new ArrayList<>();
+List<Integer> b = new ArrayList<>();
 System.out.println(a.getClass() == b.getClass());
 class StrBox implements Comparable<StrBox> {
     public int compareTo(StrBox o) { return 0; }  // compiler adds a bridge method
@@ -690,12 +735,18 @@ static <T> T create(Class<T> type) throws Exception {
 abstract class Builder<B extends Builder<B>> {      // self type
     String name;
     abstract B self();
-    B name(String n) { name = n; return self(); }
+    B name(String n) {
+        name = n;
+        return self();
+    }
 }
 class CarBuilder extends Builder<CarBuilder> {
     int doors;
     CarBuilder self() { return this; }
-    CarBuilder doors(int d) { doors = d; return this; }
+    CarBuilder doors(int d) {
+        doors = d;
+        return this;
+    }
 }
 List<Integer> nums = new ArrayList<>(List.of(1, 3, 2));
 sortDesc(nums);
@@ -741,21 +792,27 @@ class InMemoryRepo<T, ID> implements Repository<T, ID> {
         return Optional.ofNullable(store.get(id));
     }
     public List<T> findAll() { return List.copyOf(store.values()); }
-    public T save(T e) { store.put(idOf.apply(e), e); return e; }
+    public T save(T e) {
+        store.put(idOf.apply(e), e);
+        return e;
+    }
 }
 record User(long id, String name) {}
 Repository<User, Long> users = new InMemoryRepo<>(User::id);
-users.save(new User(1, "Asha"));
+users.save(new User(1, "Abaji"));
 System.out.println(users.findById(1L).map(User::name).orElse("?"));
 
 // OUTPUT:
-// Asha`]
+// Abaji`]
     ),
 
     'annotations': dv(
         [`Annotations compile into class file attributes (<code>RuntimeVisibleAnnotations</code>), and an annotation type is an interface extending <code>java.lang.annotation.Annotation</code>. At run time <code>getAnnotation</code> returns a dynamic proxy that implements the annotation interface and serves element values. Elements may be primitives, String, Class, enums, annotations and arrays of those.`,
             r`@Retention(RetentionPolicy.RUNTIME)
-@interface Info { String value() default "none"; int[] tags() default {}; }
+@interface Info {
+    String value() default "none";
+    int[] tags() default {};
+}
 
 @Info(value = "svc", tags = {1, 2}) class A {}
 
@@ -832,8 +889,13 @@ System.out.println(s.repo != null);
 
     'reflection-api': dv(
         [`Every loaded class has a <code>Class</code> object holding metadata: fields, methods, constructors, annotations, modifiers, generic signatures. <code>Method.invoke</code> checks access and argument types, boxes arguments, and since JDK 18 uses method handles internally (faster than the old native accessors). <code>getDeclaredX</code> returns members of that class only (any visibility); <code>getX</code> returns public members including inherited.`,
-            r`class Base { public void a() {} private void b() {} }
-class Derived extends Base { public void c() {} }
+            r`class Base {
+    public void a() {}
+    private void b() {}
+}
+class Derived extends Base {
+    public void c() {}
+}
 System.out.println(Arrays.stream(Derived.class.getMethods())
     .map(Method::getName).filter(n -> n.length() == 1).sorted().toList());
 System.out.println(Arrays.stream(Derived.class.getDeclaredMethods())
@@ -917,25 +979,32 @@ System.out.println("reflect ms=" + (System.nanoTime() - t) / 1_000_000);
     }
     return sj.toString();
 }
-class U { String name = "Asha"; int age = 30; }
+class U {
+    String name = "Abaji";
+    int age = 30;
+}
 System.out.println(toJson(new U()));
 
 // OUTPUT:
-// {"name":"Asha","age":30}`]
+// {"name":"Abaji","age":30}`]
     ),
 
     'nested-inner-classes': dv(
         [`The compiler turns every nested class into a separate top-level class file (<code>Outer$Inner.class</code>, <code>Outer$1.class</code> for anonymous). An inner class constructor takes the outer instance as a hidden parameter stored in a synthetic field <code>this$0</code>. Local and anonymous classes copy captured effectively final variables into synthetic fields (<code>val$name</code>). Newer compilers (Java 18+) drop <code>this$0</code> when the inner class never uses the outer instance, so the sample below uses it.`,
             r`class Outer {
     int x;
-    class Inner { int get() { return x; } }    // uses the outer instance
+    class Inner {
+        int get() { return x; }
+    }  // uses the outer instance
     static class Nested {}
 }
 Class<?> in = Outer.Inner.class;
 System.out.println(in.getName() + " " + Outer.Nested.class.getName());
 System.out.println(Arrays.stream(in.getDeclaredFields())
     .map(Field::getName).toList() + " " + in.getNestHost().getSimpleName());
-Runnable anon = new Runnable() { public void run() {} };
+Runnable anon = new Runnable() {
+    public void run() {}
+};
 System.out.println(anon.getClass().getName().contains("$")
     + " " + anon.getClass().isAnonymousClass());
 
@@ -985,7 +1054,9 @@ Object o = new Object() {
 <li>Calling outer methods from threads that outlive the outer object.</li>
 </ul>`,
             r`// anonymous subclass of ArrayList, holds a reference to the outer object
-List<String> bad = new ArrayList<>() {{ add("a"); add("b"); }};
+List<String> bad = new ArrayList<>() {
+    { add("a"); add("b"); }
+};
 List<String> good = List.of("a", "b");
 System.out.println(bad.getClass() == ArrayList.class);
 
@@ -1011,7 +1082,8 @@ System.out.println(bad.getClass() == ArrayList.class);
         return size() > 2;                     // keep at most 2 entries
     }
 };
-lru.put("a", 1); lru.put("b", 2);
+lru.put("a", 1);
+lru.put("b", 2);
 lru.get("a");                                  // "a" is now most recent
 lru.put("c", 3);                               // "b" is evicted
 System.out.println(lru.keySet());
@@ -1027,7 +1099,9 @@ interface B extends A {
     default String m() { return "B" + helper(); }
     private String helper() { return "!"; }
 }
-class Base { public String m() { return "Base"; } }
+class Base {
+    public String m() { return "Base"; }
+}
 class C implements B {}
 class D extends Base implements B {}
 System.out.println(new C().m() + " " + new D().m());
@@ -1090,7 +1164,8 @@ class FakeGateway implements PaymentGateway {
     public boolean equals(Object o) { return o instanceof K k && k.v == v; }
     public int hashCode() { return 31 * v + 7; }
 }
-Map<K, String> m = new HashMap<>(); m.put(new K(5), "five");
+Map<K, String> m = new HashMap<>();
+m.put(new K(5), "five");
 boolean differ = new Object().hashCode() != new Object().hashCode();
 System.out.println(m.get(new K(5)) + " " + new K(5).hashCode() + " " + differ);
 
@@ -1098,9 +1173,13 @@ System.out.println(m.get(new K(5)) + " " + new K(5).hashCode() + " " + differ);
 // five 162 true`],
         [`Implementation recipe (Effective Java): equals checks <code>this == o</code>, type with <code>instanceof</code> (or getClass for strict), then each significant field (primitives with <code>==</code>, floats with <code>Float.compare</code>, objects with <code>Objects.equals</code>, arrays with <code>Arrays.equals</code>). hashCode combines the same fields (<code>Objects.hash</code>, or <code>31 * result + c</code>). Records and Lombok <code>@EqualsAndHashCode</code> generate both. For entity classes use a business key or the id with careful null handling.`,
             r`final class Money {
-    final long cents; final String cur; final double[] rates;
+    final long cents;
+    final String cur;
+    final double[] rates;
     Money(long cents, String cur, double[] rates) {
-        this.cents = cents; this.cur = cur; this.rates = rates;
+        this.cents = cents;
+        this.cur = cur;
+        this.rates = rates;
     }
     @Override public boolean equals(Object o) {
         return this == o || (o instanceof Money m && cents == m.cents
@@ -1133,7 +1212,9 @@ System.out.println(a.equals(b));
     // overload, not an override
     public boolean equals(Wrong w) { return w.v == v; }
 }
-Set<Wrong> s = new HashSet<>(); Wrong a = new Wrong(); s.add(a);
+Set<Wrong> s = new HashSet<>();
+Wrong a = new Wrong();
+s.add(a);
 Object o = new Wrong();
 System.out.println(o.equals(a) + " " + new Wrong().equals(a));
 
@@ -1146,7 +1227,8 @@ System.out.println(o.equals(a) + " " + new Wrong().equals(a));
     public int hashCode() { return 1; } // constant: every key in one bucket
     public boolean equals(Object o) { return o instanceof Bad b && b.v == v; }
 }
-Map<Bad, Integer> m = new HashMap<>(); long t = System.nanoTime();
+Map<Bad, Integer> m = new HashMap<>();
+long t = System.nanoTime();
 for (int i = 0; i < 20_000; i++) m.put(new Bad(i), i);
 System.out.println("constant hash ms=" + (System.nanoTime() - t) / 1_000_000);
 
@@ -1155,7 +1237,7 @@ System.out.println("constant hash ms=" + (System.nanoTime() - t) / 1_000_000);
         [`Real-world: deduplicating events or customers by business key, caching with composite keys, and entities in sets.`,
             r`record CacheKey(String tenant, long userId, Locale locale) {}
 Map<CacheKey, Profile> cache = new ConcurrentHashMap<>();
-cache.put(new CacheKey("acme", 7, Locale.US), new Profile("Asha"));
+cache.put(new CacheKey("acme", 7, Locale.US), new Profile("Abaji"));
 System.out.println(cache.containsKey(new CacheKey("acme", 7, Locale.US)));
 
 // OUTPUT:

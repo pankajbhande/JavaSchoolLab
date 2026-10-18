@@ -2687,21 +2687,21 @@ public class Test {
     public static void main(String[] args) {
         ChatMediator chatRoom = new ChatRoom();
 
-        User alice = new ChatUser(chatRoom, "Alice");
-        User bob = new ChatUser(chatRoom, "Bob");
-        User charlie = new ChatUser(chatRoom, "Charlie");
+        User anaji = new ChatUser(chatRoom, "Anaji");
+        User baji = new ChatUser(chatRoom, "Baji");
+        User charlie = new ChatUser(chatRoom, "Chimnaji");
 
-        chatRoom.addUser(alice);
-        chatRoom.addUser(bob);
+        chatRoom.addUser(anaji);
+        chatRoom.addUser(baji);
         chatRoom.addUser(charlie);
 
-        alice.send("Hi everyone!");
+        anaji.send("Hi everyone!");
     }
 }
 // OUTPUT:
-// Alice sends: Hi everyone!
-// Bob received: Hi everyone!
-// Charlie received: Hi everyone!`
+// Anaji sends: Hi everyone!
+// Baji received: Hi everyone!
+// Chimnaji received: Hi everyone!`
                                 ]
                             }
                         ],

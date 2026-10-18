@@ -36,7 +36,7 @@ print((lambda a, b: a + b)(2, 3))    # defined and called immediately
             content: `<h4>The Main Use: key= Functions</h4>
 <code>sorted()</code>, <code>min()</code> and <code>max()</code> accept a <code>key</code> function that says <b>what to compare</b>. A lambda is the natural way to write it inline.`,
             codeExamples: [
-                `students = [("Pankaj", 88), ("Sheru", 74), ("Asha", 95)]
+                `students = [("Pankaj", 88), ("Sheru", 74), ("Abaji", 95)]
 
 print(sorted(students, key=lambda s: s[1]))           # by marks
 print(max(students, key=lambda s: s[1]))              # topper
@@ -46,9 +46,9 @@ products = [{"name": "Pen", "price": 10}, {"name": "Bag", "price": 900}]
 print(sorted(products, key=lambda p: p["price"], reverse=True)[0]["name"])
 
 # OUTPUT:
-# [('Sheru', 74), ('Pankaj', 88), ('Asha', 95)]
-# ('Asha', 95)
-# ('Asha', 95)
+# [('Sheru', 74), ('Pankaj', 88), ('Abaji', 95)]
+# ('Abaji', 95)
+# ('Sheru', 74)
 # Bag`
             ]
         },
@@ -74,12 +74,12 @@ Lambdas accept the same parameter forms as <code>def</code>. A conditional expre
 total = lambda *nums: sum(nums)
 parity = lambda n: "even" if n % 2 == 0 else "odd"
 
-print(greet("Asha"), greet("Ravi", "Hi"))
+print(greet("Abaji"), greet("Raoji", "Hi"))
 print(total(1, 2, 3))
 print([parity(n) for n in range(4)])
 
 # OUTPUT:
-# Hello, Asha! Hi, Ravi!
+# Hello, Abaji! Hi, Raoji!
 # 6
 # ['even', 'odd', 'even', 'odd']`
             ]

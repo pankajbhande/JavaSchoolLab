@@ -3,7 +3,8 @@
 // mysqlSyllabus.ts), keyed by the exact topic name.
 //
 // Basic tab : Fresher Notes, Worked Examples, Practice Exercises
-// Expert tab: Mid-Level Notes, Senior Notes, Interview Questions & Answers
+// Expert tab: Mid-Level Notes, Senior Notes. The graded Q&A data (`qa`) is kept but no longer
+// rendered in the lesson body: interview questions live in the right sidebar tab.
 
 import type { ContentBlock, Topic } from '../../../types';
 
@@ -57,8 +58,7 @@ export function extraBeginner(e: Extra): ContentBlock[] {
 export function extraExpert(e: Extra): ContentBlock[] {
     return [
         { content: `<h3>Mid-Level Notes</h3>\n${list(e.mid)}` },
-        { content: `<h3>Senior Notes</h3>\n${list(e.senior)}` },
-        { content: `<h3>Interview Questions &amp; Answers</h3>\n${qaHtml(e.qa)}` }
+        { content: `<h3>Senior Notes</h3>\n${list(e.senior)}` }
     ];
 }
 

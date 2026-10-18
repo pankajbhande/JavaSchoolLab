@@ -333,7 +333,11 @@ server.servlet.session.cookie.name=SESSIONID
 server.forward-headers-strategy=framework
 
 # OUTPUT:
-# Set-Cookie: SESSIONID=ABC123; Path=/; Secure; HttpOnly; SameSite=Lax`]],
+# Set-Cookie: SESSIONID=ABC123;
+Path=/;
+Secure;
+HttpOnly;
+SameSite=Lax`]],
         [['Test the flags.',
             r`@Test
 void authCookieIsSecure() throws Exception {
@@ -392,7 +396,9 @@ public String start(HttpServletResponse response) {
 server.servlet.session.cookie.name=JSESSIONID
 
 # OUTPUT:
-# Set-Cookie: JSESSIONID=ABC123; Path=/; HttpOnly`]],
+# Set-Cookie: JSESSIONID=ABC123;
+Path=/;
+HttpOnly`]],
         [['Test the HttpOnly flag.',
             r`@Test
 void sidIsHttpOnly() throws Exception {
@@ -511,8 +517,8 @@ public ResponseEntity<String> me(HttpSession session) {
 }
 
 // OUTPUT:
-// POST /login -> 200 Welcome asha   Set-Cookie: JSESSIONID=...(varies); Path=/; HttpOnly
-// GET /me (with cookie) -> 200 asha
+// POST /login -> 200 Welcome abaji   Set-Cookie: JSESSIONID=...(varies); Path=/; HttpOnly
+// GET /me (with cookie) -> 200 abaji
 // GET /me (no cookie)   -> 401 Not logged in`],
             ['Form login with Spring Security.',
                 r`@Bean
@@ -537,10 +543,10 @@ void meRequiresLogin() throws Exception {
     mvc.perform(get("/me")).andExpect(status().isUnauthorized());
 
     MockHttpSession session = new MockHttpSession();
-    session.setAttribute("user", "asha");
+    session.setAttribute("user", "abaji");
     mvc.perform(get("/me").session(session))
         .andExpect(status().isOk())
-        .andExpect(content().string("asha"));
+        .andExpect(content().string("abaji"));
 }
 
 // OUTPUT:
@@ -548,8 +554,8 @@ void meRequiresLogin() throws Exception {
             ['Test Spring Security form login.',
                 r`@Test
 void loginSetsSessionCookie() throws Exception {
-    mvc.perform(formLogin("/login").user("asha").password("secret"))
-        .andExpect(authenticated().withUsername("asha"))
+    mvc.perform(formLogin("/login").user("abaji").password("secret"))
+        .andExpect(authenticated().withUsername("abaji"))
         .andExpect(cookie().exists("JSESSIONID"));
 }
 
@@ -597,7 +603,8 @@ class UploadController {
 
 <!-- OUTPUT:
 POST /upload HTTP/1.1
-Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryX
+Content-Type: multipart/form-data;
+boundary=----WebKitFormBoundaryX
 (one part per field, each starting with the boundary line) -->`]],
         [['Test a multipart request with MockMvc.',
             r`@Test
@@ -991,7 +998,12 @@ server.servlet.session.cookie.path=/
 server.servlet.session.cookie.max-age=30m
 
 # OUTPUT:
-# Set-Cookie: __Host-SESSION=ABC; Path=/; Max-Age=1800; Secure; HttpOnly; SameSite=Strict`],
+# Set-Cookie: __Host-SESSION=ABC;
+Path=/;
+Max-Age=1800;
+Secure;
+HttpOnly;
+SameSite=Strict`],
         [`<p>Common mistakes:</p><ul><li><b>Secure on local HTTP:</b> the cookie never comes back, so login appears broken in development; use a profile for dev.</li><li><b>Proxy hides HTTPS:</b> the cookie is not marked Secure or redirects loop.</li><li><b>Mixed content:</b> one HTTP page of the site can expose non-Secure cookies.</li><li><b>Secure value inside:</b> a Secure flag does not encrypt a cookie value.</li></ul>`,
             r`# application-dev.properties : allow plain HTTP only for local work
 server.servlet.session.cookie.secure=false
@@ -1001,8 +1013,13 @@ server.servlet.session.cookie.secure=true
 server.forward-headers-strategy=framework
 
 # OUTPUT:
-# dev : Set-Cookie: JSESSIONID=...; Path=/; HttpOnly
-# prod: Set-Cookie: JSESSIONID=...; Path=/; Secure; HttpOnly`],
+# dev : Set-Cookie: JSESSIONID=...;
+Path=/;
+HttpOnly
+# prod: Set-Cookie: JSESSIONID=...;
+Path=/;
+Secure;
+HttpOnly`],
         [`<p>HTTPS has a cost, but small:</p><ul><li><b>TLS sessions:</b> resumption and HTTP/2 make the cost low.</li><li><b>HSTS preload:</b> removes the first insecure redirect.</li><li><b>Cookie size:</b> flags add a few bytes only.</li></ul>`,
             r`http.headers(h -> h.httpStrictTransportSecurity(hsts -> hsts
     .includeSubDomains(true)
@@ -1018,7 +1035,11 @@ server.servlet.session.cookie.same-site=lax
 
 # OUTPUT:
 # Request:  http from the proxy + X-Forwarded-Proto: https
-# Response: Set-Cookie: JSESSIONID=...; Path=/; Secure; HttpOnly; SameSite=Lax`]
+# Response: Set-Cookie: JSESSIONID=...;
+Path=/;
+Secure;
+HttpOnly;
+SameSite=Lax`]
     ),
 
     'mvc-httponly': dv(
@@ -1093,9 +1114,13 @@ ResponseCookie none   = ResponseCookie.from("c", "1").sameSite("None")
                                       .secure(true).build();
 
 # OUTPUT:
-# a=1; SameSite=Strict
-# b=1; SameSite=Lax
-# c=1; Secure; SameSite=None`],
+# a=1;
+SameSite=Strict
+# b=1;
+SameSite=Lax
+# c=1;
+Secure;
+SameSite=None`],
         [`<p>Common mistakes:</p><ul><li><b>None without Secure:</b> rejected by modern browsers.</li><li><b>Strict on the login cookie:</b> external links appear logged out.</li><li><b>Relying on it only:</b> keep CSRF tokens.</li><li><b>Mixing up site and origin:</b> CORS settings are separate from SameSite.</li><li><b>Typo in value:</b> <code>lax</code> and <code>Lax</code> are accepted, but a wrong word is ignored by the browser.</li></ul>`,
             r`// WRONG: cross-site front end (app.com calling api.other.com) with Lax
 //   -> the session cookie is not sent on the fetch call
@@ -1116,7 +1141,7 @@ CorsConfigurationSource cors() {
 // Access-Control-Allow-Credentials: true`],
         [`<p>No runtime cost, but check the effect on behaviour:</p><ul><li><b>Test browsers:</b> verify flows in current versions of Chrome, Firefox and Safari.</li><li><b>Logging:</b> log missing-cookie rates after a change.</li></ul>`,
             r`// Quick manual check with curl
-// curl -i -X POST https://app.com/login -d "u=asha&p=secret"
+// curl -i -X POST https://app.com/login -d "u=abaji&p=secret"
 
 // OUTPUT:
 // HTTP/1.1 200
@@ -1136,10 +1161,10 @@ CorsConfigurationSource cors() {
 
     'mvc-cookie-based-authentication': dv(
         [`<p>How Spring Security handles a cookie session:</p><ul><li><b>Filter chain:</b> <code>SecurityContextHolderFilter</code> loads the <code>SecurityContext</code> from the session (via <code>HttpSessionSecurityContextRepository</code>).</li><li><b>Login:</b> <code>UsernamePasswordAuthenticationFilter</code> calls the <code>AuthenticationManager</code>, then a session strategy changes the session id.</li><li><b>Next request:</b> the <code>JSESSIONID</code> cookie finds the session, and the stored <code>Authentication</code> becomes the current user.</li><li><b>Authorization:</b> <code>AuthorizationFilter</code> checks rules against it.</li></ul>`,
-            r`// 1) POST /login  user=asha&password=...
+            r`// 1) POST /login  user=abaji&password=...
 //    -> AuthenticationManager OK -> new session id -> Set-Cookie: JSESSIONID=B2
 // 2) GET /orders  Cookie: JSESSIONID=B2
-//    -> SecurityContext restored from the session -> user asha -> 200
+//    -> SecurityContext restored from the session -> user abaji -> 200
 // 3) GET /orders  (no cookie) -> no Authentication -> 302 /login
 
 // OUTPUT:
@@ -1158,11 +1183,11 @@ http.sessionManagement(s -> s
 // Set-Cookie: remember-me=YXNoYTox...(varies); Max-Age=1209600; HttpOnly`],
         [`<p>Common mistakes:</p><ul><li><b>Storing the user or password in the cookie</b> instead of an id.</li><li><b>No CSRF protection</b> on state-changing endpoints.</li><li><b>Not changing the session id</b> at login.</li><li><b>Logout only client side:</b> the server session still works.</li><li><b>Plain HTTP:</b> the cookie can be sniffed.</li><li><b>Long, never expiring sessions.</b></li></ul>`,
             r`// WRONG: identity in a plain cookie, which the user can edit
-Cookie c = new Cookie("user", "asha");       // set "admin" in dev tools -> admin!
+Cookie c = new Cookie("user", "abaji");       // set "admin" in dev tools -> admin!
 
 // RIGHT: opaque id, state on the server
 request.changeSessionId();
-request.getSession().setAttribute("user", "asha");
+request.getSession().setAttribute("user", "abaji");
 // plus: HttpOnly, Secure, SameSite, CSRF tokens, session timeout
 
 // OUTPUT:
@@ -1258,7 +1283,8 @@ spring.servlet.multipart.location=/var/tmp/uploads
 server.tomcat.max-swallow-size=100MB
 
 # OUTPUT:
-# Parts under 2 MB are kept in memory; bigger parts go to /var/tmp/uploads`],
+# Parts under 2 MB are kept in memory;
+bigger parts go to /var/tmp/uploads`],
         [`<p>Scenario: a profile screen sends the user data as JSON and a photo in one request.</p><ul><li><b>Validate</b> the JSON part and the file type.</li><li><b>Test</b> with <code>MockMultipartFile</code> for both parts.</li></ul>`,
             r`@PostMapping(path = "/profile",
              consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -1273,13 +1299,13 @@ public ResponseEntity<String> profile(
 
 // Test
 MockMultipartFile json = new MockMultipartFile("data", "",
-    "application/json", "{\"name\":\"Asha\"}".getBytes());
+    "application/json", "{\"name\":\"Abaji\"}".getBytes());
 MockMultipartFile png = new MockMultipartFile("photo", "me.png",
     "image/png", new byte[]{1, 2});
 // mvc.perform(multipart("/profile").file(json).file(png)) -> 200
 
 // OUTPUT:
-// PNG photo  -> 200 Saved Asha
+// PNG photo  -> 200 Saved Abaji
 // JPEG photo -> 415 PNG only`]
     ),
 

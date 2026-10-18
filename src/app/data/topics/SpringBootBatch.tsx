@@ -153,10 +153,10 @@ spring.jpa.show-sql=true
 # including your data. Never use it against a database you care about.`,
                 `# Step 4 - src/main/resources/test.csv
 id,name,gender,batchname,position
-1,Ravi,Male,JavaFS-Morning,Trainee
-2,Sneha,Female,JavaFS-Morning,Developer
-3,Amit,Male,JavaFS-Evening,Trainee
-4,Priya,Female,JavaFS-Evening,Senior Developer
+1,Raoji,Male,JavaFS-Morning,Trainee
+2,Suryaji,Female,JavaFS-Morning,Developer
+3,Anandrao,Male,JavaFS-Evening,Trainee
+4,Prataprao,Female,JavaFS-Evening,Senior Developer
 5,Karan,Male,JavaFS-Morning,Developer
 
 # The first line is a HEADER, which is why the reader is told to skip one
@@ -459,15 +459,15 @@ There is no controller and no Postman request in this project. Spring Boot's <co
 
 // Step 9 - check the table
 // mysql> select * from users;
-// +----+-------+--------+-----------------+------------------+
-// | id | name  | gender | batchname       | position         |
-// +----+-------+--------+-----------------+------------------+
-// |  1 | Ravi  | MALE   | JavaFS-Morning  | Trainee          |
-// |  2 | Sneha | FEMALE | JavaFS-Morning  | Developer        |
-// |  3 | Amit  | MALE   | JavaFS-Evening  | Trainee          |
-// |  4 | Priya | FEMALE | JavaFS-Evening  | Senior Developer |
-// |  5 | Karan | MALE   | JavaFS-Morning  | Developer        |
-// +----+-------+--------+-----------------+------------------+
+// +----+-----------+--------+----------------+------------------+
+// | id | name      | gender | batchname      | position         |
+// +----+-----------+--------+----------------+------------------+
+// |  1 | Raoji     | MALE   | JavaFS-Morning | Trainee          |
+// |  2 | Suryaji   | FEMALE | JavaFS-Morning | Developer        |
+// |  3 | Anandrao  | MALE   | JavaFS-Evening | Trainee          |
+// |  4 | Prataprao | FEMALE | JavaFS-Evening | Senior Developer |
+// |  5 | Karan     | MALE   | JavaFS-Morning | Developer        |
+// +----+-----------+--------+----------------+------------------+
 // 5 rows in set (0.00 sec)`,
                 `# Two properties worth knowing before you run anything
 

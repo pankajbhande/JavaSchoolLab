@@ -37,7 +37,7 @@ export const javascript2Extras: Record<string, Extra> = {
 });
 
 // OUTPUT:
-// send { email: 'a@x.com', name: 'Asha' }`]],
+// send { email: 'a@x.com', name: 'Abaji' }`]],
         [['Cancel many listeners at once.',
             r`const ac = new AbortController();
 window.addEventListener("resize", onResize, { signal: ac.signal });
@@ -71,16 +71,16 @@ document.dispatchEvent(new CustomEvent("cart:add", { detail: { sku: "A1" } }));
             ['S', 'Is spread a deep copy?', 'No, it copies one level; nested references stay shared.'],
             ['S', 'Where do arrow functions differ from regular functions?', 'They have no own this, arguments or prototype and cannot be used with new.']],
         [['Parameters, defaults and renaming.',
-            r`const order = { id: 7, items: [{ sku: "A1", qty: 2 }, { sku: "B2" }], customer: { name: "Asha" } };
+            r`const order = { id: 7, items: [{ sku: "A1", qty: 2 }, { sku: "B2" }], customer: { name: "Abaji" } };
 const { id, customer: { name: buyer }, items: [first, ...others] } = order;
 const total = ({ qty = 1, price = 10 }) => qty * price;
 console.log(id, buyer, first.sku, others.length, total(first), total({}));
 
 // OUTPUT:
-// 7 Asha A1 1 20 10`],
+// 7 Abaji A1 1 20 10`],
             ['Immutable update with spread.',
-                r`const state = { user: { name: "Asha" }, cart: [1, 2] };
-const next = { ...state, cart: [...state.cart, 3], user: { ...state.user, name: "Asha R" } };
+                r`const state = { user: { name: "Abaji" }, cart: [1, 2] };
+const next = { ...state, cart: [...state.cart, 3], user: { ...state.user, name: "Abaji R" } };
 console.log(state.cart, next.cart, state.user === next.user);
 
 // OUTPUT:
@@ -165,16 +165,16 @@ await Promise.race([fetch("/api/data"), timeout(2000)]);
             ['S', 'How does this work with new?', 'new creates an object, sets this to it inside the constructor and returns it.'],
             ['S', 'How do you keep this in class event handlers?', 'Use arrow function class fields or bind in the constructor.']],
         [['Lost this and fixes.',
-            r`const user = { name: "Asha", hi() { return "Hi " + this.name; } };
+            r`const user = { name: "Abaji", hi() { return "Hi " + this.name; } };
 const f = user.hi;
 console.log(user.hi());
 try { console.log(f()); } catch (e) { console.log("error:", e.message); }
-console.log(f.call(user), user.hi.bind({ name: "Ravi" })());
+console.log(f.call(user), user.hi.bind({ name: "Raoji" })());
 
 // OUTPUT:
-// Hi Asha
+// Hi Abaji
 // error: Cannot read properties of undefined (reading 'name')
-// Hi Asha Hi Ravi`],
+// Hi Abaji Hi Raoji`],
             ['Arrow function field in a class.',
                 r`class Button {
   label = "Save";
@@ -250,7 +250,7 @@ try { work(); } finally { lock.release(); }
     ),
 
     'js-es6-classes': x(
-        ['A class is a template for objects: <code>class User { constructor(name) { this.name = name; } greet() { ... } }</code>. Create with <code>new User("Asha")</code>.',
+        ['A class is a template for objects: <code>class User { constructor(name) { this.name = name; } greet() { ... } }</code>. Create with <code>new User("Abaji")</code>.',
             'Inheritance uses <code>extends</code> and <code>super</code>.',
             'Classes are syntax over JavaScript prototypes.'],
         ['Static members belong to the class (<code>static create()</code>); private fields use <code>#name</code>; getters and setters control access.',
@@ -273,7 +273,7 @@ try { work(); } finally { lock.release(); }
   deposit(n) { if (n <= 0) throw new Error("positive amount"); this.#balance += n; return this; }
   get balance() { return this.#balance; }
 }
-const a = new Account("Asha").deposit(100).deposit(50);
+const a = new Account("Abaji").deposit(100).deposit(50);
 console.log(a.balance, Account.count, a.#balance === undefined);
 
 // OUTPUT:

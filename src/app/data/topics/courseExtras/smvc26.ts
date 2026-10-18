@@ -42,9 +42,15 @@ public class LegacyThemeConfig implements WebMvcConfigurer {
 // next requests render with the dark theme`],
             ['Modern theme with CSS variables.',
                 r`/* app.css */
-:root { --bg: #ffffff; --fg: #1a1a1a; }
+:root {
+    --bg: #ffffff;
+    --fg: #1a1a1a;
+}
 :root[data-theme="dark"] { --bg: #121212; --fg: #eeeeee; }
-body { background: var(--bg); color: var(--fg); }
+body {
+    background: var(--bg);
+    color: var(--fg);
+}
 
 // OUTPUT:
 // <html data-theme="dark"> shows a dark page
@@ -257,7 +263,8 @@ public class ThemeConfig {}
         String t = req.getParameter("theme");
         if (t != null && s.allowed().contains(t)) {
             Cookie c = new Cookie("theme", t);
-            c.setPath("/"); c.setMaxAge(31536000);
+            c.setPath("/");
+            c.setMaxAge(31536000);
             res.addCookie(c);
         }
         return true;
@@ -345,7 +352,8 @@ public class ThemeAdvice {
         return theme.equals("dark") ? "dark" : "light";
     }
 }
-// template: <html th:data-theme="$` + r`{theme}">
+// template: <html th:data-theme="$` + r`{theme}
+">
 
 // OUTPUT:
 // cookie theme=dark -> <html data-theme="dark">`],
@@ -381,13 +389,13 @@ void togglePersists() throws Exception {
 public class UserController {
     @GetMapping(value = "/users/1",
                 produces = { "application/json", "application/xml" })
-    public User one() { return new User(1, "Asha"); }
+    public User one() { return new User(1, "Abaji"); }
 }
 public record User(int id, String name) {}
 
 // OUTPUT:
-// Accept: application/json -> {"id":1,"name":"Asha"}
-// Accept: application/xml  -> <User><id>1</id><name>Asha</name></User>
+// Accept: application/json -> {"id":1,"name":"Abaji"}
+// Accept: application/xml  -> <User><id>1</id><name>Abaji</name></User>
 // Accept: text/csv         -> 406 Not Acceptable`],
             ['Configuring defaults.',
                 r`@Configuration
@@ -414,7 +422,7 @@ class NegotiationTest {
     void json() throws Exception {
         mvc.perform(get("/users/1").accept(MediaType.APPLICATION_JSON))
            .andExpect(content().contentTypeCompatibleWith("application/json"))
-           .andExpect(jsonPath("$.name").value("Asha"));
+           .andExpect(jsonPath("$.name").value("Abaji"));
     }
 }
 
@@ -529,7 +537,7 @@ public class ReportController {
 // OUTPUT:
 // HTTP/1.1 200
 // Content-Type: application/json
-// {"id":1,"name":"Asha"}`]],
+// {"id":1,"name":"Abaji"}`]],
         [['Reading the header manually.',
             r`@GetMapping("/echo")
 public String echo(@RequestHeader(value = "Accept", defaultValue = "*/*")
@@ -583,7 +591,7 @@ public ResponseEntity<String> csv() {
     return ResponseEntity.ok()
         .contentType(MediaType.parseMediaType("text/csv"))
         .header("X-Content-Type-Options", "nosniff")
-        .body("id,name\n1,Asha\n");
+        .body("id,name\n1,Abaji\n");
 }
 
 // OUTPUT:
@@ -692,11 +700,19 @@ model.addAttribute("theme", name);
 // Spring 6: model theme = dark`],
         [`<p>Variants available today:</p><ul><li><b>CSS variables + data-theme:</b> the simplest and fastest.</li><li><b>Separate stylesheets:</b> <code>link</code> to <code>light.css</code> or <code>dark.css</code> chosen on the server.</li><li><b>Class on body:</b> a <code>theme-dark</code> class, easy to combine with utility CSS.</li><li><b>Per-tenant themes:</b> pick the stylesheet from the subdomain or tenant record.</li></ul>`,
             r`/* one file, three themes */
-:root                    { --bg:#fff; --fg:#111; --accent:#0a6; }
+:root {
+    --bg:#fff;
+    --fg:#111;
+    --accent:#0a6;
+}
 :root[data-theme="dark"] { --bg:#111; --fg:#eee; --accent:#4c8; }
 :root[data-theme="contrast"] { --bg:#000; --fg:#ff0; --accent:#0ff; }
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme]) { --bg:#111; --fg:#eee; --accent:#4c8; }
+  :root:not([data-theme]) {
+      --bg:#111;
+      --fg:#eee;
+      --accent:#4c8;
+  }
 }
 
 // OUTPUT:
@@ -765,7 +781,10 @@ r.setDefaultThemeName("light");
 @Component
 class BadResolver {
     private String last;                 // shared by all users
-    String resolve(HttpServletRequest r) { last = param(r); return last; }
+    String resolve(HttpServletRequest r) {
+        last = param(r);
+        return last;
+    }
 }
 
 // RIGHT: pure function of the request
@@ -960,7 +979,8 @@ mq.addEventListener("change", e => {
         [`<p>Performance:</p><ul><li>Switching an attribute repaints once; avoid loading a new stylesheet for each switch.</li><li>Use <code>transition</code> only on a few properties.</li><li>Keep the cookie small and scoped to <code>/</code>.</li></ul>`,
             r`/* animate only what is needed */
 body { background: var(--bg); color: var(--fg);
-       transition: background-color .2s, color .2s; }
+       transition: background-color .2s, color .2s;
+       }
 
 // OUTPUT:
 // theme switch fades in 200 ms without a layout shift`],
@@ -1047,15 +1067,15 @@ public record Invoice(long id, String customer, double total) {}
 // requests with Accept: application/xml now succeed`],
         [`<p>Comparison points:</p><ul><li><b>Verbosity:</b> XML is longer.</li><li><b>Schema:</b> XSD for XML; JSON Schema for JSON.</li><li><b>Mixed content and attributes:</b> XML only.</li><li><b>Types:</b> JSON has numbers and booleans; XML values are text.</li><li><b>Tooling:</b> JSON is native in browsers.</li></ul>`,
             r`// same data
-// JSON (41 chars): {"id":1,"name":"Asha","active":true}
-// XML  (61 chars): <u><id>1</id><name>Asha</name><active>true</active></u>
+// JSON (41 chars): {"id":1,"name":"Abaji","active":true}
+// XML  (61 chars): <u><id>1</id><name>Abaji</name><active>true</active></u>
 
-String json = new ObjectMapper().writeValueAsString(new U(1, "Asha", true));
-String xml  = new XmlMapper().writeValueAsString(new U(1, "Asha", true));
+String json = new ObjectMapper().writeValueAsString(new U(1, "Abaji", true));
+String xml  = new XmlMapper().writeValueAsString(new U(1, "Abaji", true));
 System.out.println(json.length() + " vs " + xml.length());
 
 // OUTPUT:
-// 38 vs 68 (varies with root name)`],
+// 39 vs 69 (varies with root name)`],
         [`<p>Mistakes:</p><ul><li><b>XXE</b> through unsafe parsers.</li><li><b>Date formats:</b> dates become timestamps unless <code>WRITE_DATES_AS_TIMESTAMPS</code> is disabled (Boot disables it).</li><li><b>Lists in XML:</b> a wrapper element name is needed to control output.</li><li><b>Null handling</b> differs: JSON writes null; XML may write an empty tag.</li></ul>`,
             r`public class Order {
     @JacksonXmlElementWrapper(localName = "items")
@@ -1173,7 +1193,7 @@ public String form(@RequestParam String name) { return "hi " + name; }
 
 // OUTPUT:
 // multipart upload -> a.png docs
-// form name=Asha   -> hi Asha`],
+// form name=Abaji   -> hi Abaji`],
         [`<p>Mistakes:</p><ul><li><b>Client forgets the header</b>: curl <code>-d</code> sends form encoding, not JSON; add <code>-H "Content-Type: application/json"</code>.</li><li><b>Wrong annotation</b>: <code>@RequestParam</code> does not read a JSON body.</li><li><b>Charset assumptions</b> for non-JSON text.</li><li><b>Trusting an upload type:</b> the header is client-controlled, so check the file content too.</li></ul>`,
             r`// WRONG: JSON body but @RequestParam
 // @PostMapping("/x") String x(@RequestParam String name) -> 400 missing parameter
@@ -1183,7 +1203,7 @@ public String form(@RequestParam String name) { return "hi " + name; }
 String x(@RequestBody Map<String, String> body) { return body.get("name"); }
 
 // OUTPUT:
-// curl -H "Content-Type: application/json" -d "{\"name\":\"Asha\"}" /x -> Asha`],
+// curl -H "Content-Type: application/json" -d "{\"name\":\"Abaji\"}" /x -> Abaji`],
         [`<p>Performance and safety:</p><ul><li>Limit request sizes (<code>spring.servlet.multipart.max-file-size</code>, server max post size).</li><li>Reject unexpected types early with <code>consumes</code>.</li><li>Stream large uploads instead of loading them in memory.</li></ul>`,
             r`# application.properties
 spring.servlet.multipart.max-file-size=5MB

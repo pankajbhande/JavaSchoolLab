@@ -86,20 +86,20 @@ class User(Base):
 
 engine = create_engine("mysql+pymysql://app:secret@127.0.0.1/shop")
 with Session(engine) as s:
-    print(s.scalars(select(User).where(User.name == "Asha")).all())
+    print(s.scalars(select(User).where(User.name == "Abaji")).all())
 
 # OUTPUT: (example)
-# [<User id=1 name='Asha'>]`],
+# [<User id=1 name='Abaji'>]`],
         [`Hand-built SQL strings are unsafe and untestable. The ORM composes queries, parameterises them and returns objects.`,
             r`# Django ORM equivalent
 class User(models.Model):
     name = models.CharField(max_length=50)
 
 User.objects.filter(name__startswith="A").order_by("-id")[:5]
-print(User.objects.filter(name="Asha").query)
+print(User.objects.filter(name="Abaji").query)
 
 # OUTPUT:
-# SELECT shop_user.id, shop_user.name FROM shop_user WHERE shop_user.name = Asha`],
+# SELECT shop_user.id, shop_user.name FROM shop_user WHERE shop_user.name = Abaji`],
         [`Real code uses sessions or transactions per request, joined loading to avoid N+1, and raw SQL for complex reports.`,
             r`# SQLAlchemy: eager load with a JOIN
 from sqlalchemy.orm import selectinload
@@ -133,7 +133,7 @@ with engine.begin() as c:
     print(rows)
 
 # OUTPUT: (example)
-# [(1, 'Asha'), (2, 'Ravi')]`],
+# [(1, 'Abaji'), (2, 'Raoji')]`],
         `
    Python objects ─► ORM (Session / QuerySet) ─► SQL builder ─► DBAPI driver ─► MySQL
         ▲                      │ identity map / lazy queryset

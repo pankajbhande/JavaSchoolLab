@@ -147,7 +147,8 @@ t.join();
 // in worker`]],
         [['Strong typing.',
             r`// int x = "text";   // compile error: String cannot be converted to int
-long big = 5; int small = (int) big;
+long big = 5;
+int small = (int) big;
 System.out.println(small);
 
 // OUTPUT:
@@ -281,7 +282,8 @@ System.out.println((a == b) + " " + (c == d) + " " + c.equals(d));
     public void deposit(double amt) { if (amt > 0) balance += amt; }
     public double getBalance() { return balance; }
 }
-Account a = new Account(); a.deposit(100);
+Account a = new Account();
+a.deposit(100);
 System.out.println(a.getBalance());
 
 // OUTPUT:
@@ -299,7 +301,9 @@ System.out.println(a.getBalance());
 // OUTPUT:
 // the call through a Base reference does not compile`],
             ['Narrowing is not allowed when overriding.',
-                r`class A { public void m() {} }
+                r`class A {
+    public void m() {}
+}
 // class B extends A { void m() {} }   // error: attempting to assign weaker access privileges
 
 // OUTPUT:
@@ -378,7 +382,8 @@ String name = switch (day) {
 };
 switch (day) {
     case 3: System.out.print("three ");   // no break: falls into case 4
-    case 4: System.out.print("four "); break;
+    case 4: System.out.print("four ");
+    break;
     default: System.out.print("other");
 }
 System.out.println(name);
@@ -457,7 +462,10 @@ System.out.println();
         [['Infinite loop trap: update the counter before <code>continue</code> in a while loop.',
             r`int i = 0;
 while (i < 5) {
-    if (i == 2) { i++; continue; }      // increment before continue
+    if (i == 2) {
+        i++;
+        continue;
+    }  // increment before continue
     System.out.print(i + " ");
     i++;
 }
@@ -764,7 +772,9 @@ System.out.println(new Money(1999, "INR").plus(new Money(1, "INR")));
         [`Access is checked by the compiler and again by the JVM at link time (and by reflection at run time). Package-private and protected depend on the runtime package, which is the package name plus the class loader. Nested classes can access each other's private members (nestmates since Java 11 without synthetic accessors).`,
             r`public class Outer {
     private int secret = 42;
-    class Inner { int peek() { return secret; } }   // inner reads outer private
+    class Inner {
+        int peek() { return secret; }
+    }  // inner reads outer private
 
     public static void main(String[] args) {
         System.out.println(new Outer().new Inner().peek());
@@ -843,7 +853,8 @@ System.out.println(i);
 // 3`],
         [`Bit manipulation: set a bit <code>n | (1 &lt;&lt; k)</code>, clear <code>n &amp; ~(1 &lt;&lt; k)</code>, toggle <code>n ^ (1 &lt;&lt; k)</code>, test <code>(n &gt;&gt; k) &amp; 1</code>. Library helpers: <code>Integer.bitCount</code>, <code>highestOneBit</code>, <code>numberOfTrailingZeros</code>. <code>instanceof</code> with pattern matching combines test and cast.`,
             r`int flags = 0;
-flags |= 1 << 2; flags |= 1 << 0;
+flags |= 1 << 2;
+flags |= 1 << 0;
 boolean has2 = (flags >> 2 & 1) == 1;
 System.out.println(Integer.toBinaryString(flags) + " " + has2 + " "
         + Integer.bitCount(flags) + " " + Integer.highestOneBit(37));
@@ -939,8 +950,12 @@ System.out.println(bonus(2) + " " + bonus(9));
 // 20 0`],
         [`Real-world: routing commands in a CLI, mapping HTTP status codes, and state machines. Enums with abstract methods or a map of handlers keep the switch from growing without bound.`,
             r`enum Op {
-    ADD { int apply(int a, int b) { return a + b; } },
-    MUL { int apply(int a, int b) { return a * b; } };
+    ADD {
+        int apply(int a, int b) { return a + b; }
+    },
+    MUL {
+        int apply(int a, int b) { return a * b; }
+    };
     abstract int apply(int a, int b);
 }
 System.out.println(Op.valueOf("MUL").apply(6, 7));
@@ -1000,7 +1015,10 @@ System.out.println(firstNegative(new int[]{3, 5, -2, 8}));
 while (true) {
     attempt++;
     if (tryCall(attempt)) break;
-    if (attempt >= 3) { System.out.println("giving up"); break; }
+    if (attempt >= 3) {
+        System.out.println("giving up");
+        break;
+    }
 }
 static boolean tryCall(int n) { return n == 2; }
 System.out.println("attempts=" + attempt);

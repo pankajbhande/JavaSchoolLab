@@ -16,16 +16,16 @@ export const instanceVsClassVariables: Topic = {
         self.name = name                # instance variables - per object
         self.marks = marks
 
-a = Student("Asha", 91)
-b = Student("Ravi", 78)
+a = Student("Abaji", 91)
+b = Student("Raoji", 78)
 
 print(a.name, a.marks, a.school)
 print(b.name, b.marks, b.school)
 print(Student.school)                   # read it through the class too
 
 # OUTPUT:
-# Asha 91 DHIPAN Academy
-# Ravi 78 DHIPAN Academy
+# Abaji 91 DHIPAN Academy
+# Raoji 78 DHIPAN Academy
 # DHIPAN Academy`
             ]
         },
@@ -39,8 +39,8 @@ Assign through the <b>class name</b> to change the shared value.`,
     def __init__(self, name):
         self.name = name
 
-a = Student("Asha")
-b = Student("Ravi")
+a = Student("Abaji")
+b = Student("Raoji")
 
 Student.school = "DHIPAN Institute"     # change it once, on the class
 print(a.school, "|", b.school)
@@ -154,7 +154,7 @@ print(f1.items, f2.items)
     def __init__(self, name):
         self.name = name
 
-s = Student("Asha")
+s = Student("Abaji")
 print(s.__dict__)                       # only instance data
 print("school" in Student.__dict__, "school" in s.__dict__)
 
@@ -166,9 +166,9 @@ del s.school                            # remove it: the class value shows again
 print(s.school)
 
 # OUTPUT:
-# {'name': 'Asha'}
+# {'name': 'Abaji'}
 # True False
-# {'name': 'Asha', 'school': 'Other'}
+# {'name': 'Abaji', 'school': 'Other'}
 # Other DHIPAN
 # DHIPAN`
             ]

@@ -362,11 +362,11 @@ ResponseEntity<String> create(@Valid @RequestBody CreateUser dto) {
     return ResponseEntity.status(201).body("created " + dto.name());
 }
 // curl -X POST localhost:8080/users -H "Content-Type: application/json" \
-//      -d "{\"name\":\"Asha\",\"email\":\"asha@example.com\"}"
+//      -d "{\"name\":\"Abaji\",\"email\":\"abaji@example.com\"}"
 
 // OUTPUT:
 // HTTP/1.1 201
-// created Asha`],
+// created Abaji`],
             ['Optional body and list.',
                 r`@PostMapping("/tags")
 String tags(@RequestBody(required = false) List<String> tags) {
@@ -517,12 +517,12 @@ void csv(HttpServletResponse res) throws IOException {
     res.setHeader("Content-Disposition", "attachment; filename=\"report.csv\"");
     PrintWriter w = res.getWriter();
     w.println("id,name");
-    w.println("1,Asha");
+    w.println("1,Abaji");
 }
 
 // OUTPUT:
 // id,name
-// 1,Asha`]],
+// 1,Abaji`]],
         [['Test the response.',
             r`@Test
 void writesBody() throws Exception {
@@ -634,29 +634,29 @@ String whoami(HttpServletRequest req) {
 String me(Principal principal) {
     return "hello " + principal.getName();
 }
-// curl -u asha:secret localhost:8080/me
+// curl -u abaji:secret localhost:8080/me
 
 // OUTPUT:
-// hello asha`],
+// hello abaji`],
             ['@AuthenticationPrincipal.',
                 r`@GetMapping("/profile")
 String profile(@AuthenticationPrincipal UserDetails user,
                Authentication auth) {
     return user.getUsername() + " roles=" + auth.getAuthorities();
 }
-// curl -u asha:secret localhost:8080/profile
+// curl -u abaji:secret localhost:8080/profile
 
 // OUTPUT:
-// asha roles=[ROLE_USER]`]],
+// abaji roles=[ROLE_USER]`]],
         [['Test with a mock user.',
             r`@WebMvcTest(MeController.class)
 class PrincipalTest {
     @Autowired MockMvc mvc;
 
     @Test
-    @WithMockUser(username = "asha")
+    @WithMockUser(username = "abaji")
     void returnsName() throws Exception {
-        mvc.perform(get("/me")).andExpect(content().string("hello asha"));
+        mvc.perform(get("/me")).andExpect(content().string("hello abaji"));
     }
 
     @Test
@@ -675,7 +675,7 @@ List<Order> mine(Principal principal) {
 }
 
 // OUTPUT:
-// [{"id":7,"owner":"asha","total":250.0}]`]]
+// [{"id":7,"owner":"abaji","total":250.0}]`]]
     )
 };
 
@@ -860,7 +860,12 @@ server.servlet.session.cookie.same-site=lax
 server.servlet.session.cookie.max-age=30m
 
 # OUTPUT:
-# Set-Cookie: APPSESSION=...; Max-Age=1800; Path=/; Secure; HttpOnly; SameSite=Lax`],
+# Set-Cookie: APPSESSION=...;
+Max-Age=1800;
+Path=/;
+Secure;
+HttpOnly;
+SameSite=Lax`],
         [`<p>Scenario: a "remember language" feature. The first visit stores the chosen language in a cookie, later visits read it and fall back to the browser default.</p>`,
             r`@GetMapping("/lang/{code}")
 ResponseEntity<String> set(@PathVariable String code) {
@@ -1029,7 +1034,7 @@ class LogBodyAdvice extends RequestBodyAdviceAdapter {
 }
 
 // OUTPUT:
-// body read: CreateUser[name=Asha, email=asha@example.com]`],
+// body read: CreateUser[name=Abaji, email=abaji@example.com]`],
         [`<p>Options and variants:</p><ul><li><code>required</code>: default true.</li><li>Records, classes with setters, and <code>@JsonCreator</code> constructors all work.</li><li>Control fields with Jackson annotations such as <code>@JsonProperty</code>, <code>@JsonIgnoreProperties</code>, <code>@JsonFormat</code>.</li><li>Groups: <code>@Validated(Create.class)</code> for different rules per operation.</li><li><code>@RequestBody</code> is not needed in <code>@RestController</code> for return values, only for parameters.</li></ul>`,
             r`record Product(
     @JsonProperty("product_name") @NotBlank String name,
@@ -1151,7 +1156,7 @@ class AuditInterceptor implements HandlerInterceptor {
 }
 
 // OUTPUT:
-// audit - GET /orders from 10.0.0.5 user=asha`]
+// audit - GET /orders from 10.0.0.5 user=abaji`]
     ),
     'mvc-httpservletresponse': dv(
         [`<p>How the response is produced:</p><ul><li>The container creates a response with a buffer; headers and body are held until the buffer fills or is flushed.</li><li><b>Committed:</b> once flushed, status and headers are fixed.</li><li>If a handler returns a value, <code>HttpMessageConverter</code> writes it to the same output stream.</li><li>If you write the response yourself, return <code>void</code> (or mark it handled) so Spring does not add output.</li></ul>`,
@@ -1303,7 +1308,7 @@ String who(Principal p, Authentication a, HttpServletRequest r) {
     boolean same = (p == a) && (r.getUserPrincipal() == p);
     return same + " " + a.getClass().getSimpleName();
 }
-// curl -u asha:secret localhost:8080/who
+// curl -u abaji:secret localhost:8080/who
 
 // OUTPUT:
 // true UsernamePasswordAuthenticationToken`],
@@ -1313,10 +1318,10 @@ String ways(@AuthenticationPrincipal(expression = "username") String name) {
     Authentication a = SecurityContextHolder.getContext().getAuthentication();
     return name + " " + a.getName() + " " + a.isAuthenticated();
 }
-// curl -u asha:secret localhost:8080/ways
+// curl -u abaji:secret localhost:8080/ways
 
 // OUTPUT:
-// asha asha true`],
+// abaji abaji true`],
         [`<p>Mistakes and fixes:</p><ul><li><b>Principal is null:</b> the endpoint is public or security is off; require authentication.</li><li><b>Taking user id from the request:</b> use the Principal.</li><li><b>Using the Principal in a new thread:</b> the context is not copied; use <code>DelegatingSecurityContextExecutor</code> or pass values.</li><li><b>Casting the Principal to your class blindly:</b> use <code>@AuthenticationPrincipal</code>.</li></ul>`,
             r`// WRONG: any caller can ask for another user's orders
 @GetMapping("/orders")
@@ -1327,7 +1332,7 @@ List<Order> bad(@RequestParam String userId) { return svc.byOwner(userId); }
 List<Order> good(Principal p) { return svc.byOwner(p.getName()); }
 
 // OUTPUT:
-// /orders?userId=bob  -> returns bob's orders to anyone (bug)
+// /orders?userId=baji  -> returns baji's orders to anyone (bug)
 // /my-orders          -> only the logged in user's orders`],
         [`<p>Tuning: the Principal is already in memory, so reading it is free. Cost lies in authentication; cache user lookups, use stateless tokens to avoid session lookups, and avoid loading the full user entity on each call when the name or id is enough.</p>`,
             r`// keep a small custom principal instead of a heavy entity
@@ -1339,7 +1344,7 @@ String light(@AuthenticationPrincipal AppUser user) {
 }
 
 // OUTPUT:
-// 7:asha`],
+// 7:abaji`],
         [`<p>Scenario: a "my account" API plus an audit field. Controllers use the Principal to scope data to the caller and to record who changed a record.</p>`,
             r`@PutMapping("/account/email")
 ResponseEntity<Void> change(@Valid @RequestBody EmailChange body,
@@ -1351,6 +1356,6 @@ ResponseEntity<Void> change(@Valid @RequestBody EmailChange body,
 
 // OUTPUT:
 // HTTP/1.1 204
-// audit: asha EMAIL_CHANGED`]
+// audit: abaji EMAIL_CHANGED`]
     )
 };

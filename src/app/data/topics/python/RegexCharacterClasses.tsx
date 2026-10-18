@@ -66,12 +66,12 @@ A <b>character class</b> in square brackets matches <b>exactly one</b> character
                 `import re
 
 print(re.findall(r"[aeiou]", "education"))        # vowels
-print(re.findall(r"[A-Z][a-z]+", "Asha met Ravi in Pune"))
+print(re.findall(r"[A-Z][a-z]+", "Abaji met Raoji in Pune"))
 print(re.findall(r"[^0-9]+", "ab12cd3"))           # anything except digits
 
 # OUTPUT:
 # ['e', 'u', 'a', 'i', 'o']
-# ['Asha', 'Ravi', 'Pune']
+# ['Abaji', 'Raoji', 'Pune']
 # ['ab', 'cd']`
             ]
         },
@@ -125,12 +125,12 @@ Within <code>[...]</code> the characters <code>. * + ?</code> lose their special
 
 print(re.findall(r"[.*+?]", "a.b*c+d?e"))
 print(re.findall(r"[a\\-z]", "a-z b"))        # escaped hyphen: only a, - and z
-print(re.findall(r"[\\w.-]+", "ravi.k-1 @x"))  # hyphen last is literal
+print(re.findall(r"[\\w.-]+", "raoji.k-1 @x"))  # hyphen last is literal
 
 # OUTPUT:
 # ['.', '*', '+', '?']
 # ['a', '-', 'z']
-# ['ravi.k-1', 'x']`
+# ['raoji.k-1', 'x']`
             ]
         },
         {

@@ -22,7 +22,9 @@ export const java02Extras: Record<string, Extra> = {
         [['Declaring and using a package.',
             r`// src/com/acme/util/MathUtil.java
 package com.acme.util;
-public class MathUtil { public static int twice(int n) { return n * 2; } }
+public class MathUtil {
+    public static int twice(int n) { return n * 2; }
+}
 
 // src/com/acme/App.java
 package com.acme;
@@ -138,11 +140,16 @@ try {
             r`int[] a = {4, 9, 2, 9, 7};
 int max = Integer.MIN_VALUE, second = Integer.MIN_VALUE;
 for (int v : a) {
-    if (v > max) { second = max; max = v; }
+    if (v > max) {
+        second = max;
+        max = v;
+    }
     else if (v > second && v < max) second = v;
 }
 for (int i = 0, j = a.length - 1; i < j; i++, j--) {   // swap the ends
-    int t = a[i]; a[i] = a[j]; a[j] = t;
+    int t = a[i];
+    a[i] = a[j];
+    a[j] = t;
 }
 System.out.println(max + " " + second + " " + Arrays.toString(a));
 
@@ -258,34 +265,46 @@ System.out.println(new StringBuilder(w).reverse().toString().equals(w));
 
     public String toString() { return name + "(" + age + ")"; }
 }
-System.out.println(new Student("Asha") + " " + new Student("Ravi", 21));
+System.out.println(new Student("Abaji") + " " + new Student("Raoji", 21));
 
 // OUTPUT:
-// Asha(18) Ravi(21)`],
+// Abaji(18) Raoji(21)`],
             ['Static factory.',
-                r`class Temp {
-    private final double c;
+                r`class Fort {
+    private final String name;
+    private final String district;
 
-    private Temp(double c) { this.c = c; }
+    private Fort(String name, String district) {
+        this.name = name;
+        this.district = district;
+    }
 
-    static Temp ofCelsius(double c) { return new Temp(c); }
-    static Temp ofFahrenheit(double f) { return new Temp((f - 32) / 1.8); }
+    static Fort of(String name, String district) { return new Fort(name, district); }
+    static Fort inPune(String name) { return new Fort(name, "Pune"); }
 
-    public String toString() { return String.format("%.1fC", c); }
+    public String toString() { return name + " (" + district + ")"; }
 }
-System.out.println(Temp.ofFahrenheit(212));
+System.out.println(Fort.inPune("Rajgad") + " " + Fort.of("Pratapgad", "Satara"));
 
 // OUTPUT:
-// 100.0C`]],
+// Rajgad (Pune) Pratapgad (Satara)`]],
         [['Overridable call trap.',
-            r`class Base { Base() { init(); } void init() {} }
-class Child extends Base { String s = "ready"; void init() { System.out.println(s); } }
+            r`class Base {
+    Base() { init(); }
+    void init() {}
+}
+class Child extends Base {
+    String s = "ready";
+    void init() { System.out.println(s); }
+}
 new Child();
 
 // OUTPUT:
 // null`],
             ['Default constructor disappears.',
-                r`class P { P(int x) {} }
+                r`class P {
+    P(int x) {}
+}
 // new P();      // error: constructor P in class P cannot be applied to given types
 
 // OUTPUT:
@@ -309,10 +328,18 @@ new Child();
             ['S', 'What is the order of initialization?', 'Static initializers, then parent instance initializers and constructor, then child instance initializers and constructor.'],
             ['S', 'What if the parent has only a parameterized constructor?', 'The child must call it explicitly with super(args), otherwise compilation fails.']],
         [['Chaining and order.',
-            r`class A { A() { System.out.println("A()"); } }
+            r`class A {
+    A() { System.out.println("A()"); }
+}
 class B extends A {
-    B() { this(5); System.out.println("B()"); }
-    B(int x) { super(); System.out.println("B(int)"); }
+    B() {
+        this(5);
+        System.out.println("B()");
+    }
+    B(int x) {
+        super();
+        System.out.println("B(int)");
+    }
 }
 new B();
 
@@ -341,8 +368,12 @@ new C();
 // C block
 // C()`]],
         [['Explicit super needed.',
-            r`class Vehicle { Vehicle(String n) {} }
-class Car extends Vehicle { Car() { super("car"); } }
+            r`class Vehicle {
+    Vehicle(String n) {}
+}
+class Car extends Vehicle {
+    Car() { super("car"); }
+}
 // class Bike extends Vehicle { }
 // error: constructor Vehicle in class Vehicle cannot be applied to given types
 
@@ -353,7 +384,10 @@ class Car extends Vehicle { Car() { super("car"); } }
     final int x, y;
     Pt() { this(0, 0); }
     Pt(int x) { this(x, 0); }
-    Pt(int x, int y) { this.x = x; this.y = y; }
+    Pt(int x, int y) {
+        this.x = x;
+        this.y = y;
+    }
 }
 System.out.println(new Pt(3).y);
 
@@ -384,7 +418,8 @@ System.out.println(new Pt(3).y);
     Counter() { id = ++created; }
     static String describe() { return created + " objects"; }
 }
-new Counter(); new Counter();
+new Counter();
+new Counter();
 System.out.println(Counter.describe() + " last id=" + new Counter().id);
 
 // OUTPUT:
@@ -400,16 +435,27 @@ System.out.println(Config.get() == Config.get());
 // OUTPUT:
 // true`]],
         [['Static method hiding.',
-            r`class A { static String who() { return "A"; } }
-class B extends A { static String who() { return "B"; } }
+            r`class A {
+    static String who() { return "A"; }
+}
+class B extends A {
+    static String who() { return "B"; }
+}
 A ref = new B();
 System.out.println(ref.who() + " " + B.who());
 
 // OUTPUT:
 // A B`],
             ['Static block order.',
-                r`class S { static int x; static { x = 10; System.out.println("static block"); } }
-System.out.println("before"); System.out.println(S.x);
+                r`class S {
+    static int x;
+    static {
+        x = 10;
+        System.out.println("static block");
+    }
+}
+System.out.println("before");
+System.out.println(S.x);
 
 // OUTPUT:
 // before
@@ -460,8 +506,8 @@ try (Stream<String> lines = Files.lines(p)) {
 String name = br.readLine();
 System.out.println("Hi " + name);
 
-// OUTPUT: (input: Asha)
-// Hi Asha`],
+// OUTPUT: (input: Abaji)
+// Hi Abaji`],
             ['Append to a file.',
                 r`try (PrintWriter pw = new PrintWriter(new FileWriter("log.txt", true))) {
     pw.println("started");                 // true = append mode
@@ -500,8 +546,8 @@ System.out.print("Name: ");
 String name = sc.nextLine();
 System.out.println(name + " " + age);
 
-// OUTPUT: (input: abc, 25, Asha Rao)
-// Age: Enter a number: Name: Asha Rao 25`],
+// OUTPUT: (input: abc, 25, Abaji Rao)
+// Age: Enter a number: Name: Abaji Rao 25`],
             ['Scan a string with delimiters.',
                 r`Scanner s = new Scanner("10,20,30").useDelimiter(",");
 int sum = 0;
@@ -678,7 +724,8 @@ System.out.println(maxSubarray(new int[]{-2, 1, -3, 4, -1, 2, 1, -5, 4}));
 // OUTPUT:
 // 6`],
         [`Prefix sums answer range sums in O(1) after O(n) setup; sliding window finds the best fixed-size window; two sum on sorted data uses two pointers; hashing finds pairs in unsorted data in O(n). Choose the structure from constraints.`,
-            r`int[] a = {2, 1, 5, 1, 3, 2}; int k = 3;
+            r`int[] a = {2, 1, 5, 1, 3, 2};
+int k = 3;
 int win = 0, best = 0;
 for (int i = 0; i < a.length; i++) {
     win += a[i];
@@ -710,7 +757,8 @@ System.out.println(((lo + hi) / 2) + " " + (lo + (hi - lo) / 2));
     while (lo <= hi) {
         int mid = lo + (hi - lo) / 2;   // safe midpoint
         if (a[mid] == t) return mid;
-        if (a[mid] < t) lo = mid + 1; else hi = mid - 1;
+        if (a[mid] < t) lo = mid + 1;
+        else hi = mid - 1;
     }
     return -1;
 }
@@ -735,7 +783,8 @@ System.out.println(profit);
         [`Internals: a String holds a <code>byte[] value</code> and a coder (Latin-1 or UTF-16, compact strings since Java 9), plus a cached <code>hash</code>. Literals are interned in the pool at class load; <code>new String</code> creates a separate heap object. String concatenation with + compiles to <code>invokedynamic</code> (StringConcatFactory) since Java 9.`,
             r`String a = "x" + "y";            // compile-time constant, interned
 String b = "xy";
-String p = "x"; String c = p + "y";   // runtime concat
+String p = "x";
+String c = p + "y";  // runtime concat
 System.out.println((a == b) + " " + (b == c) + " " + (b == c.intern())
         + " " + "xy".hashCode());
 
@@ -787,7 +836,7 @@ System.out.println("concat ms=" + slow / 1_000_000
 }
 System.out.println(mask("4111111111111111"));
 Pattern email = Pattern.compile("^[\\w.+-]+@[\\w-]+\\.[\\w.]+$");
-System.out.println(email.matcher("asha@mail.com").matches());
+System.out.println(email.matcher("abaji@mail.com").matches());
 
 // OUTPUT:
 // ************1111
@@ -832,8 +881,14 @@ class Pizza {
         String size = "M";
         List<String> toppings = new ArrayList<>();
 
-        Builder size(String s) { size = s; return this; }
-        Builder add(String t) { toppings.add(t); return this; }
+        Builder size(String s) {
+            size = s;
+            return this;
+        }
+        Builder add(String t) {
+            toppings.add(t);
+            return this;
+        }
         Pizza build() { return new Pizza(this); }
     }
 }
@@ -846,17 +901,17 @@ System.out.println(Range.of(9, 3) + " " + new Pizza.Builder().size("L").add("cor
     String name;
     User(String name) { name = name; }       // bug: parameter assigned to itself
 }
-System.out.println(new User("Asha").name);
+System.out.println(new User("Abaji").name);
 
 class User2 {
     String name;
     User2(String name) { this.name = name; } // fixed with this.
 }
-System.out.println(new User2("Asha").name);
+System.out.println(new User2("Abaji").name);
 
 // OUTPUT:
 // null
-// Asha`],
+// Abaji`],
         [`Object creation is cheap, but constructors that open connections or build big structures are not. Make them lazy or move work to factories, use object pools only for expensive resources (connections, threads), and rely on escape analysis for short-lived objects.`,
             r`long t = System.nanoTime();
 long s = 0;
@@ -895,11 +950,17 @@ public class OrderService {
             r`class A {
     int a = log("A field");
     A() { log("A()"); }
-    static int log(String s) { System.out.println(s); return 1; }
+    static int log(String s) {
+        System.out.println(s);
+        return 1;
+    }
 }
 class B extends A {
     int b = log("B field");
-    B() { this(1); log("B()"); }
+    B() {
+        this(1);
+        log("B()");
+    }
     B(int x) { log("B(int)"); }
 }
 new B();

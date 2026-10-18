@@ -18,8 +18,8 @@ Python's built-in <code>csv</code> module reads and writes CSV correctly - inclu
 
 rows = [
     ["name", "city", "marks"],
-    ["Asha", "Pune", 91],
-    ["Ravi", "Latur", 78],
+    ["Abaji", "Pune", 91],
+    ["Raoji", "Latur", 78],
 ]
 
 with open("students.csv", "w", newline="", encoding="utf-8") as f:
@@ -31,8 +31,8 @@ with open("students.csv", encoding="utf-8") as f:
 
 # OUTPUT:
 # name,city,marks
-# Asha,Pune,91
-# Ravi,Latur,78`
+# Abaji,Pune,91
+# Raoji,Latur,78`
             ]
         },
         {
@@ -42,7 +42,7 @@ Each row comes back as a <b>list of strings</b> - even numbers. Convert them you
                 `import csv
 
 with open("students.csv", "w", newline="", encoding="utf-8") as f:
-    csv.writer(f).writerows([["name", "city", "marks"], ["Asha", "Pune", 91], ["Ravi", "Latur", 78]])
+    csv.writer(f).writerows([["name", "city", "marks"], ["Abaji", "Pune", 91], ["Raoji", "Latur", 78]])
 
 with open("students.csv", newline="", encoding="utf-8") as f:
     reader = csv.reader(f)
@@ -53,8 +53,8 @@ with open("students.csv", newline="", encoding="utf-8") as f:
 
 # OUTPUT:
 # ['name', 'city', 'marks']
-# ['Asha', 'Pune', '91'] -> marks + 5 = 96
-# ['Ravi', 'Latur', '78'] -> marks + 5 = 83`
+# ['Abaji', 'Pune', '91'] -> marks + 5 = 96
+# ['Raoji', 'Latur', '78'] -> marks + 5 = 83`
             ]
         },
         {
@@ -64,8 +64,8 @@ Working with column <b>names</b> instead of positions is clearer and survives co
                 `import csv
 
 students = [
-    {"name": "Asha", "marks": 91},
-    {"name": "Ravi", "marks": 78},
+    {"name": "Abaji", "marks": 91},
+    {"name": "Raoji", "marks": 78},
 ]
 
 with open("marks.csv", "w", newline="", encoding="utf-8") as f:
@@ -78,8 +78,8 @@ with open("marks.csv", newline="", encoding="utf-8") as f:
         print(row["name"], int(row["marks"]), row)
 
 # OUTPUT:
-# Asha 91 {'name': 'Asha', 'marks': '91'}
-# Ravi 78 {'name': 'Ravi', 'marks': '78'}`
+# Abaji 91 {'name': 'Abaji', 'marks': '91'}
+# Raoji 78 {'name': 'Raoji', 'marks': '78'}`
             ]
         },
         {
@@ -89,7 +89,7 @@ A value containing a comma is wrapped in quotes in a real CSV file. <code>split(
                 `import csv
 
 with open("address.csv", "w", newline="", encoding="utf-8") as f:
-    csv.writer(f).writerow(["Asha", "Pune, MH", 91])
+    csv.writer(f).writerow(["Abaji", "Pune, MH", 91])
 
 with open("address.csv", encoding="utf-8") as f:
     line = f.read().strip()
@@ -100,9 +100,9 @@ with open("address.csv", newline="", encoding="utf-8") as f:
     print(next(csv.reader(f)))           # right: 3 values
 
 # OUTPUT:
-# Asha,"Pune, MH",91
-# ['Asha', '"Pune', ' MH"', '91']
-# ['Asha', 'Pune, MH', '91']`
+# Abaji,"Pune, MH",91
+# ['Abaji', '"Pune', ' MH"', '91']
+# ['Abaji', 'Pune, MH', '91']`
             ]
         },
         {
@@ -111,10 +111,10 @@ with open("address.csv", newline="", encoding="utf-8") as f:
                 `import csv
 
 data = """name,subject,marks
-Asha,Maths,91
-Ravi,Maths,78
-Asha,Physics,85
-Ravi,Physics,66
+Abaji,Maths,91
+Raoji,Maths,78
+Abaji,Physics,85
+Raoji,Physics,66
 """
 with open("results.csv", "w", newline="", encoding="utf-8") as f:
     f.write(data)
@@ -128,8 +128,8 @@ for name, total in totals.items():
     print(f"{name:<6}{total:>4}")
 
 # OUTPUT:
-# Asha   176
-# Ravi   144`
+# Abaji  176
+# Raoji  144`
             ]
         }
     ],
@@ -145,7 +145,7 @@ for name, total in totals.items():
 with open("data.tsv", "w", newline="", encoding="utf-8") as f:
     writer = csv.writer(f, delimiter="\\t")
     writer.writerow(["name", "city"])
-    writer.writerow(["Asha", "Pune, MH"])     # comma is not special in a TSV
+    writer.writerow(["Abaji", "Pune, MH"])     # comma is not special in a TSV
 
 with open("data.tsv", newline="", encoding="utf-8") as f:
     for row in csv.reader(f, delimiter="\\t"):
@@ -153,11 +153,11 @@ with open("data.tsv", newline="", encoding="utf-8") as f:
 
 # OUTPUT:
 # ['name', 'city']
-# ['Asha', 'Pune, MH']`,
+# ['Abaji', 'Pune, MH']`,
                 `import csv
 
 with open("q.csv", "w", newline="", encoding="utf-8") as f:
-    csv.writer(f, quoting=csv.QUOTE_NONNUMERIC).writerow(["Asha", 91, 8.5])
+    csv.writer(f, quoting=csv.QUOTE_NONNUMERIC).writerow(["Abaji", 91, 8.5])
 
 with open("q.csv", encoding="utf-8") as f:
     print(f.read(), end="")
@@ -166,8 +166,8 @@ with open("q.csv", newline="", encoding="utf-8") as f:
     print(next(csv.reader(f, quoting=csv.QUOTE_NONNUMERIC)))
 
 # OUTPUT:
-# "Asha",91,8.5
-# ['Asha', 91.0, 8.5]`
+# "Abaji",91,8.5
+# ['Abaji', 91.0, 8.5]`
             ]
         },
         {
@@ -177,10 +177,10 @@ Real files contain blanks and typos. Convert each row inside <code>try/except</c
                 `import csv
 
 data = """name,marks
-Asha,91
-Ravi,
-Kiran,abc
-Meena,85
+Abaji,91
+Raoji,
+Kanhoji,abc
+Moropant,85
 """
 with open("raw.csv", "w", newline="", encoding="utf-8") as f:
     f.write(data)
@@ -253,8 +253,8 @@ print(df.groupby("name")["marks"].sum())
 
 # OUTPUT:
 # name
-# Asha    176
-# Ravi    144
+# Abaji    176
+# Raoji    144
 # Name: marks, dtype: int64`
             ]
         },

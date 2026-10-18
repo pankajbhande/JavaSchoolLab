@@ -28,12 +28,9 @@ Here is the basic decision-flow every if/else-if ladder follows: <br>
                             {
                                 content: `<h3>1. if statement</h3>
 The <code>if</code> block runs only when its condition is <code>true</code>. If the condition is <code>false</code>, the block is simply skipped.<br>
-<div class="bg-secondary border border-primary p-3">
-Syntax-<br>
-if (condition) { <br>
-&nbsp;&nbsp;statement 1; <br>
-}
-</div>
+<div class="syntax-box"><div class="syntax-label">Syntax</div><pre><code><span class="syn-kw">if</span> (condition) {
+  statement 1;
+}</code></pre></div>
 <h4>Flowchart of if:</h4>
 <img src="${ifImg}" alt="Flowchart of if statement" class="d-block mx-auto h-80"/>`,
                                 codeExamples: [
@@ -52,14 +49,11 @@ if (condition) { <br>
                             {
                                 content: `<h3>2. if-else statement</h3>
 When the condition is <code>true</code> the <code>if</code> block runs; when it is <code>false</code> the <code>else</code> block runs instead. Exactly one of the two blocks executes.<br>
-<div class="bg-secondary border border-primary p-3">
-Syntax-<br>
-if (condition) { <br>
-&nbsp;&nbsp;statement 1; // runs when condition is true <br>
-} else { <br>
-&nbsp;&nbsp;statement 2; // runs when condition is false <br>
-}
-</div>
+<div class="syntax-box"><div class="syntax-label">Syntax</div><pre><code><span class="syn-kw">if</span> (condition) {
+  statement 1; <span class="syn-cmt">// runs when condition is true</span>
+} <span class="syn-kw">else</span> {
+  statement 2; <span class="syn-cmt">// runs when condition is false</span>
+}</code></pre></div>
 <h4>Flowchart of if-else:</h4>
 <img src="${ifElseImg}" alt="Flowchart of if-else statement" class="d-block mx-auto h-80"/>`,
                                 codeExamples: [
@@ -80,13 +74,10 @@ if (condition) { <br>
                             {
                                 content: `<h3>3. if-else-if ladder</h3>
 Used to pick exactly one branch out of many conditions. Java checks each condition top to bottom and runs the block for the first one that is <code>true</code> - if none match, the final <code>else</code> runs.<br>
-<div class="bg-secondary border border-primary p-3">
-Syntax-<br>
-if (condition 1) { statement 1; } <br>
-else if (condition 2) { statement 2; } <br>
-else if (condition 3) { statement 3; } <br>
-else { statement 4; } // runs only if all conditions are false
-</div>
+<div class="syntax-box"><div class="syntax-label">Syntax</div><pre><code><span class="syn-kw">if</span> (condition 1) { statement 1; }
+<span class="syn-kw">else</span> <span class="syn-kw">if</span> (condition 2) { statement 2; }
+<span class="syn-kw">else</span> <span class="syn-kw">if</span> (condition 3) { statement 3; }
+<span class="syn-kw">else</span> { statement 4; } <span class="syn-cmt">// runs only if all conditions are false</span></code></pre></div>
 <h4>Flowchart of if-else-if ladder:</h4>
 <img src="${ifElseLadderImg}" alt="Flowchart of if-else-if ladder" class="d-block mx-auto h-96"/>`,
                                 codeExamples: [
@@ -113,16 +104,13 @@ else { statement 4; } // runs only if all conditions are false
                             {
                                 content: `<h3>4. Nested if statement</h3>
 An <code>if</code> block placed inside another <code>if</code> block. The inner condition is checked only when the outer condition is already <code>true</code>.<br>
-<div class="bg-secondary border border-primary p-3">
-Syntax-<br>
-if (condition 1) { <br>
-&nbsp;&nbsp;if (condition 2) { <br>
-&nbsp;&nbsp;&nbsp;&nbsp;statement 1; // runs when both conditions are true <br>
-&nbsp;&nbsp;} else { <br>
-&nbsp;&nbsp;&nbsp;&nbsp;statement 2; // runs when condition 1 is true but condition 2 is false <br>
-&nbsp;&nbsp;} <br>
-}
-</div>
+<div class="syntax-box"><div class="syntax-label">Syntax</div><pre><code><span class="syn-kw">if</span> (condition 1) {
+  <span class="syn-kw">if</span> (condition 2) {
+    statement 1; <span class="syn-cmt">// runs when both conditions are true</span>
+  } <span class="syn-kw">else</span> {
+    statement 2; <span class="syn-cmt">// runs when condition 1 is true but condition 2 is false</span>
+  }
+}</code></pre></div>
 <h4>Flowchart of nested if:</h4>
 <img src="${ifNestedImg}" alt="Flowchart of nested if statement" class="d-block mx-auto h-96"/>`,
                                 codeExamples: [
@@ -145,14 +133,11 @@ if (condition 1) { <br>
                             {
                                 content: `<h3>5. switch statement</h3>
 The <code>switch</code> statement executes the block that matches the value of an expression. It works with <code>byte</code>, <code>short</code>, <code>int</code>, <code>char</code>, <code>String</code> and <code>enum</code> types. Each <code>case</code> should end with <code>break</code> so only that one block runs; <code>default</code> runs when no case matches. Case values must be unique (no duplicates).<br>
-<div class="bg-secondary border border-primary p-3">
-Syntax-<br>
-switch (expression) { <br>
-&nbsp;&nbsp;case value1: statement 1; break; <br>
-&nbsp;&nbsp;case value2: statement 2; break; <br>
-&nbsp;&nbsp;default: default statement; <br>
-}
-</div>
+<div class="syntax-box"><div class="syntax-label">Syntax</div><pre><code><span class="syn-kw">switch</span> (expression) {
+  <span class="syn-kw">case</span> value1: statement 1; <span class="syn-kw">break</span>;
+  <span class="syn-kw">case</span> value2: statement 2; <span class="syn-kw">break</span>;
+  <span class="syn-kw">default</span>: <span class="syn-kw">default</span> statement;
+}</code></pre></div>
 <h4>Flowchart of switch:</h4>
 <img src="${switchCaseImg}" alt="Flowchart of switch statement" class="d-block mx-auto h-96"/>`,
                                 codeExamples: [
@@ -380,9 +365,9 @@ public class ControlPitfallDemo {
         System.out.println("RIGHT for Rs 6000: " + rightDiscount(6000));
 
         System.out.println(checkout(null, 3, true));
-        System.out.println(checkout("Divya", 0, true));
-        System.out.println(checkout("Divya", 3, false));
-        System.out.println(checkout("Divya", 3, true));
+        System.out.println(checkout("Dadoji", 0, true));
+        System.out.println(checkout("Dadoji", 3, false));
+        System.out.println(checkout("Dadoji", 3, true));
 
         // DISADVANTAGE 5: a stray semicolon after if
         int stock = 0;
@@ -416,7 +401,7 @@ public class ControlPitfallDemo {
 // Login required
 // Cart is empty
 // Payment failed
-// Order placed for Divya
+// Order placed for Dadoji
 // WRONG: this prints even with zero stock
 // RIGHT: out of stock
 // Delivery to DELHI in 3 days`

@@ -333,8 +333,8 @@ SET GLOBAL innodb_io_capacity_max = 8000;
 
 -- OUTPUT:
 -- name
--- Asha
--- Ravi`]],
+-- Abaji
+-- Raoji`]],
         [['Optimizer trace.',
             r`SET optimizer_trace = 'enabled=on';
 SELECT COUNT(*) FROM orders WHERE customer_id = 7;
@@ -566,7 +566,7 @@ const pool = mysql.createPool({ host: 'db', user: 'shop_app', password: process.
 const [rows] = await pool.execute('SELECT id, name FROM users WHERE email = ?', [email]);
 
 -- OUTPUT:
--- rows: [ { id: 1, name: 'Asha' } ]`],
+-- rows: [ { id: 1, name: 'Abaji' } ]`],
             ['Go database/sql.',
                 r`db, _ := sql.Open("mysql", "shop_app:***@tcp(db:3306)/shop?parseTime=true&charset=utf8mb4")
 db.SetMaxOpenConns(20); db.SetMaxIdleConns(10); db.SetConnMaxLifetime(30 * time.Minute)
@@ -574,14 +574,14 @@ var name string
 err := db.QueryRow("SELECT name FROM users WHERE id = ?", 1).Scan(&name)
 
 -- OUTPUT:
--- name = "Asha"`]],
+-- name = "Abaji"`]],
         [['PHP PDO.',
             r`$pdo = new PDO('mysql:host=db;dbname=shop;charset=utf8mb4', 'shop_app', $pass, [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
 $st = $pdo->prepare('SELECT id, name FROM users WHERE email = :email');
 $st->execute(['email' => $email]);
 
 -- OUTPUT:
--- $st->fetch() => ['id' => 1, 'name' => 'Asha']`],
+-- $st->fetch() => ['id' => 1, 'name' => 'Abaji']`],
             ['.NET MySqlConnector.',
                 r`await using var conn = new MySqlConnection(cs);
 await conn.OpenAsync();
@@ -589,7 +589,7 @@ await using var cmd = new MySqlCommand("SELECT name FROM users WHERE id = @id", 
 cmd.Parameters.AddWithValue("@id", 1);
 
 -- OUTPUT:
--- "Asha"`]]
+-- "Abaji"`]]
     ),
 
     'Connection Pooling': x(

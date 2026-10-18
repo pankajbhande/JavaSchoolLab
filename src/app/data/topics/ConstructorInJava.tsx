@@ -30,7 +30,7 @@ export const constructorInJava: Topic = {
                                     `public class Test {
     String name;
 
-    public Test() { // Default Constructor
+    public Test() { // No-arg constructor (written by us)
         name = "Default_Constructor";
     }
 
@@ -88,13 +88,13 @@ export const constructorInJava: Topic = {
     }
 
     public static void main(String[] args) {
-        Example example = new Example(10, "Pankaj", "Udgir");
+        Example example = new Example(10, "Baji Maharaj", "Rajgad");
     }
 }
 // OUTPUT:
 // id >> 10
-// name >> Pankaj
-// city >> Udgir`
+// name >> Baji Maharaj
+// city >> Rajgad`
                                 ]
                             },
 
@@ -155,13 +155,13 @@ public class Example {
     }
 
     public static void main(String[] args) {
-        new Example(10, "Pankaj", "Udgir");  // picks constructor 1
-        new Example("Dheeraj", "Latur");     // picks constructor 2
+        new Example(10, "Baji Maharaj", "Rajgad");  // picks constructor 1
+        new Example("Abaji", "Sinhagad");     // picks constructor 2
     }
 }
 // OUTPUT:
-// 10 Pankaj Udgir
-// Dheeraj Latur`
+// 10 Baji Maharaj Rajgad
+// Abaji Sinhagad`
                                 ]
                             },
                             {
@@ -223,9 +223,10 @@ class Temp {
                             },
                             {
                                 content: `<h4>4. Can a parent constructor call a child constructor?</h4>
-<p>No. Java has no way to call a subclass constructor from a superclass constructor.</p>
-
-<h4>5. What happens if you give a constructor a return type?</h4>
+<p>No. Java has no way to call a subclass constructor from a superclass constructor.</p>`
+                            },
+                            {
+                                content: `<h4>5. What happens if you give a constructor a return type?</h4>
 <p>It is no longer a constructor. A member with a return type is a normal method, even if it has the class name. It compiles, but most tools warn about it.</p>`,
                                 codeExamples: [
                                     `package com.test;

@@ -80,13 +80,13 @@ SHOW GRANTS FOR 'app'@'localhost';
 -- Variable_name   | Value
 -- max_connections | 151`]],
         [['Session variables are per client.',
-            r`SET @name = 'Asha';
+            r`SET @name = 'Abaji';
 SELECT @name;
 -- another client session:
 SELECT @name;
 
 -- OUTPUT:
--- Asha
+-- Abaji
 -- NULL`],
             ['Check whether the current connection uses TLS.',
                 r`SHOW SESSION STATUS LIKE 'Ssl_cipher';
@@ -129,8 +129,8 @@ DELETE FROM students;
 
 -- OUTPUT:
 -- id | name
---  1 | Asha
---  2 | Ravi`],
+--  1 | Abaji
+--  2 | Raoji`],
             ['Export the same data from the CLI instead (repeatable).',
                 r`mysqldump -u root -p school students > students.sql
 
@@ -211,7 +211,7 @@ SELECT USER(), CURRENT_USER(), DATABASE();
 -- OUTPUT:
 -- *************************** 1. row ***************************
 --   id: 1
--- name: Asha`]],
+-- name: Abaji`]],
         [['Run a script file.',
             r`mysql> SOURCE C:/scripts/seed.sql;
 
@@ -451,13 +451,13 @@ SHOW TABLES LIKE 'employees%';
 -- employees
 -- employees_copy`]],
         [['updated_at changes automatically.',
-            r`INSERT INTO employees (name, salary) VALUES ('Asha', 50000);
-UPDATE employees SET salary = 55000 WHERE name = 'Asha';
+            r`INSERT INTO employees (name, salary) VALUES ('Abaji', 50000);
+UPDATE employees SET salary = 55000 WHERE name = 'Abaji';
 SELECT name, created_at <> updated_at AS changed FROM employees;
 
 -- OUTPUT: (if a second passed)
--- name | changed
--- Asha |       1`],
+-- name  | changed
+-- Abaji | 1`],
             ['See the next auto-increment value.',
                 r`SELECT AUTO_INCREMENT FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name='employees';
 

@@ -74,7 +74,7 @@ Use a set whenever the main question is "have I seen this before?" or "is this a
             codeExamples: [
                 `blocked_users = {"spam_bot", "troll42"}
 
-for user in ["asha", "troll42", "ravi"]:
+for user in ["abaji", "troll42", "raoji"]:
     if user in blocked_users:
         print(user, "is blocked")
 
@@ -139,8 +139,8 @@ print(list(dict.fromkeys(visits)))
                 `squares = {n * n for n in range(-3, 4)}
 print(sorted(squares), len(squares))     # 7 inputs, 4 unique squares
 
-team_a = frozenset({"asha", "ravi"})
-team_b = frozenset({"ravi", "asha"})
+team_a = frozenset({"abaji", "raoji"})
+team_b = frozenset({"raoji", "abaji"})
 scores = {team_a: 42}
 print(scores[team_b])           # equal frozensets -> same key
 

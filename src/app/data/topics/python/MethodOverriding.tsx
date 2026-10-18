@@ -48,12 +48,12 @@ class Manager(Employee):
     def annual_pay(self):
         return super().annual_pay() + 50000    # extend: parent result + bonus
 
-print(Employee("Asha", 40000).describe())
-print(Manager("Ravi", 60000).describe())
+print(Employee("Abaji", 40000).describe())
+print(Manager("Raoji", 60000).describe())
 
 # OUTPUT:
-# Asha earns 480000
-# Ravi earns 770000`
+# Abaji earns 480000
+# Raoji earns 770000`
             ],
             codeExplanations: [
                 `describe() is defined only in Employee, but inside it self.annual_pay() is looked up on the actual object. For the Manager object that finds Manager.annual_pay, which first calls the parent's version through super() (60000 * 12 = 720000) and then adds the 50000 bonus. This is the same dynamic dispatch Java uses for non-static, non-final methods.`

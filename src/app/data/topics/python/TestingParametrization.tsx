@@ -65,7 +65,7 @@ By default pytest builds an ID from the values. For complex values, give each ca
 
 @pytest.mark.parametrize(
     "email, valid",
-    [("asha@mail.com", True), ("no-at-sign", False), ("", False)],
+    [("abaji@mail.com", True), ("no-at-sign", False), ("", False)],
     ids=["normal", "missing-at", "empty"],
 )
 def test_email(email, valid):

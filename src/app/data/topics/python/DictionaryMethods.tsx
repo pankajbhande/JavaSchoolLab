@@ -22,7 +22,7 @@ export const dictionaryMethods: Topic = {
         {
             content: `<h4>keys(), values() and items()</h4>`,
             codeExamples: [
-                `marks = {"Asha": 91, "Ravi": 78, "Kiran": 85}
+                `marks = {"Abaji": 91, "Raoji": 78, "Kanhoji": 85}
 
 print(list(marks.keys()))
 print(list(marks.values()))
@@ -30,9 +30,9 @@ print(list(marks.items()))
 print(max(marks.values()), sum(marks.values()) / len(marks))
 
 # OUTPUT:
-# ['Asha', 'Ravi', 'Kiran']
+# ['Abaji', 'Raoji', 'Kanhoji']
 # [91, 78, 85]
-# [('Asha', 91), ('Ravi', 78), ('Kiran', 85)]
+# [('Abaji', 91), ('Raoji', 78), ('Kanhoji', 85)]
 # 91 84.66666666666667`
             ]
         },
@@ -67,7 +67,7 @@ print(cart.setdefault("pen", 0))     # exists - returns 2, no change
 print(cart.setdefault("book", 1))    # missing - inserts 1
 print(cart)
 
-orders = [("Asha", "pen"), ("Ravi", "bag"), ("Asha", "book")]
+orders = [("Abaji", "pen"), ("Raoji", "bag"), ("Abaji", "book")]
 by_customer = {}
 for name, item in orders:
     by_customer.setdefault(name, []).append(item)
@@ -77,7 +77,7 @@ print(by_customer)
 # 2
 # 1
 # {'pen': 2, 'book': 1}
-# {'Asha': ['pen', 'book'], 'Ravi': ['bag']}`
+# {'Abaji': ['pen', 'book'], 'Raoji': ['bag']}`
             ]
         },
         {
@@ -136,7 +136,7 @@ print(good)
         {
             content: `<h3>Sorting and Inverting Dictionaries</h3>`,
             codeExamples: [
-                `marks = {"Asha": 91, "Ravi": 78, "Kiran": 85}
+                `marks = {"Abaji": 91, "Raoji": 78, "Kanhoji": 85}
 
 by_score = dict(sorted(marks.items(), key=lambda kv: kv[1], reverse=True))
 print(by_score)
@@ -146,9 +146,9 @@ inverted = {v: k for k, v in marks.items()}
 print(inverted[85])
 
 # OUTPUT:
-# {'Asha': 91, 'Kiran': 85, 'Ravi': 78}
-# Asha
-# Kiran`
+# {'Abaji': 91, 'Kanhoji': 85, 'Raoji': 78}
+# Abaji
+# Kanhoji`
             ]
         },
         {

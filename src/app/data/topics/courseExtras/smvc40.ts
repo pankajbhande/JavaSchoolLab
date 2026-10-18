@@ -648,7 +648,8 @@ SseEmitter progress() {
                 Thread.sleep(500);
             }
             em.complete();
-        } catch (Exception e) { em.completeWithError(e); }
+        } catch (Exception e) { em.completeWithError(e);
+        }
     });
     return em;
 }
@@ -734,7 +735,9 @@ public void good(long id) {
 # GET /actuator/metrics/hikaricp.connections.acquire
 
 # OUTPUT: (varies)
-# {"name":"hikaricp.connections.pending","measurements":[{"statistic":"VALUE","value":0.0}]}`],
+# {
+    "name":"hikaricp.connections.pending","measurements":[{"statistic":"VALUE","value":0.0}]
+}`],
         [`<p>Scenario: an API slows down under load and logs show <code>Connection is not available, request timed out after 30000ms</code>.</p><ul><li>Pending threads are high, active equals the maximum.</li><li>A thread dump shows threads inside a remote payment call within a transaction.</li><li>Fix: move the remote call out of the transaction and disable open-in-view.</li><li>Result: active connections drop and the timeouts disappear without enlarging the pool.</li></ul>`,
             r`2026-03-01 WARN HikariPool-1 - Connection is not available, request timed out after 30000ms
   (total=10, active=10, idle=0, waiting=42)
@@ -795,7 +798,9 @@ management.endpoints.web.exposure.include=metrics
 # GET /actuator/metrics/cache.gets?tag=result:hit
 
 # OUTPUT: (varies)
-# {"name":"cache.gets","measurements":[{"statistic":"COUNT","value":8421.0}]}`],
+# {
+    "name":"cache.gets","measurements":[{"statistic":"COUNT","value":8421.0}]
+}`],
         [`<p>Scenario: a product catalogue page calls the database for the same 500 products thousands of times a minute.</p><ul><li>Cache product reads by id with a 10 minute expiry.</li><li>Evict the entry when an admin updates a product.</li><li>Result: database load drops sharply and page latency falls.</li><li>Risk handled: expiry limits stale data if an eviction is missed.</li></ul>`,
             r`@Cacheable(cacheNames = "catalogue", key = "#id", sync = true)
 public ProductDto get(long id) { return mapper.toDto(repo.getReferenceById(id)); }
@@ -998,7 +1003,8 @@ ex.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
 ex.setTaskDecorator(task -> {
     Map<String, String> mdc = MDC.getCopyOfContextMap();
     return () -> { MDC.setContextMap(mdc); try { task.run(); }
-                   finally { MDC.clear(); } };
+                   finally { MDC.clear(); }
+                   };
 });
 
 // OUTPUT:
@@ -1215,7 +1221,8 @@ ResponseBodyEmitter items() {
         try {
             for (int i = 1; i <= 3; i++) em.send(new Item(i), MediaType.APPLICATION_JSON);
             em.complete();
-        } catch (IOException e) { em.completeWithError(e); }
+        } catch (IOException e) { em.completeWithError(e);
+        }
     });
     return em;
 }

@@ -332,7 +332,7 @@ public Document load(long id) {
 }
 
 // OUTPUT:
-// bob loads a document owned by ann -> AccessDeniedException`]],
+// baji loads a document owned by ann -> AccessDeniedException`]],
         [['Testing a service rule.',
             r`@SpringBootTest
 class AccountServiceTest {
@@ -515,7 +515,7 @@ public class UserRepository {
 }
 
 // OUTPUT:
-// findAll() -> [User[id=1, name=Ann], User[id=2, name=Bob]]
+// findAll() -> [User[id=1, name=Ann], User[id=2, name=Baji]]
 // add("Cy") -> 1`],
             ['Controller and properties.',
                 r`@RestController
@@ -531,7 +531,7 @@ spring.datasource.url=jdbc:h2:mem:demo
 spring.datasource.username=sa
 
 # OUTPUT:
-# GET /users -> [{"id":1,"name":"Ann"},{"id":2,"name":"Bob"}]`]],
+# GET /users -> [{"id":1,"name":"Ann"},{"id":2,"name":"Baji"}]`]],
         [['Testing with @JdbcTest.',
             r`@JdbcTest
 @Import(UserRepository.class)
@@ -620,7 +620,8 @@ class ProductRepositoryTest {
     @Autowired ProductRepository repo;
 
     @Test void findsByPartOfName() {
-        Product p = new Product(); p.setName("Blue Pen");
+        Product p = new Product();
+        p.setName("Blue Pen");
         repo.save(p);
         assertEquals(1, repo.findByNameContainingIgnoreCase("pen").size());
     }
@@ -821,7 +822,10 @@ server.servlet.session.cookie.secure=true
 server.servlet.session.cookie.http-only=true
 
 # OUTPUT:
-# Set-Cookie: JSESSIONID=...; Secure; HttpOnly; SameSite=Lax`],
+# Set-Cookie: JSESSIONID=...;
+Secure;
+HttpOnly;
+SameSite=Lax`],
         [`<p>Scenario: a banking page transfers money with a POST form.</p><ul><li>An attacker site hides a form that posts to <code>/transfer</code>.</li><li>The victim is logged in, so the browser sends the session cookie.</li><li>Without a token the transfer would succeed; with CSRF protection the attacker has no token, so the server answers 403.</li></ul>`,
             r`@Test @WithMockUser
 void forgedRequestIsBlocked() throws Exception {
@@ -989,7 +993,7 @@ List<Doc> mine();   // needs SecurityEvaluationContextExtension bean
 public void delete(long id) { repo.deleteById(id); }
 
 // OUTPUT:
-// bob deletes ann's doc -> AccessDeniedException ; ann deletes own -> ok`]
+// baji deletes ann's doc -> AccessDeniedException ; ann deletes own -> ok`]
     ),
 
     'mvc-security-context': dv(

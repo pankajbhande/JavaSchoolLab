@@ -29,10 +29,10 @@ Here a guest list ignores capitalisation and surrounding spaces.`,
     def __contains__(self, name):
         return name.strip().lower() in self._names
 
-guests = GuestList(["Asha", "Ravi Kumar"])
-print("asha" in guests)
-print("  RAVI KUMAR " in guests)
-print("Kiran" in guests, "Kiran" not in guests)
+guests = GuestList(["Abaji", "Raoji Kumar"])
+print("abaji" in guests)
+print("  RAOJI KUMAR " in guests)
+print("Kanhoji" in guests, "Kanhoji" not in guests)
 
 # OUTPUT:
 # True
@@ -55,8 +55,8 @@ Python falls back in this order:<br>
     def __iter__(self):
         return iter(self.members)
 
-t = Team(["asha", "ravi"])
-print("ravi" in t)               # found by iterating
+t = Team(["abaji", "raoji"])
+print("raoji" in t)               # found by iterating
 
 class Nothing:
     pass
@@ -86,11 +86,11 @@ The iteration fallback - and a list inside <code>__contains__</code> - checks it
     def __iter__(self):
         return iter(self._ordered)
 
-wl = Whitelist(["Asha@x.com", "ravi@x.com"])
-print("asha@X.COM" in wl, list(wl))
+wl = Whitelist(["Abaji@x.com", "raoji@x.com"])
+print("abaji@X.COM" in wl, list(wl))
 
 # OUTPUT:
-# True ['Asha@x.com', 'ravi@x.com']`
+# True ['Abaji@x.com', 'raoji@x.com']`
             ]
         },
         {

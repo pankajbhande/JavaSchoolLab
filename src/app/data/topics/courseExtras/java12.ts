@@ -104,7 +104,10 @@ int[][] grid = {{1, 2}, {3, 4}};
 search:
 for (int[] row : grid) {
     for (int v : row) {
-        if (v == 3) { System.out.println("found 3"); break search; }
+        if (v == 3) {
+            System.out.println("found 3");
+            break search;
+        }
     }
 }
 
@@ -142,7 +145,10 @@ long t = System.nanoTime();
 int common = 0;
 for (int x : a) {
     for (int y : b) {
-        if (x == y) { common++; break; }                 // O(n * m)
+        if (x == y) {
+            common++;
+            break;
+        }  // O(n * m)
     }
 }
 long nested = System.nanoTime() - t;

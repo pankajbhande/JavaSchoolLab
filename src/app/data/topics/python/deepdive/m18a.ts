@@ -28,13 +28,13 @@ discount(200, 10)
             r`import sys
 from pprint import pprint
 
-name = "Asha "                       # trailing space is invisible with plain print
+name = "Abaji "                       # trailing space is invisible with plain print
 print(f"name={name!r}")              # repr shows quotes and spaces
 print("diagnostic", file=sys.stderr) # separate stream from real output
 pprint({"user": {"id": 1, "tags": ["a", "b"]}}, width=30)
 
 # OUTPUT (stdout):
-# name='Asha '
+# name='Abaji '
 # {'user': {'id': 1,
 #           'tags': ['a', 'b']}}`],
         [`<b>Advantages:</b> zero setup, works everywhere (servers, containers, notebooks), shows the actual runtime flow, and needs no tool knowledge.`,
@@ -114,7 +114,7 @@ except ZeroDivisionError:
 #     def c(): return 1 / 0
 # ZeroDivisionError: division by zero`],
         [`Most debugging time is wasted guessing. The traceback already tells you the exception type, the exact file and line, and the path taken, so reading it well finds many bugs in seconds.`,
-            r`data = {"name": "Asha"}
+            r`data = {"name": "Abaji"}
 try:
     print(data["age"])
 except KeyError as e:
@@ -424,10 +424,10 @@ class JsonFormatter(logging.Formatter):
 
 h = logging.StreamHandler(sys.stdout); h.setFormatter(JsonFormatter())
 log = logging.getLogger("j"); log.addHandler(h); log.setLevel(logging.INFO)
-log.info("user %s logged in", "asha")
+log.info("user %s logged in", "abaji")
 
 # OUTPUT:
-# {"level": "INFO", "msg": "user asha logged in", "logger": "j"}`],
+# {"level": "INFO", "msg": "user abaji logged in", "logger": "j"}`],
         [`<b>Disadvantages:</b> adding a handler twice duplicates every line, propagation to the root logger causes double output, and misconfigured handlers fail silently.`,
             r`import logging, sys
 

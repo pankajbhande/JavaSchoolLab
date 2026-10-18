@@ -111,8 +111,8 @@ class Employee {
 public class Test {
     public static void main(String[] args) {
         List<Employee> employees = new ArrayList<>();
-        employees.add(new Employee("Ravi", 40000));
-        employees.add(new Employee("Priya", 60000));
+        employees.add(new Employee("Raoji", 40000));
+        employees.add(new Employee("Prataprao", 60000));
         employees.add(new Employee("Aman", 25000));
 
         // Strategy 1: Sort by salary

@@ -42,7 +42,12 @@ mvn javafx:run
 // OUTPUT:
 // the application window opens`]],
         [['Background task.',
-            r`Task<String> task = new Task<>() { protected String call() throws Exception { Thread.sleep(2000); return "done"; } };
+            r`Task<String> task = new Task<>() {
+    protected String call() throws Exception {
+        Thread.sleep(2000);
+        return "done";
+    }
+};
 task.setOnSucceeded(e -> label.setText(task.getValue()));
 new Thread(task).start();
 
@@ -79,13 +84,17 @@ root.setTop(new Label("Header"));
 root.setCenter(new TextArea("Notes"));
 root.setBottom(new HBox(8, new Button("Save"), new Button("Cancel")));
 Scene scene = new Scene(root, 480, 320);
-stage.setScene(scene); stage.show();
+stage.setScene(scene);
+stage.show();
 
 // OUTPUT:
 // header on top, text area in the middle, two buttons at the bottom`],
             ['Lifecycle logging.',
                 r`@Override public void init() { System.out.println("init: " + Thread.currentThread().getName()); }
-@Override public void start(Stage s) { System.out.println("start: " + Thread.currentThread().getName()); s.show(); }
+@Override public void start(Stage s) {
+    System.out.println("start: " + Thread.currentThread().getName());
+    s.show();
+}
 @Override public void stop() { System.out.println("stop"); }
 
 // OUTPUT:
@@ -122,19 +131,27 @@ stage.setScene(scene); stage.show();
             ['S', 'How do you keep a table in sync with data?', 'Use an ObservableList (and JavaFX properties) so UI updates automatically when the list or items change.']],
         [['Form with GridPane.',
             r`GridPane grid = new GridPane();
-grid.setHgap(10); grid.setVgap(8); grid.setPadding(new Insets(16));
-grid.add(new Label("Name"), 0, 0);  grid.add(new TextField(), 1, 0);
-grid.add(new Label("Email"), 0, 1); grid.add(new TextField(), 1, 1);
+grid.setHgap(10);
+grid.setVgap(8);
+grid.setPadding(new Insets(16));
+grid.add(new Label("Name"), 0, 0);
+grid.add(new TextField(), 1, 0);
+grid.add(new Label("Email"), 0, 1);
+grid.add(new TextField(), 1, 1);
 grid.add(new Button("Save"), 1, 2);
-ColumnConstraints c1 = new ColumnConstraints(); ColumnConstraints c2 = new ColumnConstraints(); c2.setHgrow(Priority.ALWAYS);
+ColumnConstraints c1 = new ColumnConstraints();
+ColumnConstraints c2 = new ColumnConstraints();
+c2.setHgrow(Priority.ALWAYS);
 grid.getColumnConstraints().addAll(c1, c2);
 
 // OUTPUT:
 // a two-column form where the input column stretches with the window`],
             ['TableView with properties.',
-                r`TableView<Customer> table = new TableView<>(FXCollections.observableArrayList(new Customer("Asha", "a@x.com")));
-TableColumn<Customer, String> name = new TableColumn<>("Name"); name.setCellValueFactory(c -> c.getValue().nameProperty());
-TableColumn<Customer, String> email = new TableColumn<>("Email"); email.setCellValueFactory(c -> c.getValue().emailProperty());
+                r`TableView<Customer> table = new TableView<>(FXCollections.observableArrayList(new Customer("Abaji", "a@x.com")));
+TableColumn<Customer, String> name = new TableColumn<>("Name");
+name.setCellValueFactory(c -> c.getValue().nameProperty());
+TableColumn<Customer, String> email = new TableColumn<>("Email");
+email.setCellValueFactory(c -> c.getValue().emailProperty());
 table.getColumns().addAll(name, email);
 
 // OUTPUT:
@@ -182,7 +199,12 @@ nameField.textProperty().addListener((obs, old, val) -> save.setDisable(val.isBl
             ['Long work in a Task.',
                 r`save.setOnAction(e -> {
     save.setDisable(true);
-    Task<Void> t = new Task<>() { protected Void call() { repository.saveAll(); return null; } };
+    Task<Void> t = new Task<>() {
+        protected Void call() {
+            repository.saveAll();
+            return null;
+        }
+    };
     t.setOnSucceeded(ev -> { status.setText("Saved"); save.setDisable(false); });
     t.setOnFailed(ev -> status.setText("Failed: " + t.getException().getMessage()));
     new Thread(t).start();
@@ -210,15 +232,22 @@ export const javafxDeep: Record<string, Deep> = {
     @Override public void start(Stage stage) {
         Label clock = new Label();
         Timeline tick = new Timeline(new KeyFrame(Duration.seconds(1), e -> clock.setText(LocalTime.now().withNano(0).toString())));
-        tick.setCycleCount(Animation.INDEFINITE); tick.play();
-        stage.setScene(new Scene(new StackPane(clock), 240, 120)); stage.show();
+        tick.setCycleCount(Animation.INDEFINITE);
+        tick.play();
+        stage.setScene(new Scene(new StackPane(clock), 240, 120));
+        stage.show();
     }
 }
 
 // OUTPUT:
 // a window showing a clock that updates every second, driven by a Timeline on the UI thread`],
         [`Ways to build UI: pure Java code, FXML with Scene Builder, and mixed approaches. Ways to run: <code>Application.launch</code>, Maven or Gradle plugins, jlink runtime images, jpackage installers. Modules: <code>javafx.base</code>, <code>controls</code>, <code>graphics</code>, <code>fxml</code>, <code>media</code>, <code>web</code>, <code>swing</code>.`,
-            r`module com.shop.desktop { requires javafx.controls; requires javafx.fxml; opens com.shop.desktop to javafx.fxml; exports com.shop.desktop; }
+            r`module com.shop.desktop {
+    requires javafx.controls;
+    requires javafx.fxml;
+    opens com.shop.desktop to javafx.fxml;
+    exports com.shop.desktop;
+}
 jpackage --type msi --input target --main-jar shop.jar --main-class com.shop.desktop.App --module-path "%PATH_TO_FX%" --add-modules javafx.controls,javafx.fxml
 
 // OUTPUT:
@@ -238,7 +267,9 @@ new Thread(() -> Platform.runLater(() -> label.setText("loaded"))).start();`],
 // pulse 120: 3.1 ms layout, 1.4 ms render        (a pulse over 16 ms means dropped frames)`],
         [`Real-world: a small desktop client that talks to a REST API. The UI shows a table, loads data in a Task, shows a progress indicator and handles errors in a dialog.`,
             r`ProgressIndicator spinner = new ProgressIndicator();
-Task<List<Order>> load = new Task<>() { protected List<Order> call() { return api.fetchOrders(); } };
+Task<List<Order>> load = new Task<>() {
+    protected List<Order> call() { return api.fetchOrders(); }
+};
 spinner.visibleProperty().bind(load.runningProperty());
 load.setOnSucceeded(e -> table.getItems().setAll(load.getValue()));
 load.setOnFailed(e -> new Alert(Alert.AlertType.ERROR, load.getException().getMessage()).show());
@@ -277,7 +308,8 @@ ListView<String> list = new ListView<>(FXCollections.observableArrayList(names))
 // OUTPUT:
 // 10,000 items shown with about 20 cell nodes`],
         [`Rendering cost scales with node count and effects. Cache complex static nodes, avoid large blur or shadow effects on animated nodes, and use Canvas for very many simple primitives.`,
-            r`node.setCache(true); node.setCacheHint(CacheHint.SPEED);
+            r`node.setCache(true);
+node.setCacheHint(CacheHint.SPEED);
 Canvas canvas = new Canvas(800, 600);
 GraphicsContext gc = canvas.getGraphicsContext2D();
 for (Point p : points) gc.fillOval(p.x, p.y, 2, 2);
@@ -287,7 +319,10 @@ for (Point p : points) gc.fillOval(p.x, p.y, 2, 2);
         [`Real-world: a dashboard with tiles. Each tile is a small component node; tiles are added and removed as widgets are configured, and all listeners are removed when a tile is closed.`,
             r`public class Tile extends VBox implements AutoCloseable {
     private final ChangeListener<Number> l = (o, a, b) -> refresh(b.intValue());
-    Tile(IntegerProperty source) { source.addListener(l); this.source = source; }
+    Tile(IntegerProperty source) {
+        source.addListener(l);
+        this.source = source;
+    }
     @Override public void close() { source.removeListener(l); }
 }
 
@@ -312,7 +347,8 @@ System.out.println(box.prefWidth(-1));
 split.setDividerPositions(0.3);
 TabPane tabs = new TabPane(new Tab("Orders", ordersTable), new Tab("Customers", customersTable));
 tabs.getTabs().forEach(t -> t.setClosable(false));
-ScrollPane scroll = new ScrollPane(form); scroll.setFitToWidth(true);
+ScrollPane scroll = new ScrollPane(form);
+scroll.setFitToWidth(true);
 
 // OUTPUT:
 // resizable split view with a tabbed area and a scrollable form`],
@@ -320,7 +356,10 @@ ScrollPane scroll = new ScrollPane(form); scroll.setFitToWidth(true);
             r`TableColumn<Order, BigDecimal> total = new TableColumn<>("Total");
 total.setCellValueFactory(c -> c.getValue().totalProperty());
 total.setCellFactory(col -> new TableCell<>() {
-    @Override protected void updateItem(BigDecimal v, boolean empty) { super.updateItem(v, empty); setText(empty || v == null ? null : String.format("%,.2f", v)); }
+    @Override protected void updateItem(BigDecimal v, boolean empty) {
+        super.updateItem(v, empty);
+        setText(empty || v == null ? null : String.format("%,.2f", v));
+    }
 });
 
 // OUTPUT:
@@ -372,7 +411,12 @@ search.textProperty().addListener((o, a, q) -> { debounce.setOnFinished(e -> run
 // OUTPUT:
 // one search 250 ms after the user stops typing`],
         [`Real-world: a form with validation feedback. Property listeners validate on change, a binding enables the submit button, and the submit handler runs the network call in a Task with progress and error handling.`,
-            r`Task<Void> submit = new Task<>() { protected Void call() { api.save(form.toDto()); return null; } };
+            r`Task<Void> submit = new Task<>() {
+    protected Void call() {
+        api.save(form.toDto());
+        return null;
+    }
+};
 progress.visibleProperty().bind(submit.runningProperty());
 submit.setOnSucceeded(e -> status.setText("Saved"));
 submit.setOnFailed(e -> new Alert(Alert.AlertType.ERROR, submit.getException().getMessage()).show());

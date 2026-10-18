@@ -5,8 +5,8 @@ export const s10a: Record<string, DeepDive> = {
     'COUNT, SUM, AVG, MIN & MAX': dd(
         [`<b>Aggregate functions</b> collapse many rows into one value: <code>COUNT</code> (how many), <code>SUM</code> (total), <code>AVG</code> (mean), <code>MIN</code> and <code>MAX</code> (extremes). Without <code>GROUP BY</code> the whole table becomes one group.`,
             r`CREATE TABLE emp (id INT PRIMARY KEY, name VARCHAR(20), dept VARCHAR(10), salary INT);
-INSERT INTO emp VALUES (1,'Asha','IT',50000), (2,'Ravi','IT',70000),
-                       (3,'Meena','HR',40000), (4,'John','HR',NULL), (5,'Zoya','OPS',60000);
+INSERT INTO emp VALUES (1,'Abaji','IT',50000), (2,'Raoji','IT',70000),
+                       (3,'Moropant','HR',40000), (4,'Jiva','HR',NULL), (5,'Zoya','OPS',60000);
 
 SELECT COUNT(*)    AS rows_,     -- all rows
        SUM(salary) AS total,     -- NULL ignored
@@ -105,8 +105,8 @@ FROM emp WHERE dept = 'NONE';
     'GROUP BY with Aggregates': dd(
         [`<b>GROUP BY</b> splits rows into groups that share the same value(s), then applies aggregates to each group separately, returning one row per group.`,
             r`CREATE TABLE emp (id INT PRIMARY KEY, name VARCHAR(20), dept VARCHAR(10), salary INT);
-INSERT INTO emp VALUES (1,'Asha','IT',50000), (2,'Ravi','IT',70000),
-                       (3,'Meena','HR',40000), (4,'John','HR',45000), (5,'Zoya','OPS',60000);
+INSERT INTO emp VALUES (1,'Abaji','IT',50000), (2,'Raoji','IT',70000),
+                       (3,'Moropant','HR',40000), (4,'Jiva','HR',45000), (5,'Zoya','OPS',60000);
 
 SELECT dept,
        COUNT(*)    AS headcount,   -- rows in each group
@@ -192,8 +192,8 @@ FROM emp GROUP BY dept ORDER BY dept;
 -- +------+-----------+---+
 -- | dept | some_name | n |
 -- +------+-----------+---+
--- | HR   | Meena     | 2 |
--- | IT   | Asha      | 2 |
+-- | HR   | Moropant  | 2 |
+-- | IT   | Abaji     | 2 |
 -- | OPS  | Zoya      | 1 |
 -- +------+-----------+---+`],
         `
@@ -210,12 +210,12 @@ FROM emp GROUP BY dept ORDER BY dept;
     'WHERE vs HAVING': dd(
         [`<b>WHERE</b> filters individual rows <i>before</i> grouping; <b>HAVING</b> filters groups <i>after</i> aggregation and may use aggregate functions.`,
             r`CREATE TABLE emp (id INT PRIMARY KEY, name VARCHAR(20), dept VARCHAR(10), salary INT);
-INSERT INTO emp VALUES (1,'Asha','IT',50000), (2,'Ravi','IT',70000),
-                       (3,'Meena','HR',40000), (4,'John','HR',45000), (5,'Zoya','OPS',60000);
+INSERT INTO emp VALUES (1,'Abaji','IT',50000), (2,'Raoji','IT',70000),
+                       (3,'Moropant','HR',40000), (4,'Jiva','HR',45000), (5,'Zoya','OPS',60000);
 
 SELECT dept, SUM(salary) AS payroll
 FROM emp
-WHERE salary >= 45000          -- row filter: Meena (40000) is dropped before grouping
+WHERE salary >= 45000          -- row filter: Moropant (40000) is dropped before grouping
 GROUP BY dept
 HAVING SUM(salary) > 60000;    -- group filter: keep big payrolls only
 

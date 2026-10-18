@@ -1631,7 +1631,7 @@ class Employee {
 public class EmployeeListDemo { // class that holds the main method
     public static void main(String[] args) { // program entry point
         ArrayList<Employee> employees = new ArrayList<>(); // creates an empty ArrayList named employees
-        employees.add(new Employee(20, "Ram", "25000"));
+        employees.add(new Employee(20, "Rajaram", "25000"));
         employees.add(new Employee(30, "Sohan", "15000"));
 
         // Using Iterator
@@ -1647,9 +1647,9 @@ public class EmployeeListDemo { // class that holds the main method
     }
 }
 // OUTPUT:
-// employee list>> Employee [id=20, name=Ram, salary=25000]
+// employee list>> Employee [id=20, name=Rajaram, salary=25000]
 // employee list>> Employee [id=30, name=Sohan, salary=15000]
-// data is>> Employee [id=20, name=Ram, salary=25000]
+// data is>> Employee [id=20, name=Rajaram, salary=25000]
 // data is>> Employee [id=30, name=Sohan, salary=15000]`
                 ]
               },
@@ -1828,7 +1828,7 @@ public class EmployeeListBuilder { // class that holds the main method
     public List<Employee> getEmployeeList() {
         List<Employee> list = new ArrayList<>();
         list.add(new Employee("ajay", "deshmukh"));
-        list.add(new Employee("Ram", "Pawar"));
+        list.add(new Employee("Rajaram", "Pawar"));
         return list;
     }
 
@@ -1850,7 +1850,7 @@ public class EmployeeListBuilder { // class that holds the main method
         System.out.println(employees);
     }
 }
-// OUTPUT: [ajay deshmukh, Ram Pawar]`
+// OUTPUT: [ajay deshmukh, Rajaram Pawar]`
                 ]
               },
               {
@@ -2021,7 +2021,7 @@ import java.util.List;
 
 public class ExtractPortionDemo { // class that holds the main method
     public static void main(String[] args) { // program entry point
-        List<String> listNames = Arrays.asList("Tom", "John", "Mary", "Peter", "David", "Alice");
+        List<String> listNames = Arrays.asList("Tom", "Jiva", "Mary", "Peter", "David", "Anaji");
         System.out.println("Original list: " + listNames);
 
         List<String> subList = listNames.subList(2, 5);
@@ -2029,7 +2029,7 @@ public class ExtractPortionDemo { // class that holds the main method
     }
 }
 // OUTPUT:
-// Original list: [Tom, John, Mary, Peter, David, Alice]
+// Original list: [Tom, Jiva, Mary, Peter, David, Anaji]
 // Sub list: [Mary, Peter, David]`
                 ]
               },
@@ -3927,9 +3927,9 @@ class Student {
 public class CustomObjectVectorExample { // class that holds the main method
     public static void main(String[] args) { // program entry point
         Vector<Student> students = new Vector<>(); // creates an empty Vector named students
-        students.add(new Student("Alice", 1));
-        students.add(new Student("Bob", 2));
-        students.add(new Student("Charlie", 3));
+        students.add(new Student("Anaji", 1));
+        students.add(new Student("Baji", 2));
+        students.add(new Student("Chimnaji", 3));
 
         System.out.println("Students Vector: " + students);
 
@@ -4206,11 +4206,11 @@ public class A3 { // class that holds the main method
         // Adding Elements = Add() Method
         obj.add("Akash");       // 0th Index
         obj.add("Avinash");     // 1st
-        obj.add("Pooja");
+        obj.add("Pilaji");
         obj.add("Pratiksha");
         obj.add("Shraddha");
         obj.add("Vaishnavi");
-        obj.add("Seema");
+        obj.add("Sambhaji");
         obj.add("Supriya");
         obj.add("Sushmita");
         obj.add("Mayuri");
@@ -4789,13 +4789,13 @@ public class TreeSetBasics { // class that holds the main method
         System.out.println("Last: " + numbers.last());     // 40
 
         TreeSet<String> names = new TreeSet<>(); // creates an empty TreeSet named names
-        names.add("Charlie");
-        names.add("Alice");
-        names.add("Bob");
+        names.add("Chimnaji");
+        names.add("Anaji");
+        names.add("Baji");
 
         // Strings sorted alphabetically
         System.out.println("Names: " + names);
-        // Output: [Alice, Bob, Charlie]
+        // Output: [Anaji, Baji, Chimnaji]
     }
 }`
                 ]
@@ -5394,10 +5394,10 @@ public class HashMapBasics { // class that holds the main method
 public class HashMapDemo { // class that holds the main method
     public static void main(String[] args) { // program entry point
         HashMap<Integer, String> map = new HashMap<>(); // creates an empty HashMap named map
-        map.put(101, "Ram");
-        map.put(102, "Shyam");
+        map.put(101, "Rajaram");
+        map.put(102, "Shahaji");
         map.put(103, "Pankaj");
-        map.put(101, "Updated Ram");    // Duplicate key - value updated
+        map.put(101, "Updated Rajaram");    // Duplicate key - value updated
 
         System.out.println("HashMap: " + map);
 
@@ -6007,14 +6007,14 @@ public class TreeMapBasics { // class that holds the main method
     public static void main(String[] args) { // program entry point
         TreeMap<Integer, String> treeMap = new TreeMap<>(); // creates an empty TreeMap named treeMap
 
-        treeMap.put(3, "Charlie");
-        treeMap.put(1, "Alice");
+        treeMap.put(3, "Chimnaji");
+        treeMap.put(1, "Anaji");
         treeMap.put(4, "David");
-        treeMap.put(2, "Bob");
+        treeMap.put(2, "Baji");
 
         // Entries are sorted by key
         System.out.println("TreeMap: " + treeMap);
-        // Output: {1=Alice, 2=Bob, 3=Charlie, 4=David}
+        // Output: {1=Anaji, 2=Baji, 3=Chimnaji, 4=David}
 
         System.out.println("First Key: " + treeMap.firstKey());  // 1
         System.out.println("Last Key: " + treeMap.lastKey());    // 4
@@ -6056,8 +6056,8 @@ public class TreeMapDemo { // class that holds the main method
     public static void main(String[] args) { // program entry point
         TreeMap<Integer, String> map = new TreeMap<>(); // creates an empty TreeMap named map
         map.put(103, "Pankaj");
-        map.put(101, "Ram");
-        map.put(102, "Shyam");
+        map.put(101, "Rajaram");
+        map.put(102, "Shahaji");
         map.put(104, "Dheeraj");
 
         System.out.println("TreeMap (sorted): " + map);
@@ -6953,9 +6953,9 @@ class Person implements Comparable<Person> {
 public class ComparableExample { // class that holds the main method
     public static void main(String[] args) { // program entry point
         List<Person> people = new ArrayList<>();
-        people.add(new Person("Charlie", 30));
-        people.add(new Person("Alice", 25));
-        people.add(new Person("Bob", 28));
+        people.add(new Person("Chimnaji", 30));
+        people.add(new Person("Anaji", 25));
+        people.add(new Person("Baji", 28));
         people.add(new Person("David", 22));
 
         System.out.println("Before sorting: " + people);
@@ -6963,7 +6963,7 @@ public class ComparableExample { // class that holds the main method
         Collections.sort(people);  // uses compareTo()
 
         System.out.println("After sorting by age: " + people);
-        // Output: [David(22), Alice(25), Bob(28), Charlie(30)]
+        // Output: [David(22), Anaji(25), Baji(28), Chimnaji(30)]
     }
 }`
                 ]
@@ -7097,13 +7097,13 @@ public class Employee implements Comparable<Employee> {
 
     public static void main(String[] args) { // program entry point
         java.util.List<Employee> emps = new java.util.ArrayList<>(java.util.List.of(
-            new Employee("IT", "Charlie"), new Employee("HR", "Bob"), new Employee("IT", "Alice")
+            new Employee("IT", "Chimnaji"), new Employee("HR", "Baji"), new Employee("IT", "Anaji")
         ));
         java.util.Collections.sort(emps);
         System.out.println(emps);
     }
 }
-// OUTPUT: [HR:Bob, IT:Alice, IT:Charlie]`,
+// OUTPUT: [HR:Baji, IT:Anaji, IT:Chimnaji]`,
                   `// Enum implements Comparable automatically - ordering is by declaration order (ordinal)
 import java.util.*;
 
@@ -7430,7 +7430,7 @@ The key insight a diagram makes obvious: with Comparable, the comparison logic i
 </td>
 <td style="width:30px;">&rarr;</td>
 <td style="background:#fdf2e3; border:1px solid #e0b878; border-radius:6px; padding:10px 14px; vertical-align:top;">
-<strong>Person@A</strong> {name="Bob", age=28}<br>
+<strong>Person@A</strong> {name="Baji", age=28}<br>
 <span style="font-size:12px; color:#8a5a00;">class pointer &darr;</span><br><br>
 <strong>Person@B</strong> {name="Ann", age=25}<br>
 <span style="font-size:12px; color:#8a5a00;">class pointer &darr;</span>
@@ -7557,9 +7557,9 @@ class NameComparator implements Comparator<StudentInfo> {
 public class ComparatorExample { // class that holds the main method
     public static void main(String[] args) { // program entry point
         List<StudentInfo> students = new ArrayList<>();
-        students.add(new StudentInfo("Charlie", 22, 85.5));
-        students.add(new StudentInfo("Alice", 20, 92.0));
-        students.add(new StudentInfo("Bob", 21, 78.3));
+        students.add(new StudentInfo("Chimnaji", 22, 85.5));
+        students.add(new StudentInfo("Anaji", 20, 92.0));
+        students.add(new StudentInfo("Baji", 21, 78.3));
 
         System.out.println("Original: " + students);
 
@@ -7677,13 +7677,13 @@ public class ComparatorComparingDemo { // class that holds the main method
     record Person(String name, int age) {}
     public static void main(String[] args) { // program entry point
         List<Person> people = new ArrayList<>(List.of(
-            new Person("Charlie", 30), new Person("Alice", 25), new Person("Bob", 28)
+            new Person("Chimnaji", 30), new Person("Anaji", 25), new Person("Baji", 28)
         ));
         people.sort(Comparator.comparing(Person::name));
         System.out.println(people);
     }
 }
-// OUTPUT: [Person[name=Alice, age=25], Person[name=Bob, age=28], Person[name=Charlie, age=30]]`,
+// OUTPUT: [Person[name=Anaji, age=25], Person[name=Baji, age=28], Person[name=Chimnaji, age=30]]`,
                   `// naturalOrder() / reverseOrder() - ready-made Comparators, no lambda needed
 import java.util.*;
 public class ComparatorNaturalReverseDemo { // class that holds the main method
@@ -7704,27 +7704,27 @@ public class ComparatorReversedDemo { // class that holds the main method
     record Person(String name, int age) {}
     public static void main(String[] args) { // program entry point
         List<Person> people = new ArrayList<>(List.of(
-            new Person("Alice", 25), new Person("Bob", 28)
+            new Person("Anaji", 25), new Person("Baji", 28)
         ));
         people.sort(Comparator.comparing(Person::age).reversed());
         System.out.println(people);
     }
 }
-// OUTPUT: [Person[name=Bob, age=28], Person[name=Alice, age=25]]`,
+// OUTPUT: [Person[name=Baji, age=28], Person[name=Anaji, age=25]]`,
                   `// thenComparing(Function) - tie-breaker when the primary key is equal
 import java.util.*;
 public class ComparatorThenComparingDemo { // class that holds the main method
     record Person(String name, int age) {}
     public static void main(String[] args) { // program entry point
         List<Person> people = new ArrayList<>(List.of(
-            new Person("Bob", 25), new Person("Alice", 25), new Person("Charlie", 20)
+            new Person("Baji", 25), new Person("Anaji", 25), new Person("Chimnaji", 20)
         ));
         // Sort by age first, then by name for people with the same age
         people.sort(Comparator.comparing(Person::age).thenComparing(Person::name));
         System.out.println(people);
     }
 }
-// OUTPUT: [Person[name=Charlie, age=20], Person[name=Alice, age=25], Person[name=Bob, age=25]]`,
+// OUTPUT: [Person[name=Chimnaji, age=20], Person[name=Anaji, age=25], Person[name=Baji, age=25]]`,
                   `// comparingInt/Long/Double - primitive-specialized key extractors (avoid autoboxing)
 import java.util.*;
 public class ComparatorComparingIntDemo { // class that holds the main method
@@ -7742,7 +7742,7 @@ public class ComparatorComparingIntDemo { // class that holds the main method
 import java.util.*;
 public class ComparatorNullsFirstLastDemo { // class that holds the main method
     public static void main(String[] args) { // program entry point
-        List<String> names = new ArrayList<>(Arrays.asList("Bob", null, "Alice"));
+        List<String> names = new ArrayList<>(Arrays.asList("Baji", null, "Anaji"));
 
         names.sort(Comparator.nullsFirst(Comparator.naturalOrder()));
         System.out.println("nullsFirst: " + names);
@@ -7752,8 +7752,8 @@ public class ComparatorNullsFirstLastDemo { // class that holds the main method
     }
 }
 // OUTPUT:
-// nullsFirst: [null, Alice, Bob]
-// nullsLast: [Alice, Bob, null]`
+// nullsFirst: [null, Anaji, Baji]
+// nullsLast: [Anaji, Baji, null]`
                 ]
               },
               {
@@ -7782,7 +7782,7 @@ public class ComparatorThenComparingWithComparatorDemo { // class that holds the
     record Employee(String dept, String name) {}
     public static void main(String[] args) { // program entry point
         List<Employee> emps = new ArrayList<>(List.of(
-            new Employee("IT", "Charlie"), new Employee("IT", "Alice"), new Employee("HR", "Bob")
+            new Employee("IT", "Chimnaji"), new Employee("IT", "Anaji"), new Employee("HR", "Baji")
         ));
 
         // Primary: compare by dept. Tie-breaker: a FULL Comparator (reverse-alphabetical by name)
@@ -7791,7 +7791,7 @@ public class ComparatorThenComparingWithComparatorDemo { // class that holds the
         System.out.println(emps);
     }
 }
-// OUTPUT: [Employee[dept=HR, name=Bob], Employee[dept=IT, name=Charlie], Employee[dept=IT, name=Alice]]`,
+// OUTPUT: [Employee[dept=HR, name=Baji], Employee[dept=IT, name=Chimnaji], Employee[dept=IT, name=Anaji]]`,
                   `// thenComparing(Function, Comparator) - 3-arg overload: tie-break by a key with custom key-ordering
 import java.util.*;
 public class ComparatorThenComparingWithKeyComparatorDemo { // class that holds the main method
@@ -7833,7 +7833,7 @@ public class ComparatorThenComparingLongDoubleDemo { // class that holds the mai
     record Order(String customer, long orderTime, double total) {}
     public static void main(String[] args) { // program entry point
         List<Order> orders = new ArrayList<>(List.of(
-            new Order("Alice", 500L, 30.0), new Order("Alice", 100L, 10.0), new Order("Bob", 200L, 15.0)
+            new Order("Anaji", 500L, 30.0), new Order("Anaji", 100L, 10.0), new Order("Baji", 200L, 15.0)
         ));
 
         // Group by customer first, then break ties by earliest orderTime
@@ -7841,7 +7841,7 @@ public class ComparatorThenComparingLongDoubleDemo { // class that holds the mai
         System.out.println(orders);
     }
 }
-// OUTPUT: [Order[customer=Alice, orderTime=100, total=10.0], Order[customer=Alice, orderTime=500, total=30.0], Order[customer=Bob, orderTime=200, total=15.0]]`
+// OUTPUT: [Order[customer=Anaji, orderTime=100, total=10.0], Order[customer=Anaji, orderTime=500, total=30.0], Order[customer=Baji, orderTime=200, total=15.0]]`
                 ]
               },
               {
@@ -8008,7 +8008,7 @@ The contrast with Comparable's diagram is the whole point: with Comparator, the 
 <tr><td colspan="3" style="font-size:12px; font-weight:bold; color:#3b6e3b; padding-bottom:6px;">HEAP</td></tr>
 <tr>
 <td style="background:#fdf2e3; border:1px solid #e0b878; border-radius:6px; padding:10px 14px; vertical-align:top;">
-<strong>Person@A</strong> {name="Bob", age=28}<br><br>
+<strong>Person@A</strong> {name="Baji", age=28}<br><br>
 <strong>Person@B</strong> {name="Ann", age=25}<br>
 <span style="font-size:11px; color:#8a5a00;">(no comparison logic here at all)</span>
 </td>

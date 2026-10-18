@@ -4,7 +4,7 @@ import { dd, r, type DeepDive } from './deepDive';
 export const m03b: Record<string, DeepDive> = {
     'Dictionaries': dd(
         [`A <b>dictionary</b> maps unique, hashable <b>keys</b> to <b>values</b>. Lookup, insert and delete are O(1) on average. Since Python 3.7 a dict remembers insertion order.`,
-            r`user = {"name": "Asha", "age": 30}
+            r`user = {"name": "Abaji", "age": 30}
 print(user["name"])                # lookup by key
 user["city"] = "Pune"              # add
 user["age"] = 31                   # update
@@ -13,7 +13,7 @@ print(user)
 print("age" in user, len(user))    # membership tests KEYS
 
 # OUTPUT:
-# Asha
+# Abaji
 # {'age': 31, 'city': 'Pune'}
 # True 2`],
         [`Real data is labelled: a user has a name, an order has an id and items. Looking things up by meaningful key is clearer and much faster than scanning a list of pairs.`,
@@ -28,14 +28,14 @@ print(freq)
 # {'to': 2, 'be': 2, 'or': 1, 'not': 1}`],
         [`JSON documents, configuration, caches, database rows, HTTP headers, routing tables and in-memory indexes are all dictionaries.`,
             r`import json
-response = '{"id": 7, "tags": ["a", "b"], "owner": {"name": "Ravi"}}'
+response = '{"id": 7, "tags": ["a", "b"], "owner": {"name": "Raoji"}}'
 data = json.loads(response)                 # JSON object -> dict
 print(data["owner"]["name"], data["tags"][0])
 print(json.dumps(data, indent=None, sort_keys=True))
 
 # OUTPUT:
-# Ravi a
-# {"id": 7, "owner": {"name": "Ravi"}, "tags": ["a", "b"]}`],
+# Raoji a
+# {"id": 7, "owner": {"name": "Raoji"}, "tags": ["a", "b"]}`],
         [`<b>Advantages:</b> O(1) average lookup, ordered, flexible values of any type, and a rich API (<code>get</code>, <code>setdefault</code>, <code>items</code>).`,
             r`# Advantage: O(1) lookup versus scanning a list of pairs
 pairs = [(i, i * i) for i in range(100_000)]
@@ -77,11 +77,11 @@ except RuntimeError as e:
    key ──► hash(key) ──► slot ──► value
    "age"     8731..       [4]       31
 
-   {"name": "Asha", "age": 31}
+   {"name": "Abaji", "age": 31}
     ┌────────┬────────┐
     │  key   │ value  │   insertion order kept
     ├────────┼────────┤
-    │ name   │ Asha   │
+    │ name   │ Abaji  │
     │ age    │ 31     │
     └────────┴────────┘
 `,
@@ -201,11 +201,11 @@ class User:
     name: str
     age: int
 
-row = {"name": "Asha", "age": 30}     # e.g. from a database or JSON
+row = {"name": "Abaji", "age": 30}     # e.g. from a database or JSON
 print(User(**row))                    # dict -> object in one step
 
 # OUTPUT:
-# User(name='Asha', age=30)`],
+# User(name='Abaji', age=30)`],
         [`<b>Advantages:</b> concise, creates a new dict (no mutation), works with several dicts at once, and lets functions accept flexible options.`,
             r`# Advantage: merge many sources, last wins
 env = {"level": "info"}
@@ -220,7 +220,7 @@ print({**env, **file, **cli})
     return "hi " + name
 
 try:
-    greet(**{"name": "Asha", "age": 30})   # 'age' is not a parameter
+    greet(**{"name": "Abaji", "age": 30})   # 'age' is not a parameter
 except TypeError as e:
     print("TypeError:", e)
 
@@ -372,9 +372,9 @@ print(set(a) & set(b))                     # set version: O(n+m)
 # [3, 4]
 # {3, 4}`],
         [`<b>Disadvantages:</b> list: slow membership; set: no order, no duplicates (counts lost), no indexing, more memory.`,
-            r`names = ["asha", "ravi", "asha"]
+            r`names = ["abaji", "raoji", "abaji"]
 print(len(names), len(set(names)))         # duplicate info is gone
-print(set(names) == {"ravi", "asha"})      # order is irrelevant
+print(set(names) == {"raoji", "abaji"})      # order is irrelevant
 
 # OUTPUT:
 # 3 2
@@ -473,7 +473,7 @@ print(hash(42))
         `
    key "age" ─► hash ─► index table          entries (insertion order)
                        ┌────┐              ┌───┬────────┬───────┬───────┐
-        hash & mask ─► │  2 │────────────► │ 0 │ h(name)│ name  │ Asha  │
+        hash & mask ─► │  2 │────────────► │ 0 │ h(name)│ name  │ Abaji │
                        │ -- │              │ 1 │ h(age) │ age   │ 31    │
                        │  1 │────────────► │   │        │       │       │
                        └────┘              └───┴────────┴───────┴───────┘
@@ -485,7 +485,7 @@ print(hash(42))
     'Shallow Copy vs Deep Copy': dd(
         [`A <b>shallow copy</b> creates a new container but reuses the same inner objects. A <b>deep copy</b> (<code>copy.deepcopy</code>) recursively copies everything, so the two structures are fully independent.`,
             r`import copy
-orig = {"name": "Asha", "scores": [90, 80]}
+orig = {"name": "Abaji", "scores": [90, 80]}
 shallow = copy.copy(orig)              # same as orig.copy()
 deep = copy.deepcopy(orig)
 orig["scores"].append(70)

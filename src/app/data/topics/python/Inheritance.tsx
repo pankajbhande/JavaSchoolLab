@@ -71,12 +71,12 @@ class Manager(Employee):
     def bonus(self):                     # overrides Employee.bonus
         return self.salary * 0.20
 
-for person in [Employee("Ravi", 50000), Manager("Asha", 80000)]:
+for person in [Employee("Raoji", 50000), Manager("Abaji", 80000)]:
     print(person.name, person.bonus())
 
 # OUTPUT:
-# Ravi 5000.0
-# Asha 16000.0`
+# Raoji 5000.0
+# Abaji 16000.0`
             ]
         },
         {

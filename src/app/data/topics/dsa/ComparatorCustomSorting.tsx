@@ -61,8 +61,8 @@ public class MultiLevelComparatorDemo {
     public static void main(String[] args) {
         List<Employee> employees = new ArrayList<>(List.of(
             new Employee("Eng", 90000, "Zara"),
-            new Employee("Sales", 70000, "Amit"),
-            new Employee("Eng", 95000, "Amit"),
+            new Employee("Sales", 70000, "Anandrao"),
+            new Employee("Eng", 95000, "Anandrao"),
             new Employee("Sales", 70000, "Zara")
         ));
 
@@ -76,10 +76,10 @@ public class MultiLevelComparatorDemo {
     }
 }
 // OUTPUT:
-// Eng | Amit | 95000
-// Eng | Zara | 90000
-// Sales | Amit | 70000
-// Sales | Zara | 70000`
+// Eng   | Anandrao | 95000
+// Eng   | Zara     | 90000
+// Sales | Anandrao | 70000
+// Sales | Zara     | 70000`
             ]
         },
         {

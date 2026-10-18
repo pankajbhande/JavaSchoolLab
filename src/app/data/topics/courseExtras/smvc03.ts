@@ -91,14 +91,14 @@ class HomeControllerTest {
         [['Fill the model and read it in the view.',
             r`@GetMapping("/users")
 public String users(Model model) {
-    model.addAttribute("users", List.of("Asha", "Ravi"));
+    model.addAttribute("users", List.of("Abaji", "Raoji"));
     model.addAttribute("count", 2);
     return "users";
 }
 // users.jsp: use the EL expression for "users" and "count"
 
 // OUTPUT:
-// page shows: 2 users: Asha, Ravi`],
+// page shows: 2 users: Abaji, Raoji`],
             ['Shared attribute for all handlers.',
                 r`@ModelAttribute("appName")
 public String appName() {
@@ -145,13 +145,13 @@ public String create(RedirectAttributes ra) {
             r`@GetMapping("/profile")
 public ModelAndView profile() {
     ModelAndView mav = new ModelAndView("profile");
-    mav.addObject("name", "Asha");
+    mav.addObject("name", "Abaji");
     mav.addObject("age", 28);
     return mav;
 }
 
 // OUTPUT:
-// renders view "profile" with name=Asha, age=28`],
+// renders view "profile" with name=Abaji, age=28`],
             ['Set a status code.',
                 r`@GetMapping("/gone")
 public ModelAndView gone() {
@@ -178,7 +178,7 @@ public class MyResolver implements HandlerExceptionResolver {
             ['Testing the returned object.',
                 r`mvc.perform(get("/profile"))
    .andExpect(view().name("profile"))
-   .andExpect(model().attribute("name", "Asha"));
+   .andExpect(model().attribute("name", "Abaji"));
 
 // OUTPUT:
 // Tests run: 1, Failures: 0`]]
@@ -294,7 +294,8 @@ void interceptorRuns() throws Exception {
   </bean>
 </beans>
 
-<!-- OUTPUT: controllers in com.example.web are found; views map to JSPs -->`]],
+<!-- OUTPUT: controllers in com.example.web are found;
+views map to JSPs -->`]],
         [['Static resources and interceptor in XML.',
             r`<mvc:resources mapping="/static/**" location="/static/"/>
 <mvc:interceptors>
@@ -673,7 +674,7 @@ public class ViewCfg implements WebMvcConfigurer {
 }
 
 // OUTPUT:
-// return "report" -> text/plain "report for Asha"; return "home" -> JSP`],
+// return "report" -> text/plain "report for Abaji"; return "home" -> JSP`],
         [`<p>Common mistakes and fixes:</p><ul><li><b>@Controller with a string meant as JSON:</b> add <code>@ResponseBody</code> or use <code>@RestController</code>, or the string is treated as a view name.</li><li><b>Circular view path:</b> a controller path equal to the view name makes a forward loop.</li><li><b>Wrong prefix:</b> a missing slash gives 404 for the JSP.</li><li><b>Views under WEB-INF:</b> put templates there so they cannot be requested directly.</li><li><b>Model data lost on redirect:</b> use flash attributes.</li></ul>`,
             r`// WRONG: returns the text "ok" as a view name -> 404 / Circular view path
 @Controller
@@ -700,7 +701,8 @@ spring.thymeleaf.suffix=.html
 spring.web.resources.cache.cachecontrol.max-age=1d
 
 # OUTPUT:
-# templates are parsed once and reused; static assets cached by the browser for a day`],
+# templates are parsed once and reused;
+static assets cached by the browser for a day`],
         [`<p>Scenario: an admin portal serves HTML pages and also a CSV export of orders.</p><ul><li>The HTML page returns a logical name resolved by Thymeleaf.</li><li>The export returns a custom <code>View</code> that streams CSV.</li><li>Both read the same model attributes, so the service layer is shared.</li></ul>`,
             r`@Controller
 @RequestMapping("/orders")
@@ -850,7 +852,10 @@ public ModelAndView list() {
 public ModelAndView a() { return new ModelAndView("a", "x", 1); }
 
 @GetMapping("/b")
-public String b(Model m) { m.addAttribute("x", 1); return "b"; }
+public String b(Model m) {
+    m.addAttribute("x", 1);
+    return "b";
+}
 
 // OUTPUT:
 // both render a view with attribute x = 1; /b is the modern style`],
@@ -908,7 +913,7 @@ public class CurrentUserResolver implements HandlerMethodArgumentResolver {
 // @GetMapping("/me") String me(CurrentUser u) { return u.name(); }
 
 // OUTPUT:
-// GET /me with header X-User: asha -> asha`],
+// GET /me with header X-User: abaji -> abaji`],
         [`<p>Common mistakes:</p><ul><li><b>Interceptor returns false without writing a response:</b> the client gets an empty 200.</li><li><b>Filter order wrong:</b> a security filter placed after the logging filter hides the user name.</li><li><b>Reading the body twice:</b> the request stream can be read only once; wrap the request if needed.</li><li><b>Thinking interceptors see static files:</b> that depends on the resource handler setup.</li><li><b>Handling exceptions in the interceptor</b> instead of in <code>@ControllerAdvice</code>.</li></ul>`,
             r`// WRONG: stops the chain but sends nothing
 public boolean preHandle(HttpServletRequest q, HttpServletResponse s, Object h) {
@@ -1011,7 +1016,8 @@ public class AuditFilter extends OncePerRequestFilter {
 </beans>
 
 <!-- OUTPUT:
-     startup time drops; the first request pays the creation cost -->`],
+     startup time drops;
+     the first request pays the creation cost -->`],
         [`<p>Scenario: a ten-year-old WAR application moves to Java configuration step by step.</p><ul><li>Create a <code>@Configuration</code> class that imports the old XML.</li><li>Convert beans one module at a time and delete their XML.</li><li>Replace <code>web.xml</code> with an initializer when no listeners remain.</li><li>Keep tests loading the context after each step.</li></ul>`,
             r`@Configuration
 @ImportResource("classpath:legacy-beans.xml")   // old beans keep working
@@ -1113,7 +1119,10 @@ class AppIT {
         [`<p>How <code>@Configuration</code> is processed:</p><ul><li><b>Early parsing:</b> <code>ConfigurationClassPostProcessor</code>, a <code>BeanDefinitionRegistryPostProcessor</code>, finds candidate classes.</li><li><b>ConfigurationClassParser</b> handles <code>@ComponentScan</code>, <code>@Import</code>, <code>@PropertySource</code> and <code>@Bean</code> methods.</li><li><b>Enhancement:</b> full classes are replaced by a CGLIB subclass that intercepts <code>@Bean</code> calls.</li><li><b>Interception:</b> a call first checks the container for an existing singleton and creates one only if missing.</li><li><b>Loading:</b> <code>ConfigurationClassBeanDefinitionReader</code> turns each <code>@Bean</code> method into a bean definition.</li></ul>`,
             r`@Configuration
 class Cfg {
-    @Bean Engine engine() { System.out.println("new Engine"); return new Engine(); }
+    @Bean Engine engine() {
+        System.out.println("new Engine");
+        return new Engine();
+    }
     @Bean Car car() { return new Car(engine()); }
     @Bean Bike bike() { return new Bike(engine()); }
 }
@@ -1166,7 +1175,8 @@ management.endpoints.web.exposure.include=beans,conditions
 public class ClientConfig {
     @Bean @Profile("!test")
     PaymentClient realClient(RestClient.Builder builder,
-            @Value("` + r`$` + r`{payment.url}") String url) {
+            @Value("` + r`$` + r`{payment.url}
+") String url) {
         return new HttpPaymentClient(builder.baseUrl(url).build());
     }
 
@@ -1352,12 +1362,16 @@ public interface ServiceMarker { }       // marks the package com.example.servic
 // only @Service classes in com.example.service are registered, created lazily`],
         [`<p>Common mistakes and fixes:</p><ul><li><b>Class outside the scanned package:</b> bean not found, <code>NoSuchBeanDefinitionException</code>.</li><li><b>Main class in the default package:</b> Boot scans everything and warns; use a named package.</li><li><b>Two beans with the same name</b> from different packages: <code>ConflictingBeanDefinitionException</code>; set explicit names.</li><li><b>Annotation on an interface</b> only: scanning ignores interfaces.</li><li><b>Scanning too wide</b> (for example the package <code>com</code>) picks up library classes and slows startup.</li></ul>`,
             r`// WRONG: two classes both named Client -> default name "client" clashes
-package com.a;  @Component public class Client { }
-package com.b;  @Component public class Client { }
+package com.a;
+@Component public class Client { }
+package com.b;
+@Component public class Client { }
 
 // RIGHT: explicit names
-package com.a;  @Component("aClient") public class Client { }
-package com.b;  @Component("bClient") public class Client { }
+package com.a;
+@Component("aClient") public class Client { }
+package com.b;
+@Component("bClient") public class Client { }
 
 // OUTPUT:
 // WRONG: ConflictingBeanDefinitionException: annotation-specified bean name 'client'
@@ -1368,7 +1382,8 @@ spring.main.lazy-initialization=true
 logging.level.org.springframework.context.annotation=DEBUG
 
 # OUTPUT:
-# faster startup; DEBUG lines list each scanned candidate component`],
+# faster startup;
+DEBUG lines list each scanned candidate component`],
         [`<p>Scenario: a modular monolith has a shared library with its own beans.</p><ul><li>The main app lives in <code>com.shop</code>, the library in <code>com.shared</code>.</li><li>Boot does not scan the library package by default.</li><li>The app lists both packages, and a test proves the library beans are present.</li></ul>`,
             r`@SpringBootApplication(scanBasePackages = {"com.shop", "com.shared"})
 public class ShopApp { }

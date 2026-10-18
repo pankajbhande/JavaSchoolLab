@@ -107,11 +107,11 @@ server.servlet.context-path=/api
 @RestController
 class UserController {
     @GetMapping("/users/1")
-    User one() { return new User(1, "Asha"); }
+    User one() { return new User(1, "Abaji"); }
 }
 
 // OUTPUT:
-// GET /users/1 -> 200 {"id":1,"name":"Asha"}`],
+// GET /users/1 -> 200 {"id":1,"name":"Abaji"}`],
             ['Test with MockMvc.',
                 r`@WebMvcTest(UserController.class)
 class UserControllerTest {
@@ -121,7 +121,7 @@ class UserControllerTest {
     void returnsUser() throws Exception {
         mvc.perform(get("/users/1"))
            .andExpect(status().isOk())
-           .andExpect(jsonPath("$.name").value("Asha"));
+           .andExpect(jsonPath("$.name").value("Abaji"));
     }
 }
 
@@ -304,7 +304,7 @@ class SecurityConfig {
                 r`@Bean
 UserDetailsService users(PasswordEncoder enc) {
     return new InMemoryUserDetailsManager(
-        User.withUsername("asha").password(enc.encode("pw"))
+        User.withUsername("abaji").password(enc.encode("pw"))
             .roles("USER").build());
 }
 
@@ -312,7 +312,7 @@ UserDetailsService users(PasswordEncoder enc) {
 PasswordEncoder encoder() { return new BCryptPasswordEncoder(); }
 
 // OUTPUT:
-// httpBasic asha:pw -> 200 on /orders`]],
+// httpBasic abaji:pw -> 200 on /orders`]],
         [['Method-level rule.',
             r`@EnableMethodSecurity
 class MethodConfig {}
@@ -327,7 +327,7 @@ class ReportService {
 // USER role calls secret() -> AccessDeniedException (403 in a web call)`],
             ['MockMvc with a mock user.',
                 r`@Test
-@WithMockUser(username = "asha", roles = "USER")
+@WithMockUser(username = "abaji", roles = "USER")
 void userSeesOrders() throws Exception {
     mvc.perform(get("/orders")).andExpect(status().isOk());
     mvc.perform(get("/admin/stats")).andExpect(status().isForbidden());
@@ -735,7 +735,8 @@ spring.jackson.default-property-inclusion=non_null
 spring.web.resources.cache.period=3600
 
 # OUTPUT:
-# gzip is applied to JSON responses over the minimum size; null fields are omitted`],
+# gzip is applied to JSON responses over the minimum size;
+null fields are omitted`],
         [`<p>Mistakes:</p><ul><li><b>Main class in the default package:</b> scanning fails or is too broad.</li><li><b>Controller outside the scan root:</b> endpoint returns 404.</li><li><b>Returning an entity with lazy fields:</b> serialization errors; return a DTO.</li><li><b>Using @Controller and returning a String:</b> Boot looks for a view; use <code>@RestController</code>.</li><li><b>Blocking calls on request threads</b> exhaust the pool.</li></ul>`,
             r`@Controller            // WRONG for JSON APIs
 class BadController {
@@ -757,7 +758,8 @@ server.tomcat.connection-timeout=10s
 spring.threads.virtual.enabled=true
 
 # OUTPUT:
-# bounded pool with a queue of 50; requests beyond that are refused`],
+# bounded pool with a queue of 50;
+requests beyond that are refused`],
         [`<p>An order API serves a React front end. The team returns DTO records, maps validation errors in one advice class, enables gzip, and tests each controller with <code>@WebMvcTest</code>. Static build output from the front end goes into <code>static</code> so one jar serves both.</p>`,
             r`@RestController
 @RequestMapping("/api/orders")
@@ -788,7 +790,10 @@ System.out.println(repo.getClass().getSimpleName());
     @Query("select p.name as name, p.price as price from Product p")
     List<NameAndPrice> summaries();
 }
-interface NameAndPrice { String getName(); BigDecimal getPrice(); }
+interface NameAndPrice {
+    String getName();
+    BigDecimal getPrice();
+}
 
 // OUTPUT:
 // findByCategory("toys", PageRequest.of(0, 10)) -> Page with 10 rows and total count`],
@@ -889,7 +894,7 @@ ResponseEntity<Map<String, Object>> params(ConstraintViolationException e) {
 System.out.println(a.getName() + " " + a.getAuthorities());
 
 // OUTPUT:
-// asha [ROLE_USER]`],
+// abaji [ROLE_USER]`],
         [`<p>Configuration variants:</p><ul><li><b>Basic and form login:</b> <code>httpBasic</code>, <code>formLogin</code>.</li><li><b>Stateless JWT:</b> <code>sessionManagement</code> with STATELESS, a custom filter and resource server support (<code>oauth2ResourceServer</code>).</li><li><b>Matchers:</b> <code>requestMatchers</code> with HTTP method and patterns.</li><li><b>CORS and headers:</b> <code>cors</code>, <code>headers</code>.</li><li><b>Roles versus authorities:</b> <code>hasRole(&quot;ADMIN&quot;)</code> expects <code>ROLE_ADMIN</code>.</li></ul>`,
             r`http.csrf(c -> c.disable())
     .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -1085,7 +1090,8 @@ class CacheFeature {
 }
 
 # OUTPUT:
-# app.cache.enabled=true -> CacheManager bean exists; absent or false -> skipped`],
+# app.cache.enabled=true -> CacheManager bean exists;
+absent or false -> skipped`],
         [`<p>Mistakes:</p><ul><li><b>Putting auto-configuration under component scan:</b> it loses ordering and condition semantics; register it in the imports file instead.</li><li><b>ConditionalOnBean in ordinary configuration</b> depends on registration order and may fail.</li><li><b>Excluding the wrong class</b> and then missing beans.</li><li><b>Assuming magic:</b> not reading the conditions report when something does not apply.</li></ul>`,
             r`Positive matches / Negative matches (from --debug):
 
@@ -1184,7 +1190,10 @@ class BillingService implements BillingApi {   // package-private implementation
             r`@Component
 class WarmUp implements SmartLifecycle {
     private boolean running;
-    public void start() { System.out.println("warm cache"); running = true; }
+    public void start() {
+        System.out.println("warm cache");
+        running = true;
+    }
     public void stop() { running = false; }
     public boolean isRunning() { return running; }
 }

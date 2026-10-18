@@ -125,7 +125,7 @@ print("got", first)
 Returning a lazy object that depends on a resource is a classic bug: the <code>with</code> block closes the file before anyone reads from the generator. Make the function itself a generator so the file stays open while it is consumed.`,
             codeExamples: [
                 `with open("names.txt", "w", encoding="utf-8") as f:
-    f.write("asha\\nravi\\n")
+    f.write("abaji\\nraoji\\n")
 
 def read_names(path):
     with open(path, encoding="utf-8") as f:
@@ -140,7 +140,7 @@ print(list(read_names("names.txt")))
 print(list(read_names_bug("names.txt")))
 
 # OUTPUT:
-# ['asha', 'ravi']
+# ['abaji', 'raoji']
 # ValueError: I/O operation on closed file.`
             ]
         },

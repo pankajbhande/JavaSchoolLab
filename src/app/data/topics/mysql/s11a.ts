@@ -7,7 +7,7 @@ export const s11a: Record<string, DeepDive> = {
             r`CREATE TABLE dept (id INT PRIMARY KEY, name VARCHAR(10));
 CREATE TABLE emp  (id INT PRIMARY KEY, name VARCHAR(10), dept_id INT);
 INSERT INTO dept VALUES (1,'IT'), (2,'HR'), (3,'Legal');
-INSERT INTO emp  VALUES (1,'Asha',1), (2,'Ravi',1), (3,'Meena',2), (4,'John',NULL);
+INSERT INTO emp  VALUES (1,'Abaji',1), (2,'Raoji',1), (3,'Moropant',2), (4,'Jiva',NULL);
 
 SELECT e.name AS employee, d.name AS department
 FROM emp e
@@ -17,11 +17,11 @@ INNER JOIN dept d ON d.id = e.dept_id;    -- match emp.dept_id to dept.id
 -- +----------+------------+
 -- | employee | department |
 -- +----------+------------+
--- | Asha     | IT         |
--- | Ravi     | IT         |
--- | Meena    | HR         |
+-- | Abaji    | IT         |
+-- | Raoji    | IT         |
+-- | Moropant | HR         |
 -- +----------+------------+
--- John (no dept) and Legal (no staff) are both missing.`],
+-- Jiva (no dept) and Legal (no staff) are both missing.`],
         [`Normalised data is split across tables (employees in one, departments in another). Joins put it back together at query time without storing the same department name many times.`,
             r`-- Without a join you would need two queries and manual matching in code:
 --   SELECT * FROM emp;   SELECT * FROM dept;
@@ -31,16 +31,16 @@ FROM emp e JOIN dept d ON d.id = e.dept_id      -- JOIN = INNER JOIN
 WHERE d.name = 'IT';                            -- filter by a column of the other table
 
 -- OUTPUT:
--- +------+------+
--- | name | dept |
--- +------+------+
--- | Asha | IT   |
--- | Ravi | IT   |
+-- +-------+------+
+-- | name  | dept |
+-- +-------+------+
+-- | Abaji | IT   |
+-- | Raoji | IT   |
 -- +------+------+`],
         [`Orders with customer names, invoices with line items, students with courses: any report that needs attributes from two related entities.`,
             r`CREATE TABLE customer (id INT PRIMARY KEY, name VARCHAR(10));
 CREATE TABLE orders   (id INT PRIMARY KEY, customer_id INT, total INT);
-INSERT INTO customer VALUES (1,'Asha'), (2,'Ravi');
+INSERT INTO customer VALUES (1,'Abaji'), (2,'Raoji');
 INSERT INTO orders   VALUES (10,1,500), (11,1,300), (12,2,200);
 
 SELECT c.name, COUNT(*) AS orders_placed, SUM(o.total) AS spent
@@ -50,11 +50,11 @@ GROUP BY c.id, c.name
 ORDER BY spent DESC;
 
 -- OUTPUT:
--- +------+---------------+-------+
--- | name | orders_placed | spent |
--- +------+---------------+-------+
--- | Asha |             2 |   800 |
--- | Ravi |             1 |   200 |
+-- +-------+---------------+-------+
+-- | name  | orders_placed | spent |
+-- +-------+---------------+-------+
+-- | Abaji |             2 |   800 |
+-- | Raoji |             1 |   200 |
 -- +------+---------------+-------+`],
         [`<b>Advantages:</b> returns only complete, related data; the optimiser can reorder INNER joins freely and use indexes on either side; it is the most common and best-optimised join.`,
             r`-- Equivalent old-style syntax (comma join + WHERE). Same plan, but easy to forget the condition.
@@ -66,12 +66,12 @@ WHERE d.id = e.dept_id;
 SELECT e.name, d.name AS dept FROM emp e JOIN dept d ON d.id = e.dept_id;
 
 -- OUTPUT (both):
--- +-------+------+
--- | name  | dept |
--- +-------+------+
--- | Asha  | IT   |
--- | Ravi  | IT   |
--- | Meena | HR   |
+-- +----------+------+
+-- | name     | dept |
+-- +----------+------+
+-- | Abaji    | IT   |
+-- | Raoji    | IT   |
+-- | Moropant | HR   |
 -- +-------+------+`],
         [`<b>Disadvantages:</b> silently loses unmatched rows (employees with a NULL department disappear from reports), and a one-to-many join multiplies parent rows.`,
             r`-- Parent columns repeat once per child, so SUM on the parent side over-counts:
@@ -88,7 +88,7 @@ FROM budget b JOIN emp e ON e.dept_id = b.dept_id;
 -- |        2500 |   <- expected 1500
 -- +-------------+`],
         [`<b>Limitations:</b> <code>NULL</code> never equals <code>NULL</code>, so NULL keys never match; joining on mismatched types or collations can disable index use; a missing <code>ON</code> in MySQL acts like a cross join.`,
-            r`-- NULL = NULL is not true, so John (dept_id NULL) matches nothing
+            r`-- NULL = NULL is not true, so Jiva (dept_id NULL) matches nothing
 SELECT COUNT(*) AS matched
 FROM emp e JOIN dept d ON e.dept_id = d.id;
 
@@ -107,13 +107,13 @@ SELECT NULL = NULL AS plain_eq, NULL <=> NULL AS null_safe_eq;
 -- | NULL     |            1 |
 -- +----------+--------------+`],
         `
-   emp                         dept
-   +----+-------+---------+    +----+-------+
-   | 1  | Asha  | 1  -----+--> | 1  | IT    |
-   | 2  | Ravi  | 1  -----+    | 2  | HR    |
-   | 3  | Meena | 2  ---------> | 3  | Legal |  (no match: dropped)
-   | 4  | John  | NULL (dropped)+----+-------+
-   +----+-------+---------+
+   emp                          dept
+   +----+----------+---------+  +----+-------+
+   | 1  | Abaji    | 1  -----+--> | 1  | IT    |
+   | 2  | Raoji    | 1  -----+    | 2  | HR    |
+   | 3  | Moropant | 2 --------> | 3  | Legal | (no match: dropped)
+   | 4  | Jiva     | NULL (dropped)+----+-------+
+   +----+----------+---------+
 
    INNER JOIN = the overlap of the two circles only
 `,
@@ -125,7 +125,7 @@ SELECT NULL = NULL AS plain_eq, NULL <=> NULL AS null_safe_eq;
             r`CREATE TABLE dept (id INT PRIMARY KEY, name VARCHAR(10));
 CREATE TABLE emp  (id INT PRIMARY KEY, name VARCHAR(10), dept_id INT);
 INSERT INTO dept VALUES (1,'IT'), (2,'HR'), (3,'Legal');
-INSERT INTO emp  VALUES (1,'Asha',1), (2,'Ravi',1), (3,'Meena',2), (4,'John',NULL);
+INSERT INTO emp  VALUES (1,'Abaji',1), (2,'Raoji',1), (3,'Moropant',2), (4,'Jiva',NULL);
 
 SELECT e.name AS employee, d.name AS department
 FROM emp e
@@ -135,10 +135,10 @@ LEFT JOIN dept d ON d.id = e.dept_id;     -- all employees, even without a depar
 -- +----------+------------+
 -- | employee | department |
 -- +----------+------------+
--- | Asha     | IT         |
--- | Ravi     | IT         |
--- | Meena    | HR         |
--- | John     | NULL       |
+-- | Abaji    | IT         |
+-- | Raoji    | IT         |
+-- | Moropant | HR         |
+-- | Jiva     | NULL       |
 -- +----------+------------+`],
         [`Reports often must show everything on the main side, including items with no related rows: customers who never ordered, products never sold, employees not yet assigned.`,
             r`-- Anti-join: find rows with NO match (left join then keep the NULLs)
@@ -156,7 +156,7 @@ WHERE e.id IS NULL;                    -- no employee row was found
         [`"Customers with their order count including zero", "all days with and without sales" (calendar table left joined to facts), and optional profile data.`,
             r`CREATE TABLE customer (id INT PRIMARY KEY, name VARCHAR(10));
 CREATE TABLE orders (id INT PRIMARY KEY, customer_id INT, total INT);
-INSERT INTO customer VALUES (1,'Asha'), (2,'Ravi'), (3,'Zoya');
+INSERT INTO customer VALUES (1,'Abaji'), (2,'Raoji'), (3,'Zoya');
 INSERT INTO orders VALUES (10,1,500), (11,1,300), (12,2,200);
 
 SELECT c.name,
@@ -166,12 +166,12 @@ FROM customer c LEFT JOIN orders o ON o.customer_id = c.id
 GROUP BY c.id, c.name;
 
 -- OUTPUT:
--- +------+---------------+-------+
--- | name | orders_placed | spent |
--- +------+---------------+-------+
--- | Asha |             2 |   800 |
--- | Ravi |             1 |   200 |
--- | Zoya |             0 |     0 |
+-- +-------+---------------+-------+
+-- | name  | orders_placed | spent |
+-- +-------+---------------+-------+
+-- | Abaji |             2 |   800 |
+-- | Raoji |             1 |   200 |
+-- | Zoya  |             0 |     0 |
 -- +------+---------------+-------+`],
         [`<b>Advantages:</b> no data loss on the preserved side, makes missing relationships visible, and is the basis of the "find orphans" anti-join pattern.`,
             r`-- Filter on the right table in ON (keeps left rows) rather than WHERE (drops them)
@@ -184,7 +184,7 @@ ORDER BY d.id;
 -- +-------+----------+
 -- | name  | employee |
 -- +-------+----------+
--- | IT    | Asha     |
+-- | IT    | Abaji    |
 -- | HR    | NULL     |
 -- | Legal | NULL     |
 -- +-------+----------+`],
@@ -198,7 +198,7 @@ WHERE e.name LIKE 'A%';
 -- +------+----------+
 -- | name | employee |
 -- +------+----------+
--- | IT   | Asha     |      <- HR and Legal vanished
+-- | IT   | Abaji     |      <- HR and Legal vanished
 -- +------+----------+`],
         [`<b>Limitations:</b> NULLs in the result are ambiguous (no match, or a real NULL value), so test the right table's primary key; MySQL has no <code>FULL OUTER JOIN</code> and emulates it with LEFT UNION RIGHT.`,
             r`-- Emulate FULL OUTER JOIN: left join UNION right join (UNION removes the duplicates)
@@ -212,19 +212,19 @@ FROM emp e RIGHT JOIN dept d ON d.id = e.dept_id;
 -- +----------+------------+
 -- | employee | department |
 -- +----------+------------+
--- | Asha     | IT         |
--- | Ravi     | IT         |
--- | Meena    | HR         |
--- | John     | NULL       |
+-- | Abaji    | IT         |
+-- | Raoji    | IT         |
+-- | Moropant | HR         |
+-- | Jiva     | NULL       |
 -- | NULL     | Legal      |
 -- +----------+------------+`],
         `
-   customer (LEFT, kept)        orders (RIGHT)
-   +----+------+                +-----+-------------+
-   | 1  | Asha | ------------>  | 10  | cust 1      |
-   | 2  | Ravi | ------------>  | 12  | cust 2      |
-   | 3  | Zoya | -- no match -> NULL NULL NULL
-   +----+------+                +-----+-------------+
+   customer (LEFT, kept)         orders (RIGHT)
+   +----+-------+               +-----+-------------+
+   | 1  | Abaji | ------------> | 10  | cust 1      |
+   | 2  | Raoji | ------------> | 12  | cust 2      |
+   | 3  | Zoya  | -- no match -> NULL NULL NULL
+   +----+-------+               +-----+-------------+
 
    LEFT JOIN = the whole left circle (overlap + left-only)
 `,
@@ -236,7 +236,7 @@ FROM emp e RIGHT JOIN dept d ON d.id = e.dept_id;
             r`CREATE TABLE dept (id INT PRIMARY KEY, name VARCHAR(10));
 CREATE TABLE emp  (id INT PRIMARY KEY, name VARCHAR(10), dept_id INT);
 INSERT INTO dept VALUES (1,'IT'), (2,'HR'), (3,'Legal');
-INSERT INTO emp  VALUES (1,'Asha',1), (2,'Ravi',1), (3,'Meena',2), (4,'John',NULL);
+INSERT INTO emp  VALUES (1,'Abaji',1), (2,'Raoji',1), (3,'Moropant',2), (4,'Jiva',NULL);
 
 SELECT e.name AS employee, d.name AS department
 FROM emp e
@@ -246,9 +246,9 @@ RIGHT JOIN dept d ON d.id = e.dept_id;     -- every department is kept
 -- +----------+------------+
 -- | employee | department |
 -- +----------+------------+
--- | Asha     | IT         |
--- | Ravi     | IT         |
--- | Meena    | HR         |
+-- | Abaji    | IT         |
+-- | Raoji    | IT         |
+-- | Moropant | HR         |
 -- | NULL     | Legal      |
 -- +----------+------------+`],
         [`Sometimes the table you must preserve is the one you wrote second. RIGHT JOIN lets you keep that order, though it can always be rewritten as a LEFT JOIN by swapping the tables.`,
@@ -257,13 +257,13 @@ SELECT d.name, e.name FROM emp e RIGHT JOIN dept d ON d.id = e.dept_id;
 SELECT d.name, e.name FROM dept d LEFT  JOIN emp  e ON d.id = e.dept_id;
 
 -- OUTPUT (both, row order may differ):
--- +-------+-------+
--- | name  | name  |
--- +-------+-------+
--- | IT    | Asha  |
--- | IT    | Ravi  |
--- | HR    | Meena |
--- | Legal | NULL  |
+-- +-------+----------+
+-- | name  | name     |
+-- +-------+----------+
+-- | IT    | Abaji    |
+-- | IT    | Raoji    |
+-- | HR    | Moropant |
+-- | Legal | NULL     |
 -- +-------+-------+`],
         [`Rare in hand-written code; it appears mostly in generated SQL (ORMs, BI tools) and when extending an existing query by adding a table whose rows must be preserved.`,
             r`-- Count employees per department, showing departments with zero staff
@@ -322,12 +322,12 @@ SELECT 'prefer LEFT JOIN' AS style_guide;
 -- +----+-------+--------+
 -- The plan shows dept as the driving table, exactly as if you wrote dept LEFT JOIN emp.`],
         `
-   emp (left)                dept (RIGHT, kept)
-   +-------+---------+       +----+-------+
-   | Asha  | 1  ------------>| 1  | IT    |
-   | Meena | 2  ------------>| 2  | HR    |
-   | NULL  | NULL  <-no match| 3  | Legal |
-   +-------+---------+       +----+-------+
+   emp (left)                   dept (RIGHT, kept)
+   +----------+---------+       +----+-------+
+   | Abaji    | 1  ------------>| 1  | IT    |
+   | Moropant | 2  ------------>| 2  | HR    |
+   | NULL     | NULL  <-no match| 3  | Legal |
+   +----------+---------+       +----+-------+
 
    RIGHT JOIN = whole right circle (overlap + right-only)
 `,

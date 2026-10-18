@@ -208,7 +208,7 @@ ALTER TABLE users ADD UNIQUE KEY uq_email (email);       -- dupes exist => fails
     'Employees Earning More Than Their Manager': dd(
         [`A self join treats the same table as two roles: employee (e) and manager (m), linked by manager_id. Then compare their salaries.`,
             r`CREATE TABLE emp (id INT PRIMARY KEY, name VARCHAR(20), salary INT, manager_id INT);
-INSERT INTO emp VALUES (1,'Boss',9000,NULL),(2,'Ann',9500,1),(3,'Bob',7000,1),(4,'Cy',7500,3),(5,'Di',6000,3);
+INSERT INTO emp VALUES (1,'Boss',9000,NULL),(2,'Ann',9500,1),(3,'Baji',7000,1),(4,'Cy',7500,3),(5,'Di',6000,3);
 
 SELECT e.name AS employee
 FROM   emp e
@@ -225,7 +225,7 @@ ORDER  BY e.name;
 -- +----------+`],
         [`The same result with a correlated subquery. Interviewers like seeing both because the join is usually faster and easier to extend.`,
             r`CREATE TABLE emp (id INT PRIMARY KEY, name VARCHAR(20), salary INT, manager_id INT);
-INSERT INTO emp VALUES (1,'Boss',9000,NULL),(2,'Ann',9500,1),(3,'Bob',7000,1),(4,'Cy',7500,3),(5,'Di',6000,3);
+INSERT INTO emp VALUES (1,'Boss',9000,NULL),(2,'Ann',9500,1),(3,'Baji',7000,1),(4,'Cy',7500,3),(5,'Di',6000,3);
 
 SELECT e.name
 FROM   emp e
@@ -241,7 +241,7 @@ ORDER  BY e.name;
 -- +------+`],
         [`Reports usually also show the manager and the gap, which the join form gives for free.`,
             r`CREATE TABLE emp (id INT PRIMARY KEY, name VARCHAR(20), salary INT, manager_id INT);
-INSERT INTO emp VALUES (1,'Boss',9000,NULL),(2,'Ann',9500,1),(3,'Bob',7000,1),(4,'Cy',7500,3),(5,'Di',6000,3);
+INSERT INTO emp VALUES (1,'Boss',9000,NULL),(2,'Ann',9500,1),(3,'Baji',7000,1),(4,'Cy',7500,3),(5,'Di',6000,3);
 
 SELECT e.name AS employee, m.name AS manager, e.salary - m.salary AS gap
 FROM   emp e JOIN emp m ON m.id = e.manager_id
@@ -249,11 +249,11 @@ WHERE  e.salary > m.salary
 ORDER  BY gap DESC;
 
 -- OUTPUT:
--- +----------+---------+------+
--- | employee | manager | gap  |
--- +----------+---------+------+
--- | Ann      | Boss    |  500 |
--- | Cy       | Bob     |  500 |
+-- +----------+---------+-----+
+-- | employee | manager | gap |
+-- +----------+---------+-----+
+-- | Ann      | Boss    | 500 |
+-- | Cy       | Baji    | 500 |
 -- +----------+---------+------+`],
         [`<b>Advantages:</b> an index on manager_id (and the primary key on id) makes the join a fast key lookup per employee.`,
             r`CREATE TABLE emp (id INT PRIMARY KEY, name VARCHAR(20), salary INT, manager_id INT, KEY ix_mgr (manager_id));
@@ -267,7 +267,7 @@ EXPLAIN SELECT e.name FROM emp e JOIN emp m ON m.id = e.manager_id WHERE e.salar
 --  1 | m     | eq_ref | PRIMARY |    1      <- one primary-key lookup per employee`],
         [`<b>Disadvantages:</b> the top boss has manager_id NULL, so an INNER JOIN drops him. That is right here, but wrong if you must list everyone with a flag.`,
             r`CREATE TABLE emp (id INT PRIMARY KEY, name VARCHAR(20), salary INT, manager_id INT);
-INSERT INTO emp VALUES (1,'Boss',9000,NULL),(2,'Ann',9500,1),(3,'Bob',7000,1);
+INSERT INTO emp VALUES (1,'Boss',9000,NULL),(2,'Ann',9500,1),(3,'Baji',7000,1);
 
 SELECT e.name, m.name AS manager, (e.salary > m.salary) AS earns_more   -- NULL when no manager
 FROM   emp e LEFT JOIN emp m ON m.id = e.manager_id
@@ -279,11 +279,11 @@ ORDER  BY e.id;
 -- +------+---------+------------+
 -- | Boss | NULL    |       NULL |
 -- | Ann  | Boss    |          1 |
--- | Bob  | Boss    |          0 |
+-- | Baji | Boss    |          0 |
 -- +------+---------+------------+`],
         [`<b>Limitations:</b> a join only sees the direct manager. To compare with <i>any</i> ancestor you need a recursive CTE.`,
             r`CREATE TABLE emp (id INT PRIMARY KEY, name VARCHAR(20), salary INT, manager_id INT);
-INSERT INTO emp VALUES (1,'Boss',9000,NULL),(2,'Ann',9500,1),(3,'Bob',7000,1),(4,'Cy',7500,3),(5,'Di',6000,3);
+INSERT INTO emp VALUES (1,'Boss',9000,NULL),(2,'Ann',9500,1),(3,'Baji',7000,1),(4,'Cy',7500,3),(5,'Di',6000,3);
 
 WITH RECURSIVE anc AS (
     SELECT id, manager_id AS anc_id FROM emp WHERE manager_id IS NOT NULL
@@ -300,12 +300,12 @@ ORDER  BY e.name, m.name;
 -- | name | ancestor |
 -- +------+----------+
 -- | Ann  | Boss     |
--- | Cy   | Bob      |
+-- | Cy   | Baji     |
 -- +------+----------+`],
         `
           Boss 9000
           /        \
-    Ann 9500 *    Bob 7000
+    Ann 9500 *    Baji 7000
                    /     \
              Cy 7500 *   Di 6000        * = earns more than direct manager
    e.manager_id ----> m.id   (same table, two aliases)
@@ -316,7 +316,7 @@ ORDER  BY e.name, m.name;
     'Department-wise Highest Salary & Top 3 per Department': dd(
         [`The highest salary per department: aggregate in a subquery, then join back to find who earns it (ties return every top earner).`,
             r`CREATE TABLE emp (id INT PRIMARY KEY, name VARCHAR(20), dept VARCHAR(10), salary INT);
-INSERT INTO emp VALUES (1,'Ann','Eng',9000),(2,'Bob','Eng',8000),(3,'Cy','Eng',8000),(4,'Di','Eng',7000),
+INSERT INTO emp VALUES (1,'Ann','Eng',9000),(2,'Baji','Eng',8000),(3,'Cy','Eng',8000),(4,'Di','Eng',7000),
                        (5,'Ed','Eng',6000),(6,'Fay','Sales',5000),(7,'Gus','Sales',4000);
 
 SELECT e.dept, e.name, e.salary
@@ -334,7 +334,7 @@ ORDER  BY e.dept;
 -- +-------+------+--------+`],
         [`Top 3 per department needs ranking inside each group. <code>DENSE_RANK() OVER (PARTITION BY dept ...)</code> restarts the numbering for every department.`,
             r`CREATE TABLE emp (id INT PRIMARY KEY, name VARCHAR(20), dept VARCHAR(10), salary INT);
-INSERT INTO emp VALUES (1,'Ann','Eng',9000),(2,'Bob','Eng',8000),(3,'Cy','Eng',8000),(4,'Di','Eng',7000),
+INSERT INTO emp VALUES (1,'Ann','Eng',9000),(2,'Baji','Eng',8000),(3,'Cy','Eng',8000),(4,'Di','Eng',7000),
                        (5,'Ed','Eng',6000),(6,'Fay','Sales',5000),(7,'Gus','Sales',4000);
 
 SELECT dept, name, salary, rnk
@@ -349,7 +349,7 @@ ORDER  BY dept, rnk, name;
 -- | dept  | name | salary | rnk |
 -- +-------+------+--------+-----+
 -- | Eng   | Ann  |   9000 |   1 |
--- | Eng   | Bob  |   8000 |   2 |
+-- | Eng   | Baji |   8000 |   2 |
 -- | Eng   | Cy   |   8000 |   2 |
 -- | Eng   | Di   |   7000 |   3 |
 -- | Sales | Fay  |   5000 |   1 |
@@ -357,7 +357,7 @@ ORDER  BY dept, rnk, name;
 -- +-------+------+--------+-----+`],
         [`If the business wants exactly three people per department (not three salary levels), use ROW_NUMBER with a tie-breaker.`,
             r`CREATE TABLE emp (id INT PRIMARY KEY, name VARCHAR(20), dept VARCHAR(10), salary INT);
-INSERT INTO emp VALUES (1,'Ann','Eng',9000),(2,'Bob','Eng',8000),(3,'Cy','Eng',8000),(4,'Di','Eng',7000),
+INSERT INTO emp VALUES (1,'Ann','Eng',9000),(2,'Baji','Eng',8000),(3,'Cy','Eng',8000),(4,'Di','Eng',7000),
                        (6,'Fay','Sales',5000),(7,'Gus','Sales',4000);
 
 SELECT dept, name, salary
@@ -372,14 +372,14 @@ ORDER  BY dept, rn;
 -- | dept  | name | salary |
 -- +-------+------+--------+
 -- | Eng   | Ann  |   9000 |
--- | Eng   | Bob  |   8000 |
+-- | Eng   | Baji |   8000 |
 -- | Eng   | Cy   |   8000 |
 -- | Sales | Fay  |   5000 |
 -- | Sales | Gus  |   4000 |
 -- +-------+------+--------+`],
         [`<b>Advantages:</b> window functions keep the detail rows while adding group facts, e.g. each person next to the department maximum.`,
             r`CREATE TABLE emp (id INT PRIMARY KEY, name VARCHAR(20), dept VARCHAR(10), salary INT);
-INSERT INTO emp VALUES (1,'Ann','Eng',9000),(2,'Bob','Eng',8000),(6,'Fay','Sales',5000),(7,'Gus','Sales',4000);
+INSERT INTO emp VALUES (1,'Ann','Eng',9000),(2,'Baji','Eng',8000),(6,'Fay','Sales',5000),(7,'Gus','Sales',4000);
 
 SELECT name, dept, salary,
        MAX(salary) OVER (PARTITION BY dept)          AS dept_max,
@@ -391,13 +391,13 @@ FROM   emp ORDER BY id;
 -- | name | dept  | salary | dept_max | below_top |
 -- +------+-------+--------+----------+-----------+
 -- | Ann  | Eng   |   9000 |     9000 |         0 |
--- | Bob  | Eng   |   8000 |     9000 |      1000 |
+-- | Baji | Eng   |   8000 |     9000 |      1000 |
 -- | Fay  | Sales |   5000 |     5000 |         0 |
 -- | Gus  | Sales |   4000 |     5000 |      1000 |
 -- +------+-------+--------+----------+-----------+`],
         [`<b>Disadvantages:</b> the three ranking functions disagree on ties; picking the wrong one silently returns the wrong number of rows.`,
             r`CREATE TABLE emp (id INT PRIMARY KEY, name VARCHAR(20), salary INT);
-INSERT INTO emp VALUES (1,'Ann',9000),(2,'Bob',8000),(3,'Cy',8000),(4,'Di',7000);
+INSERT INTO emp VALUES (1,'Ann',9000),(2,'Baji',8000),(3,'Cy',8000),(4,'Di',7000);
 
 SELECT name, salary,
        ROW_NUMBER() OVER w AS rn, RANK() OVER w AS rk, DENSE_RANK() OVER w AS drk
@@ -409,7 +409,7 @@ WINDOW w AS (ORDER BY salary DESC);
 -- | name | salary | rn | rk | drk |
 -- +------+--------+----+----+-----+
 -- | Ann  |   9000 |  1 |  1 |   1 |
--- | Bob  |   8000 |  2 |  2 |   2 |
+-- | Baji |   8000 |  2 |  2 |   2 |
 -- | Cy   |   8000 |  3 |  2 |   2 |
 -- | Di   |   7000 |  4 |  4 |   3 |
 -- +------+--------+----+----+-----+`],
@@ -431,7 +431,7 @@ SELECT id, dept, salary FROM r WHERE rk = 1;
 -- |  1 | Eng  |   9000 |
 -- +----+------+--------+`],
         `
-   Eng  : Ann 9000 | Bob 8000 | Cy 8000 | Di 7000 | Ed 6000
+   Eng  : Ann 9000 | Baji 8000 | Cy 8000 | Di 7000 | Ed 6000
    PARTITION BY dept  (separate window per department)
           DENSE_RANK:  1        2         2         3         4
           keep rnk<=3 ---------------------------^  (Ed dropped)

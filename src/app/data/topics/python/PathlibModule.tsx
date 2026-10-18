@@ -20,8 +20,8 @@ print(Path.home())               # your home folder
 # OUTPUT (the last three lines depend on your machine - e.g.):
 # data/2024/sales.csv
 # WindowsPath
-# C:\\Users\\asha\\projects\\shop
-# C:\\Users\\asha`
+# C:\\Users\\abaji\\projects\\shop
+# C:\\Users\\abaji`
             ]
         },
         {
@@ -30,7 +30,7 @@ These attributes only look at the text of the path - the file doesn't need to ex
             codeExamples: [
                 `from pathlib import PurePosixPath
 
-p = PurePosixPath("/home/asha/reports/sales.2024.csv")
+p = PurePosixPath("/home/abaji/reports/sales.2024.csv")
 
 print(p.name)           # final component
 print(p.stem)           # name without the last suffix
@@ -47,11 +47,11 @@ print(p.with_name("summary.txt"))
 # sales.2024
 # .csv
 # ['.2024', '.csv']
-# /home/asha/reports
-# /home/asha
-# ('/', 'home', 'asha', 'reports', 'sales.2024.csv')
+# /home/abaji/reports
+# /home/abaji
+# ('/', 'home', 'abaji', 'reports', 'sales.2024.csv')
 # sales.2024.xlsx
-# /home/asha/reports/summary.txt`
+# /home/abaji/reports/summary.txt`
             ]
         },
         {
@@ -160,7 +160,7 @@ Most standard-library functions (<code>open</code>, <code>shutil</code>, <code>o
             codeExamples: [
                 `from pathlib import PureWindowsPath, PurePosixPath
 
-w = PureWindowsPath(r"C:\\Users\\Asha\\report.docx")
+w = PureWindowsPath(r"C:\\Users\\Abaji\\report.docx")
 print(w.drive, w.name, w.suffix)
 print(w.parent)
 print(w.as_posix())
@@ -170,8 +170,8 @@ print(PureWindowsPath("C:/data") == PureWindowsPath("c:\\\\DATA"))   # Windows p
 
 # OUTPUT:
 # C: report.docx .docx
-# C:\\Users\\Asha
-# C:/Users/Asha/report.docx
+# C:\\Users\\Abaji
+# C:/Users/Abaji/report.docx
 # /srv/app/static/site.css
 # True`
             ]
@@ -190,7 +190,7 @@ print(css.relative_to("/srv/app"))
 print(css.is_relative_to("/srv/app"), css.is_relative_to("/etc"))
 
 # OUTPUT (first line depends on your current folder - e.g.):
-# /home/asha/project/data/sales.csv
+# /home/abaji/project/data/sales.csv
 # static/css/site.css
 # True False`
             ]

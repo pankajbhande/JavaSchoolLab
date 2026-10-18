@@ -64,7 +64,7 @@ A bank account keeps its balance and the rules for changing it in one place. Cal
         return f"{self.owner}: ₹{self.balance}"
 
 
-acc = BankAccount("Asha", 1000)
+acc = BankAccount("Abaji", 1000)
 acc.deposit(500)
 acc.withdraw(200)
 print(acc)
@@ -75,7 +75,7 @@ except ValueError as error:
     print("Error:", error)
 
 # OUTPUT:
-# Asha: ₹1300
+# Abaji: ₹1300
 # Error: insufficient funds`
             ]
         },

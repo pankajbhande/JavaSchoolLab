@@ -39,7 +39,7 @@ public class RowSetBeanDemo {
     }
 }
 // OUTPUT:
-// Aarav - 65000.0
+// Ajabrao - 65000.0
 // Bhavna - 72000.0`]
         },
         {
@@ -72,7 +72,7 @@ public class DisconnectedRowSetDemo {
     }
 }
 // OUTPUT:
-// Aarav
+// Ajabrao
 // Bhavna
 // Chetan`]
         },

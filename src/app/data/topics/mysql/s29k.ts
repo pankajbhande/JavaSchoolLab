@@ -10,17 +10,17 @@ export const s29k: Record<string, DeepDive> = {
 );
 
 INSERT INTO profile (doc)
-VALUES (JSON_OBJECT('name', 'Asha',              -- key/value pairs
+VALUES (JSON_OBJECT('name', 'Abaji',              -- key/value pairs
                     'age',  30,
                     'skills', JSON_ARRAY('sql', 'java')));   -- a JSON array
 
 SELECT doc FROM profile;                         -- note the normalised key order
 
 -- OUTPUT:
--- +------------------------------------------------------+
--- | doc                                                  |
--- +------------------------------------------------------+
--- | {"age": 30, "name": "Asha", "skills": ["sql", "java"]} |
+-- +---------------------------------------------------------+
+-- | doc                                                     |
+-- +---------------------------------------------------------+
+-- | {"age": 30, "name": "Abaji", "skills": ["sql", "java"]} |
 -- +------------------------------------------------------+`],
         [`Not every attribute deserves its own column. Product specs, user preferences, webhook payloads and API responses have a shape that varies per row or changes often. JSON lets you store them without a schema migration for each new field, while still being validated and queryable.`,
             r`-- Validate and inspect JSON values with built-in functions
@@ -68,7 +68,7 @@ SELECT doc FROM profile WHERE id = 1;
 -- +-----------------------------------------------------------------------------------+
 -- | doc                                                                               |
 -- +-----------------------------------------------------------------------------------+
--- | {"age": 31, "city": "Pune", "name": "Asha", "skills": ["sql", "java", "docker"]}  |
+-- | {"age": 31, "city": "Pune", "name": "Abaji", "skills": ["sql", "java", "docker"]} |
 -- +-----------------------------------------------------------------------------------+`],
         [`<b>Disadvantages:</b> the structure is not enforced (a typo in a key silently creates a new key), there are no foreign keys into a JSON value, and large documents are costly to read and update. Invalid JSON text is rejected at write time, which is good but must be handled by the application.`,
             r`INSERT INTO profile (doc) VALUES ('{name: "x"}');   -- keys must be double-quoted
@@ -84,7 +84,7 @@ SELECT doc FROM profile WHERE id = 1;
 --   columns on a specified JSON path.`],
         `
    SQL values                           JSON column (binary, validated)
-   'Asha', 30, JSON_ARRAY(...)  ---->   +----------------------------------+
+   'Abaji', 30, JSON_ARRAY(...)  ---->   +----------------------------------+
         |                               | header | key table | value table |
    JSON_OBJECT / JSON_ARRAY             +----------------------------------+
                                         keys sorted: len, then bytes
@@ -101,9 +101,9 @@ SELECT doc FROM profile WHERE id = 1;
         [`<code>JSON_EXTRACT(doc, path)</code> returns the value at a JSON path as a JSON value (so strings keep their quotes). <code>doc-&gt;'$.k'</code> is shorthand for it, and <code>doc-&gt;&gt;'$.k'</code> additionally unquotes the result to a plain SQL string. <code>JSON_VALUE</code> (8.0.21+) extracts a scalar and converts it to a SQL type with <code>RETURNING</code>.`,
             r`CREATE TABLE person (id INT PRIMARY KEY, doc JSON);
 INSERT INTO person VALUES
- (1, '{"name":"Asha", "score":9,   "address":{"city":"Pune"},  "tags":["sql","java"]}'),
- (2, '{"name":"Ravi", "score":10,  "address":{"city":"Delhi"}, "tags":[]}'),
- (3, '{"name":"Meena","score":100, "address":{"city":"Pune"},  "tags":["java"]}');
+ (1, '{"name":"Abaji", "score":9,   "address":{"city":"Pune"},  "tags":["sql","java"]}'),
+ (2, '{"name":"Raoji", "score":10,  "address":{"city":"Delhi"}, "tags":[]}'),
+ (3, '{"name":"Moropant","score":100, "address":{"city":"Pune"},  "tags":["java"]}');
 
 SELECT doc->'$.name'                    AS as_json,       -- JSON string, quoted
        doc->>'$.name'                   AS as_text,       -- unquoted SQL string
@@ -114,7 +114,7 @@ FROM   person WHERE id = 1;
 -- +---------+---------+-----------+
 -- | as_json | as_text | city_json |
 -- +---------+---------+-----------+
--- | "Asha"  | Asha    | "Pune"    |
+-- | "Abaji" | Abaji   | "Pune"    |
 -- +---------+---------+-----------+`],
         [`Application queries need typed values, not JSON fragments. <code>JSON_VALUE ... RETURNING</code> gives a correctly typed column, and <code>ON EMPTY / ON ERROR</code> clauses let you supply defaults instead of NULLs or surprises.`,
             r`SELECT id,
@@ -202,10 +202,10 @@ SELECT doc->>'$.first name'   AS broken FROM person WHERE id = 4;  -- invalid pa
 -- +-------+
 -- ERROR 3143 (42000): Invalid JSON path expression. The error is around character position 8.`],
         `
-   doc = {"name":"Asha","address":{"city":"Pune"},"tags":["sql","java"]}
+   doc = {"name":"Abaji","address":{"city":"Pune"},"tags":["sql","java"]}
 
    $                     whole document
-   $.name                ----------------------->  "Asha"       (-> keeps quotes)
+   $.name                ----------------------->  "Abaji"       (-> keeps quotes)
    $.address.city        ----------------------->  "Pune"
    $.tags[0]             ----------------------->  "sql"
    $.tags[*]             ----------------------->  ["sql","java"]
@@ -227,11 +227,11 @@ SELECT doc->>'$.first name'   AS broken FROM person WHERE id = 4;  -- invalid pa
   KEY idx_email (email)                                              -- secondary index on it
 );
 INSERT INTO cust (id, doc) VALUES
- (1, '{"email":"asha@x.com","score":9, "tags":["sql","java"]}'),
- (2, '{"email":"ravi@x.com","score":10,"tags":["go"]}'),
- (3, '{"email":"meena@x.com","score":100,"tags":["java"]}');
+ (1, '{"email":"abaji@x.com","score":9, "tags":["sql","java"]}'),
+ (2, '{"email":"raoji@x.com","score":10,"tags":["go"]}'),
+ (3, '{"email":"moropant@x.com","score":100,"tags":["java"]}');
 
-EXPLAIN SELECT id FROM cust WHERE email = 'asha@x.com';
+EXPLAIN SELECT id FROM cust WHERE email = 'abaji@x.com';
 
 -- OUTPUT (example, partial columns):
 -- +----+-------------+-------+------+-----------+------+
@@ -273,12 +273,12 @@ EXPLAIN SELECT id FROM cust WHERE 'java' MEMBER OF (doc->'$.tags');
         [`<b>Advantages:</b> a generated column documents which JSON attribute is "promoted", can be a normal column in SELECT lists, and can carry NOT NULL or UNIQUE rules. Virtual columns cost no disk for the value itself; only the index is stored.`,
             r`-- Uniqueness on a JSON attribute, enforced by a unique index on the generated column
 ALTER TABLE cust ADD UNIQUE KEY uq_email (email);
-INSERT INTO cust (id, doc) VALUES (4, '{"email":"asha@x.com"}');
+INSERT INTO cust (id, doc) VALUES (4, '{"email":"abaji@x.com"}');
 
 -- OUTPUT:
--- ERROR 1062 (23000): Duplicate entry 'asha@x.com' for key 'cust.uq_email'`],
+-- ERROR 1062 (23000): Duplicate entry 'abaji@x.com' for key 'cust.uq_email'`],
         [`<b>Disadvantages:</b> each index adds write cost and storage; a STORED column also duplicates the data on disk; and adding a STORED column rebuilds the table. The extracted text from <code>-&gt;&gt;</code> uses a binary-style (case-sensitive) collation, which can surprise you when you expect case-insensitive email matching.`,
-            r`SELECT id FROM cust WHERE email = 'ASHA@X.COM';     -- case-sensitive compare
+            r`SELECT id FROM cust WHERE email = 'ABAJI@X.COM';     -- case-sensitive compare
 
 -- OUTPUT:
 -- Empty set (0.00 sec)`],

@@ -9,7 +9,7 @@ export const s16k: Record<string, DeepDive> = {
     email    VARCHAR(80)  NOT NULL UNIQUE,              -- alternate key 1
     username VARCHAR(30)  NOT NULL UNIQUE               -- alternate key 2
 );
-INSERT INTO app_user (email, username) VALUES ('asha@x.com','asha'),('ravi@x.com','ravi');
+INSERT INTO app_user (email, username) VALUES ('abaji@x.com','abaji'),('raoji@x.com','raoji');
 SHOW INDEX FROM app_user;
 
 -- OUTPUT (example, trimmed):
@@ -21,7 +21,7 @@ SHOW INDEX FROM app_user;
 -- | app_user |          0 | username | username    |
 -- +----------+------------+----------+-------------+`],
         [`People and systems look rows up by what they know (an email at login, an ISBN at a till), not by an internal id. Alternate keys make those lookups both unique and fast, and prevent two accounts for one email.`,
-            r`EXPLAIN SELECT id FROM app_user WHERE email = 'asha@x.com';
+            r`EXPLAIN SELECT id FROM app_user WHERE email = 'abaji@x.com';
 
 -- OUTPUT (example, trimmed):
 -- +------+-------+-------+------+
@@ -50,10 +50,10 @@ SELECT name, country_code FROM city;
 -- | Pune | IN           |
 -- +------+--------------+`],
         [`<b>Advantages:</b> the database guarantees uniqueness of every real-world identifier you care about, not just the surrogate id.`,
-            r`INSERT INTO app_user (email, username) VALUES ('asha@x.com','asha2');
+            r`INSERT INTO app_user (email, username) VALUES ('abaji@x.com','asha2');
 
 -- OUTPUT:
--- ERROR 1062 (23000): Duplicate entry 'asha@x.com' for key 'app_user.email'`],
+-- ERROR 1062 (23000): Duplicate entry 'abaji@x.com' for key 'app_user.email'`],
         [`<b>Disadvantages:</b> each alternate key is another B-tree: extra disk, extra memory and extra work on every insert and update. And a nullable alternate key allows many NULLs, so declare NOT NULL when the value is mandatory.`,
             r`CREATE TABLE weak (id INT PRIMARY KEY, passport VARCHAR(20) UNIQUE);   -- NULL allowed
 INSERT INTO weak VALUES (1,NULL),(2,NULL),(3,'P123');
@@ -67,11 +67,11 @@ SELECT * FROM weak ORDER BY id;
 -- |  2 | NULL     |
 -- |  3 | P123     |
 -- +----+----------+`],
-        [`<b>Limitations:</b> uniqueness follows the column collation. The default utf8mb4_0900_ai_ci ignores case and accents, so 'Asha@x.com' collides with 'asha@x.com'. That is often desirable for email, but not for case-sensitive identifiers. Index keys are also limited to 3072 bytes.`,
-            r`INSERT INTO app_user (email, username) VALUES ('ASHA@X.COM','asha3');
+        [`<b>Limitations:</b> uniqueness follows the column collation. The default utf8mb4_0900_ai_ci ignores case and accents, so 'Abaji@x.com' collides with 'abaji@x.com'. That is often desirable for email, but not for case-sensitive identifiers. Index keys are also limited to 3072 bytes.`,
+            r`INSERT INTO app_user (email, username) VALUES ('ABAJI@X.COM','asha3');
 
 -- OUTPUT:
--- ERROR 1062 (23000): Duplicate entry 'ASHA@X.COM' for key 'app_user.email'
+-- ERROR 1062 (23000): Duplicate entry 'ABAJI@X.COM' for key 'app_user.email'
 
 -- Case-sensitive identifier: pick a binary-ish collation for that column
 -- ALTER TABLE app_user MODIFY username VARCHAR(30) COLLATE utf8mb4_0900_as_cs NOT NULL;`],
@@ -107,16 +107,16 @@ SELECT * FROM book_sur;
             r`CREATE TABLE u_nat (email VARCHAR(60) PRIMARY KEY);
 CREATE TABLE u_log (id INT PRIMARY KEY AUTO_INCREMENT, email VARCHAR(60),
     FOREIGN KEY (email) REFERENCES u_nat(email) ON UPDATE CASCADE);
-INSERT INTO u_nat VALUES ('asha@old.com');
-INSERT INTO u_log (email) VALUES ('asha@old.com');
-UPDATE u_nat SET email = 'asha@new.com';        -- rewrites parent AND every child row
+INSERT INTO u_nat VALUES ('abaji@old.com');
+INSERT INTO u_log (email) VALUES ('abaji@old.com');
+UPDATE u_nat SET email = 'abaji@new.com';        -- rewrites parent AND every child row
 SELECT * FROM u_log;
 
 -- OUTPUT:
 -- +----+--------------+
 -- | id | email        |
 -- +----+--------------+
--- |  1 | asha@new.com |
+-- |  1 | abaji@new.com |
 -- +----+--------------+`],
         [`Most OLTP systems use BIGINT AUTO_INCREMENT. Distributed systems that generate ids on many nodes use UUIDs; MySQL 8 offers UUID_TO_BIN with a swap flag so time-ordered UUIDs insert sequentially and stay index-friendly.`,
             r`CREATE TABLE evt (
@@ -166,7 +166,7 @@ INSERT INTO tiny VALUES (NULL);                  -- next value would overflow
    Natural key                          Surrogate key
    PK = email VARCHAR(60)               PK = id BIGINT (8 bytes)    + UNIQUE(email)
    ┌──────────────────┐                 ┌────┬──────────────────┐
-   │ asha@x.com       │                 │  1 │ asha@x.com       │
+   │ abaji@x.com       │                 │  1 │ abaji@x.com       │
    └──────────────────┘                 └────┴──────────────────┘
    meaningful, wide, can change         meaningless, narrow, never changes
    copied into every child + 2nd index  copied into every child + 2nd index (small)
@@ -193,14 +193,14 @@ SHOW INDEX FROM emp;
 -- +-------+------------+----------+-------------+`],
         [`You need both: the primary key says "this is row number N" for joins, foreign keys and updates; unique keys say "no two rows may share this business value". One mechanism cannot do both jobs.`,
             r`-- PK identifies the row to change; UNIQUE protects the business rule
-INSERT INTO emp VALUES (1,'asha@x.com','ABCDE1234F');
-UPDATE emp SET email = 'asha@corp.com' WHERE id = 1;       -- identify by PK
-INSERT INTO emp VALUES (2,'asha@corp.com','ZZZZZ9999Z');   -- breaks the unique rule
+INSERT INTO emp VALUES (1,'abaji@x.com','ABCDE1234F');
+UPDATE emp SET email = 'abaji@corp.com' WHERE id = 1;       -- identify by PK
+INSERT INTO emp VALUES (2,'abaji@corp.com','ZZZZZ9999Z');   -- breaks the unique rule
 
 -- OUTPUT:
 -- Query OK, 1 row affected
 -- Rows matched: 1  Changed: 1  Warnings: 0
--- ERROR 1062 (23000): Duplicate entry 'asha@corp.com' for key 'emp.email'`],
+-- ERROR 1062 (23000): Duplicate entry 'abaji@corp.com' for key 'emp.email'`],
         [`Optional identifiers (a tax number that some customers lack) belong in a UNIQUE column that allows NULL. A PK cannot be NULL, so it suits only mandatory identity.`,
             r`INSERT INTO emp VALUES (3,NULL,NULL),(4,NULL,NULL);     -- many NULLs in UNIQUE columns
 SELECT id, email FROM emp WHERE email IS NULL ORDER BY id;

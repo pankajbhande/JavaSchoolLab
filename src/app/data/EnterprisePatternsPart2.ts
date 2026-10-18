@@ -56,7 +56,7 @@ public class DaoDemo {
     public static void main(String[] args) {
         EmployeeDao dao = new InMemoryEmployeeDao();
         dao.save(new Employee(1, "Pankaj"));
-        dao.save(new Employee(2, "Rahul"));
+        dao.save(new Employee(2, "Raghunath"));
 
         System.out.println(dao.findById(1));
         System.out.println("All: " + dao.findAll());
@@ -64,7 +64,7 @@ public class DaoDemo {
 }
 // OUTPUT:
 // Employee[1, Pankaj]
-// All: [Employee[1, Pankaj], Employee[2, Rahul]]`
+// All: [Employee[1, Pankaj], Employee[2, Raghunath]]`
                 ]
               }
             ],
@@ -286,11 +286,11 @@ public class UnitOfWorkDemo {
     public static void main(String[] args) {
         UnitOfWork uow = new UnitOfWork();
         Employee e1 = new Employee(1, "Pankaj");
-        Employee e2 = new Employee(2, "Rahul");
+        Employee e2 = new Employee(2, "Raghunath");
 
         uow.registerNew(e1);
         uow.registerNew(e2);
-        e2.name = "Rahul Sharma";
+        e2.name = "Raghunath Sharma";
         uow.registerDirty(e2);
 
         uow.commit(); // ALL changes written out together, atomically

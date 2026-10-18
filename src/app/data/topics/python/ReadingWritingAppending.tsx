@@ -9,9 +9,9 @@ export const readingWritingAppending: Topic = {
 <code>write(text)</code> writes a string and returns the number of characters written. It does <b>not</b> add a newline - include <code>\\n</code> yourself. Opening with <code>"w"</code> creates the file or erases an existing one.`,
             codeExamples: [
                 `with open("students.txt", "w", encoding="utf-8") as f:
-    count = f.write("Asha\\n")
-    f.write("Ravi\\n")
-    f.write("Kiran\\n")
+    count = f.write("Abaji\\n")
+    f.write("Raoji\\n")
+    f.write("Kanhoji\\n")
 
 print(count)
 
@@ -19,10 +19,10 @@ with open("students.txt", encoding="utf-8") as f:
     print(f.read())
 
 # OUTPUT:
-# 5
-# Asha
-# Ravi
-# Kiran
+# 6
+# Abaji
+# Raoji
+# Kanhoji
 #`
             ]
         },
@@ -36,7 +36,7 @@ with open("students.txt", encoding="utf-8") as f:
 </table>`,
             codeExamples: [
                 `with open("students.txt", "w", encoding="utf-8") as f:
-    f.write("Asha\\nRavi\\nKiran\\n")
+    f.write("Abaji\\nRaoji\\nKanhoji\\n")
 
 with open("students.txt", encoding="utf-8") as f:
     print(repr(f.read()))
@@ -49,10 +49,10 @@ with open("students.txt", encoding="utf-8") as f:
     print(f.readlines())
 
 # OUTPUT:
-# 'Asha\\nRavi\\nKiran\\n'
-# 'Asha\\n'
-# 'Ravi\\n'
-# ['Asha\\n', 'Ravi\\n', 'Kiran\\n']`
+# 'Abaji\\nRaoji\\nKanhoji\\n'
+# 'Abaji\\n'
+# 'Raoji\\n'
+# ['Abaji\\n', 'Raoji\\n', 'Kanhoji\\n']`
             ]
         },
         {
@@ -60,20 +60,20 @@ with open("students.txt", encoding="utf-8") as f:
 A file object is iterable: <code>for line in f</code> reads <b>one line at a time</b>, so it works even for files larger than your memory. Each line still ends with <code>\\n</code>; remove it with <code>rstrip("\\n")</code> (or <code>strip()</code> to also remove spaces).`,
             codeExamples: [
                 `with open("marks.txt", "w", encoding="utf-8") as f:
-    f.write("Asha,91\\nRavi,78\\nKiran,85\\n")
+    f.write("Abaji,91\\nRaoji,78\\nKanhoji,85\\n")
 
 total = 0
 with open("marks.txt", encoding="utf-8") as f:
     for line in f:
         name, mark = line.rstrip("\\n").split(",")
         total += int(mark)
-        print(f"{name:<6}{mark}")
+        print(f"{name:<8}{mark}")
 print("Total:", total)
 
 # OUTPUT:
-# Asha  91
-# Ravi  78
-# Kiran 85
+# Abaji   91
+# Raoji   78
+# Kanhoji 85
 # Total: 254`
             ]
         },

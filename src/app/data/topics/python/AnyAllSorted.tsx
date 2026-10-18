@@ -143,7 +143,7 @@ Like <code>sorted</code>, <code>min</code> and <code>max</code> accept <code>key
 print(max(words, key=len))              # "banana" and "cherry" tie - first wins
 print(min(words, key=len))
 
-scores = {"Asha": 91, "Ravi": 78, "Kiran": 85}
+scores = {"Abaji": 91, "Raoji": 78, "Kanhoji": 85}
 print(max(scores, key=scores.get))      # key with the highest value
 
 print(max([], default=0))
@@ -151,7 +151,7 @@ print(max([], default=0))
 # OUTPUT:
 # banana
 # fig
-# Asha
+# Abaji
 # 0`
             ]
         },
@@ -159,18 +159,18 @@ print(max([], default=0))
             content: `<h3>Sorting Dictionaries and Records</h3>
 Sorting is covered in depth in <i>List Methods: sort(), reverse() &amp; More</i> (stability, multi-key sorting). The same <code>key</code> functions work with <code>sorted()</code> on any iterable - including dictionary items.`,
             codeExamples: [
-                `scores = {"Asha": 91, "Ravi": 78, "Kiran": 85}
+                `scores = {"Abaji": 91, "Raoji": 78, "Kanhoji": 85}
 
 print(sorted(scores.items(), key=lambda kv: kv[1], reverse=True))
 print(sorted(scores, key=scores.get))
 
-students = [("Ravi", "CSE", 78), ("Asha", "ECE", 91), ("Kiran", "CSE", 85)]
+students = [("Raoji", "CSE", 78), ("Abaji", "ECE", 91), ("Kanhoji", "CSE", 85)]
 print(sorted(students, key=lambda s: (s[1], -s[2])))   # branch, then marks high-low
 
 # OUTPUT:
-# [('Asha', 91), ('Kiran', 85), ('Ravi', 78)]
-# ['Ravi', 'Kiran', 'Asha']
-# [('Kiran', 'CSE', 85), ('Ravi', 'CSE', 78), ('Asha', 'ECE', 91)]`
+# [('Abaji', 91), ('Kanhoji', 85), ('Raoji', 78)]
+# ['Raoji', 'Kanhoji', 'Abaji']
+# [('Kanhoji', 'CSE', 85), ('Raoji', 'CSE', 78), ('Abaji', 'ECE', 91)]`
             ]
         },
         {

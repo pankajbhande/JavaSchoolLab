@@ -328,7 +328,7 @@ UPDATE stock SET qty = qty + 1 WHERE sku = 'A1';
             r`SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;          -- just the next transaction
 START TRANSACTION;
 SELECT COUNT(*) FROM shifts WHERE day = '2026-05-04' AND doctor_on_call = 1;
-UPDATE shifts SET doctor_on_call = 0 WHERE day = '2026-05-04' AND doctor = 'Asha';
+UPDATE shifts SET doctor_on_call = 0 WHERE day = '2026-05-04' AND doctor = 'Abaji';
 COMMIT;
 
 -- OUTPUT:
@@ -436,8 +436,8 @@ SELECT ROW_COUNT() AS saved;
 -- saved
 -- 1`],
         [`Mistakes: read in one request and write in another with no version check, overwriting the whole row with stale values from a form, and assuming transactions alone prevent it. Include a version or use column-level atomic updates.`,
-            r`UPDATE profiles SET name = 'Asha', phone = '999', city = 'Pune' WHERE id = 1;      -- stale form overwrites a concurrent phone change
-UPDATE profiles SET name = 'Asha' WHERE id = 1;                                      -- only update the changed columns
+            r`UPDATE profiles SET name = 'Abaji', phone = '999', city = 'Pune' WHERE id = 1;      -- stale form overwrites a concurrent phone change
+UPDATE profiles SET name = 'Abaji' WHERE id = 1;                                      -- only update the changed columns
 
 -- OUTPUT:
 -- Query OK, 1 row affected`],

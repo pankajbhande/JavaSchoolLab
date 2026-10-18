@@ -271,7 +271,7 @@ public class TrainBookingDemo {
 
         // REAL TIME: IRCTC style booking record
         long pnrNumber = 4512789034L;      // too big for int, so long
-        String passengerName = "Rahul Verma";
+        String passengerName = "Raghunath Verma";
         int age = 27;                      // int is enough
         char coach = 'B';                  // one character
         int seatNumber = 42;
@@ -303,7 +303,7 @@ public class TrainBookingDemo {
 }
 // OUTPUT:
 // PNR       : 4512789034
-// Passenger : Rahul Verma, age 27
+// Passenger : Raghunath Verma, age 27
 // Seat      : B-42
 // Tatkal    : false
 // Fare      : Rs 1450.50
@@ -580,7 +580,7 @@ public class VariableScopeDemo {
         e1.id = 101; e1.name = "Pankaj";
 
         Employee e2 = new Employee();
-        e2.id = 102; e2.name = "Rahul";
+        e2.id = 102; e2.name = "Raghunath";
 
         System.out.println(e1.name + " works at " + e1.company);
         System.out.println(e2.name + " works at " + e2.company);
@@ -589,7 +589,7 @@ public class VariableScopeDemo {
 }
 // OUTPUT:
 // Pankaj works at ABC
-// Rahul works at ABC
+// Raghunath works at ABC
 // 100`
                                 ]
                             },

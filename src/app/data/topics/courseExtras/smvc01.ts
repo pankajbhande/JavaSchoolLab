@@ -27,11 +27,11 @@ class HelloController {
         return "Hello, " + name;
     }
 }
-// curl "localhost:8080/hello?name=Asha"
+// curl "localhost:8080/hello?name=Abaji"
 
 // OUTPUT:
 // HTTP/1.1 200
-// Hello, Asha`],
+// Hello, Abaji`],
             ['Path variable and status code.',
                 r`@RestController
 class UserController {
@@ -52,9 +52,9 @@ class HelloControllerTest {
 
     @Test
     void greets() throws Exception {
-        mvc.perform(get("/hello").param("name", "Asha"))
+        mvc.perform(get("/hello").param("name", "Abaji"))
            .andExpect(status().isOk())
-           .andExpect(content().string("Hello, Asha"));
+           .andExpect(content().string("Hello, Abaji"));
     }
 }
 
@@ -172,14 +172,14 @@ class BookControllerTest {
 class GreetController {
     @GetMapping("/greet")
     String greet(Model model) {
-        model.addAttribute("name", "Asha");
+        model.addAttribute("name", "Abaji");
         model.addAttribute("count", 3);
         return "greet";
     }
 }
 
 // OUTPUT:
-// view "greet" receives name=Asha, count=3`],
+// view "greet" receives name=Abaji, count=3`],
             ['ModelAndView.',
                 r`@GetMapping("/report")
 ModelAndView report() {
@@ -198,18 +198,18 @@ String signup(@ModelAttribute Signup form, Model model) {
     model.addAttribute("msg", "Welcome " + form.name());
     return "done";
 }
-// curl -d "name=Asha&age=30" localhost:8080/signup
+// curl -d "name=Abaji&age=30" localhost:8080/signup
 
 // OUTPUT:
-// view "done" with msg=Welcome Asha`],
+// view "done" with msg=Welcome Abaji`],
             ['Testing model content.',
                 r`mvc.perform(get("/greet"))
    .andExpect(status().isOk())
-   .andExpect(model().attribute("name", "Asha"))
+   .andExpect(model().attribute("name", "Abaji"))
    .andExpect(view().name("greet"));
 
 // OUTPUT:
-// Test passes: model holds name=Asha and view is greet`]]
+// Test passes: model holds name=Abaji and view is greet`]]
     ),
 
     'mvc-view': x(
@@ -233,7 +233,7 @@ String signup(@ModelAttribute Signup form, Model model) {
 class HomeController {
     @GetMapping("/")
     String home(Model model) {
-        model.addAttribute("user", "Asha");
+        model.addAttribute("user", "Abaji");
         return "home";
     }
 }
@@ -501,13 +501,13 @@ class AppTest {
     public static void main(String[] args) {
         try (var ctx = new AnnotationConfigApplicationContext(AppConfig.class)) {
             GreetingService s = ctx.getBean(GreetingService.class);
-            System.out.println(s.greet("Asha"));
+            System.out.println(s.greet("Abaji"));
         }
     }
 }
 
 // OUTPUT:
-// Hello, Asha`],
+// Hello, Abaji`],
             ['MVC adds the web layer.',
                 r`@Controller
 class GreetingController {
@@ -515,11 +515,11 @@ class GreetingController {
     GreetingController(GreetingService s) { this.service = s; }
 
     @GetMapping("/greet") @ResponseBody
-    String greet() { return service.greet("Asha"); }
+    String greet() { return service.greet("Abaji"); }
 }
 
 // OUTPUT:
-// GET /greet -> Hello, Asha  (service injected by the core container)`]],
+// GET /greet -> Hello, Abaji  (service injected by the core container)`]],
         [['Maven dependencies.',
             r`<dependency>
   <groupId>org.springframework</groupId>
@@ -532,7 +532,7 @@ class GreetingController {
                 r`class GreetingServiceTest {
     @Test
     void greets() {
-        assertEquals("Hello, Asha", new GreetingService().greet("Asha"));
+        assertEquals("Hello, Abaji", new GreetingService().greet("Abaji"));
     }
 }
 
@@ -735,7 +735,8 @@ spring.thymeleaf.cache=true
 spring.web.resources.cache.cachecontrol.max-age=7d
 
 # OUTPUT:
-# responses over 1 KB are gzipped; static files are cached for 7 days`],
+# responses over 1 KB are gzipped;
+static files are cached for 7 days`],
         [`<p>A typical request in a production shop application:</p><ul><li>A filter adds a trace id and Spring Security authenticates the user.</li><li>The controller validates the JSON, calls a service and returns a DTO.</li><li>A <code>@RestControllerAdvice</code> turns failures into a uniform error body.</li></ul>`,
             r`@RestController
 @RequestMapping("/api/orders")
@@ -801,7 +802,8 @@ String pay(@RequestParam double amount) {
 spring.jpa.open-in-view=false
 
 # OUTPUT:
-# no lazy loading from templates; the service must fetch what the view needs
+# no lazy loading from templates;
+the service must fetch what the view needs
 # (a LazyInitializationException shows a missing fetch)`],
         [`<p>A catalogue site: a request for <code>/books</code> goes to the controller, which asks the service for a page of books, adds them to the model and returns the view. The same service is reused by a REST controller for the mobile app.</p>`,
             r`@Controller
@@ -909,7 +911,7 @@ class RegisterController {
 
 // OUTPUT:
 // invalid: 200 register page with field errors
-// valid:   302 /home, then page shows "Welcome Asha" once`]
+// valid:   302 /home, then page shows "Welcome Abaji" once`]
     ),
 
     'mvc-view': dv(
@@ -967,7 +969,7 @@ String mine(Principal p, Model model) {
 // <tr th:each="o : orders"><td th:text="o.id">1</td></tr>
 
 // OUTPUT:
-// <h1>asha</h1>
+// <h1>abaji</h1>
 // <tr><td>1001</td></tr> <tr><td>1002</td></tr>`]
     ),
 
@@ -1207,9 +1209,15 @@ public class LegacyApp {
         [`<p>How the framework modules stack.</p><ul><li><code>spring-core</code> and <code>spring-beans</code> provide the IoC container.</li><li><code>spring-context</code> adds the application context, events and resources.</li><li><code>spring-web</code> has the HTTP abstractions and message converters shared by MVC and WebFlux.</li><li><code>spring-webmvc</code> adds <code>DispatcherServlet</code> and the MVC programming model.</li><li>In classic setups the <code>ContextLoaderListener</code> creates the root context and the <code>DispatcherServlet</code> a child context.</li></ul>`,
             r`// Classic two-context setup (no Boot)
 public class WebInit extends AbstractAnnotationConfigDispatcherServletInitializer {
-    protected Class<?>[] getRootConfigClasses()    { return new Class[]{ RootConfig.class }; }
-    protected Class<?>[] getServletConfigClasses() { return new Class[]{ MvcConfig.class }; }
-    protected String[] getServletMappings()        { return new String[]{ "/" }; }
+    protected Class<?>[] getRootConfigClasses() {
+        return new Class[]{ RootConfig.class };
+    }
+    protected Class<?>[] getServletConfigClasses() {
+        return new Class[]{ MvcConfig.class };
+    }
+    protected String[] getServletMappings() {
+        return new String[]{ "/" };
+    }
 }
 
 // OUTPUT:
@@ -1217,7 +1225,9 @@ public class WebInit extends AbstractAnnotationConfigDispatcherServletInitialize
 // servlet context: controllers, view resolvers (can see root beans)`],
         [`<p>Where each piece lives:</p><ul><li><b>Core and DI:</b> any Java program.</li><li><b>Data access:</b> <code>JdbcTemplate</code>, transactions, ORM support.</li><li><b>Messaging:</b> <code>spring-jms</code>, <code>spring-messaging</code>.</li><li><b>Web servlet:</b> Spring MVC.</li><li><b>Web reactive:</b> Spring WebFlux.</li><li><b>Test:</b> <code>spring-test</code> with <code>MockMvc</code>.</li></ul>`,
             r`// Same service used from three entry points
-@Service class PriceService { double price(String sku) { return 9.99; } }
+@Service class PriceService {
+    double price(String sku) { return 9.99; }
+}
 
 // 1. console:   ctx.getBean(PriceService.class).price("A1")
 // 2. MVC:       @GetMapping("/price/{sku}") returns service.price(sku)
@@ -1376,7 +1386,8 @@ SseEmitter events() {
                 Thread.sleep(500);
             }
             emitter.complete();
-        } catch (Exception e) { emitter.completeWithError(e); }
+        } catch (Exception e) { emitter.completeWithError(e);
+        }
     });
     return emitter;
 }

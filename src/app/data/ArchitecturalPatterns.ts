@@ -167,7 +167,7 @@ Because the core only depends on interfaces (ports), you can unit-test all busin
             beginner: [
               {
                 content: `<h3>What is Clean Architecture?</h3>
-Popularized by Robert C. Martin ("Uncle Bob"), Clean Architecture arranges the system as <strong>concentric circles</strong>, with a single, strict rule: <strong>The Dependency Rule</strong> - source code dependencies can only point <strong>inward</strong>. Nothing in an inner circle can know anything about an outer circle.<br>
+Popularized by Robert C. Martin ("Uncle Baji"), Clean Architecture arranges the system as <strong>concentric circles</strong>, with a single, strict rule: <strong>The Dependency Rule</strong> - source code dependencies can only point <strong>inward</strong>. Nothing in an inner circle can know anything about an outer circle.<br>
 <br>
 <pre class="bg-[#1e1e2e] text-gray-100 p-4 rounded-lg overflow-x-auto font-mono text-[13px] leading-6">   +-------------------------------------------+
    |     Frameworks & Drivers (DB, Web, UI)     |

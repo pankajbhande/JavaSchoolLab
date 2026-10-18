@@ -240,7 +240,7 @@ print("tests pass")
 # OUTPUT:
 # tests pass`],
         [`Web applications split into handler (HTTP), service/rule (business) and data access. A change to the database does not touch the rules.`,
-            r`DB = {1: {"name": "Asha", "age": 17}}
+            r`DB = {1: {"name": "Abaji", "age": 17}}
 
 def find_user(uid):                         # data concern
     return DB.get(uid)

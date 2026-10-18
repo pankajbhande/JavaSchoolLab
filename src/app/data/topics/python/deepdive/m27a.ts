@@ -10,13 +10,13 @@ con = sqlite3.connect(":memory:")           # throw-away database in RAM
 con.execute("CREATE TABLE users (id INTEGER PRIMARY KEY, name TEXT, age INT)")
 
 con.execute("INSERT INTO users (name, age) VALUES (?, ?)", ("Ada", 36))   # Create
-con.execute("INSERT INTO users (name, age) VALUES (?, ?)", ("Bob", 25))
-con.execute("UPDATE users SET age = age + 1 WHERE name = ?", ("Bob",))    # Update
+con.execute("INSERT INTO users (name, age) VALUES (?, ?)", ("Baji", 25))
+con.execute("UPDATE users SET age = age + 1 WHERE name = ?", ("Baji",))    # Update
 con.execute("DELETE FROM users WHERE name = ?", ("Ada",))                 # Delete
 print(con.execute("SELECT id, name, age FROM users").fetchall())          # Read
 
 # OUTPUT:
-# [(2, 'Bob', 26)]`],
+# [(2, 'Baji', 26)]`],
         [`Programs lose their data when they exit. A database stores it durably, lets many programs query it, and guarantees structure (types, keys, constraints) that a plain file cannot.`,
             r`import sqlite3
 
@@ -101,7 +101,7 @@ con = sqlite3.connect(":memory:")
 con.executescript("""
 CREATE TABLE users  (id INT PRIMARY KEY, name TEXT);
 CREATE TABLE orders (id INT PRIMARY KEY, user_id INT, total INT);
-INSERT INTO users  VALUES (1,'Ada'),(2,'Bob'),(3,'Cy');
+INSERT INTO users  VALUES (1,'Ada'),(2,'Baji'),(3,'Cy');
 INSERT INTO orders VALUES (1,1,50),(2,1,30),(3,2,20);
 """)
 sql = """SELECT u.name, o.total FROM users u
@@ -109,7 +109,7 @@ sql = """SELECT u.name, o.total FROM users u
 print(con.execute(sql).fetchall())
 
 # OUTPUT:
-# [('Ada', 50), ('Ada', 30), ('Bob', 20)]`],
+# [('Ada', 50), ('Ada', 30), ('Baji', 20)]`],
         [`Normalised databases split data into tables to avoid duplication (user once, many orders). To answer questions that span entities, you must join them back together.`,
             r`import sqlite3
 
@@ -117,7 +117,7 @@ con = sqlite3.connect(":memory:")
 con.executescript("""
 CREATE TABLE users  (id INT, name TEXT);
 CREATE TABLE orders (id INT, user_id INT, total INT);
-INSERT INTO users  VALUES (1,'Ada'),(2,'Bob'),(3,'Cy');
+INSERT INTO users  VALUES (1,'Ada'),(2,'Baji'),(3,'Cy');
 INSERT INTO orders VALUES (1,1,50),(2,1,30),(3,2,20);
 """)
 # LEFT JOIN: users with no orders still appear (total is NULL -> None)
@@ -126,7 +126,7 @@ sql = """SELECT u.name, o.total FROM users u
 print(con.execute(sql).fetchall())
 
 # OUTPUT:
-# [('Ada', 50), ('Ada', 30), ('Bob', 20), ('Cy', None)]`],
+# [('Ada', 50), ('Ada', 30), ('Baji', 20), ('Cy', None)]`],
         [`Real reports: "customers who never ordered" (LEFT JOIN ... WHERE o.id IS NULL), order lines with product names, employees with their manager (self join).`,
             r`import sqlite3
 
@@ -136,7 +136,7 @@ CREATE TABLE emp (id INT, name TEXT, manager_id INT);
 INSERT INTO emp VALUES (1,'Boss',NULL),(2,'Ann',1),(3,'Ben',1),(4,'Cat',2);
 CREATE TABLE users (id INT, name TEXT);
 CREATE TABLE orders (id INT, user_id INT);
-INSERT INTO users VALUES (1,'Ada'),(2,'Bob');
+INSERT INTO users VALUES (1,'Ada'),(2,'Baji');
 INSERT INTO orders VALUES (1,1);
 """)
 # anti-join: users with no orders
@@ -147,7 +147,7 @@ print(con.execute("""SELECT e.name, m.name FROM emp e JOIN emp m ON e.manager_id
                      ORDER BY e.id""").fetchall())
 
 # OUTPUT:
-# [('Bob',)]
+# [('Baji',)]
 # [('Ann', 'Boss'), ('Ben', 'Boss'), ('Cat', 'Ann')]`],
         [`<b>Advantages:</b> keeps data normalised, one query returns related data, and the database optimises join order using indexes.`,
             r`import sqlite3
@@ -194,10 +194,10 @@ print(con.execute("SELECT COUNT(*) FROM a JOIN b ON a.k = b.k").fetchone())   # 
    │ id │ name │    │ id │ user_id │ total │
    ├────┼──────┤    ├────┼─────────┼───────┤
    │ 1  │ Ada  │◄───│ 1  │    1    │  50   │
-   │ 2  │ Bob  │◄───│ 3  │    2    │  20   │
+   │ 2  │ Baji │◄───│ 3  │    2    │  20   │
    │ 3  │ Cy   │    └────┴─────────┴───────┘
    └────┴──────┘
-   INNER: Ada, Bob     LEFT: Ada, Bob, Cy(NULL)
+   INNER: Ada, Baji     LEFT: Ada, Baji, Cy(NULL)
 `,
         `Index every foreign key used in joins, check plans with EXPLAIN, and be careful with aggregates over one-to-many joins (aggregate in a subquery first). Excessively wide join chains often signal that a reporting table, materialised view or denormalised read model is the better design.`
     ),
@@ -356,14 +356,14 @@ print(con.execute(sql).fetchall())
 con = sqlite3.connect(":memory:")
 con.executescript("""
 CREATE TABLE users (id INT, name TEXT); CREATE TABLE orders (user_id INT);
-INSERT INTO users VALUES (1,'Ada'),(2,'Bob'); INSERT INTO orders VALUES (1);
+INSERT INTO users VALUES (1,'Ada'),(2,'Baji'); INSERT INTO orders VALUES (1);
 """)
 sql = """SELECT name FROM users u
          WHERE NOT EXISTS (SELECT 1 FROM orders o WHERE o.user_id = u.id)"""
 print(con.execute(sql).fetchall())
 
 # OUTPUT:
-# [('Bob',)]`],
+# [('Baji',)]`],
         [`<b>Disadvantages:</b> correlated subqueries can run once per outer row (slow), deep nesting is unreadable, and some engines re-evaluate a CTE each time it is referenced.`,
             r`import sqlite3
 

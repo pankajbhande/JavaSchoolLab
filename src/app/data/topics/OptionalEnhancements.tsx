@@ -165,9 +165,9 @@ public class OptionalExpert {
 
         // Flattening nested Optionals
         List<User> users = List.of(
-            new User("Alice", Optional.of("alice@mail.com")),
-            new User("Bob", Optional.empty()),
-            new User("Charlie", Optional.of("charlie@mail.com"))
+            new User("Anaji", Optional.of("anaji@mail.com")),
+            new User("Baji", Optional.empty()),
+            new User("Chimnaji", Optional.of("charlie@mail.com"))
         );
 
         List<String> emails = users.stream()

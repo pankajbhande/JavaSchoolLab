@@ -176,14 +176,14 @@ class SecurityConfig {
                 r`@Bean
 UserDetailsService users(PasswordEncoder enc) {
     return new InMemoryUserDetailsManager(
-        User.withUsername("asha").password(enc.encode("pw1")).roles("USER").build());
+        User.withUsername("abaji").password(enc.encode("pw1")).roles("USER").build());
 }
 
 @Bean
 PasswordEncoder encoder() { return new BCryptPasswordEncoder(); }
 
 // OUTPUT:
-// Login as asha / pw1 succeeds; the stored password is a BCrypt hash like $2a$10$...`]],
+// Login as abaji / pw1 succeeds; the stored password is a BCrypt hash like $2a$10$...`]],
         [['Test with MockMvc.',
             r`@WebMvcTest(OrderController.class)
 @Import(SecurityConfig.class)
@@ -209,7 +209,7 @@ String me(@AuthenticationPrincipal UserDetails user) {
 }
 
 // OUTPUT:
-// GET /me (as asha) -> asha [ROLE_USER]`]]
+// GET /me (as abaji) -> abaji [ROLE_USER]`]]
     ),
 
     'mvc-authentication': x(
@@ -243,8 +243,8 @@ class LoginService {
 }
 
 // OUTPUT:
-// login("asha", "pw1")   -> asha [ROLE_USER]
-// login("asha", "wrong") -> BadCredentialsException: Bad credentials`],
+// login("abaji", "pw1")   -> abaji [ROLE_USER]
+// login("abaji", "wrong") -> BadCredentialsException: Bad credentials`],
             ['Database users.',
                 r`@Service
 class DbUserDetailsService implements UserDetailsService {
@@ -260,7 +260,7 @@ class DbUserDetailsService implements UserDetailsService {
 }
 
 // OUTPUT:
-// DaoAuthenticationProvider calls loadUserByUsername("asha") then matches the hash.`]],
+// DaoAuthenticationProvider calls loadUserByUsername("abaji") then matches the hash.`]],
         [['Expose the AuthenticationManager bean.',
             r`@Bean
 AuthenticationManager authManager(AuthenticationConfiguration cfg)
@@ -272,7 +272,7 @@ AuthenticationManager authManager(AuthenticationConfiguration cfg)
 // The manager is built from the registered UserDetailsService and PasswordEncoder beans.`],
             ['Test authentication failure.',
                 r`mvc.perform(post("/login").with(csrf())
-        .param("username", "asha").param("password", "bad"))
+        .param("username", "abaji").param("password", "bad"))
     .andExpect(redirectedUrl("/login?error"));
 
 // OUTPUT:
@@ -400,11 +400,11 @@ class LoginController {
     .failureHandler((req, res, ex) -> res.sendError(401, "Bad credentials")));
 
 // OUTPUT:
-// POST /login valid   -> 200 {"user":"asha"}
+// POST /login valid   -> 200 {"user":"abaji"}
 // POST /login invalid -> 401`],
             ['Test a login.',
-                r`mvc.perform(formLogin("/login").user("asha").password("pw1"))
-    .andExpect(authenticated().withUsername("asha"));
+                r`mvc.perform(formLogin("/login").user("abaji").password("pw1"))
+    .andExpect(authenticated().withUsername("abaji"));
 
 // OUTPUT:
 // Tests run: 1, Failures: 0`]]
@@ -451,7 +451,7 @@ class LoginController {
 // OUTPUT:
 // POST /api/logout -> 200 (no redirect)`],
             ['Test logout.',
-                r`mvc.perform(post("/logout").with(csrf()).with(user("asha")))
+                r`mvc.perform(post("/logout").with(csrf()).with(user("abaji")))
     .andExpect(status().is3xxRedirection())
     .andExpect(redirectedUrl("/login?logout"));
 
@@ -543,20 +543,20 @@ void loginSucceeds() throws Exception {
         .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
 // OUTPUT:
-// curl -u asha:pw1 http://localhost:8080/api/orders -> 200
+// curl -u abaji:pw1 http://localhost:8080/api/orders -> 200
 // curl http://localhost:8080/api/orders             -> 401
 // WWW-Authenticate: Basic realm="Realm"`],
             ['Build the header by hand.',
-                r`String raw = "asha:pw1";
+                r`String raw = "abaji:pw1";
 String header = "Basic " + Base64.getEncoder().encodeToString(raw.getBytes());
 System.out.println(header);
 
 // OUTPUT:
 // Basic YXNoYTpwdzE=`]],
         [['Test with httpBasic.',
-            r`mvc.perform(get("/api/orders").with(httpBasic("asha", "pw1")))
+            r`mvc.perform(get("/api/orders").with(httpBasic("abaji", "pw1")))
     .andExpect(status().isOk());
-mvc.perform(get("/api/orders").with(httpBasic("asha", "bad")))
+mvc.perform(get("/api/orders").with(httpBasic("abaji", "bad")))
     .andExpect(status().isUnauthorized());
 
 // OUTPUT:
@@ -606,9 +606,13 @@ server.servlet.session.cookie.secure=true
 server.servlet.session.cookie.same-site=lax
 
 # OUTPUT:
-# Set-Cookie: JSESSIONID=...; Path=/; Secure; HttpOnly; SameSite=Lax`]],
+# Set-Cookie: JSESSIONID=...;
+Path=/;
+Secure;
+HttpOnly;
+SameSite=Lax`]],
         [['Inspect the session in a test.',
-            r`MvcResult res = mvc.perform(formLogin().user("asha").password("pw1"))
+            r`MvcResult res = mvc.perform(formLogin().user("abaji").password("pw1"))
     .andExpect(authenticated()).andReturn();
 MockHttpSession session = (MockHttpSession) res.getRequest().getSession();
 mvc.perform(get("/orders").session(session)).andExpect(status().isOk());
@@ -834,7 +838,7 @@ System.out.println("ms=" + (System.nanoTime() - t) / 1_000_000);
     'mvc-authentication': dv(
         [`<p>Authentication is a pipeline of small objects.</p><ul><li><b>Filter:</b> builds an unauthenticated <code>Authentication</code> (for example <code>UsernamePasswordAuthenticationToken</code>).</li><li><b>ProviderManager:</b> asks each <code>AuthenticationProvider</code> whether it <code>supports</code> that token type.</li><li><b>DaoAuthenticationProvider:</b> calls <code>UserDetailsService</code>, checks account flags, then <code>PasswordEncoder.matches</code>.</li><li><b>Result:</b> a new token with authorities and <code>authenticated=true</code>, stored in the <code>SecurityContext</code>; credentials are erased.</li></ul>`,
             r`UsernamePasswordAuthenticationToken req =
-    UsernamePasswordAuthenticationToken.unauthenticated("asha", "pw1");
+    UsernamePasswordAuthenticationToken.unauthenticated("abaji", "pw1");
 System.out.println(req.isAuthenticated());
 Authentication done = manager.authenticate(req);
 System.out.println(done.isAuthenticated() + " " + done.getAuthorities());
@@ -868,7 +872,7 @@ CompletableFuture.runAsync(() -> log(SecurityContextHolder.getContext()), ex);
 
 // OUTPUT:
 // Wrong: authentication is null in the pool thread
-// Right: authentication is asha`],
+// Right: authentication is abaji`],
         [`<p>Performance and tuning:</p><ul><li><b>BCrypt cost</b> is deliberate; do not lower it for speed, cache sessions or tokens instead.</li><li><b>User lookup:</b> index the username column and cache <code>UserDetails</code> with <code>CachingUserDetailsService</code> only when changes are rare.</li><li><b>Token validation</b> for JWT is local and fast, with no database read per request.</li></ul>`,
             r`@Bean
 UserCache userCache(CacheManager cm) {
@@ -876,7 +880,7 @@ UserCache userCache(CacheManager cm) {
 }
 
 // OUTPUT:
-// Second login of asha loads the user from the cache; the password check still runs.`],
+// Second login of abaji loads the user from the cache; the password check still runs.`],
         [`<p>Scenario: a company portal authenticates employees. Passwords are BCrypt hashed, five failed logins lock the account for a time, and the lock is reported through <code>AuthenticationFailureBadCredentialsEvent</code> listeners.</p>`,
             r`@Component
 class LoginAudit {
@@ -891,8 +895,8 @@ class LoginAudit {
 }
 
 // OUTPUT:
-// failed login for asha
-// login ok for asha`]
+// failed login for abaji
+// login ok for abaji`]
     ),
 
     'mvc-authorization': dv(
@@ -968,7 +972,10 @@ public Patient get(long id) { return repo.findById(id).orElseThrow(); }
 class AuthController {
     private final AuthenticationManager manager;
     private final JwtService jwt;
-    AuthController(AuthenticationManager m, JwtService j) { manager = m; jwt = j; }
+    AuthController(AuthenticationManager m, JwtService j) {
+        manager = m;
+        jwt = j;
+    }
 
     @PostMapping("/api/login")
     Map<String, String> login(@RequestBody LoginRequest req) {
@@ -979,7 +986,7 @@ class AuthController {
 }
 
 // OUTPUT:
-// POST /api/login {"user":"asha","pass":"pw1"} -> {"token":"eyJhbGciOi..."} (varies)`],
+// POST /api/login {"user":"abaji","pass":"pw1"} -> {"token":"eyJhbGciOi..."} (varies)`],
         [`<p>Common mistakes:</p><ul><li><b>Login page blocked:</b> forget <code>permitAll()</code> and get a redirect loop.</li><li><b>Missing CSRF field:</b> 403 on post.</li><li><b>Form field names differ</b> from the configured parameters.</li><li><b>Detailed errors:</b> telling which of user or password is wrong.</li><li><b>HTTP instead of HTTPS:</b> passwords visible on the network.</li><li><b>Open redirect:</b> using an unchecked <code>redirect</code> parameter after login.</li></ul>`,
             r`// Wrong: login page needs authentication -> redirect loop
 http.authorizeHttpRequests(a -> a.anyRequest().authenticated())
@@ -1002,14 +1009,14 @@ class LoginThrottle {
 }
 
 // OUTPUT:
-// after 5 wrong passwords blocked("asha") -> true`],
+// after 5 wrong passwords blocked("abaji") -> true`],
         [`<p>Scenario: a ticket system with a custom page. Users who open a deep link are sent to login and then back to the same ticket. The team verifies that with a MockMvc test and logs every failed attempt.</p>`,
             r`@Test
 void deepLinkReturnsAfterLogin() throws Exception {
     MockHttpSession session = new MockHttpSession();
     mvc.perform(get("/tickets/42").session(session))
         .andExpect(redirectedUrlPattern("**/login"));
-    mvc.perform(formLogin().user("asha").password("pw1").session(session))
+    mvc.perform(formLogin().user("abaji").password("pw1").session(session))
         .andExpect(redirectedUrl("http://localhost/tickets/42"));
 }
 
@@ -1037,7 +1044,7 @@ void deepLinkReturnsAfterLogin() throws Exception {
     .logoutSuccessHandler((req, res, auth) -> res.setStatus(200)));
 
 // OUTPUT:
-// bye asha
+// bye abaji
 // HTTP/1.1 200`],
         [`<p>Common mistakes:</p><ul><li><b>Logout link with GET</b> while CSRF is on gives a 404 or login page.</li><li><b>Forgetting the CSRF token</b> in the logout form.</li><li><b>Stale JWT:</b> the client logs out but the token stays valid until it expires.</li><li><b>Remember-me cookie</b> not cleared, so the user returns logged in.</li><li><b>Caching:</b> the browser back button shows protected pages; Spring sends no-cache headers by default, keep them.</li></ul>`,
             r`// Wrong: GET link
@@ -1054,12 +1061,13 @@ void deepLinkReturnsAfterLogin() throws Exception {
 server.servlet.session.timeout=15m
 
 # OUTPUT:
-# Idle sessions expire after 15 minutes; the next request redirects to /login`],
+# Idle sessions expire after 15 minutes;
+the next request redirects to /login`],
         [`<p>Scenario: a shared computer in a bank branch. The team logs out on a button and on idle timeout, deletes cookies, clears the cache headers, and checks with a test that a protected page redirects after logout.</p>`,
             r`@Test
 void afterLogoutPageIsProtected() throws Exception {
     MockHttpSession s = new MockHttpSession();
-    mvc.perform(formLogin().user("asha").password("pw1").session(s));
+    mvc.perform(formLogin().user("abaji").password("pw1").session(s));
     mvc.perform(post("/logout").with(csrf()).session(s));
     mvc.perform(get("/account").session(s))
         .andExpect(status().is3xxRedirection());
@@ -1111,7 +1119,7 @@ String loginPage() { return "login"; }
         [`<p>Scenario: an internal HR portal with Thymeleaf pages. The team uses form login with a branded page, role based menus, and a test suite that checks anonymous redirect, success, failure and logout.</p>`,
             r`@Test
 void wrongPasswordShowsError() throws Exception {
-    mvc.perform(formLogin().user("asha").password("nope"))
+    mvc.perform(formLogin().user("abaji").password("nope"))
         .andExpect(unauthenticated())
         .andExpect(redirectedUrl("/login?error"));
 }
@@ -1134,11 +1142,11 @@ void wrongPasswordShowsError() throws Exception {
 // HTTP/1.1 200
 
 // OUTPUT:
-// Base64 decode of YXNoYTpwdzE= is asha:pw1`],
+// Base64 decode of YXNoYTpwdzE= is abaji:pw1`],
         [`<p>Variants:</p><ul><li><b>Realm name:</b> <code>httpBasic(b -&gt; b.realmName("Shop API"))</code>.</li><li><b>Custom entry point</b> for JSON errors.</li><li><b>Client side:</b> <code>RestTemplate</code> or <code>WebClient</code> with <code>setBasicAuth</code>.</li><li><b>Mixed:</b> Basic for internal paths, form login for browser pages.</li></ul>`,
             r`WebClient client = WebClient.builder()
     .baseUrl("http://localhost:8080")
-    .defaultHeaders(h -> h.setBasicAuth("asha", "pw1"))
+    .defaultHeaders(h -> h.setBasicAuth("abaji", "pw1"))
     .build();
 String body = client.get().uri("/api/orders").retrieve()
     .bodyToMono(String.class).block();
@@ -1188,7 +1196,7 @@ http.authorizeHttpRequests(a -> a
         [`<p>Session handling internals:</p><ul><li><b>Login:</b> after success, <code>SessionAuthenticationStrategy</code> runs (fixation, concurrency), then <code>HttpSessionSecurityContextRepository</code> saves the context under an attribute.</li><li><b>Next request:</b> <code>SecurityContextHolderFilter</code> loads it from the session into <code>SecurityContextHolder</code> lazily.</li><li><b>Concurrency:</b> <code>ConcurrentSessionControlAuthenticationStrategy</code> consults the <code>SessionRegistry</code>.</li><li><b>End of request:</b> the holder is cleared from the thread.</li></ul>`,
             r`// Session attribute (simplified)
 // SPRING_SECURITY_CONTEXT -> SecurityContextImpl [Authentication=UsernamePasswordAuthenticationToken
-//   [Principal=asha, Authorities=[ROLE_USER]]]
+//   [Principal=abaji, Authorities=[ROLE_USER]]]
 
 // OUTPUT:
 // Every request with the same JSESSIONID sees the same logged-in user.`],

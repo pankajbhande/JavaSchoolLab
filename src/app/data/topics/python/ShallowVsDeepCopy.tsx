@@ -58,18 +58,18 @@ print(len(original), len(shallow), len(deep))
             content: `<h4>dict.copy() Is Shallow Too</h4>
 Replacing a top-level value in the copy is safe, but mutating a nested list or dict changes the original as well.`,
             codeExamples: [
-                `student = {"name": "Asha", "marks": [80, 90]}
+                `student = {"name": "Abaji", "marks": [80, 90]}
 backup = student.copy()
 
-backup["name"] = "Ravi"          # top-level replace: independent
+backup["name"] = "Raoji"          # top-level replace: independent
 backup["marks"].append(70)       # nested mutation: shared!
 
 print(student)
 print(backup)
 
 # OUTPUT:
-# {'name': 'Asha', 'marks': [80, 90, 70]}
-# {'name': 'Ravi', 'marks': [80, 90, 70]}`
+# {'name': 'Abaji', 'marks': [80, 90, 70]}
+# {'name': 'Raoji', 'marks': [80, 90, 70]}`
             ]
         },
         {
@@ -78,9 +78,9 @@ A common pattern is to start every new record from a "template" dict. With a sha
             codeExamples: [
                 `TEMPLATE = {"course": "Python", "modules": ["Basics"], "progress": {"done": 0}}
 
-asha = TEMPLATE.copy()                 # shallow - BUG
-asha["modules"].append("OOP")
-asha["progress"]["done"] = 3
+abaji = TEMPLATE.copy()                 # shallow - BUG
+abaji["modules"].append("OOP")
+abaji["progress"]["done"] = 3
 
 print(TEMPLATE)
 
@@ -90,12 +90,12 @@ print(TEMPLATE)
 
 TEMPLATE = {"course": "Python", "modules": ["Basics"], "progress": {"done": 0}}
 
-ravi = copy.deepcopy(TEMPLATE)         # fully independent
-ravi["modules"].append("Django")
-ravi["progress"]["done"] = 5
+raoji = copy.deepcopy(TEMPLATE)         # fully independent
+raoji["modules"].append("Django")
+raoji["progress"]["done"] = 5
 
 print(TEMPLATE)
-print(ravi)
+print(raoji)
 
 # OUTPUT:
 # {'course': 'Python', 'modules': ['Basics'], 'progress': {'done': 0}}
@@ -163,10 +163,10 @@ class Student:
         self.name = name
         self.marks = marks
 
-s1 = Student("Asha", [80, 90])
+s1 = Student("Abaji", [80, 90])
 s2 = copy.copy(s1)
 
-s2.name = "Ravi"              # rebinding: independent
+s2.name = "Raoji"              # rebinding: independent
 s2.marks.append(70)           # mutating a shared list
 
 print(s1.name, s1.marks)
@@ -176,7 +176,7 @@ s3 = copy.deepcopy(s1)
 print(s3.marks is s1.marks)
 
 # OUTPUT:
-# Asha [80, 90, 70]
+# Abaji [80, 90, 70]
 # False True
 # False`
             ]

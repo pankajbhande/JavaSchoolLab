@@ -98,7 +98,7 @@ except urllib.error.URLError as e:
      │    Host, Accept, Authorization            │
      │ ◄───────── 200 OK ────────────────────── │
      │    Content-Type: application/json         │
-     │    {"id": 7, "name": "Asha"}              │
+     │    {"id": 7, "name": "Abaji"}             │
    (new request = new, independent conversation)
 `,
         `Design APIs around HTTP semantics (correct verbs, status codes, caching headers, idempotency keys for POST) so proxies, CDNs and retries work for free. Always use TLS, set timeouts and consider HTTP/2 or HTTP/3 for many small requests. For bidirectional streaming prefer WebSockets or gRPC.`
@@ -312,7 +312,7 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 
 class H(BaseHTTPRequestHandler):             # tiny local API so the demo is offline
     def do_GET(self):
-        body = json.dumps({"name": "Asha", "q": self.path}).encode()
+        body = json.dumps({"name": "Abaji", "q": self.path}).encode()
         self.send_response(200); self.send_header("Content-Type", "application/json")
         self.send_header("Content-Length", str(len(body))); self.end_headers(); self.wfile.write(body)
     def log_message(self, *a): pass
@@ -326,7 +326,7 @@ print(resp.status_code, resp.json())
 srv.shutdown()
 
 # OUTPUT:
-# 200 {'name': 'Asha', 'q': '/users?page=2'}`],
+# 200 {'name': 'Abaji', 'q': '/users?page=2'}`],
         [`The standard <code>urllib</code> works but is verbose. requests gives a human API: automatic query encoding, JSON, cookies, sessions, redirects, file upload and sensible defaults.`,
             r`import requests
 
@@ -454,14 +454,14 @@ async def main():
     site = web.TCPSite(runner, "127.0.0.1", 0); await site.start()
     port = site._server.sockets[0].getsockname()[1]
     async with ClientSession() as s:
-        async with s.get(f"http://127.0.0.1:{port}/hi/asha") as resp:
+        async with s.get(f"http://127.0.0.1:{port}/hi/abaji") as resp:
             print(resp.status, await resp.json())
     await runner.cleanup()
 
 asyncio.run(main())
 
 # OUTPUT:
-# 200 {'hello': 'asha'}`],
+# 200 {'hello': 'abaji'}`],
         [`<b>Advantages:</b> high concurrency, connection pooling, streaming, HTTP/2 (httpx with <code>http2=True</code>), timeouts by default in httpx (5 s), and a sync API in httpx for easy migration from requests.`,
             r`import httpx
 
@@ -517,7 +517,7 @@ asyncio.run(main())
             r`import threading, json, requests
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
-USERS = {1: {"id": 1, "name": "Asha"}}
+USERS = {1: {"id": 1, "name": "Abaji"}}
 class API(BaseHTTPRequestHandler):
     def _send(self, code, obj):
         b = json.dumps(obj).encode()
@@ -536,12 +536,12 @@ threading.Thread(target=srv.serve_forever, daemon=True).start()
 BASE = f"http://127.0.0.1:{srv.server_port}"
 
 print(requests.get(f"{BASE}/users/1", timeout=5).json())
-print(requests.post(f"{BASE}/users/", json={"name": "Ravi"}, timeout=5).status_code)
+print(requests.post(f"{BASE}/users/", json={"name": "Raoji"}, timeout=5).status_code)
 print(requests.get(f"{BASE}/users/99", timeout=5).status_code)
 srv.shutdown()
 
 # OUTPUT:
-# {'id': 1, 'name': 'Asha'}
+# {'id': 1, 'name': 'Abaji'}
 # 201
 # 404`],
         [`Almost every product integrates third-party services (payments, maps, auth, messaging). A naive client that ignores failures, timeouts or pagination breaks in production under real conditions.`,
@@ -627,12 +627,12 @@ def parse_user(d):
     except (KeyError, ValueError, TypeError) as e:
         raise ValueError(f"bad API payload: {e!r}") from None
 
-print(parse_user({"id": "7", "name": "Asha"}))
+print(parse_user({"id": "7", "name": "Abaji"}))
 try: parse_user({"id": "x"})
 except ValueError as e: print(e)
 
 # OUTPUT:
-# User(id=7, name='Asha')
+# User(id=7, name='Abaji')
 # bad API payload: ValueError("invalid literal for int() with base 10: 'x'")`],
         `
    client code ─► API client class ─► Session (auth, timeout, retry) ─► HTTPS ─► API

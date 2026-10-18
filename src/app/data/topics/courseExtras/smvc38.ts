@@ -39,8 +39,8 @@ export const smvc38Extras: Record<string, Extra> = {
 
 // OUTPUT:
 // GET /users with Accept: text/csv
-// 1,Asha
-// 2,Ravi`],
+// 1,Abaji
+// 2,Raoji`],
             ['Register it.',
                 r`@Configuration
 public class WebConfig implements WebMvcConfigurer {
@@ -57,13 +57,13 @@ public class WebConfig implements WebMvcConfigurer {
             r`@RestController
 class UserController {
     @GetMapping(value = "/users", produces = {"application/json", "text/csv"})
-    List<User> all() { return List.of(new User(1, "Asha"), new User(2, "Ravi")); }
+    List<User> all() { return List.of(new User(1, "Abaji"), new User(2, "Raoji")); }
 }
 
 // OUTPUT:
 // curl -H "Accept: text/csv" /users
-// 1,Asha
-// 2,Ravi`],
+// 1,Abaji
+// 2,Raoji`],
             ['Test with MockMvc.',
                 r`@WebMvcTest(UserController.class)
 @Import(WebConfig.class)
@@ -72,7 +72,7 @@ class UserCsvTest {
     @Test void csv() throws Exception {
         mvc.perform(get("/users").accept("text/csv"))
            .andExpect(status().isOk())
-           .andExpect(content().string("1,Asha\n2,Ravi\n"));
+           .andExpect(content().string("1,Abaji\n2,Raoji\n"));
     }
 }
 
@@ -105,8 +105,8 @@ public @interface CurrentUser { }
 String me(@CurrentUser User user) { return "Hello " + user.name(); }
 
 // OUTPUT:
-// GET /me (header X-User: asha)
-// Hello asha`],
+// GET /me (header X-User: abaji)
+// Hello abaji`],
             ['The argument resolver behind it.',
                 r`public class CurrentUserResolver implements HandlerMethodArgumentResolver {
     public boolean supportsParameter(MethodParameter p) {
@@ -315,7 +315,9 @@ class ProductController {
             ['The view template.',
                 r`<!-- templates/products.html (Thymeleaf) -->
 <ul>
-  <li th:each="p : $` + r`{products}" th:text="$` + r`{p.name}"></li>
+  <li th:each="p : $` + r`{products}
+" th:text="$` + r`{p.name}
+"></li>
 </ul>
 
 // OUTPUT:
@@ -440,13 +442,13 @@ public class Main {
     public static void main(String[] args) {
         var ctx = new AnnotationConfigApplicationContext(AppConfig.class);
         GreetingService s = ctx.getBean(GreetingService.class);
-        System.out.println(s.greet("Asha"));
+        System.out.println(s.greet("Abaji"));
         ctx.close();
     }
 }
 
 // OUTPUT:
-// Hello Asha`],
+// Hello Abaji`],
             ['Without IoC for comparison.',
                 r`class Report {
     private final Printer printer = new ConsolePrinter();   // tied to one class
@@ -567,9 +569,11 @@ class Desk {
         [['Simple factory and a Spring map.',
             r`interface Notifier { String send(String msg); }
 @Component("email") class EmailNotifier implements Notifier {
-    public String send(String m) { return "email:" + m; } }
+    public String send(String m) { return "email:" + m; }
+    }
 @Component("sms") class SmsNotifier implements Notifier {
-    public String send(String m) { return "sms:" + m; } }
+    public String send(String m) { return "sms:" + m; }
+    }
 
 @Component
 class NotifierFactory {
@@ -635,9 +639,11 @@ class FactoryTest {
         [['Discount strategies selected by key.',
             r`interface Discount { int apply(int price); }
 @Component("none")    class NoDiscount implements Discount {
-    public int apply(int p) { return p; } }
+    public int apply(int p) { return p; }
+    }
 @Component("student") class StudentDiscount implements Discount {
-    public int apply(int p) { return p * 80 / 100; } }
+    public int apply(int p) { return p * 80 / 100; }
+    }
 
 @Service
 class PriceService {
@@ -652,7 +658,10 @@ class PriceService {
 // price("student", 100) -> 80
 // price("unknown", 100) -> 100`],
             ['Supports-style selection.',
-                r`interface Exporter { boolean supports(String f); String export(String d); }
+                r`interface Exporter {
+    boolean supports(String f);
+    String export(String d);
+}
 @Service
 class ExportService {
     private final List<Exporter> exporters;
@@ -749,7 +758,8 @@ protected void writeInternal(List<User> users, HttpOutputMessage out)
     private final SignatureVerifier verifier;
     public SignedOrderConverter(ObjectMapper m, SignatureVerifier v) {
         super(MediaType.valueOf("application/vnd.acme.order+json"));
-        this.mapper = m; this.verifier = v;
+        this.mapper = m;
+        this.verifier = v;
     }
     protected boolean supports(Class<?> c) { return Order.class.equals(c); }
     protected Order readInternal(Class<? extends Order> c, HttpInputMessage in)
@@ -817,7 +827,8 @@ class AuditRegistry {
 }
 
 # OUTPUT:
-# annotation lookup done once per method; later calls are a map read`],
+# annotation lookup done once per method;
+later calls are a map read`],
         [`<p>Real-world scenario: audit logging for sensitive endpoints with <code>@Audited(action = ...)</code>. An aspect writes who did what after the method succeeds.</p><ul><li><b>Marker</b> on the controller method.</li><li><b>Aspect</b> reads the annotation and the current user.</li><li><b>Test</b> verifies one audit row per call.</li></ul>`,
             r`@Aspect @Component
 class AuditAspect {
@@ -895,7 +906,10 @@ public boolean preHandle(HttpServletRequest q, HttpServletResponse s, Object h)
     public boolean preHandle(HttpServletRequest req, HttpServletResponse res,
             Object h) throws IOException {
         String t = req.getHeader("X-Tenant");
-        if (t == null) { res.sendError(400, "tenant required"); return false; }
+        if (t == null) {
+            res.sendError(400, "tenant required");
+            return false;
+        }
         TenantContext.set(t);
         return true;
     }
@@ -932,11 +946,14 @@ spring.mvc.throw-exception-if-no-handler-found=true
 spring.web.resources.add-mappings=false
 
 # OUTPUT:
-# GET /api/orders is served; GET /api/nothing -> NoHandlerFoundException -> 404 JSON`],
+# GET /api/orders is served;
+GET /api/nothing -> NoHandlerFoundException -> 404 JSON`],
         [`<p>Common mistakes:</p><ul><li><b>Mapping the servlet to /*:</b> JSPs and static files stop working because they are also routed to it.</li><li><b>Handler in the wrong package:</b> not component scanned, so 404.</li><li><b>Two contexts:</b> beans defined in the child context are invisible to filters in the root.</li><li><b>Doing cross-cutting work in each controller</b> instead of a filter or advice.</li></ul>`,
             r`// WRONG: controller outside the scanned packages
 package org.other;              // main class is in com.example.app
-@RestController class Hidden { @GetMapping("/h") String h() { return "x"; } }
+@RestController class Hidden {
+    @GetMapping("/h") String h() { return "x"; }
+}
 
 // RIGHT: move it under com.example.app, or
 @SpringBootApplication(scanBasePackages = {"com.example", "org.other"})
@@ -1001,7 +1018,10 @@ String pay(@RequestParam int amount) {
 }
 // RIGHT: delegate
 @PostMapping("/pay")
-String pay(@RequestParam int amount) { paymentService.pay(amount); return "ok"; }
+String pay(@RequestParam int amount) {
+    paymentService.pay(amount);
+    return "ok";
+}
 
 // OUTPUT:
 // the same URL works, but the rule is now testable without the web layer`],
@@ -1048,9 +1068,12 @@ class Mailer {
             r`@Component
 @ConfigurationProperties(prefix = "mail")
 class MailProps {
-    private String host; private int port = 25;
-    public String getHost() { return host; } public void setHost(String h) { host = h; }
-    public int getPort() { return port; } public void setPort(int p) { port = p; }
+    private String host;
+    private int port = 25;
+    public String getHost() { return host; }
+    public void setHost(String h) { host = h; }
+    public int getPort() { return port; }
+    public void setPort(int p) { port = p; }
 }
 
 # application.properties
@@ -1081,7 +1104,8 @@ spring.main.lazy-initialization=true     # faster startup, errors appear later
 logging.level.org.springframework.beans=DEBUG   # see wiring while debugging
 
 # OUTPUT:
-# startup time drops (varies); wiring failures show on first use`],
+# startup time drops (varies);
+wiring failures show on first use`],
         [`<p>Real-world scenario: a payment module has Card and UPI gateways. The checkout service receives all gateways as a map and picks one by customer choice, and tests plug in a fake gateway.</p>`,
             r`@Service
 class Checkout {
@@ -1200,7 +1224,10 @@ class TwoConfig {
 @Service
 class ProfileService {
     private User current;                       // overwritten by other threads
-    String name(User u) { current = u; return current.name(); }
+    String name(User u) {
+        current = u;
+        return current.name();
+    }
 }
 // RIGHT: keep data in locals
 @Service
@@ -1324,8 +1351,12 @@ protected HandlerAdapter getHandlerAdapter(Object handler) throws ServletExcepti
 // HttpRequestHandler -> HttpRequestHandlerAdapter`],
         [`<p>Ways to select a strategy:</p><ul><li><b>Key:</b> <code>Map&lt;String, S&gt;</code> using bean names.</li><li><b>Supports:</b> <code>List&lt;S&gt;</code> and ask each one.</li><li><b>Enum with behavior:</b> each constant implements the method.</li><li><b>Lambda:</b> functional interface passed as an argument.</li><li><b>Profile or property:</b> a conditional bean chooses one at startup.</li></ul>`,
             r`enum Shipping {
-    STANDARD { int cost(int kg) { return 5 * kg; } },
-    EXPRESS  { int cost(int kg) { return 12 * kg; } };
+    STANDARD {
+        int cost(int kg) { return 5 * kg; }
+    },
+    EXPRESS {
+        int cost(int kg) { return 12 * kg; }
+    };
     abstract int cost(int kg);
 }
 System.out.println(Shipping.EXPRESS.cost(3));
@@ -1360,7 +1391,10 @@ class StrategyRegistry {
 # OUTPUT:
 # lookup per request is a single hash read`],
         [`<p>Real-world scenario: a pricing engine applies different rules per customer type and season. Each rule is a bean implementing <code>PricingRule</code>; the engine applies those that support the order, in <code>@Order</code>.</p>`,
-            r`interface PricingRule { boolean supports(Order o); int adjust(Order o, int price); }
+            r`interface PricingRule {
+    boolean supports(Order o);
+    int adjust(Order o, int price);
+}
 
 @Service
 class PricingEngine {

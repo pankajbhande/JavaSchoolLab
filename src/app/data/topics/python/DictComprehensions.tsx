@@ -10,7 +10,7 @@ A <b>dictionary comprehension</b> builds a new dict in one expression, the same 
 <code>{key_expr: value_expr for item in iterable}</code><br><br>
 It replaces the pattern "create an empty dict, loop, assign <code>d[key] = value</code>". In Java you would reach for <code>stream().collect(Collectors.toMap(...))</code>.`,
             codeExamples: [
-                `names = ["Asha", "Ravi", "Meena"]
+                `names = ["Abaji", "Raoji", "Moropant"]
 
 # Loop version
 lengths = {}
@@ -23,8 +23,8 @@ lengths = {name: len(name) for name in names}
 print(lengths)
 
 # OUTPUT:
-# {'Asha': 4, 'Ravi': 4, 'Meena': 5}
-# {'Asha': 4, 'Ravi': 4, 'Meena': 5}`
+# {'Abaji': 5, 'Raoji': 5, 'Moropant': 8}
+# {'Abaji': 5, 'Raoji': 5, 'Moropant': 8}`
             ]
         },
         {
@@ -66,7 +66,7 @@ print(upper_keys)
             content: `<h4>Filtering Entries</h4>
 Add an <code>if</code> at the end to keep only some entries.`,
             codeExamples: [
-                `marks = {"Asha": 91, "Ravi": 35, "Meena": 78, "Kiran": 28}
+                `marks = {"Abaji": 91, "Raoji": 35, "Moropant": 78, "Kanhoji": 28}
 
 passed = {name: mark for name, mark in marks.items() if mark >= 40}
 print(passed)
@@ -75,7 +75,7 @@ expensive = {k: v for k, v in {"pen": 10, "bag": 900}.items() if v > 100}
 print(expensive)
 
 # OUTPUT:
-# {'Asha': 91, 'Meena': 78}
+# {'Abaji': 91, 'Moropant': 78}
 # {'bag': 900}`
             ]
         },
@@ -101,10 +101,10 @@ print(code_for["Japan"])
             content: `<h3>Duplicate Keys: the Last Value Silently Wins</h3>
 If the key expression produces the same key twice, the later entry overwrites the earlier one - no error, no warning. Inverting a dict whose values are <b>not unique</b> therefore loses data. Java's <code>Collectors.toMap</code> throws <code>IllegalStateException</code> on a duplicate key; Python does not. When several items share a key, <b>group</b> them into lists instead.`,
             codeExamples: [
-                `grades = {"Asha": "A", "Ravi": "B", "Meena": "A"}
+                `grades = {"Abaji": "A", "Raoji": "B", "Moropant": "A"}
 
 inverted = {grade: name for name, grade in grades.items()}
-print(inverted)                      # Asha has disappeared!
+print(inverted)                      # Abaji has disappeared!
 
 by_grade = {}
 for name, grade in grades.items():
@@ -112,11 +112,11 @@ for name, grade in grades.items():
 print(by_grade)
 
 # OUTPUT:
-# {'A': 'Meena', 'B': 'Ravi'}
-# {'A': ['Asha', 'Meena'], 'B': ['Ravi']}`,
+# {'A': 'Moropant', 'B': 'Raoji'}
+# {'A': ['Abaji', 'Moropant'], 'B': ['Raoji']}`,
                 `from collections import defaultdict
 
-grades = {"Asha": "A", "Ravi": "B", "Meena": "A"}
+grades = {"Abaji": "A", "Raoji": "B", "Moropant": "A"}
 
 by_grade = defaultdict(list)
 for name, grade in grades.items():
@@ -124,20 +124,20 @@ for name, grade in grades.items():
 print(dict(by_grade))
 
 # OUTPUT:
-# {'A': ['Asha', 'Meena'], 'B': ['Ravi']}`
+# {'A': ['Abaji', 'Moropant'], 'B': ['Raoji']}`
             ]
         },
         {
             content: `<h3>Conditional Values</h3>
 An <code>if</code> at the <b>end</b> filters entries out. A conditional expression in the <b>value</b> keeps every entry but chooses its value.`,
             codeExamples: [
-                `marks = {"Asha": 91, "Ravi": 35, "Meena": 78, "Kiran": 28}
+                `marks = {"Abaji": 91, "Raoji": 35, "Moropant": 78, "Kanhoji": 28}
 
 result = {name: ("pass" if mark >= 40 else "fail") for name, mark in marks.items()}
 print(result)
 
 # OUTPUT:
-# {'Asha': 'pass', 'Ravi': 'fail', 'Meena': 'pass', 'Kiran': 'fail'}`
+# {'Abaji': 'pass', 'Raoji': 'fail', 'Moropant': 'pass', 'Kanhoji': 'fail'}`
             ]
         },
         {

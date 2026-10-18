@@ -27,8 +27,8 @@ export const smvc30Extras: Record<string, Extra> = {
 }
 
 // usage in a service
-userRepository.save(new User("Asha", "asha@x.com"));
-System.out.println(userRepository.findByEmail("asha@x.com").isPresent());
+userRepository.save(new User("Abaji", "abaji@x.com"));
+System.out.println(userRepository.findByEmail("abaji@x.com").isPresent());
 
 // OUTPUT:
 // true`],
@@ -48,8 +48,8 @@ class UserRepositoryTest {
 
     @Test
     void findsByEmail() {
-        repo.save(new User("Ravi", "ravi@x.com"));
-        assertTrue(repo.findByEmail("ravi@x.com").isPresent());
+        repo.save(new User("Raoji", "raoji@x.com"));
+        assertTrue(repo.findByEmail("raoji@x.com").isPresent());
     }
 }
 
@@ -65,8 +65,8 @@ List<UserView> findByActiveTrue();
 users.forEach(u -> System.out.println(u.getName() + " " + u.getEmail()));
 
 // OUTPUT:
-// Asha asha@x.com
-// Ravi ravi@x.com`]]
+// Abaji abaji@x.com
+// Raoji raoji@x.com`]]
     ),
 
     'mvc-service-layer': x(
@@ -100,7 +100,7 @@ public class UserService {
 }
 
 // OUTPUT:
-// register("Asha","a@x.com") -> User(id=1)
+// register("Abaji","a@x.com") -> User(id=1)
 // register again -> IllegalStateException: Email already used: a@x.com`],
             ['Service unit test with Mockito.',
                 r`@ExtendWith(MockitoExtension.class)
@@ -138,7 +138,7 @@ public void transfer(long from, long to, BigDecimal amt) {
 }
 
 // OUTPUT:
-// get(1)  -> UserDto[id=1, name=Asha]
+// get(1)  -> UserDto[id=1, name=Abaji]
 // get(99) -> UserNotFoundException: User 99 not found`]]
     ),
 
@@ -176,7 +176,7 @@ public class UserController {
 }
 
 // OUTPUT:
-// GET /api/users/1 -> 200 {"id":1,"name":"Asha"}
+// GET /api/users/1 -> 200 {"id":1,"name":"Abaji"}
 // POST /api/users  -> 201 Location: /api/users/2`],
             ['MVC controller returning a view.',
                 r`@Controller
@@ -198,10 +198,10 @@ class UserControllerTest {
 
     @Test
     void getsUser() throws Exception {
-        when(service.get(1)).thenReturn(new UserDto(1L, "Asha"));
+        when(service.get(1)).thenReturn(new UserDto(1L, "Abaji"));
         mvc.perform(get("/api/users/1"))
            .andExpect(status().isOk())
-           .andExpect(jsonPath("$.name").value("Asha"));
+           .andExpect(jsonPath("$.name").value("Abaji"));
     }
 }
 
@@ -249,7 +249,7 @@ public class JdbcUserDao implements UserDao {
 }
 
 // OUTPUT:
-// findById(1) -> Optional[User(id=1, name=Asha)]
+// findById(1) -> Optional[User(id=1, name=Abaji)]
 // findById(9) -> Optional.empty`],
             ['Insert with generated key.',
                 r`public long insert(User u) {
@@ -266,7 +266,7 @@ public class JdbcUserDao implements UserDao {
 }
 
 // OUTPUT:
-// insert(new User("Asha","a@x.com")) -> 1`]],
+// insert(new User("Abaji","a@x.com")) -> 1`]],
         [['@JdbcTest for the DAO.',
             r`@JdbcTest
 @Import(JdbcUserDao.class)
@@ -275,7 +275,7 @@ class JdbcUserDaoTest {
 
     @Test
     void insertsAndFinds() {
-        long id = dao.insert(new User(null, "Asha", "a@x.com"));
+        long id = dao.insert(new User(null, "Abaji", "a@x.com"));
         assertTrue(dao.findById(id).isPresent());
     }
 }
@@ -314,10 +314,10 @@ public record UserDto(Long id, String name) {}
 public UserDto toDto(User u) { return new UserDto(u.getId(), u.getName()); }
 public User toEntity(CreateUser r) { return new User(r.name(), r.email()); }
 
-System.out.println(toDto(new User(1L, "Asha", "a@x.com", "ADMIN")));
+System.out.println(toDto(new User(1L, "Abaji", "a@x.com", "ADMIN")));
 
 // OUTPUT:
-// UserDto[id=1, name=Asha]`],
+// UserDto[id=1, name=Abaji]`],
             ['DTO straight from a query.',
                 r`@Query("select new com.app.dto.UserDto(u.id, u.name) from User u")
 List<UserDto> findAllDtos();
@@ -325,8 +325,8 @@ List<UserDto> findAllDtos();
 repo.findAllDtos().forEach(System.out::println);
 
 // OUTPUT:
-// UserDto[id=1, name=Asha]
-// UserDto[id=2, name=Ravi]`]],
+// UserDto[id=1, name=Abaji]
+// UserDto[id=2, name=Raoji]`]],
         [['JSON shape produced.',
             r`@GetMapping("/{id}")
 public UserDto get(@PathVariable long id) { return service.get(id); }
@@ -334,7 +334,7 @@ public UserDto get(@PathVariable long id) { return service.get(id); }
 // GET /api/users/1
 
 // OUTPUT:
-// {"id":1,"name":"Asha"}     (password and role are never exposed)`],
+// {"id":1,"name":"Abaji"}     (password and role are never exposed)`],
             ['Mass assignment blocked.',
                 r`// client sends: {"name":"Eve","email":"e@x.com","role":"ADMIN"}
 // CreateUser has only name and email, so Jackson ignores the role field
@@ -392,7 +392,10 @@ public class Customer {
                orphanRemoval = true)
     private List<Order> orders = new ArrayList<>();
 
-    public void addOrder(Order o) { orders.add(o); o.setCustomer(this); }
+    public void addOrder(Order o) {
+        orders.add(o);
+        o.setCustomer(this);
+    }
 }
 
 // OUTPUT:
@@ -404,7 +407,7 @@ class OrderMappingTest {
 
     @Test
     void persistsOrder() {
-        Customer c = em.persist(new Customer("Asha"));
+        Customer c = em.persist(new Customer("Abaji"));
         Order o = new Order("A-1", c);
         em.persistAndFlush(o);
         assertNotNull(o.getId());
@@ -666,7 +669,8 @@ public class OrderService {
     private final OrderRepository orders;
     private final ProductRepository products;
     public OrderService(OrderRepository o, ProductRepository p) {
-        this.orders = o; this.products = p;
+        this.orders = o;
+        this.products = p;
     }
 
     @Transactional
@@ -799,7 +803,7 @@ public Page<OrderRow> list(@PageableDefault(size = 20) Pageable p) {
 
 // OUTPUT:
 // GET /admin/orders?page=0&size=20&sort=number
-// {"content":[{"id":10,"number":"A-1","customerName":"Asha"}],"totalElements":57}`]
+// {"content":[{"id":10,"number":"A-1","customerName":"Abaji"}],"totalElements":57}`]
     ),
 
     'mvc-service-layer': dv(
@@ -821,7 +825,8 @@ public class ProductService {
     private final ProductRepository repo;
     private final ApplicationEventPublisher events;
     public ProductService(ProductRepository r, ApplicationEventPublisher e) {
-        this.repo = r; this.events = e;
+        this.repo = r;
+        this.events = e;
     }
 
     public ProductDto get(long id) { /* read */ return null; }
@@ -863,7 +868,10 @@ public void importAll(List<Row> rows) {
     int i = 0;
     for (Row r : rows) {
         em.persist(toEntity(r));
-        if (++i % 50 == 0) { em.flush(); em.clear(); }   // keep memory flat
+        if (++i % 50 == 0) {
+            em.flush();
+            em.clear();
+        }  // keep memory flat
     }
 }
 
@@ -1005,7 +1013,7 @@ List<User> found = named.query(
 
 SimpleJdbcInsert insert = new SimpleJdbcInsert(jdbc)
     .withTableName("users").usingGeneratedKeyColumns("id");
-Number id = insert.executeAndReturnKey(Map.of("name", "Ravi", "email", "r@x.com"));
+Number id = insert.executeAndReturnKey(Map.of("name", "Raoji", "email", "r@x.com"));
 
 jdbc.batchUpdate("update users set active = ? where id = ?",
     List.of(new Object[]{false, 1L}, new Object[]{false, 2L}));
@@ -1055,7 +1063,7 @@ public class SalesReportDao {
 }
 
 // OUTPUT:
-// topReps(1) -> [SalesRank[region=North, rep=Asha, total=90000.00, rank=1], ...]`]
+// topReps(1) -> [SalesRank[region=North, rep=Abaji, total=90000.00, rank=1], ...]`]
     ),
 
     'mvc-dto-pattern': dv(
@@ -1065,13 +1073,13 @@ public class SalesReportDao {
     @Email @NotBlank String email) {}
 
 ObjectMapper om = new ObjectMapper();
-CreateUser u = om.readValue("{\"name\":\"Asha\",\"email\":\"a@x.com\"}", CreateUser.class);
+CreateUser u = om.readValue("{\"name\":\"Abaji\",\"email\":\"a@x.com\"}", CreateUser.class);
 System.out.println(u);
 System.out.println(om.writeValueAsString(u));
 
 // OUTPUT:
-// CreateUser[name=Asha, email=a@x.com]
-// {"name":"Asha","email":"a@x.com"}`],
+// CreateUser[name=Abaji, email=a@x.com]
+// {"name":"Abaji","email":"a@x.com"}`],
         [`<p>DTO styles:</p><ul><li><b>Records:</b> short and immutable.</li><li><b>Classes with Lombok</b> when you need builders or setters.</li><li><b>Separate DTOs per use case:</b> <code>CreateUser</code>, <code>UpdateUser</code>, <code>UserSummary</code>, <code>UserDetail</code>.</li><li><b>MapStruct:</b> an interface with <code>@Mapper(componentModel = "spring")</code> that generates the mapping.</li><li><b>Jackson annotations:</b> <code>@JsonProperty</code>, <code>@JsonIgnore</code>, <code>@JsonInclude</code> to shape JSON.</li></ul>`,
             r`@Mapper(componentModel = "spring")
 public interface UserMapper {
@@ -1088,7 +1096,7 @@ public record UserSummary(
 
 // OUTPUT:
 // MapStruct generates UserMapperImpl at compile time (no reflection at runtime)
-// {"id":1,"full_name":"Asha"}   (phone omitted when null)`],
+// {"id":1,"full_name":"Abaji"}   (phone omitted when null)`],
         [`<p>DTO mistakes:</p><ul><li><b>One DTO for everything</b> leads to nullable fields and unclear rules.</li><li><b>Entity inside a DTO</b> brings the persistence model back.</li><li><b>Validation on the entity only</b>: the request DTO is the right place for input rules.</li><li><b>Manual mapping errors</b>: forgetting a new field; MapStruct with <code>unmappedTargetPolicy = ERROR</code> catches this.</li><li><b>Mutable DTOs</b> shared across threads.</li></ul>`,
             r`@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.ERROR)
 public interface OrderMapper {
@@ -1115,7 +1123,7 @@ void publicJsonHasNoSecrets() throws Exception {
     mvc.perform(get("/api/users/1"))
        .andExpect(jsonPath("$.passwordHash").doesNotExist())
        .andExpect(jsonPath("$.role").doesNotExist())
-       .andExpect(jsonPath("$.name").value("Asha"));
+       .andExpect(jsonPath("$.name").value("Abaji"));
 }
 
 // OUTPUT:
@@ -1485,8 +1493,12 @@ class FakeGateway implements PaymentGateway {
 
 // GOOD: extract the shared part
 @Service class PricingService { /* shared rules */ }
-@Service class OrderService   { OrderService(PricingService p) {} }
-@Service class InvoiceService { InvoiceService(PricingService p) {} }
+@Service class OrderService {
+    OrderService(PricingService p) {}
+}
+@Service class InvoiceService {
+    InvoiceService(PricingService p) {}
+}
 
 // OUTPUT:
 // BAD  -> startup failure: circular reference

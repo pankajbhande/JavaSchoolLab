@@ -910,7 +910,10 @@ public class BadController {
     private HttpServletRequest saved;          // MISTAKE: shared by all threads
 
     @GetMapping("/bad")
-    public String bad(HttpServletRequest req) { this.saved = req; return "x"; }
+    public String bad(HttpServletRequest req) {
+        this.saved = req;
+        return "x";
+    }
 }
 // FIX: use the request only inside the method, or inject it as a method argument.
 
@@ -1175,7 +1178,8 @@ public Invoice getMine(@PathVariable long id, Principal me) {
 spring.mvc.pathmatch.matching-strategy=path-pattern-parser
 
 # OUTPUT:
-# PathPatternParser is used; patterns are precompiled once at startup`],
+# PathPatternParser is used;
+patterns are precompiled once at startup`],
         [`<p>Real-world: a nested REST resource where the URL shows ownership. The service checks the parent-child relation, and a missing child returns 404.</p>`,
             r`@RestController
 @RequestMapping("/api/projects/{projectId}/tasks")

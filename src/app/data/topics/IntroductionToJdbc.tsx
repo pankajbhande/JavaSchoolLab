@@ -144,7 +144,7 @@ public class VulnerableLogin {
 // OUTPUT (against a users table with several rows, run on a live DB):
 // Executed SQL: SELECT * FROM users WHERE username = 'admin' OR '1'='1' AND password = 'anything'
 // Logged in as: admin
-// Logged in as: alice
+// Logged in as: anaji
 // Logged in as: admin      <-- AND binds tighter than OR, so this matched the admin row
 //                            and bypassed the password check entirely`,
                                     `import java.sql.*;
@@ -346,7 +346,7 @@ public class TryWithResourcesJdbc {
     }
 }
 // OUTPUT (against a live students table with rows 1..3):
-// 1 Aarav
+// 1 Ajabrao
 // 2 Bhavna
 // 3 Chetan`
                                 ]

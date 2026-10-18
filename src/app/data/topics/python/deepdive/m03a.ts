@@ -198,20 +198,20 @@ print(data)
 # [2, 5, 9]`],
         [`Sort records by several fields (salary then name), keep the top-N, and report counts.`,
             r`# Real-time: sort employees by salary (desc), then name
-emp = [("Ravi", 50000), ("Asha", 60000), ("Meena", 50000)]
+emp = [("Raoji", 50000), ("Abaji", 60000), ("Moropant", 50000)]
 emp.sort(key=lambda e: (-e[1], e[0]))
 print(emp)
 
 # OUTPUT:
-# [('Asha', 60000), ('Meena', 50000), ('Ravi', 50000)]`],
+# [('Abaji', 60000), ('Moropant', 50000), ('Raoji', 50000)]`],
         [`<b>Advantages:</b> Timsort is stable and fast (O(n log n), nearly O(n) on partially sorted data); <code>key</code> avoids comparing whole objects; stability allows multi-pass sorting.`,
             r`# Advantage: stability - equal keys keep their original order
-people = [("Asha", 30), ("Ravi", 25), ("Meena", 30)]
+people = [("Abaji", 30), ("Raoji", 25), ("Moropant", 30)]
 people.sort(key=lambda p: p[1])
 print(people)
 
 # OUTPUT:
-# [('Ravi', 25), ('Asha', 30), ('Meena', 30)]`],
+# [('Raoji', 25), ('Abaji', 30), ('Moropant', 30)]`],
         [`<b>Disadvantages:</b> sort() mutates and returns None (a common bug); <code>index()</code> and <code>count()</code> scan the whole list.`,
             r`# Disadvantage: classic bug - assigning the result of sort()
 nums = [3, 1, 2]
@@ -354,12 +354,12 @@ def min_max(values):
 lo, hi = min_max([4, 9, 1])
 print(lo, hi)
 User = namedtuple("User", "name age")
-u = User("Asha", 30)
+u = User("Abaji", 30)
 print(u.name, u[1], u)
 
 # OUTPUT:
 # 1 9
-# Asha 30 User(name='Asha', age=30)`],
+# Abaji 30 User(name='Abaji', age=30)`],
         [`<b>Advantages:</b> smaller and faster than lists, hashable (if contents are), thread-safe by design, and communicate "this will not change".`,
             r`import sys
 print(sys.getsizeof((1, 2, 3)), "<", sys.getsizeof([1, 2, 3]))
@@ -414,7 +414,7 @@ print(x, y)
 # 1 [2, 3, 4] 5
 # 20 10`],
         [`Returning multiple values, iterating pairs, and swapping all become one clear line. It removes index noise like <code>pair[0]</code> and <code>pair[1]</code>.`,
-            r`students = [("Asha", 90), ("Ravi", 75)]
+            r`students = [("Abaji", 90), ("Raoji", 75)]
 for name, mark in students:        # unpack in the for header
     print(f"{name}: {mark}")
 
@@ -422,10 +422,10 @@ for i, (name, mark) in enumerate(students):   # nested unpacking
     print(i, name, mark)
 
 # OUTPUT:
-# Asha: 90
-# Ravi: 75
-# 0 Asha 90
-# 1 Ravi 75`],
+# Abaji: 90
+# Raoji: 75
+# 0 Abaji 90
+# 1 Raoji 75`],
         [`Parsing CSV rows, splitting <code>head, *tail</code> of command lines, iterating <code>dict.items()</code>, and handling function results are everyday uses.`,
             r`# Real-time: parse a log line
 line = "2024-05-01 ERROR disk full on /dev/sda1"
@@ -438,12 +438,12 @@ print(" ".join(message))
 # disk full on /dev/sda1`],
         [`<b>Advantages:</b> concise, readable, no temp variables; works with any iterable; <code>_</code> conventionally ignores values.`,
             r`# Advantage: ignore parts you do not need with _
-record = ("Asha", 30, "Pune", "asha@x.com")
+record = ("Abaji", 30, "Pune", "abaji@x.com")
 name, _, city, _ = record
 print(name, city)
 
 # OUTPUT:
-# Asha Pune`],
+# Abaji Pune`],
         [`<b>Disadvantages:</b> the number of targets must match exactly (unless a star is used) or you get a ValueError; long unpackings are hard to read and positional.`,
             r`# Disadvantage: count mismatch
 try:
@@ -471,7 +471,7 @@ except SyntaxError as e:
 # [2, 3] list
 # SyntaxError: multiple starred expressions in assignment`],
         `
-   ("Asha", 30, "Pune")
+   ("Abaji", 30, "Pune")
         │      │     │
         ▼      ▼     ▼
    name,    age,  city  =  (...)      one name per slot
@@ -581,16 +581,16 @@ print({1, 2} <= a, a.isdisjoint({9}))
 # {1, 2, 5, 6}
 # True True`],
         [`Comparing groups ("who is in both lists?", "what is missing?") by hand needs nested loops; set algebra does it in one line, fast and readable.`,
-            r`enrolled = {"asha", "ravi", "meena"}
-paid = {"asha", "meena", "kiran"}
+            r`enrolled = {"abaji", "raoji", "moropant"}
+paid = {"abaji", "moropant", "kanhoji"}
 print("paid and enrolled:", sorted(enrolled & paid))
 print("enrolled, not paid:", sorted(enrolled - paid))
 print("paid, not enrolled:", sorted(paid - enrolled))
 
 # OUTPUT:
-# paid and enrolled: ['asha', 'meena']
-# enrolled, not paid: ['ravi']
-# paid, not enrolled: ['kiran']`],
+# paid and enrolled: ['abaji', 'moropant']
+# enrolled, not paid: ['raoji']
+# paid, not enrolled: ['kanhoji']`],
         [`Recommendation engines (common interests), access control (role overlap), data reconciliation between two systems, and finding added/removed files in a sync tool.`,
             r`# Real-time: reconcile yesterday's and today's file lists
 yesterday = {"a.txt", "b.txt", "c.txt"}

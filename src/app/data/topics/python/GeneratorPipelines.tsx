@@ -14,11 +14,11 @@ Process a sales log: read lines, drop blank ones, keep only INFO records, parse 
             codeExamples: [
                 `import io
 
-log = io.StringIO("""INFO user=asha amount=250
-ERROR user=ravi amount=0
+log = io.StringIO("""INFO user=abaji amount=250
+ERROR user=raoji amount=0
 
-INFO user=kiran amount=1200
-INFO user=asha amount=99
+INFO user=kanhoji amount=1200
+INFO user=abaji amount=99
 """)
 
 def read_lines(f):
@@ -54,7 +54,7 @@ Short stages can be written inline. Nothing runs until the final <code>sum()</co
             codeExamples: [
                 `import io
 
-log = io.StringIO("INFO asha 250\\nERROR ravi 0\\n\\nINFO kiran 1200\\nINFO asha 99\\n")
+log = io.StringIO("INFO abaji 250\\nERROR raoji 0\\n\\nINFO kanhoji 1200\\nINFO abaji 99\\n")
 
 lines = (line.strip() for line in log)
 non_blank = (line for line in lines if line)
@@ -129,7 +129,7 @@ def parse(lines):
         user, amount = line.split(",")
         yield user, int(amount)
 
-raw = ["asha,250", "", "kiran,1200", "  asha,99 ", "ravi,40"]
+raw = ["abaji,250", "", "kanhoji,1200", "  abaji,99 ", "raoji,40"]
 
 totals = defaultdict(int)
 for user, amount in pipeline(raw, strip, skip_blank, parse):
@@ -140,8 +140,8 @@ first_two = pipeline(raw, strip, skip_blank, parse, lambda rows: islice(rows, 2)
 print(list(first_two))
 
 # OUTPUT:
-# {'asha': 349, 'kiran': 1200, 'ravi': 40}
-# [('asha', 250), ('kiran', 1200)]`
+# {'abaji': 349, 'kanhoji': 1200, 'raoji': 40}
+# [('abaji', 250), ('kanhoji', 1200)]`
             ]
         },
         {

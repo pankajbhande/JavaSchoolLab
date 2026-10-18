@@ -591,9 +591,9 @@ public class UserServiceTest {
 // OUTPUT:
 // Tests run: 3, Failures: 0, Errors: 0
 //
-// Now change the expectation to assertEquals("amit", name) as the PDF
+// Now change the expectation to assertEquals("anandrao", name) as the PDF
 // does in Step-9, and:
-// org.opentest4j.AssertionFailedError: expected: <amit> but was: <suresh>
+// org.opentest4j.AssertionFailedError: expected: <anandrao> but was: <suresh>
 //     at UserServiceTest.getNameByUserIdTest(UserServiceTest.java:29)`]
         },
 
@@ -745,9 +745,9 @@ public class PolicyServiceImplTest {
     @Test
     public void getAllPolicyTest() {
         List<Policy> list = new ArrayList<>();
-        list.add(new Policy(1, "101", "1000", "Ram",   "ram@gmail.com",   "2020", "active"));
-        list.add(new Policy(2, "102", "2000", "Shyam", "shyam@gmail.com", "2021", "active"));
-        list.add(new Policy(3, "103", "3000", "Rahul", "rahul@gmail.com", "2022", "active"));
+        list.add(new Policy(1, "101", "1000", "Rajaram",   "ram@gmail.com",   "2020", "active"));
+        list.add(new Policy(2, "102", "2000", "Shahaji", "shyam@gmail.com", "2021", "active"));
+        list.add(new Policy(3, "103", "3000", "Raghunath", "raghunath@gmail.com", "2022", "active"));
 
         when(policyRepository.findAll()).thenReturn(list);
 
@@ -757,13 +757,13 @@ public class PolicyServiceImplTest {
     @Test
     public void getPolicyByIdTest() {
         when(policyRepository.findById(3)).thenReturn(Optional.of(
-                new Policy(3, "103", "1000", "Shyam",
+                new Policy(3, "103", "1000", "Shahaji",
                            "shyam@gmail.com", "2022", "active")));
 
         Policy policy = policyService.getPolicyById(3);
 
         assertEquals("103",    policy.getPolicyNumber());
-        assertEquals("Shyam",  policy.getName());
+        assertEquals("Shahaji",  policy.getName());
         assertEquals("active", policy.getStatus());
     }
 
@@ -1077,7 +1077,7 @@ class PolicyCancellationServiceTest {
 
     @Test
     void cancellingAnActivePolicyAuditsAndNotifiesOnce() {
-        Policy active = new Policy(7, "P-700", "1000", "Ram",
+        Policy active = new Policy(7, "P-700", "1000", "Rajaram",
                                    "ram@x.com", "C-1", "active");
         when(repository.findById(7)).thenReturn(Optional.of(active));
 
@@ -1107,7 +1107,7 @@ class PolicyCancellationServiceTest {
 
     @Test
     void cancellingAnAlreadyCancelledPolicyDoesNothing() {
-        Policy done = new Policy(8, "P-800", "1000", "Sita",
+        Policy done = new Policy(8, "P-800", "1000", "Sonopant",
                                  "sita@x.com", "C-2", "cancelled");
         when(repository.findById(8)).thenReturn(Optional.of(done));
 
@@ -1314,8 +1314,8 @@ A useful discipline for judging a suite is <strong>mutation testing</strong> (PI
 @Test
 void testGetSetName() {
     Policy p = new Policy();
-    p.setName("Ram");
-    assertEquals("Ram", p.getName());
+    p.setName("Rajaram");
+    assertEquals("Rajaram", p.getName());
 }
 // Adds a line to the coverage report. Would not detect any realistic bug.
 

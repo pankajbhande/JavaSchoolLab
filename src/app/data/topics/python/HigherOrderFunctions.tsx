@@ -17,12 +17,12 @@ Note the difference: <code>greet</code> is the function object; <code>greet()</c
     return f"Hello, {name}!"
 
 say = greet                    # no parentheses: the function itself
-print(say("Asha"))
+print(say("Abaji"))
 print(say is greet, say.__name__)
 print(type(greet))
 
 # OUTPUT:
-# Hello, Asha!
+# Hello, Abaji!
 # True greet
 # <class 'function'>`
             ]

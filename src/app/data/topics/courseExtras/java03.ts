@@ -24,12 +24,15 @@ export const java03Extras: Record<string, Extra> = {
     private static final long serialVersionUID = 1L;
     String name;
     transient String password;   // not saved
-    User(String n, String p) { name = n; password = p; }
+    User(String n, String p) {
+        name = n;
+        password = p;
+    }
 }
 
 // Write
 try (var out = new ObjectOutputStream(new FileOutputStream("u.ser"))) {
-    out.writeObject(new User("Asha", "secret"));
+    out.writeObject(new User("Abaji", "secret"));
 }
 // Read
 try (var in = new ObjectInputStream(new FileInputStream("u.ser"))) {
@@ -38,7 +41,7 @@ try (var in = new ObjectInputStream(new FileInputStream("u.ser"))) {
 }
 
 // OUTPUT:
-// Asha null`],
+// Abaji null`],
             ['Not serializable field.',
                 r`class Holder implements Serializable {
     Object lock = new Object();   // Object is not Serializable
@@ -64,12 +67,12 @@ try (var in = new ObjectInputStream(new FileInputStream("u.ser"))) {
 // classes outside com.acme throw InvalidClassException (REJECTED)`],
             ['JSON instead.',
                 r`ObjectMapper om = new ObjectMapper();
-String json = om.writeValueAsString(Map.of("name", "Asha"));
+String json = om.writeValueAsString(Map.of("name", "Abaji"));
 Object name = om.readValue(json, Map.class).get("name");
 System.out.println(json + " " + name);
 
 // OUTPUT:
-// {"name":"Asha"} Asha`]]
+// {"name":"Abaji"} Abaji`]]
     ),
 
 'properties-file': x(
@@ -155,7 +158,10 @@ System.out.println(list + " " + Arrays.toString(a));
                 r`class Invoice {
     private final long id;
     private final double amount;
-    Invoice(long id, double amount) { this.id = id; this.amount = amount; }
+    Invoice(long id, double amount) {
+        this.id = id;
+        this.amount = amount;
+    }
     long id() { return id; }
 }
 System.out.println(new Invoice(7, 99.5).id());
@@ -171,7 +177,9 @@ System.out.println(add.apply(5));
 // OUTPUT:
 // 15`],
             ['Final method.',
-                r`class A { final void lock() { System.out.println("locked"); } }
+                r`class A {
+    final void lock() { System.out.println("locked"); }
+}
 class B extends A { /* void lock() {} -> error: final method */ }
 new B().lock();
 
@@ -225,7 +233,9 @@ System.out.println(l);
 // OUTPUT:
 // [5]`],
             ['Parsing errors.',
-                r`try { Integer.parseInt("12a"); } catch (NumberFormatException e) { System.out.println(e.getMessage()); }
+                r`try {
+    Integer.parseInt("12a");
+} catch (NumberFormatException e) { System.out.println(e.getMessage()); }
 
 // OUTPUT:
 // For input string: "12a"`]]
@@ -309,8 +319,14 @@ System.out.println(divide(7, 2));
             r`class Query {
     private final StringBuilder sb = new StringBuilder();
 
-    Query select(String c) { sb.append("SELECT ").append(c); return this; }
-    Query from(String t) { sb.append(" FROM ").append(t); return this; }
+    Query select(String c) {
+        sb.append("SELECT ").append(c);
+        return this;
+    }
+    Query from(String t) {
+        sb.append(" FROM ").append(t);
+        return this;
+    }
     String build() { return sb.toString(); }
 }
 System.out.println(new Query().select("*").from("users").build());
@@ -332,7 +348,7 @@ System.out.println(range(new int[]{4, 1, 9}));
             r`static Optional<String> find(Map<Integer, String> m, int id) {
     return Optional.ofNullable(m.get(id));
 }
-System.out.println(find(Map.of(1, "Asha"), 2).orElse("not found"));
+System.out.println(find(Map.of(1, "Abaji"), 2).orElse("not found"));
 
 // OUTPUT:
 // not found`],
@@ -479,8 +495,14 @@ System.out.println(ref.x + " " + ((Q) ref).x);
                 r`class Pt {
     int x, y;
 
-    Pt x(int v) { this.x = v; return this; }
-    Pt y(int v) { this.y = v; return this; }
+    Pt x(int v) {
+        this.x = v;
+        return this;
+    }
+    Pt y(int v) {
+        this.y = v;
+        return this;
+    }
 }
 
 // in main:
@@ -521,14 +543,20 @@ System.out.println(p.x + "," + p.y);
     }
     double balance() { return balance; }
 }
-BankAccount a = new BankAccount(); a.deposit(500); a.withdraw(120);
-BankAccount b = a; b.deposit(100);
+BankAccount a = new BankAccount();
+a.deposit(500);
+a.withdraw(120);
+BankAccount b = a;
+b.deposit(100);
 System.out.println(a.balance());
 
 // OUTPUT:
 // 480.0`],
             ['Equality of objects.',
-                r`class P { final int x; P(int x) { this.x = x; } }
+                r`class P {
+    final int x;
+    P(int x) { this.x = x; }
+}
 System.out.println(new P(1).equals(new P(1)));
 record R(int x) {}
 System.out.println(new R(1).equals(new R(1)));
@@ -538,7 +566,8 @@ System.out.println(new R(1).equals(new R(1)));
 // true`]],
         [['Reference vs object.',
             r`StringBuilder a = new StringBuilder("x");
-StringBuilder b = a; b.append("y");
+StringBuilder b = a;
+b.append("y");
 StringBuilder c = new StringBuilder("x");
 System.out.println(a + " " + (a == b) + " " + (a == c));
 
@@ -547,7 +576,8 @@ System.out.println(a + " " + (a == b) + " " + (a == c));
             ['Garbage eligibility.',
                 r`Object o = new Object();
 WeakReference<Object> w = new WeakReference<>(o);
-o = null; System.gc();
+o = null;
+System.gc();
 System.out.println(w.get() == null);
 
 // OUTPUT: (typical)
@@ -689,7 +719,10 @@ System.out.println(in == null);
             r`class Safe {
     final int a;
     final List<Integer> list;
-    Safe() { a = 5; list = List.of(1, 2, 3); }
+    Safe() {
+        a = 5;
+        list = List.of(1, 2, 3);
+    }
 }
 // A thread that sees a Safe reference always sees a == 5 and the full list.
 
@@ -772,7 +805,8 @@ System.out.println(total + " " + max.getAsInt() + " " + Double.isNaN(0.0 / 0.0))
 // 255 ff 4294967295 7
 // 15 9 true`],
         [`Mistakes: == on wrappers, NPE on unboxing, mixing types in a ternary (<code>cond ? 1 : null</code> unboxes to int and can NPE), Long vs Integer equals (different types are never equal), and boxing in generic code in hot loops. Use equals or compare.`,
-            r`Integer x = null; boolean flag = false;
+            r`Integer x = null;
+boolean flag = false;
 try {
     Integer r = flag ? 1 : x;   // mixed int and Integer: x is unboxed
 } catch (NullPointerException e) {
@@ -835,7 +869,11 @@ System.out.println(max(List.of(3, 8, 5)) + " " + max(List.of("b", "z", "a"))
 // OUTPUT:
 // 8 z 3628800 10`],
         [`Mistakes: believing Java is pass by reference, swapping values with a method (cannot swap primitives), huge methods, unnecessary side effects, too many parameters, boolean flag parameters (split into two methods), ignoring return values, and unbounded recursion (StackOverflowError). Return results instead of mutating parameters.`,
-            r`static void swap(int a, int b) { int t = a; a = b; b = t; }
+            r`static void swap(int a, int b) {
+    int t = a;
+    a = b;
+    b = t;
+}
 int x = 1, y = 2;
 swap(x, y);                          // swaps only the local copies
 System.out.println(x + " " + y);
@@ -1098,7 +1136,10 @@ public void init(ServletConfig config) throws ServletException {
 
     'classes-objects': dv(
         [`An object has a header (mark word with hash and lock state, class pointer), then fields, padded to 8 bytes. <code>new</code> allocates in the young generation (a thread-local allocation buffer makes it fast), initializes fields to defaults, then runs the constructor. Each class has a class object and a method table used for virtual dispatch.`,
-            r`class Empty {} class Pair { int a; int b; }
+            r`class Empty {} class Pair {
+    int a;
+    int b;
+}
 // with JOL (org.openjdk.jol): ClassLayout.parseClass(Pair.class).toPrintable()
 //  OFFSET SIZE TYPE DESCRIPTION
 //   0     8         (mark word)

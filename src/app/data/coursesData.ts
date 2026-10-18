@@ -57,7 +57,7 @@ const microservicesFundamentals = [{
 }];
 
 
-const baseCourses = [ ...SoftwareFoundations, ...ProgrammingFundamentals, ...HtmlandCSS,...coreJava, ...JavaMemoryJVM, ...JSPServlets, ...CollectionFramework,
+export const baseCourses = [ ...SoftwareFoundations, ...ProgrammingFundamentals, ...HtmlandCSS,...coreJava, ...JavaMemoryJVM, ...JSPServlets, ...CollectionFramework,
     ...designPattern, ...enterprisePatterns, ...microservicesPatterns, ...messagingPatterns, ...architecturalPatterns, ...cloudNativePatterns, ...microservicesFundamentals,
     ...MySQLCSS, ...Hibernate,...Reactjs,
     ...JavaScriptCourse, ...AngularCourse, ...Flutter, ...JavaFXCourse,

@@ -57,7 +57,7 @@ next(items)
             content: `<h4>Skipping a Header Line</h4>
 A common use: take the first item separately, then loop over the rest. The loop continues from where <code>next()</code> stopped.`,
             codeExamples: [
-                `lines = iter(["name,marks", "Asha,91", "Ravi,78"])
+                `lines = iter(["name,marks", "Abaji,91", "Raoji,78"])
 
 header = next(lines)
 print("columns:", header.split(","))
@@ -67,8 +67,8 @@ for line in lines:
 
 # OUTPUT:
 # columns: ['name', 'marks']
-# Asha 91
-# Ravi 78`
+# Abaji 91
+# Raoji 78`
             ]
         }
     ],

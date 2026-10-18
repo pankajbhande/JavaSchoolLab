@@ -6,13 +6,13 @@ export const s15l: Record<string, DeepDive> = {
         [`A table is in <b>Third Normal Form</b> when it is in 2NF and no non-key column depends on another non-key column (no <i>transitive</i> dependency). Memory aid: every attribute depends on the key, the whole key, and nothing but the key.`,
             r`-- Violates 3NF: order_id -> cust_id -> cust_name, cust_city
 CREATE TABLE orders_bad (order_id INT PRIMARY KEY, cust_id INT, cust_name VARCHAR(20), cust_city VARCHAR(20));
-INSERT INTO orders_bad VALUES (1,5,'Asha','Pune'),(2,5,'Asha','Pune'),(3,6,'Ravi','Delhi');
+INSERT INTO orders_bad VALUES (1,5,'Abaji','Pune'),(2,5,'Abaji','Pune'),(3,6,'Raoji','Delhi');
 
 -- 3NF: customer facts move to a customer table
 CREATE TABLE customer (cust_id INT PRIMARY KEY, cust_name VARCHAR(20), cust_city VARCHAR(20));
 CREATE TABLE orders (order_id INT PRIMARY KEY, cust_id INT,
     FOREIGN KEY (cust_id) REFERENCES customer(cust_id));
-INSERT INTO customer VALUES (5,'Asha','Pune'),(6,'Ravi','Delhi');
+INSERT INTO customer VALUES (5,'Abaji','Pune'),(6,'Raoji','Delhi');
 INSERT INTO orders   VALUES (1,5),(2,5),(3,6);
 SELECT o.order_id, c.cust_name, c.cust_city
 FROM orders o JOIN customer c ON c.cust_id = o.cust_id ORDER BY o.order_id;
@@ -21,11 +21,11 @@ FROM orders o JOIN customer c ON c.cust_id = o.cust_id ORDER BY o.order_id;
 -- +----------+-----------+-----------+
 -- | order_id | cust_name | cust_city |
 -- +----------+-----------+-----------+
--- |        1 | Asha      | Pune      |
--- |        2 | Asha      | Pune      |
--- |        3 | Ravi      | Delhi     |
+-- |        1 | Abaji     | Pune      |
+-- |        2 | Abaji     | Pune      |
+-- |        3 | Raoji     | Delhi     |
 -- +----------+-----------+-----------+`],
-        [`With the transitive dependency left in, Asha moving cities means updating every one of her orders. Miss one and the database disagrees with itself about where she lives.`,
+        [`With the transitive dependency left in, Abaji moving cities means updating every one of her orders. Miss one and the database disagrees with itself about where she lives.`,
             r`-- Un-normalized: one UPDATE touches several rows and can be partial
 UPDATE orders_bad SET cust_city = 'Mumbai' WHERE order_id = 1;   -- forgot orders 2
 
@@ -52,8 +52,8 @@ SELECT * FROM order_report WHERE cust_city = 'Mumbai';
 -- +----------+-----------+-----------+
 -- | order_id | cust_name | cust_city |
 -- +----------+-----------+-----------+
--- |        1 | Asha      | Mumbai    |
--- |        2 | Asha      | Mumbai    |
+-- |        1 | Abaji     | Mumbai    |
+-- |        2 | Abaji     | Mumbai    |
 -- +----------+-----------+-----------+`],
         [`<b>Advantages:</b> each fact has one home, so there are no update, insert or delete anomalies, storage is smaller and constraints (UNIQUE name, CHECK city) can be applied once.`,
             r`-- A customer can now exist before any order is placed (no insertion anomaly)
@@ -78,16 +78,16 @@ FROM customer c LEFT JOIN orders o ON o.cust_id = c.cust_id WHERE o.order_id IS 
             r`-- Each teacher teaches ONE subject (teacher -> subject), a student has one teacher per subject
 CREATE TABLE enrol3 (student VARCHAR(10), subject VARCHAR(10), teacher VARCHAR(10),
     PRIMARY KEY (student, subject));
-INSERT INTO enrol3 VALUES ('Asha','Math','Rao'),('Ravi','Math','Rao'),('Asha','Physics','Iyer');
+INSERT INTO enrol3 VALUES ('Abaji','Math','Rao'),('Raoji','Math','Rao'),('Abaji','Physics','Iyer');
 SELECT * FROM enrol3 ORDER BY student, subject;
 
 -- OUTPUT:
 -- +---------+---------+---------+
 -- | student | subject | teacher |
 -- +---------+---------+---------+
--- | Asha    | Math    | Rao     |
--- | Asha    | Physics | Iyer    |
--- | Ravi    | Math    | Rao     |
+-- | Abaji   | Math    | Rao     |
+-- | Abaji   | Physics | Iyer    |
+-- | Raoji   | Math    | Rao     |
 -- +---------+---------+---------+
 -- In 3NF (subject is a prime attribute) yet "Rao teaches Math" is stored twice: see BCNF.`],
         `
@@ -109,7 +109,7 @@ CREATE TABLE student_teacher (
     FOREIGN KEY (teacher) REFERENCES teacher_subject(teacher)
 );
 INSERT INTO teacher_subject VALUES ('Rao','Math'),('Iyer','Physics');
-INSERT INTO student_teacher VALUES ('Asha','Rao'),('Ravi','Rao'),('Asha','Iyer');
+INSERT INTO student_teacher VALUES ('Abaji','Rao'),('Raoji','Rao'),('Abaji','Iyer');
 SELECT st.student, ts.subject, st.teacher
 FROM student_teacher st JOIN teacher_subject ts ON ts.teacher = st.teacher
 ORDER BY st.student, ts.subject;
@@ -118,9 +118,9 @@ ORDER BY st.student, ts.subject;
 -- +---------+---------+---------+
 -- | student | subject | teacher |
 -- +---------+---------+---------+
--- | Asha    | Math    | Rao     |
--- | Asha    | Physics | Iyer    |
--- | Ravi    | Math    | Rao     |
+-- | Abaji   | Math    | Rao     |
+-- | Abaji   | Physics | Iyer    |
+-- | Raoji   | Math    | Rao     |
 -- +---------+---------+---------+`],
         [`In the 3NF design nothing stops contradictory data: the rule "a teacher teaches one subject" is not backed by any key, so a bad row is accepted silently.`,
             r`-- enrol3 table from the 3NF topic: Rao now "teaches" Physics too, contradicting Math
@@ -153,9 +153,9 @@ SELECT * FROM teacher_subject ORDER BY teacher;
 -- | Rao     | Statistics |
 -- +---------+------------+`],
         [`<b>Disadvantages:</b> BCNF decomposition can lose <i>dependency preservation</i>. The original rule "a student has one teacher per subject" cannot be a key in the new tables, so the database can no longer enforce it declaratively.`,
-            r`-- Asha now has two Math teachers: allowed by PRIMARY KEY (student, teacher)
+            r`-- Abaji now has two Math teachers: allowed by PRIMARY KEY (student, teacher)
 INSERT INTO teacher_subject VALUES ('Das','Statistics');
-INSERT INTO student_teacher VALUES ('Asha','Das');         -- Rao and Das both teach Asha statistics
+INSERT INTO student_teacher VALUES ('Abaji','Das');         -- Rao and Das both teach Abaji statistics
 
 SELECT st.student, ts.subject, COUNT(*) AS teachers
 FROM student_teacher st JOIN teacher_subject ts ON ts.teacher = st.teacher
@@ -165,7 +165,7 @@ GROUP BY st.student, ts.subject HAVING COUNT(*) > 1;
 -- +---------+------------+----------+
 -- | student | subject    | teachers |
 -- +---------+------------+----------+
--- | Asha    | Statistics |        2 |
+-- | Abaji   | Statistics |        2 |
 -- +---------+------------+----------+`],
         [`<b>Limitations:</b> a lossless, dependency-preserving BCNF decomposition does not always exist. When it does not, you choose between BCNF (and a trigger or application check) or 3NF (and a stored redundancy).`,
             r`-- Workaround for the lost rule: enforce it with a trigger or a periodic check query.
@@ -196,7 +196,7 @@ SHOW INDEX FROM student_teacher WHERE Key_name = 'uq_student_subject';
 CREATE TABLE d_item (order_id INT, line_no INT, price DECIMAL(8,2), qty INT,
     PRIMARY KEY (order_id, line_no));
 START TRANSACTION;
-INSERT INTO d_orders (id, customer) VALUES (1,'Asha');
+INSERT INTO d_orders (id, customer) VALUES (1,'Abaji');
 INSERT INTO d_item VALUES (1,1,10.00,3),(1,2,50.00,1);
 UPDATE d_orders SET item_count = 2, total = 10.00*3 + 50.00*1 WHERE id = 1;   -- stored copy of the aggregate
 COMMIT;

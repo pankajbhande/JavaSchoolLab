@@ -78,15 +78,15 @@ A container usually doesn't track a position itself. Its <code>__iter__</code> j
     def __iter__(self):
         return iter(self._students)
 
-room = Classroom(["Asha", "Ravi", "Kiran"])
+room = Classroom(["Abaji", "Raoji", "Kanhoji"])
 for s in room:
     print(s, end=" ")
 print()
-print(sorted(room), "Ravi" in room)
+print(sorted(room), "Raoji" in room)
 
 # OUTPUT:
-# Asha Ravi Kiran
-# ['Asha', 'Kiran', 'Ravi'] True`
+# Abaji Raoji Kanhoji
+# ['Abaji', 'Kanhoji', 'Raoji'] True`
             ]
         }
     ],

@@ -462,8 +462,8 @@ public class StringRealTimeDemo {
         System.out.println("Card masked    : " + mask("4111111111111111"));
         System.out.println("Short input    : " + mask("12"));
 
-        String[] upiIds = {"meera@okhdfc", "rahul@unknownbank",
-                           "@ybl", "a@b@ybl", "kiran@paytm"};
+        String[] upiIds = {"meera@okhdfc", "raghunath@unknownbank",
+                           "@ybl", "a@b@ybl", "kanhoji@paytm"};
         for (String u : upiIds) {
             System.out.println(u + " valid: " + isValidUpi(u));
         }
@@ -490,10 +490,10 @@ public class StringRealTimeDemo {
 // Card masked    : XXXXXXXXXXXX1111
 // Short input    : INVALID
 // meera@okhdfc valid: true
-// rahul@unknownbank valid: false
+// raghunath@unknownbank valid: false
 // @ybl valid: false
 // a@b@ybl valid: false
-// kiran@paytm valid: true
+// kanhoji@paytm valid: true
 // Dear Ananya, Rs 2500.75 debited for SWIGGY. Avl bal Rs 14,250.30. Not you? Call 1800-11-2211.
 // Date      : 2026-09-05
 // Account   : SB100234

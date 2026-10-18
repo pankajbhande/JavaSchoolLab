@@ -16,14 +16,14 @@ EXPLAIN SELECT a.owner, s.theme FROM accounts a JOIN account_settings s ON s.acc
 -- s     | const | PRIMARY`],
         [`Choices: shared PK vs surrogate + UNIQUE FK; optional vs mandatory child; ON DELETE CASCADE for owned data. Create both rows in one transaction, and read optional children with LEFT JOIN.`,
             r`START TRANSACTION;
-INSERT INTO accounts (owner) VALUES ('Asha');
+INSERT INTO accounts (owner) VALUES ('Abaji');
 INSERT INTO account_settings (account_id) VALUES (LAST_INSERT_ID());
 COMMIT;
 SELECT a.owner, COALESCE(s.theme, 'default') AS theme FROM accounts a LEFT JOIN account_settings s ON s.account_id = a.id;
 
 -- OUTPUT:
 -- owner | theme
--- Asha  | light`],
+-- Abaji | light`],
         [`Mistakes: forgetting the UNIQUE or PK on the child (becomes one-to-many), splitting tables that are always read together, and assuming the database can force the child to exist. Add the key and merge tables that gain nothing from the split.`,
             r`CREATE TABLE bad_profile (id INT PRIMARY KEY AUTO_INCREMENT, user_id BIGINT NOT NULL, bio VARCHAR(100));
 INSERT INTO bad_profile (user_id, bio) VALUES (1,'a'),(1,'b');       -- allowed: not actually one-to-one
@@ -219,7 +219,7 @@ DELETE FROM posts WHERE id = 1;                          -- now a trivial cascad
     'Data Redundancy & Functional Dependency': dv(
         [`A functional dependency A → B means every value of A determines exactly one value of B (employee id determines name). Redundancy appears when a non-key attribute depends on something that is not the whole key, so the same fact is stored in many rows and can become inconsistent.`,
             r`CREATE TABLE orders_flat (order_id INT, customer_id INT, customer_name VARCHAR(30), customer_city VARCHAR(30), item VARCHAR(30));
-INSERT INTO orders_flat VALUES (1,7,'Asha','Pune','Pen'),(2,7,'Asha','Pune','Book'),(3,7,'Asha','Delhi','Bag');
+INSERT INTO orders_flat VALUES (1,7,'Abaji','Pune','Pen'),(2,7,'Abaji','Pune','Book'),(3,7,'Abaji','Delhi','Bag');
 -- test the dependency customer_id -> customer_city
 SELECT customer_id, COUNT(DISTINCT customer_city) AS cities FROM orders_flat GROUP BY customer_id HAVING cities > 1;
 
@@ -348,7 +348,7 @@ SELECT oi.order_id, p.name FROM order_items oi JOIN products p ON p.id = oi.prod
     '3NF': dv(
         [`Third normal form removes transitive dependencies: a non-key column must not depend on another non-key column. If department name depends on department id and department id depends on the employee id, the name belongs with the department, not in every employee row.`,
             r`CREATE TABLE emp_bad (id INT PRIMARY KEY, name VARCHAR(30), dept_id INT, dept_name VARCHAR(30), dept_city VARCHAR(30));
-INSERT INTO emp_bad VALUES (1,'Asha',10,'HR','Pune'),(2,'Ravi',10,'HR','Pune'),(3,'Meena',20,'IT','Delhi');
+INSERT INTO emp_bad VALUES (1,'Abaji',10,'HR','Pune'),(2,'Raoji',10,'HR','Pune'),(3,'Moropant',20,'IT','Delhi');
 SELECT dept_id, COUNT(*) AS emp_rows, COUNT(DISTINCT dept_name, dept_city) AS dept_facts FROM emp_bad GROUP BY dept_id;
 
 -- OUTPUT:

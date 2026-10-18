@@ -4,11 +4,11 @@ import { dd, r, type DeepDive } from '../python/deepdive/deepDive';
 export const s13k: Record<string, DeepDive> = {
     'UNION vs UNION ALL': dd(
         [`<b>UNION</b> stacks the rows of two or more SELECTs into one result and <b>removes duplicate rows</b>. <b>UNION ALL</b> stacks them and keeps every row, duplicates included. Both need the same number of columns, matched by position.`,
-            r`-- Two customer lists that overlap on one person (Ravi)
+            r`-- Two customer lists that overlap on one person (Raoji)
 CREATE TABLE web_cust  (name VARCHAR(20), city VARCHAR(20));
 CREATE TABLE shop_cust (name VARCHAR(20), city VARCHAR(20));
-INSERT INTO web_cust  VALUES ('Asha','Pune'),('Ravi','Delhi'),('Mina','Pune');
-INSERT INTO shop_cust VALUES ('Ravi','Delhi'),('Karan','Goa');
+INSERT INTO web_cust  VALUES ('Abaji','Pune'),('Raoji','Delhi'),('Mina','Pune');
+INSERT INTO shop_cust VALUES ('Raoji','Delhi'),('Karan','Goa');
 
 SELECT name, city FROM web_cust
 UNION                                         -- duplicates removed
@@ -19,12 +19,12 @@ ORDER BY name;
 -- +-------+-------+
 -- | name  | city  |
 -- +-------+-------+
--- | Asha  | Pune  |
+-- | Abaji | Pune  |
 -- | Karan | Goa   |
 -- | Mina  | Pune  |
--- | Ravi  | Delhi |
+-- | Raoji | Delhi |
 -- +-------+-------+
--- (UNION ALL on the same query would return 5 rows: Ravi appears twice.)`],
+-- (UNION ALL on the same query would return 5 rows: Raoji appears twice.)`],
         [`Data often lives in several places: per-year tables, per-region tables, live plus archive. Reports need them as one list. UNION ALL is the cheap way to concatenate; UNION is for when the same entity may appear in more than one source and you want it once.`,
             r`-- Keep the source visible: the extra literal column makes rows distinct,
 -- so UNION ALL is the right (and cheaper) choice here
@@ -37,11 +37,11 @@ ORDER BY name, src;
 -- +-------+------+
 -- | name  | src  |
 -- +-------+------+
--- | Asha  | web  |
+-- | Abaji | web  |
 -- | Karan | shop |
 -- | Mina  | web  |
--- | Ravi  | shop |
--- | Ravi  | web  |
+-- | Raoji | shop |
+-- | Raoji | web  |
 -- +-------+------+`],
         [`A classic production pattern is "hot and archive" or one table per year. A view or query unions them with UNION ALL, then aggregates the combined set.`,
             r`CREATE TABLE sales_2025 (amt INT);
@@ -109,14 +109,14 @@ UNION ALL
         `
    web_cust            shop_cust
    ┌───────┬───────┐   ┌───────┬───────┐
-   │ Asha  │ Pune  │   │ Ravi  │ Delhi │
-   │ Ravi  │ Delhi │   │ Karan │ Goa   │
+   │ Abaji │ Pune  │   │ Raoji │ Delhi │
+   │ Raoji │ Delhi │   │ Karan │ Goa   │
    │ Mina  │ Pune  │   └───────┴───────┘
    └───────┴───────┘
         │                    │
         └──────┬─────────────┘
                ▼
-   UNION ALL : 5 rows (keeps both Ravi rows)
+   UNION ALL : 5 rows (keeps both Raoji rows)
    UNION     : 4 rows (dedupe via temp table + unique index)
 `,
         `Default to UNION ALL and reach for UNION only when duplicates across sources are truly possible and unwanted; if you can make the branches disjoint with a literal source column or a WHERE range, do so. For very large unions prefer partitioning or a single table over a view that unions many tables, because the optimizer plans each branch separately and cannot prune them like partitions.`
@@ -140,7 +140,7 @@ ORDER BY name;
 -- +------+-------+             +------+------+
 -- | name | city  |             | name | city |
 -- +------+-------+             +------+------+
--- | Ravi | Delhi |             | Asha | Pune |
+-- | Raoji | Delhi |             | Abaji | Pune |
 -- +------+-------+             | Mina | Pune |
 --                              +------+------+`],
         [`"Who is in A and B?" and "who is in A but not B?" are everyday questions: loyal customers, churned users, records missing from a sync. Before 8.0.31 you had to emulate them with joins or subqueries, which is longer and easy to get wrong with NULLs.`,
@@ -159,7 +159,7 @@ WHERE NOT EXISTS (SELECT 1 FROM shop_cust s
 ORDER BY w.name;
 
 -- OUTPUT (first query):        OUTPUT (second query):
--- | Ravi | Delhi |             | Asha | Pune |
+-- | Raoji | Delhi |             | Abaji | Pune |
 --                              | Mina | Pune |`],
         [`Reconciliation jobs use EXCEPT in both directions to find rows missing or extra between a source and a copy; marketing uses INTERSECT to find users who match two segments.`,
             r`-- Data-sync check: what is in the web list but missing from the shop list, and vice versa
@@ -173,7 +173,7 @@ ORDER BY side, name;
 -- | side      | name  |
 -- +-----------+-------+
 -- | only_shop | Karan |
--- | only_web  | Asha  |
+-- | only_web  | Abaji |
 -- | only_web  | Mina  |
 -- +-----------+-------+`],
         [`<b>Advantages:</b> declarative and readable, NULLs are treated as equal (unlike the = operator), and the ALL variants give true multiset arithmetic.`,
@@ -220,15 +220,15 @@ SELECT name FROM shop_cust EXCEPT SELECT name FROM web_cust;
         `
    A = web_cust       B = shop_cust
         ┌───────────┬───────────┐
-        │  Asha     │   Karan   │
+        │  Abaji    │   Karan   │
         │  Mina     │           │
         │       ┌───┴───┐       │
-        │       │ Ravi  │       │
+        │       │ Raoji │       │
         └───────┴───────┴───────┘
-   A INTERSECT B = {Ravi}
-   A EXCEPT    B = {Asha, Mina}
+   A INTERSECT B = {Raoji}
+   A EXCEPT    B = {Abaji, Mina}
    B EXCEPT    A = {Karan}
-   A UNION     B = {Asha, Mina, Ravi, Karan}
+   A UNION     B = {Abaji, Mina, Raoji, Karan}
 `,
         `Prefer INTERSECT/EXCEPT for clarity in reporting and reconciliation code, but check the minimum server version across every environment, including replicas and managed services. In hot paths, an indexed EXISTS or NOT EXISTS is usually planned as a semi or anti join and can beat the temporary-table approach of set operators; benchmark both.`
     ),
@@ -248,18 +248,18 @@ SELECT 2,        'y';                         -- names a, b come from the first 
 -- +---+---+`],
         [`Because matching is positional, swapping two columns still runs without error and silently mixes unrelated data. Understanding the rules protects you from this class of bug.`,
             r`CREATE TABLE person (name VARCHAR(20), city VARCHAR(20));
-INSERT INTO person VALUES ('Asha','Pune');
+INSERT INTO person VALUES ('Abaji','Pune');
 
 SELECT name, city FROM person
 UNION ALL
 SELECT city, name FROM person;                -- columns swapped by mistake
 
 -- OUTPUT (no error, wrong data):
--- +------+------+
--- | name | city |
--- +------+------+
--- | Asha | Pune |
--- | Pune | Asha |
+-- +-------+-------+
+-- | name  | city  |
+-- +-------+-------+
+-- | Abaji | Pune  |
+-- | Pune  | Abaji |
 -- +------+------+`],
         [`When sources have different shapes (users, leads), pad the missing columns with NULL of the right type and add a source label. This builds one unified feed.`,
             r`SELECT id, email, NULL  AS phone, 'user' AS kind FROM (SELECT 1 AS id, 'a@x.com' AS email) AS u
@@ -285,19 +285,19 @@ SHOW COLUMNS FROM mixed;
 -- | v     | varchar(3) | NO   |
 -- +-------+------------+------+
 -- The INT 1 became the string '1'.`],
-        [`<b>Disadvantages:</b> duplicate detection uses the column collation, so with a case-insensitive collation (the default) 'Asha' and 'asha' count as the same row, and NULLs are treated as equal. Which spelling you get back is not guaranteed.`,
-            r`SELECT 'Asha' AS name
+        [`<b>Disadvantages:</b> duplicate detection uses the column collation, so with a case-insensitive collation (the default) 'Abaji' and 'abaji' count as the same row, and NULLs are treated as equal. Which spelling you get back is not guaranteed.`,
+            r`SELECT 'Abaji' AS name
 UNION
-SELECT 'asha';                                -- default collation is case-insensitive
+SELECT 'abaji';                                -- default collation is case-insensitive
 
-SELECT 'Asha' AS name
+SELECT 'Abaji' AS name
 UNION
-SELECT 'asha' COLLATE utf8mb4_0900_as_cs;     -- case-sensitive collation on one side
+SELECT 'abaji' COLLATE utf8mb4_0900_as_cs;     -- case-sensitive collation on one side
 
 -- OUTPUT (first):    OUTPUT (second):
 -- | name |           | name |
--- | Asha |           | Asha |
---                     | asha |`],
+-- | Abaji |           | Abaji |
+--                     | abaji |`],
         [`<b>Limitations:</b> a different column count is an error, incompatible collations can raise "illegal mix" errors, and implicit conversion can change data (long string to short type, number to string sort order).`,
             r`SELECT 1, 2
 UNION

@@ -42,7 +42,7 @@ def get_greeting(api, user_id):
 
 def main():
     api = Mock()
-    api.get_user.return_value = {"name": "Asha"}
+    api.get_user.return_value = {"name": "Abaji"}
 
     print(get_greeting(api, 42))
     api.get_user.assert_called_once_with(42)  # raises if the call differs
@@ -62,7 +62,7 @@ if __name__ == "__main__":
     main()
 
 # OUTPUT:
-# Hello, Asha!
+# Hello, Abaji!
 # verified: called once with 42
 # TimeoutError: api down
 # call count: 2
@@ -83,7 +83,7 @@ A <code>Mock</code> accepts any attribute or call. Set <code>return_value</code>
                 `from unittest.mock import Mock
 
 api = Mock()
-api.get_user.return_value = {"name": "Asha"}
+api.get_user.return_value = {"name": "Abaji"}
 
 print(api.get_user(42))
 print(api.get_user.call_count)
@@ -91,7 +91,7 @@ print(api.get_user.call_args)
 api.get_user.assert_called_once_with(42)
 
 # OUTPUT:
-# {'name': 'Asha'}
+# {'name': 'Abaji'}
 # 1
 # call(42)`
             ],

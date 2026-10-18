@@ -6,16 +6,16 @@ export const s07k: Record<string, DeepDive> = {
         [`<b>WHERE</b> filters rows before they are grouped or returned. Each row is tested against a boolean condition; only rows for which the condition is TRUE survive (FALSE and NULL are dropped). It works with SELECT, UPDATE and DELETE alike.`,
             r`CREATE TABLE emp (id INT PRIMARY KEY, name VARCHAR(30), dept VARCHAR(20), salary DECIMAL(9,2), city VARCHAR(20));
 INSERT INTO emp VALUES
- (1,'Asha','IT',60000,'Pune'), (2,'Ravi','HR',45000,'Delhi'),
- (3,'Mina','IT',52000,'Pune'), (4,'Kiran','Sales',38000,NULL);
+ (1,'Abaji','IT',60000,'Pune'), (2,'Raoji','HR',45000,'Delhi'),
+ (3,'Mina','IT',52000,'Pune'), (4,'Kanhoji','Sales',38000,NULL);
 
 SELECT name, salary FROM emp WHERE dept = 'IT' AND salary > 55000;
 
 -- OUTPUT:
--- +------+----------+
--- | name | salary   |
--- +------+----------+
--- | Asha | 60000.00 |
+-- +-------+----------+
+-- | name  | salary   |
+-- +-------+----------+
+-- | Abaji | 60000.00 |
 -- +------+----------+`],
         [`Returning every row is wasteful and rarely what the user asked for. Filtering in the database moves less data over the network, lets indexes narrow the search, and is the same predicate that makes UPDATE and DELETE safe.`,
             r`-- NULL is neither equal nor unequal to anything, so these rows vanish from both tests
@@ -23,12 +23,12 @@ SELECT name FROM emp WHERE city = 'Pune';
 SELECT name FROM emp WHERE city <> 'Pune';
 
 -- OUTPUT:
--- +------+        +------+
--- | name |        | name |
--- +------+        +------+
--- | Asha |        | Ravi |
--- | Mina |        +------+       <- Kiran (city NULL) appears in neither result
--- +------+`],
+-- +-------+        +-------+
+-- | name  |        | name  |
+-- +-------+        +-------+
+-- | Abaji |        | Raoji |
+-- | Mina  |        +-------+       <- Kanhoji (city NULL) appears in neither result
+-- +-------+`],
         [`Real queries combine conditions, ranges and lists. Predicates that compare a bare indexed column to a value (sargable) can use the index; wrapping the column in a function usually cannot.`,
             r`ALTER TABLE emp ADD KEY idx_salary (salary);
 EXPLAIN SELECT id FROM emp WHERE salary >= 50000;         -- sargable: index range scan
@@ -45,11 +45,11 @@ WHERE dept IN ('IT', 'HR')
   AND city IS NOT NULL;
 
 -- OUTPUT:
--- +------+
--- | name |
--- +------+
--- | Ravi |
--- | Mina |
+-- +-------+
+-- | name  |
+-- +-------+
+-- | Raoji |
+-- | Mina  |
 -- +------+`],
         [`<b>Disadvantages:</b> a non-sargable or low-selectivity predicate forces a full scan; implicit type conversion (comparing a string column with a number) can disable the index and silently match unexpected rows; NULL logic surprises beginners.`,
             r`CREATE TABLE phone_book (id INT PRIMARY KEY, phone VARCHAR(15), KEY (phone));
@@ -78,33 +78,33 @@ EXPLAIN SELECT id FROM phone_book WHERE phone = 9000000001;     -- number vs str
     'ORDER BY': dd(
         [`<b>ORDER BY</b> sorts the result by one or more expressions, ascending (default) or <code>DESC</code>. It is the only way to get a guaranteed order; without it MySQL may return rows in any order, which can change after an index or plan change.`,
             r`CREATE TABLE emp (id INT PRIMARY KEY, name VARCHAR(30), dept VARCHAR(20), salary DECIMAL(9,2));
-INSERT INTO emp VALUES (1,'Asha','IT',60000),(2,'Ravi','HR',45000),(3,'Mina','IT',52000),(4,'Kiran','HR',45000);
+INSERT INTO emp VALUES (1,'Abaji','IT',60000),(2,'Raoji','HR',45000),(3,'Mina','IT',52000),(4,'Kanhoji','HR',45000);
 
 SELECT name, dept, salary
 FROM emp
 ORDER BY dept ASC, salary DESC;          -- by department, then highest paid first
 
 -- OUTPUT:
--- +-------+------+----------+
--- | name  | dept | salary   |
--- +-------+------+----------+
--- | Ravi  | HR   | 45000.00 |
--- | Kiran | HR   | 45000.00 |
--- | Asha  | IT   | 60000.00 |
--- | Mina  | IT   | 52000.00 |
--- +-------+------+----------+
--- (Ravi/Kiran tie on both keys: their relative order is not guaranteed; add id as a tie-breaker)`],
+-- +---------+------+----------+
+-- | name    | dept | salary   |
+-- +---------+------+----------+
+-- | Raoji   | HR   | 45000.00 |
+-- | Kanhoji | HR   | 45000.00 |
+-- | Abaji   | IT   | 60000.00 |
+-- | Mina    | IT   | 52000.00 |
+-- +---------+------+----------+
+-- (Raoji/Kanhoji tie on both keys: their relative order is not guaranteed; add id as a tie-breaker)`],
         [`People read lists sorted: newest first, alphabetical, top earners. Pagination, reports and deterministic tests all need a stable total order, which means adding a unique tie-breaker such as the primary key.`,
             r`SELECT name, salary FROM emp ORDER BY salary DESC, id ASC;      -- id makes ties deterministic
 
 -- OUTPUT:
--- +-------+----------+
--- | name  | salary   |
--- +-------+----------+
--- | Asha  | 60000.00 |
--- | Mina  | 52000.00 |
--- | Ravi  | 45000.00 |
--- | Kiran | 45000.00 |
+-- +---------+----------+
+-- | name    | salary   |
+-- +---------+----------+
+-- | Abaji   | 60000.00 |
+-- | Mina    | 52000.00 |
+-- | Raoji   | 45000.00 |
+-- | Kanhoji | 45000.00 |
 -- +-------+----------+`],
         [`Sorting can use column aliases, positions and expressions, and NULLs sort first in ASC and last in DESC in MySQL. Custom order uses <code>FIELD()</code> or CASE.`,
             r`SELECT name, dept FROM emp
@@ -114,18 +114,18 @@ ORDER BY FIELD(dept, 'IT', 'HR'),        -- custom rank: IT first
 SELECT name, salary * 12 AS annual FROM emp ORDER BY annual DESC LIMIT 1;   -- alias allowed here
 
 -- OUTPUT:
--- +-------+------+
--- | name  | dept |
--- +-------+------+
--- | Asha  | IT   |
--- | Mina  | IT   |
--- | Kiran | HR   |
--- | Ravi  | HR   |
--- +-------+------+
--- +------+-----------+
--- | name | annual    |
--- +------+-----------+
--- | Asha | 720000.00 |
+-- +---------+------+
+-- | name    | dept |
+-- +---------+------+
+-- | Abaji   | IT   |
+-- | Mina    | IT   |
+-- | Kanhoji | HR   |
+-- | Raoji   | HR   |
+-- +---------+------+
+-- +-------+-----------+
+-- | name  | annual    |
+-- +-------+-----------+
+-- | Abaji | 720000.00 |
 -- +------+-----------+`],
         [`<b>Advantages:</b> deterministic output, multi-key sorting, and a matching index (same columns and direction; descending indexes are real in 8.0) lets MySQL read rows already sorted and skip the sort entirely.`,
             r`ALTER TABLE emp ADD KEY idx_dept_sal (dept, salary);
@@ -270,18 +270,18 @@ SELECT COUNT(*) AS rows_all, COUNT(DISTINCT region) AS regions, COUNT(DISTINCT p
         [`DISTINCT often patches duplicates produced by an accidental one-to-many join. A better fix is EXISTS or a proper grouping, since DISTINCT hides the real problem and costs a sort or hash.`,
             r`CREATE TABLE customer (id INT PRIMARY KEY, name VARCHAR(20));
 CREATE TABLE orders (id INT PRIMARY KEY, customer_id INT);
-INSERT INTO customer VALUES (1,'Asha'),(2,'Ravi');
+INSERT INTO customer VALUES (1,'Abaji'),(2,'Raoji');
 INSERT INTO orders VALUES (1,1),(2,1),(3,1);
 
-SELECT c.name FROM customer c JOIN orders o ON o.customer_id = c.id;               -- Asha x3
+SELECT c.name FROM customer c JOIN orders o ON o.customer_id = c.id;               -- Abaji x3
 SELECT c.name FROM customer c WHERE EXISTS (SELECT 1 FROM orders o WHERE o.customer_id = c.id);
 
 -- OUTPUT:
--- first query: Asha, Asha, Asha
+-- first query: Abaji, Abaji, Abaji
 -- +------+
 -- | name |
 -- +------+
--- | Asha |        <- EXISTS returns each qualifying customer once
+-- | Abaji |        <- EXISTS returns each qualifying customer once
 -- +------+`],
         [`<b>Advantages:</b> a one-word way to deduplicate; works across multiple columns; <code>COUNT(DISTINCT)</code> answers cardinality questions; an index on the column lets MySQL do a loose index scan instead of reading every row.`,
             r`ALTER TABLE sale ADD KEY idx_region (region);
@@ -405,7 +405,7 @@ SELECT region FROM sale GROUP BY region ORDER BY region;  -- guaranteed
     'Order of Clause Execution': dd(
         [`SQL is <i>written</i> in one order but <i>executed</i> in another. Logical order: <code>FROM / JOIN</code> then <code>WHERE</code> then <code>GROUP BY</code> then <code>HAVING</code> then window functions, <code>SELECT</code> (with DISTINCT), then <code>ORDER BY</code>, then <code>LIMIT</code>. Knowing this explains which names are visible where.`,
             r`CREATE TABLE emp (id INT PRIMARY KEY, name VARCHAR(20), dept VARCHAR(10), salary INT);
-INSERT INTO emp VALUES (1,'Asha','IT',60),(2,'Ravi','HR',45),(3,'Mina','IT',52),(4,'Kiran','HR',40),(5,'Dev','IT',30);
+INSERT INTO emp VALUES (1,'Abaji','IT',60),(2,'Raoji','HR',45),(3,'Mina','IT',52),(4,'Kanhoji','HR',40),(5,'Dev','IT',30);
 
 SELECT dept, AVG(salary) AS avg_sal         -- 5. compute columns and aliases
 FROM emp                                    -- 1. read table
@@ -441,11 +441,11 @@ SELECT * FROM (
 WHERE rnk = 1;                              -- top earner per department
 
 -- OUTPUT:
--- +------+------+--------+-----+
--- | name | dept | salary | rnk |
--- +------+------+--------+-----+
--- | Asha | IT   |     60 |   1 |
--- | Ravi | HR   |     45 |   1 |
+-- +-------+------+--------+-----+
+-- | name  | dept | salary | rnk |
+-- +-------+------+--------+-----+
+-- | Abaji | IT   |     60 |   1 |
+-- | Raoji | HR   |     45 |   1 |
 -- +------+------+--------+-----+`],
         [`<b>Advantages:</b> a simple, consistent rule that predicts name visibility and lets you restructure a slow query by moving filters to the earliest legal stage.`,
             r`-- HAVING vs WHERE: same result, very different work

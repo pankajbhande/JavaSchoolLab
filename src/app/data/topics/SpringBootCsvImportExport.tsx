@@ -381,7 +381,7 @@ This is why Commons CSV exists rather than a loop over <code>String.split</code>
 
 <table>
 <tr><th>Case</th><th>What it looks like</th></tr>
-<tr><td>Comma inside a value</td><td><code>1,"Patil, Ajay",pune</code> - one field, not two.</td></tr>
+<tr><td>Comma inside a value</td><td><code>1,"Patil, Ambaji",pune</code> - one field, not two.</td></tr>
 <tr><td>Quote inside a value</td><td><code>1,"He said ""hi""",pune</code> - a doubled quote is one literal quote.</td></tr>
 <tr><td>Newline inside a value</td><td>A quoted field spanning two physical lines.</td></tr>
 <tr><td>Empty vs missing</td><td><code>1,,pune</code> is an empty string; a short row is a missing column.</td></tr>
@@ -392,10 +392,10 @@ This is why Commons CSV exists rather than a loop over <code>String.split</code>
 <code>QuoteMode.MINIMAL</code> handles the first four automatically when writing: it quotes a field only when it contains a delimiter, a quote or a newline.<br>`,
             codeExamples: [
                 `// What MINIMAL quoting produces
-Employee e = new Employee(1, "Patil, Ajay", "pune");
+Employee e = new Employee(1, "Patil, Ambaji", "pune");
 // OUTPUT:
 // id,name,city
-// 1,"Patil, Ajay",pune
+// 1,"Patil, Ambaji",pune
 //    ^ quoted because it contains a comma
 
 Employee e2 = new Employee(2, "He said \\"hi\\"", "mumbai");
@@ -404,7 +404,7 @@ Employee e2 = new Employee(2, "He said \\"hi\\"", "mumbai");
 //    ^ quoted, and the inner quotes are doubled
 
 // A naive split(",") on row 1 gives:
-//   ["1", "\\"Patil", " Ajay\\"", "pune"]   -- four fields, all wrong.`,
+//   ["1", "\\"Patil", " Ambaji\\"", "pune"]   -- four fields, all wrong.`,
                 `// The BOM problem, and the standard fix
 // Excel saves employees.csv starting with EF BB BF.
 // csvRecord.get("id")  ->  IllegalArgumentException:

@@ -178,11 +178,11 @@ static String audit(Event e) {
         case Purchase p -> p.user() + " bought";   // no default needed
     };
 }
-System.out.println(audit(new Purchase("asha", 5000)) + " | "
-    + audit(new Login("ravi")));
+System.out.println(audit(new Purchase("abaji", 5000)) + " | "
+    + audit(new Login("raoji")));
 
 // OUTPUT:
-// LARGE asha | ravi in`]],
+// LARGE abaji | raoji in`]],
         [['Dominated label.',
             r`// switch (o) { case CharSequence cs -> "cs"; case String s -> "s"; default -> "x"; }
 // error: this case label is dominated by a preceding case label (String is a CharSequence)
@@ -283,7 +283,8 @@ System.out.println(rev + " " + l);
             ['S', 'What are the stable alternatives?', 'String.format, String.formatted, text blocks and StringBuilder.']],
         [['Preview syntax (Java 21).',
             r`// javac --enable-preview --release 21 Main.java    java --enable-preview Main
-String name = "Asha"; int a = 3, b = 4;
+String name = "Abaji";
+int a = 3, b = 4;
 String s1 = STR."Hello \{name}!";
 String s2 = STR."\{a} + \{b} = \{a + b}";
 String json = STR."""
@@ -292,9 +293,10 @@ String json = STR."""
 System.out.println(s1 + " | " + s2);
 
 // OUTPUT:
-// Hello Asha! | 3 + 4 = 7`],
+// Hello Abaji! | 3 + 4 = 7`],
             ['Stable alternatives.',
-                r`String name = "Asha"; int a = 3, b = 4;
+                r`String name = "Abaji";
+int a = 3, b = 4;
 String s1 = "Hello %s!".formatted(name);
 String s2 = String.format("%d + %d = %d", a, b, a + b);
 System.out.println(s1 + " | " + s2);
@@ -304,8 +306,8 @@ String json = """
 System.out.print(json);
 
 // OUTPUT:
-// Hello Asha! | 3 + 4 = 7
-// { "user": "Asha", "sum": 7 }`]],
+// Hello Abaji! | 3 + 4 = 7
+// { "user": "Abaji", "sum": 7 }`]],
         [['Injection with plain concatenation.',
             r`String user = "x' OR '1'='1";
 String bad = "SELECT * FROM users WHERE name = '" + user + "'";       // injectable
@@ -331,7 +333,8 @@ export const java11Deep: Record<string, Deep> = {
     try { Thread.sleep(100); } catch (InterruptedException e) {}
     System.out.println("after:  " + Thread.currentThread());   // maybe another carrier
 });
-vt.start(); vt.join();
+vt.start();
+vt.join();
 System.out.println(vt.isDaemon() + " " + vt.getThreadGroup().getName());
 
 // OUTPUT: (carrier ids vary)

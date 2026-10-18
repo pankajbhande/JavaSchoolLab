@@ -1,0 +1,37 @@
+// GENERATED FILE - do not edit by hand. Run: npm run gen:course-stats
+//
+// Which course module defines each course, and which extras files hold its topics' extra content.
+
+export const courseLoadMap: Record<string, { module: string; extras: string[] }> = {
+  "algorithms": { module: "DsaCourse", extras: [] },
+  "angular": { module: "AngularCourse", extras: ["angular"] },
+  "architectural-patterns": { module: "architecturalPatterns", extras: [] },
+  "cloud-native-patterns": { module: "cloudNativePatterns", extras: [] },
+  "collection": { module: "CollectionFramework", extras: ["collection1","collection2"] },
+  "data-science": { module: "DataScienceCourse", extras: [] },
+  "design-patterns": { module: "designPattern", extras: [] },
+  "digital-image-analysis": { module: "DigitalImageAnalysisCourse", extras: [] },
+  "enterprise-patterns-1": { module: "enterprisePatterns", extras: [] },
+  "flutter": { module: "Flutter", extras: [] },
+  "hibernate": { module: "Hibernate", extras: ["hibernate"] },
+  "HTML and CSS": { module: "HtmlandCSS", extras: [] },
+  "java": { module: "coreJava", extras: ["java01","java02","java03","java04","java05","java06","java07","java08","java09","java10","java11","java12"] },
+  "java-memory-jvm": { module: "JavaMemoryJVM", extras: ["jvm1","jvm2","jvm3","jvm4","jvm5","jvm6"] },
+  "javafx": { module: "JavaFXCourse", extras: ["javafx"] },
+  "javascript": { module: "JavaScriptCourse", extras: ["javascript1","javascript2"] },
+  "jdbc": { module: "coreJava", extras: ["jdbc"] },
+  "jsp-servlet": { module: "JSPServlets", extras: ["jsp1","jsp2","jsp3","jsp4","jsp5","jsp6","jsp7"] },
+  "machine-learning": { module: "MachineLearningCourse", extras: [] },
+  "math-foundations-cs": { module: "MathFoundationsCourse", extras: [] },
+  "messaging-patterns-1": { module: "messagingPatterns", extras: [] },
+  "microservices-fundamentals": { module: "microservicesFundamentals", extras: [] },
+  "microservices-patterns-1": { module: "microservicesPatterns", extras: [] },
+  "mysql": { module: "MySQLCSS", extras: [] },
+  "programming-fundamentals": { module: "ProgrammingFundamentals", extras: [] },
+  "python": { module: "PythonCourse", extras: [] },
+  "react-js": { module: "Reactjs", extras: ["react1","react2"] },
+  "software-foundations": { module: "SoftwareFoundations", extras: [] },
+  "spring-boot": { module: "coreJava", extras: [] },
+  "spring-core": { module: "coreJava", extras: ["springcore"] },
+  "spring-mvc": { module: "coreJava", extras: ["springAll"] },
+};

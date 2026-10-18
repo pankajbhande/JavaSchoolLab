@@ -171,8 +171,8 @@ public class SyncProsAndConsDemo {
 
         // POINT 4: only one passenger can get the last seat
         TicketCounter counter = new TicketCounter();
-        Thread p1 = new Thread(() -> counter.book("Amit"));
-        Thread p2 = new Thread(() -> counter.book("Priya"));
+        Thread p1 = new Thread(() -> counter.book("Anandrao"));
+        Thread p2 = new Thread(() -> counter.book("Prataprao"));
         p1.start();
         p2.start();
         p1.join();
@@ -196,8 +196,8 @@ public class SyncProsAndConsDemo {
     }
 }
 // OUTPUT (order of the two LOG lines can swap, the count is wrong every run):
-// LOG: Amit got the last seat
-// LOG: Priya got no seat
+// LOG: Anandrao got the last seat
+// LOG: Prataprao got no seat
 // Wrong lock object, expected 100000, actual 73921
 // RIGHT fix: synchronize on one shared final object, not a new one`
                                 ]
@@ -256,7 +256,7 @@ public class BookMyShowSyncDemo {
     public static void main(String[] args) throws InterruptedException {
 
         ShowSeats show = new ShowSeats();
-        String[] users = {"Amit", "Priya", "Rahul", "Sneha"};
+        String[] users = {"Anandrao", "Prataprao", "Raghunath", "Suryaji"};
 
         Thread[] threads = new Thread[users.length];
         for (int i = 0; i < users.length; i++) {
@@ -272,10 +272,10 @@ public class BookMyShowSyncDemo {
     }
 }
 // OUTPUT (which user wins changes on every run, but the total is always 1):
-// Amit booked seat 3 for 250 rupees
-// Priya could not book seat 3, already taken
-// Rahul could not book seat 3, already taken
-// Sneha could not book seat 3, already taken
+// Anandrao booked seat 3 for 250 rupees
+// Prataprao could not book seat 3, already taken
+// Raghunath could not book seat 3, already taken
+// Suryaji could not book seat 3, already taken
 // Total confirmed bookings for seat 3: 1`
                                 ]
                             }

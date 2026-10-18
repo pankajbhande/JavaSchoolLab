@@ -20,17 +20,17 @@ FROM   mysql.user WHERE user = 'app';
 -- | app  | 10.0.% | caching_sha2_password | N                | N              |
 -- +------+--------+-----------------------+------------------+----------------+`],
         [`Every client must be identifiable so that privileges, audit trails and limits are per person or per application, not shared. Because the host is part of the identity, you can allow an account only from the application subnet and keep it useless from anywhere else.`,
-            r`CREATE USER 'bob'@'localhost' IDENTIFIED BY 'Bob!Pass12345';
-CREATE USER 'bob'@'%'         IDENTIFIED BY 'Other!Pass12345';   -- a different account!
+            r`CREATE USER 'baji'@'localhost' IDENTIFIED BY 'Baji!Pass12345';
+CREATE USER 'baji'@'%'         IDENTIFIED BY 'Other!Pass12345';   -- a different account!
 
--- Run after connecting as bob:
+-- Run after connecting as baji:
 SELECT USER() AS asked_as, CURRENT_USER() AS matched_account;
 
 -- OUTPUT (example, connecting from another machine):
 -- +----------------+-----------------+
 -- | asked_as       | matched_account |
 -- +----------------+-----------------+
--- | bob@10.0.3.17  | bob@%           |
+-- | baji@10.0.3.17  | baji@%           |
 -- +----------------+-----------------+`],
         [`Real use: joiner/leaver processes and service accounts. A new service gets its own account with a connection cap and mandatory TLS. A leaver is locked first (reversible) and dropped later.`,
             r`ALTER USER 'app'@'10.0.%'
@@ -66,12 +66,12 @@ SELECT * FROM v_one;
 -- OUTPUT:
 -- ERROR 1819 (HY000): Your password does not satisfy the current policy requirements`],
         `
-   client connects as  bob  from 10.0.3.17
+   client connects as  baji  from 10.0.3.17
         |
         v   mysql.user  (sorted: most specific host first)
    +-----------------+-----------------------------+
-   | 'bob'@'10.0.3.%'| plugin, password, TLS, limit|   <- matched first if present
-   | 'bob'@'%'       |                             |
+   | 'baji'@'10.0.3.%'| plugin, password, TLS, limit|   <- matched first if present
+   | 'baji'@'%'       |                             |
    +-----------------+-----------------------------+
         |
         v   authenticate (caching_sha2_password) + lock/expiry checks
@@ -308,11 +308,11 @@ SELECT * FROM shop.v_customer_public LIMIT 1;
 SELECT card_no FROM shop.customers;
 
 -- OUTPUT (example):
--- +----+------+
--- | id | name |
--- +----+------+
--- |  1 | Asha |
--- +----+------+
+-- +----+-------+
+-- | id | name  |
+-- +----+-------+
+-- |  1 | Abaji |
+-- +----+-------+
 -- ERROR 1142 (42000): SELECT command denied to user 'shop_ro'@'10.0.0.8' for table 'customers'`],
         [`<b>Disadvantages:</b> more accounts and grants to manage, more places for a wrong host pattern to lock out a service, and migrations that must run under a separate, more powerful account complicate deployment pipelines.`,
             r`-- The runtime account cannot run a schema change - by design

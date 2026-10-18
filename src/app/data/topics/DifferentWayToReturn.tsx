@@ -330,7 +330,7 @@ public class OutputParamDemo {
     public static void main(String[] args) {
         StringBuilder sb = new StringBuilder();
         appendGreeting(sb, "Pankaj");
-        appendGreeting(sb, "Rahul");
+        appendGreeting(sb, "Raghunath");
         System.out.println(sb);
 
         java.util.List<Integer> evens = new java.util.ArrayList<>();
@@ -339,7 +339,7 @@ public class OutputParamDemo {
     }
 }
 // OUTPUT:
-// Hello, Pankaj! Hello, Rahul!
+// Hello, Pankaj! Hello, Raghunath!
 // [2, 4, 6]`
                                 ]
                             },

@@ -48,15 +48,15 @@ record Point(double x, double y) {
 
 public class RecordBasic {
     public static void main(String[] args) {
-        Person p1 = new Person("Alice", 30);
-        Person p2 = new Person("Alice", 30);
+        Person p1 = new Person("Anaji", 30);
+        Person p2 = new Person("Anaji", 30);
 
         // Auto-generated accessor methods (not getXxx!)
-        System.out.println(p1.name());  // Alice
+        System.out.println(p1.name());  // Anaji
         System.out.println(p1.age());   // 30
 
         // Auto-generated toString()
-        System.out.println(p1);  // Person[name=Alice, age=30]
+        System.out.println(p1);  // Person[name=Anaji, age=30]
 
         // Auto-generated equals() — value-based
         System.out.println(p1.equals(p2));  // true
@@ -72,9 +72,9 @@ public class RecordBasic {
 }
 
 // OUTPUT:
-// Alice
+// Anaji
 // 30
-// Person[name=Alice, age=30]
+// Person[name=Anaji, age=30]
 // true
 // true
 // Distance: 5.0`
@@ -157,9 +157,9 @@ public class RecordIntermediate {
         record NameAge(String name, int age) {}
 
         var people = List.of(
-            new NameAge("Alice", 30),
-            new NameAge("Bob", 25),
-            new NameAge("Charlie", 35)
+            new NameAge("Anaji", 30),
+            new NameAge("Baji", 25),
+            new NameAge("Chimnaji", 35)
         );
 
         people.stream()
@@ -171,9 +171,9 @@ public class RecordIntermediate {
 // OUTPUT:
 // Range[min=1, max=10]
 // Total area: 130.81415022205297
-// NameAge[name=Bob, age=25]
-// NameAge[name=Alice, age=30]
-// NameAge[name=Charlie, age=35]`
+// NameAge[name=Baji, age=25]
+// NameAge[name=Anaji, age=30]
+// NameAge[name=Chimnaji, age=35]`
                                 ]
                             }
                         ],
@@ -233,10 +233,10 @@ record SerializablePoint(double x, double y) implements java.io.Serializable {
 public class RecordExpert {
     public static void main(String[] args) {
         // Defensive copy prevents mutation
-        var members = new java.util.ArrayList<>(List.of("Alice", "Bob"));
+        var members = new java.util.ArrayList<>(List.of("Anaji", "Baji"));
         Team team = new Team("Dev", members);
-        members.add("Charlie"); // original list modified
-        System.out.println(team.members()); // [Alice, Bob] — record's copy is safe
+        members.add("Chimnaji"); // original list modified
+        System.out.println(team.members()); // [Anaji, Baji] — record's copy is safe
 
         // Generic records
         var pair = Pair.of("Answer", 42);
@@ -261,7 +261,7 @@ public class RecordExpert {
 }
 
 // OUTPUT:
-// [Alice, Bob]
+// [Anaji, Baji]
 // Pair[first=Answer, second=42]
 // Is record: true
 // Component: name Type: String

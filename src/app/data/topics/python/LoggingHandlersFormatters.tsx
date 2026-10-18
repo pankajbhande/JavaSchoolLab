@@ -197,10 +197,10 @@ log.addHandler(handler)
 log.setLevel(logging.INFO)
 log.propagate = False
 
-log.info("user %s logged in", "asha")
+log.info("user %s logged in", "abaji")
 
 # OUTPUT:
-# {"level": "INFO", "logger": "svc", "message": "user asha logged in"}`
+# {"level": "INFO", "logger": "svc", "message": "user abaji logged in"}`
             ]
         },
         {

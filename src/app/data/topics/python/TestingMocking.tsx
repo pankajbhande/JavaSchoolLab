@@ -63,15 +63,15 @@ Assertion methods check how the mock was used - like Mockito's <code>verify()</c
 
 def checkout(cart_total, gateway, mailer):
     gateway.charge(cart_total)
-    mailer.send("asha@mail.com", "Order confirmed")
+    mailer.send("abaji@mail.com", "Order confirmed")
 
 gateway = Mock()
 mailer = Mock()
 checkout(760, gateway, mailer)
 
 gateway.charge.assert_called_once_with(760)
-mailer.send.assert_called_once_with("asha@mail.com", "Order confirmed")
-print(mailer.mock_calls == [call.send("asha@mail.com", "Order confirmed")])
+mailer.send.assert_called_once_with("abaji@mail.com", "Order confirmed")
+print(mailer.mock_calls == [call.send("abaji@mail.com", "Order confirmed")])
 gateway.refund.assert_not_called()
 print("all checks passed")
 

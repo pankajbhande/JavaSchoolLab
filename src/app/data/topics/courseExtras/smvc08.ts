@@ -67,8 +67,8 @@ class GreetingService {
 }
 
 // OUTPUT:
-// Accept-Language: fr -> Bonjour Asha
-// Accept-Language: en -> Hello Asha`]]
+// Accept-Language: fr -> Bonjour Abaji
+// Accept-Language: en -> Hello Abaji`]]
     ),
 
     'mvc-request-attributes': x(
@@ -181,12 +181,12 @@ class ProductController {
             ['Derived attribute name.',
                 r`@GetMapping("/users")
 String users(Model model) {
-    model.addAttribute(List.of("Asha", "Ravi"));   // name from type
+    model.addAttribute(List.of("Abaji", "Raoji"));   // name from type
     return "users";
 }
 
 // OUTPUT:
-// model attribute name: stringList = [Asha, Ravi]`]],
+// model attribute name: stringList = [Abaji, Raoji]`]],
         [['MockMvc checks the model.',
             r`@WebMvcTest(ProductController.class)
 class ProductControllerTest {
@@ -205,7 +205,10 @@ class ProductControllerTest {
 // Tests run: 1, Failures: 0, Errors: 0`],
             ['Model is not session data.',
                 r`@GetMapping("/a")
-String a(Model m) { m.addAttribute("x", 1); return "a"; }
+String a(Model m) {
+    m.addAttribute("x", 1);
+    return "a";
+}
 
 @GetMapping("/b")
 String b(Model m) {
@@ -236,14 +239,14 @@ String b(Model m) {
         [['Fill a ModelMap.',
             r`@GetMapping("/profile")
 String profile(ModelMap map) {
-    map.addAttribute("name", "Asha")
+    map.addAttribute("name", "Abaji")
        .addAttribute("age", 28)
        .addAttribute("skills", List.of("Java", "Spring"));
     return "profile";
 }
 
 // OUTPUT:
-// model = {name=Asha, age=28, skills=[Java, Spring]}`],
+// model = {name=Abaji, age=28, skills=[Java, Spring]}`],
             ['Use the map methods.',
                 r`@GetMapping("/info")
 String info(ModelMap map) {
@@ -269,7 +272,7 @@ String both(Model model, ModelMap map) {
                 r`@Test
 void profileModel() throws Exception {
     mvc.perform(get("/profile"))
-       .andExpect(model().attribute("name", "Asha"))
+       .andExpect(model().attribute("name", "Abaji"))
        .andExpect(model().attributeExists("skills"));
 }
 
@@ -364,13 +367,13 @@ void orderView() throws Exception {
         [['addAttribute and addAllAttributes.',
             r`@GetMapping("/dashboard")
 String dashboard(Model model) {
-    model.addAttribute("user", "Asha");
+    model.addAttribute("user", "Abaji");
     model.addAllAttributes(Map.of("unread", 3, "plan", "PRO"));
     return "dashboard";
 }
 
 // OUTPUT:
-// model has user=Asha, unread=3, plan=PRO (map order varies)`],
+// model has user=Abaji, unread=3, plan=PRO (map order varies)`],
             ['Shared data with @ModelAttribute.',
                 r`@Controller
 @RequestMapping("/register")
@@ -397,7 +400,7 @@ class GlobalModel {
                 r`@Test
 void dashboardHasData() throws Exception {
     mvc.perform(get("/dashboard"))
-       .andExpect(model().attribute("user", "Asha"))
+       .andExpect(model().attribute("user", "Abaji"))
        .andExpect(model().attribute("unread", 3));
 }
 
@@ -459,12 +462,12 @@ void readModel() throws Exception {
 // OUTPUT:
 // Tests run: 1, Failures: 0, Errors: 0`],
             ['A template typo fails silently.',
-                r`// controller: model.addAttribute("userName", "Asha");
+                r`// controller: model.addAttribute("userName", "Abaji");
 // template uses the name "username" (wrong case)
 // the page renders an empty value and no error is shown
 
 // OUTPUT:
-// Hello !   (expected: Hello Asha!)`]]
+// Hello !   (expected: Hello Abaji!)`]]
     ),
 
     'mvc-returning-view-name': x(
@@ -611,7 +614,7 @@ String home2(@RequestParam(defaultValue = "user") String role, Model model) {
 class HelloController {
     @GetMapping("/hello")
     String hello(Model model) {
-        model.addAttribute("name", "Asha");
+        model.addAttribute("name", "Abaji");
         return "hello";      // ThymeleafViewResolver -> hello.html
     }
 }
@@ -657,7 +660,7 @@ class ReportView implements View {
 }
 
 // OUTPUT:
-// return "report" from a handler -> Report for Asha`]]
+// return "report" from a handler -> Report for Abaji`]]
     )
 };
 
@@ -708,7 +711,8 @@ spring.messages.cache-duration=3600s
 spring.messages.fallback-to-system-locale=false
 
 # OUTPUT:
-# bundles are cached for an hour; unknown locales fall back to messages.properties`],
+# bundles are cached for an hour;
+unknown locales fall back to messages.properties`],
         [`<p>A shop supports English, French and German. Choose a cookie resolver so the choice persists, show prices with locale-aware formatting, and test each language with MockMvc.</p><ul><li><b>Cookie:</b> keeps the language between visits.</li><li><b>Switch link:</b> <code>?lang=de</code> in the page header.</li><li><b>Test:</b> one test per supported language.</li></ul>`,
             r`@Bean
 LocaleResolver localeResolver() {
@@ -1071,7 +1075,8 @@ spring.jpa.open-in-view=false
 model.addAttribute("order", orderService.loadWithItems(id));
 
 # OUTPUT:
-# the template cannot trigger hidden lazy queries; a missing fetch fails loudly`],
+# the template cannot trigger hidden lazy queries;
+a missing fetch fails loudly`],
         [`<p>Post-Redirect-Get with a success message is the classic case.</p><ul><li><b>POST:</b> saves and sets a flash message.</li><li><b>GET:</b> reads it from the model and shows it once.</li><li><b>Test:</b> checks <code>flash().attribute</code>.</li></ul>`,
             r`@PostMapping("/profile")
 String update(ProfileForm f, RedirectAttributes ra) {
@@ -1215,7 +1220,7 @@ ModelAndView users(@RequestParam(defaultValue = "html") String fmt) {
 
 // OUTPUT:
 // /users          -> HTML page
-// /users?fmt=json -> {"users":["asha","ravi"]}`]
+// /users?fmt=json -> {"users":["abaji","raoji"]}`]
     ),
 
     'mvc-view-rendering': dv(

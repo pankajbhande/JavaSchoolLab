@@ -33,7 +33,8 @@ jcmd 4242 Thread.print > dump1.txt
 #    java.lang.Thread.State: TIMED_WAITING (sleeping)
 #         at java.lang.Thread.sleep(Native Method)`],
             ['Take three dumps with a pause.',
-                r`for i in 1 2 3; do
+                r`for i in 1 2 3;
+do
   jcmd 4242 Thread.print > dump_$i.txt
   sleep 5
 done
@@ -338,7 +339,10 @@ jcmd 4242 Thread.print | grep -A3 "exec-" | grep -c "SocketInputStream"
 # 200
 # 187      <- almost all workers wait on a slow downstream call`],
         [`<p>Scenario: a service stops answering but CPU is low.</p><ul><li><b>Step 1:</b> take three dumps, 5 seconds apart.</li><li><b>Step 2:</b> count threads by state and by top frame.</li><li><b>Step 3:</b> find the lock owner for the BLOCKED threads.</li><li><b>Step 4:</b> fix the root cause: lock order, a timeout, or a bigger or isolated pool.</li></ul>`,
-            r`for i in 1 2 3; do jcmd 4242 Thread.print -l > d$i.txt; sleep 5; done
+            r`for i in 1 2 3;
+do jcmd 4242 Thread.print -l > d$i.txt;
+sleep 5;
+done
 grep -h "waiting to lock" d1.txt d2.txt d3.txt | sort | uniq -c
 
 # OUTPUT: (varies)

@@ -28,6 +28,8 @@ export interface Topic {
   /** Shown under the Expert tab, concatenated after `intermediate`. */
   intermediate?: ContentBlock[];
   expert?: ContentBlock[];
+  /** Interview questions with model answers, shown in the right pane rather than in the notes. */
+  interviewQA?: [question: string, answer: string][];
 }
 
 /** A module: the unit a completion test and certificate are issued against. */

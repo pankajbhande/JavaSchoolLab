@@ -104,7 +104,7 @@ A dictionary pattern matches if the listed keys exist with matching values - <b>
             return "Invalid event"
 
 print(handle({"type": "payment", "amount": 499, "currency": "INR", "user": "sheru"}))
-print(handle({"type": "signup", "user": "asha"}))
+print(handle({"type": "signup", "user": "abaji"}))
 print(handle(["not", "a", "dict"]))
 
 # OUTPUT:

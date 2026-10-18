@@ -120,13 +120,13 @@ public class TextBlockIntermediate {
         // Trailing space preservation with \\s
         String table = """
                 Name   \\s
-                Alice  \\s
-                Bob    \\s
+                Anaji  \\s
+                Baji    \\s
                 """;
         System.out.println(table);
 
         // Using formatted() for parameterized text blocks
-        String name = "Alice";
+        String name = "Anaji";
         int age = 30;
         String greeting = """
                 Hello, %s!
@@ -160,9 +160,9 @@ public class TextBlockIntermediate {
 // OUTPUT:
 // This is a very long line that we want to keep on a single line in the output ...
 // Name
-// Alice
-// Bob
-// Hello, Alice!
+// Anaji
+// Baji
+// Hello, Anaji!
 // You are 30 years old.
 // Welcome to Java 17.
 // She said "Hello" and he replied "Hi".

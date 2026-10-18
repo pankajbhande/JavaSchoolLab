@@ -69,13 +69,13 @@ Memory is not infinite. If a program keeps creating objects that never become un
         {
             content: `<h3>Stack vs Heap - The Core Model</h3>
 <pre class="bg-[#1e1e2e] text-gray-100 p-4 rounded-lg overflow-x-auto font-mono text-[13px] leading-6">STACK (per thread)                    HEAP (shared, one per JVM)
-+----------------------+              +--------------------------+
-| main() frame         |              |                          |
-|  int x = 5           |              |  new Person("Ravi", 22)  |
-|  Person p ----------------------&gt;   |  { name: "Ravi",         |
-|                       |              |    age: 22 }             |
-+----------------------+              |                          |
-| greet() frame         |              +--------------------------+
++----------------------+              +----------------------------+
+| main() frame         |              |                            |
+|  int x = 5           |              |  new Person("Raoji", 22)   |
+|  Person p ----------------------&gt;   |  { name: "Raoji",          |
+|                       |              |    age: 22 }               |
++----------------------+              |                            |
+| greet() frame         |              +----------------------------+
 |  (pushed on call,     |
 |   popped on return)   |
 +----------------------+</pre>

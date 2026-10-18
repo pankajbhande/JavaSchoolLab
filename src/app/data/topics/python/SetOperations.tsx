@@ -39,8 +39,8 @@ print("symmetric:   ", a ^ b)
             content: `<h4>A Real Example: Course Enrolment</h4>
 <code>sorted()</code> is used so the output order is always the same.`,
             codeExamples: [
-                `python_course = {"Asha", "Ravi", "Meena", "Kiran"}
-java_course = {"Ravi", "Kiran", "Sheru"}
+                `python_course = {"Abaji", "Raoji", "Moropant", "Kanhoji"}
+java_course = {"Raoji", "Kanhoji", "Sheru"}
 
 print("Both courses: ", sorted(python_course & java_course))
 print("Python only:  ", sorted(python_course - java_course))
@@ -48,10 +48,10 @@ print("Everyone:     ", sorted(python_course | java_course))
 print("Exactly one:  ", sorted(python_course ^ java_course))
 
 # OUTPUT:
-# Both courses:  ['Kiran', 'Ravi']
-# Python only:   ['Asha', 'Meena']
-# Everyone:      ['Asha', 'Kiran', 'Meena', 'Ravi', 'Sheru']
-# Exactly one:   ['Asha', 'Meena', 'Sheru']`
+# Both courses:  ['Kanhoji', 'Raoji']
+# Python only:   ['Abaji', 'Moropant']
+# Everyone:      ['Abaji', 'Kanhoji', 'Moropant', 'Raoji', 'Sheru']
+# Exactly one:   ['Abaji', 'Moropant', 'Sheru']`
             ]
         },
         {
@@ -117,9 +117,9 @@ print(s)
 Unpack a list of sets into the method call.`,
             codeExamples: [
                 `attendance = [
-    {"asha", "ravi", "meena"},       # Monday
-    {"asha", "meena", "kiran"},      # Tuesday
-    {"meena", "asha", "sheru"},      # Wednesday
+    {"abaji", "raoji", "moropant"},       # Monday
+    {"abaji", "moropant", "kanhoji"},      # Tuesday
+    {"moropant", "abaji", "sheru"},      # Wednesday
 ]
 
 every_day = set.intersection(*attendance)
@@ -128,7 +128,7 @@ print(sorted(every_day))
 print(len(any_day))
 
 # OUTPUT:
-# ['asha', 'meena']
+# ['abaji', 'moropant']
 # 5`
             ]
         },

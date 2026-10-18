@@ -20,7 +20,7 @@ SELECT e.name, d.name, l.city FROM emp e JOIN departments d ON d.id = e.dept JOI
 
 -- OUTPUT:
 -- name  | name | city
--- Asha  | HR   | Pune`],
+-- Abaji | HR   | Pune`],
         [`Mistakes: missing join condition (Cartesian product), joining on a mismatched type or collation (index unused), selecting ambiguous column names, and joining before filtering in the ON clause by mistake. Always check row counts.`,
             r`SELECT COUNT(*) FROM emp e JOIN departments d;             -- no ON: 3 x 4 = 12 rows (in MySQL a JOIN without ON is a cross join)
 SELECT COUNT(*) FROM emp e JOIN departments d ON d.id = e.dept;
@@ -43,7 +43,7 @@ FROM orders o JOIN customers c ON c.id = o.customer_id JOIN order_items i ON i.o
 
 -- OUTPUT:
 -- id   | customer | product | qty | unit_price | line_total
--- 1001 | Asha     | Pen     |   2 |      10.00 |      20.00`]
+-- 1001 | Abaji    | Pen     |   2 |      10.00 | 20.00`]
     ),
 
     'LEFT JOIN': dv(
@@ -52,9 +52,9 @@ FROM orders o JOIN customers c ON c.id = o.customer_id JOIN order_items i ON i.o
 
 -- OUTPUT:
 -- dept  | employee
--- HR    | Asha
--- HR    | Ravi
--- IT    | Meena
+-- HR    | Abaji
+-- HR    | Raoji
+-- IT    | Moropant
 -- Sales | NULL`],
         [`Where a condition goes decides the result. Conditions on the right table belong in ON to keep unmatched left rows; in WHERE they turn the join into an inner join. Use IS NULL on a right key for an anti-join.`,
             r`SELECT d.name, e.name FROM departments d LEFT JOIN emp e ON e.dept = d.id AND e.salary > 50000;      -- keeps Sales
@@ -83,9 +83,9 @@ SELECT d.name FROM departments d LEFT JOIN emp e ON e.dept = d.id WHERE e.id IS 
 FROM customers c LEFT JOIN (SELECT customer_id, COUNT(*) AS orders, MAX(created_at) AS last_order FROM orders GROUP BY customer_id) x ON x.customer_id = c.id ORDER BY x.last_order DESC;
 
 -- OUTPUT:
--- id | name | orders | last_order
---  1 | Asha |      9 | 2026-04-30 18:20:11
---  2 | Ravi |      0 | NULL`]
+-- id | name  | orders | last_order
+--  1 | Abaji |      9 | 2026-04-30 18:20:11
+--  2 | Raoji |      0 | NULL`]
     ),
 
     'RIGHT JOIN': dv(
@@ -177,7 +177,7 @@ SELECT COUNT(*) FROM variants;
     'SELF JOIN': dv(
         [`A self join uses the same table twice under different aliases, so each row can be matched with other rows of the same table. The optimizer treats the two aliases as independent tables, so an index on the join column (for example <code>manager_id</code>) is used for the inner lookups.`,
             r`CREATE TABLE staff (id INT PRIMARY KEY, name VARCHAR(20), manager_id INT, KEY idx_mgr (manager_id));
-INSERT INTO staff VALUES (1,'Anita',NULL),(2,'Ravi',1),(3,'Meena',1),(4,'Kiran',2);
+INSERT INTO staff VALUES (1,'Annaji',NULL),(2,'Raoji',1),(3,'Moropant',1),(4,'Kanhoji',2);
 EXPLAIN SELECT e.name, m.name FROM staff e JOIN staff m ON m.id = e.manager_id;
 
 -- OUTPUT: (example)
@@ -190,10 +190,10 @@ SELECT a.id, b.id AS duplicate_of FROM users a JOIN users b ON a.email = b.email
 
 -- OUTPUT:
 -- employee | manager
--- Anita    | (top)
--- Ravi     | Anita
--- Meena    | Anita
--- Kiran    | Ravi`],
+-- Annaji   | (top)
+-- Raoji    | Annaji
+-- Moropant | Annaji
+-- Kanhoji  | Raoji`],
         [`Mistakes: forgetting aliases (ambiguous columns), using INNER JOIN and losing root rows, producing both (a,b) and (b,a) pairs, and attempting arbitrary-depth hierarchies with a fixed number of self joins. Use a recursive CTE for depth.`,
             r`SELECT name FROM staff JOIN staff ON staff.id = staff.manager_id;
 
@@ -210,7 +210,7 @@ ALTER TABLE events ADD INDEX idx_user_created (user_id, created_at);
 
 -- OUTPUT:
 -- employee | salary | manager | manager_salary
--- Kiran    |  90000 | Ravi    |          80000`]
+-- Kanhoji  |  90000 | Raoji   | 80000`]
     ),
 
     'Multiple Joins & Many-to-Many Joins': dv(
@@ -231,7 +231,7 @@ SELECT c.title, COUNT(*) AS students, GROUP_CONCAT(s.name ORDER BY s.name) AS na
 
 -- OUTPUT:
 -- name
--- Asha`],
+-- Abaji`],
         [`Mistakes: fan-out when joining two one-to-many branches (totals multiply), mixing INNER and LEFT joins so an inner join discards the preserved rows, and selecting wide columns through many joins. Aggregate branches separately.`,
             r`SELECT o.id, SUM(i.qty * i.unit_price) AS items_total, SUM(p.amount) AS paid FROM orders o JOIN order_items i ON i.order_id = o.id JOIN payments p ON p.order_id = o.id GROUP BY o.id;
 -- both sums are inflated (every item row repeats for every payment row)
@@ -252,8 +252,8 @@ JOIN (SELECT order_id, SUM(qty * unit_price) AS items_total FROM order_items GRO
 LEFT JOIN (SELECT order_id, SUM(amount) AS paid FROM payments GROUP BY order_id) p ON p.order_id = o.id WHERE o.created_at >= '2026-05-01';
 
 -- OUTPUT:
--- id | name | items_total | paid
---  1 | Asha |      900.00 | 900.00`]
+-- id | name  | items_total | paid
+--  1 | Abaji |      900.00 | 900.00`]
     ),
 
     'Join vs Subquery & Join Performance': dv(
@@ -271,7 +271,7 @@ SELECT c.name FROM customers c WHERE EXISTS (SELECT 1 FROM orders o WHERE o.cust
 
 -- OUTPUT: (all three)
 -- name
--- Asha`],
+-- Abaji`],
         [`Mistakes: correlated subqueries in the SELECT list that run once per row, derived tables that cannot be merged and are materialized, and assuming one form is always faster. Test with EXPLAIN ANALYZE on realistic data.`,
             r`SELECT c.id, (SELECT COUNT(*) FROM orders o WHERE o.customer_id = c.id) AS orders FROM customers c;                  -- one subquery per customer
 SELECT c.id, COALESCE(x.n, 0) AS orders FROM customers c LEFT JOIN (SELECT customer_id, COUNT(*) AS n FROM orders GROUP BY customer_id) x ON x.customer_id = c.id;
@@ -294,8 +294,8 @@ SELECT c.name, o.id, o.total FROM customers c JOIN orders o ON o.customer_id = c
 SELECT c.name FROM customers c WHERE EXISTS (SELECT 1 FROM orders o WHERE o.customer_id = c.id AND o.total > 1000);
 
 -- OUTPUT:
--- name | id | total
--- Asha | 77 | 1500.00`]
+-- name  | id | total
+-- Abaji | 77 | 1500.00`]
     ),
 
     'Scalar & Single-Row Subqueries': dv(
@@ -305,9 +305,9 @@ SELECT (SELECT MAX(salary) FROM emp) AS top, (SELECT COUNT(*) FROM emp) AS headc
 EXPLAIN SELECT name FROM emp WHERE salary > (SELECT AVG(salary) FROM emp);
 
 -- OUTPUT:
--- name  | salary
--- Asha  |  60000
--- Meena |  70000
+-- name     | salary
+-- Abaji    |  60000
+-- Moropant |  70000
 -- (EXPLAIN: select_type SUBQUERY, evaluated once)`],
         [`Where it can appear: WHERE, HAVING, SELECT list, ORDER BY, SET of an UPDATE and VALUES of an INSERT. Use LIMIT 1 or aggregates to guarantee a single row, and COALESCE for the empty case.`,
             r`UPDATE emp SET salary = (SELECT AVG(salary) FROM emp WHERE dept = 10) WHERE id = 99;
@@ -328,8 +328,8 @@ SELECT name FROM emp WHERE salary = (SELECT MAX(salary) FROM emp WHERE dept = 10
 
 -- OUTPUT:
 -- name  | salary | diff_from_dept_avg
--- Asha  |  60000 |               7500
--- Ravi  |  45000 |              -7500`],
+-- Abaji |  60000 | 7500
+-- Raoji |  45000 | -7500`],
         [`Real-world: compare each row to a global baseline, such as orders above the average order value this month.`,
             r`SELECT id, total FROM orders WHERE created_at >= '2026-05-01' AND total > (SELECT AVG(total) FROM orders WHERE created_at >= '2026-05-01') ORDER BY total DESC LIMIT 5;
 
@@ -353,8 +353,8 @@ SELECT name FROM emp WHERE dept NOT IN (SELECT id FROM departments WHERE active 
 
 -- OUTPUT:
 -- name
--- Asha
--- Meena`],
+-- Abaji
+-- Moropant`],
         [`The classic bug: NOT IN with a NULL in the subquery returns no rows because x NOT IN (1, NULL) is unknown. Filter NULLs or use NOT EXISTS.`,
             r`SELECT id FROM departments WHERE id NOT IN (SELECT dept FROM emp);                                       -- emp.dept has a NULL: empty
 SELECT id FROM departments d WHERE NOT EXISTS (SELECT 1 FROM emp e WHERE e.dept = d.id);                   -- correct
@@ -405,7 +405,7 @@ SELECT e.name FROM emp e JOIN (SELECT dept, AVG(salary) AS a FROM emp GROUP BY d
 
 -- OUTPUT:
 -- name
--- Asha`],
+-- Abaji`],
         [`Real-world: top 3 recent orders per customer using a correlated count, then the faster window version for large data.`,
             r`SELECT o.id, o.customer_id FROM orders o WHERE (SELECT COUNT(*) FROM orders x WHERE x.customer_id = o.customer_id AND (x.created_at, x.id) > (o.created_at, o.id)) < 3;
 SELECT id, customer_id FROM (SELECT id, customer_id, ROW_NUMBER() OVER (PARTITION BY customer_id ORDER BY created_at DESC, id DESC) AS rn FROM orders) t WHERE rn <= 3;
@@ -428,7 +428,7 @@ SELECT id, customer_id FROM (SELECT id, customer_id, ROW_NUMBER() OVER (PARTITIO
 
 -- OUTPUT:
 -- name
--- Asha         (customers who bought every featured product)`],
+-- Abaji         (customers who bought every featured product)`],
         [`Mistakes: forgetting the correlation (the subquery is then true for everyone or no one), using COUNT(*) &gt; 0 instead of EXISTS, and NOT IN where NOT EXISTS is needed. Always reference the outer row.`,
             r`SELECT name FROM customers WHERE EXISTS (SELECT 1 FROM orders);                        -- true for all customers if any order exists
 SELECT name FROM customers c WHERE (SELECT COUNT(*) FROM orders o WHERE o.customer_id = c.id) > 0;   -- counts everything
@@ -497,10 +497,10 @@ EXPLAIN SELECT name FROM emp WHERE dept = 10 UNION SELECT name FROM emp WHERE sa
 
 -- OUTPUT:
 -- name
--- Asha
--- Ravi
--- Meena
--- Asha          (UNION ALL keeps the duplicate)
+-- Abaji
+-- Raoji
+-- Moropant
+-- Abaji          (UNION ALL keeps the duplicate)
 -- EXPLAIN: UNION RESULT <union1,2> uses a temporary table`],
         [`Combine more than two branches, give individual branches ORDER BY/LIMIT with parentheses, sort the final result once, and add a literal column to label the source of each row.`,
             r`(SELECT id, 'emp' AS src, name FROM emp ORDER BY id LIMIT 2)
@@ -510,10 +510,10 @@ ORDER BY src, id;
 
 -- OUTPUT:
 -- id | src  | name
---  1 | cust | Asha
---  2 | cust | Ravi
---  1 | emp  | Asha
---  2 | emp  | Ravi`],
+--  1 | cust | Abaji
+--  2 | cust | Raoji
+--  1 | emp  | Abaji
+--  2 | emp  | Raoji`],
         [`Mistakes: UNION when duplicates cannot occur (wasted work), mismatched column counts or types, ORDER BY on a branch without parentheses, and expecting UNION to keep the order of branches. Default to UNION ALL.`,
             r`SELECT id, name FROM emp UNION SELECT id FROM customers;
 
@@ -606,16 +606,16 @@ SELECT id, name, phone, 'cust' FROM customers;
 SELECT code COLLATE utf8mb4_0900_ai_ci FROM t1 UNION SELECT code COLLATE utf8mb4_0900_ai_ci FROM t2;
 
 -- OUTPUT:
--- id | name | phone | src
---  1 | Asha | NULL  | emp
---  1 | Asha | 9999  | cust`],
+-- id | name  | phone | src
+--  1 | Abaji |  NULL | emp
+--  1 | Abaji |  9999 | cust`],
         [`Mistakes: relying on implicit casts that change sort order, forgetting that different extra columns make duplicate rows distinct, and comparing branches whose column order differs. Normalise before the union.`,
             r`SELECT name, 'x' AS tag FROM a UNION SELECT name, 'y' FROM b;      -- same names appear twice: tag differs
 
 -- OUTPUT:
--- name | tag
--- Asha | x
--- Asha | y`],
+-- name  | tag
+-- Abaji | x
+-- Abaji | y`],
         [`To deduplicate by a business key (not the whole row) after UNION ALL, rank rows and keep one per key, with an index-friendly ordering rule.`,
             r`SELECT id, name FROM (
   SELECT id, name, ROW_NUMBER() OVER (PARTITION BY id ORDER BY updated_at DESC) AS rn
@@ -623,7 +623,7 @@ SELECT code COLLATE utf8mb4_0900_ai_ci FROM t1 UNION SELECT code COLLATE utf8mb4
 
 -- OUTPUT:
 -- id | name
---  1 | Asha          (newest version of each id)`],
+--  1 | Abaji          (newest version of each id)`],
         [`Real-world: merging data from two systems during a migration, labelling the origin and resolving duplicates by priority so the target table receives one clean row per key.`,
             r`INSERT INTO customers_merged (email, name, source)
 SELECT email, name, source FROM (

@@ -91,7 +91,7 @@ Low-level functions should usually let exceptions propagate; the code that knows
     name, marks = line.split(",")
     return name, int(marks)             # no try here - let errors propagate
 
-lines = ["Asha,91", "Ravi,abc", "Kiran,85"]
+lines = ["Abaji,91", "Raoji,abc", "Kanhoji,85"]
 for line in lines:
     try:
         name, marks = parse_marks(line)
@@ -100,9 +100,9 @@ for line in lines:
         print(f"Skipping {line!r}: {e}")
 
 # OUTPUT:
-# Asha 91
-# Skipping 'Ravi,abc': invalid literal for int() with base 10: 'abc'
-# Kiran 85`
+# Abaji 91
+# Skipping 'Raoji,abc': invalid literal for int() with base 10: 'abc'
+# Kanhoji 85`
             ]
         }
     ],

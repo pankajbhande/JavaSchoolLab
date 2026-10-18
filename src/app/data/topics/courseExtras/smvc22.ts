@@ -47,7 +47,10 @@ class TraceFilter extends OncePerRequestFilter {
 @RestController
 class HelloController {
     @GetMapping("/hello")
-    String hello() { System.out.println("controller"); return "hi"; }
+    String hello() {
+        System.out.println("controller");
+        return "hi";
+    }
 }
 
 // OUTPUT:
@@ -133,7 +136,9 @@ void keepsCounter() throws Exception {
 curl -b jar.txt http://localhost:8080/visits
 
 # OUTPUT: (varies)
-# Set-Cookie: JSESSIONID=7F3A91...; Path=/; HttpOnly
+# Set-Cookie: JSESSIONID=7F3A91...;
+Path=/;
+HttpOnly
 # visit 2`]]
     ),
     'mvc-httpsession-session': x(
@@ -169,8 +174,8 @@ String home(HttpSession session) {
 }
 
 // OUTPUT:
-// POST /login name=asha -> 302 /home
-// GET /home -> hello asha`],
+// POST /login name=abaji -> 302 /home
+// GET /home -> hello abaji`],
             ['Do not create sessions for anonymous reads.',
                 r`@GetMapping("/peek")
 @ResponseBody
@@ -200,10 +205,10 @@ public class SessionCounter implements HttpSessionListener {
             ['Test that login stores the user.',
                 r`@Test
 void loginStoresUser() throws Exception {
-    MvcResult res = mvc.perform(post("/login").param("name", "asha"))
+    MvcResult res = mvc.perform(post("/login").param("name", "abaji"))
         .andExpect(status().is3xxRedirection()).andReturn();
     HttpSession s = res.getRequest().getSession();
-    assertEquals("asha", ((LoginUser) s.getAttribute("user")).name());
+    assertEquals("abaji", ((LoginUser) s.getAttribute("user")).name());
 }
 
 // OUTPUT:
@@ -233,7 +238,8 @@ class OrderWizard {
 
     @PostMapping("/wizard/step1")
     String step1(@ModelAttribute("order") Order o, String item) {
-        o.setItem(item); return "redirect:/wizard/step2";
+        o.setItem(item);
+        return "redirect:/wizard/step2";
     }
     @PostMapping("/wizard/done")
     @ResponseBody
@@ -255,12 +261,12 @@ String profile(@SessionAttribute(name = "user", required = false) String user) {
 
 // OUTPUT:
 // without login -> please log in
-// after login   -> profile of asha`]],
+// after login   -> profile of abaji`]],
         [['Test with sessionAttr.',
             r`@Test
 void profile() throws Exception {
-    mvc.perform(get("/profile").sessionAttr("user", "asha"))
-       .andExpect(content().string("profile of asha"));
+    mvc.perform(get("/profile").sessionAttr("user", "abaji"))
+       .andExpect(content().string("profile of abaji"));
 }
 
 // OUTPUT:
@@ -357,7 +363,11 @@ server.servlet.session.cookie.same-site=lax
 server.servlet.session.tracking-modes=cookie
 
 # OUTPUT:
-# Set-Cookie: APPSESSION=ab12...; Path=/; Secure; HttpOnly; SameSite=Lax`],
+# Set-Cookie: APPSESSION=ab12...;
+Path=/;
+Secure;
+HttpOnly;
+SameSite=Lax`],
             ['Show the cookie exchange.',
                 r`@GetMapping("/hello")
 @ResponseBody
@@ -380,7 +390,9 @@ assertTrue(r.getHeaders().getFirst("Set-Cookie").contains("APPSESSION"));
 
 # OUTPUT: (varies)
 # HTTP/1.1 200
-# Set-Cookie: APPSESSION=ab12...; Path=/; HttpOnly`]]
+# Set-Cookie: APPSESSION=ab12...;
+Path=/;
+HttpOnly`]]
     ),
     'mvc-url-rewriting': x(
         ['<b>URL rewriting</b> keeps the session id in the URL, for example <code>/cart;jsessionid=ABC123</code>, for browsers that block cookies.',
@@ -481,7 +493,7 @@ List<String> ids(Object principal) {
 void idChangesAfterLogin() throws Exception {
     MockHttpSession before = new MockHttpSession();
     String oldId = before.getId();
-    MvcResult res = mvc.perform(formLogin().user("asha").password("pw").session(before))
+    MvcResult res = mvc.perform(formLogin().user("abaji").password("pw").session(before))
         .andReturn();
     assertNotEquals(oldId, res.getRequest().getSession().getId());
 }
@@ -631,9 +643,15 @@ processDispatchResult(request, response, chain, mv, null);
         [`<p>Ways to set it up:</p><ul><li><b>Boot:</b> auto-configured, mapped to <code>/</code>; change with <code>spring.mvc.servlet.path</code>.</li><li><b>Java config:</b> extend <code>AbstractAnnotationConfigDispatcherServletInitializer</code> and return root and servlet config classes.</li><li><b>Several servlets:</b> add <code>ServletRegistrationBean</code> with its own context.</li><li><b>Startup:</b> <code>spring.mvc.servlet.load-on-startup=1</code> initializes it early.</li><li><b>Unmatched 404:</b> <code>spring.mvc.throw-exception-if-no-handler-found</code> turns it into an exception.</li></ul>`,
             r`public class WebInit
         extends AbstractAnnotationConfigDispatcherServletInitializer {
-    protected Class<?>[] getRootConfigClasses() { return new Class<?>[] { RootConfig.class }; }
-    protected Class<?>[] getServletConfigClasses() { return new Class<?>[] { WebConfig.class }; }
-    protected String[] getServletMappings() { return new String[] { "/" }; }
+    protected Class<?>[] getRootConfigClasses() {
+        return new Class<?>[] { RootConfig.class };
+    }
+    protected Class<?>[] getServletConfigClasses() {
+        return new Class<?>[] { WebConfig.class };
+    }
+    protected String[] getServletMappings() {
+        return new String[] { "/" };
+    }
 }
 
 @Bean
@@ -652,7 +670,10 @@ ServletRegistrationBean<DispatcherServlet> adminServlet() {
 class BadController {
     private String lastUser;                 // BUG: shared by all requests
     @GetMapping("/who")
-    String who(@RequestParam String u) { lastUser = u; return lastUser; }
+    String who(@RequestParam String u) {
+        lastUser = u;
+        return lastUser;
+    }
 }
 // FIX: use local variables only
 @GetMapping("/who")
@@ -712,7 +733,10 @@ class CartController {
     private final Cart cart;                       // proxy injected into a singleton
     CartController(Cart cart) { this.cart = cart; }
     @PostMapping("/cart/{item}")
-    List<String> add(@PathVariable String item) { cart.add(item); return cart.items(); }
+    List<String> add(@PathVariable String item) {
+        cart.add(item);
+        return cart.items();
+    }
 }
 
 // OUTPUT:
@@ -834,10 +858,16 @@ class ShopController {
 @Controller
 class ByType {
     @GetMapping("/order/new")
-    String form(Model m) { m.addAttribute(new Order()); return "orderForm"; }
+    String form(Model m) {
+        m.addAttribute(new Order());
+        return "orderForm";
+    }
 
     @GetMapping("/order/cancel")
-    String cancel(SessionStatus status) { status.setComplete(); return "redirect:/"; }
+    String cancel(SessionStatus status) {
+        status.setComplete();
+        return "redirect:/";
+    }
 }
 
 // OUTPUT:
@@ -962,7 +992,11 @@ server.servlet.session.cookie.max-age=-1
             r`curl -sI https://app.example.com/login | grep -i set-cookie
 
 # OUTPUT: (varies)
-# set-cookie: SESSION=NzE...; Path=/; Secure; HttpOnly; SameSite=Lax`]
+# set-cookie: SESSION=NzE...;
+Path=/;
+Secure;
+HttpOnly;
+SameSite=Lax`]
     ),
     'mvc-url-rewriting': dv(
         [`<p>How rewriting works:</p><ul><li><b>Decision:</b> <code>encodeURL</code> calls the request <code>isRequestedSessionIdFromCookie</code>; if the cookie is not confirmed, the id is added.</li><li><b>Format:</b> a path parameter <code>;jsessionid=ID</code> after the path and before the query string.</li><li><b>Incoming:</b> Tomcat parses the path parameter and finds the session.</li><li><b>First request:</b> the server cannot know whether cookies work yet, so it rewrites links once.</li></ul>`,
@@ -998,7 +1032,8 @@ server.servlet.session.tracking-modes=cookie
             r`server.servlet.session.tracking-modes=cookie
 
 # OUTPUT:
-# crawler gets clean URLs; users keep sessions through cookies`]
+# crawler gets clean URLs;
+users keep sessions through cookies`]
     ),
     'mvc-session-management': dv(
         [`<p>Inside Spring Security:</p><ul><li><b>SessionManagementFilter / strategies:</b> a composite <code>SessionAuthenticationStrategy</code> runs after login.</li><li><b>Parts:</b> <code>ChangeSessionIdAuthenticationStrategy</code>, <code>ConcurrentSessionControlAuthenticationStrategy</code> and <code>RegisterSessionAuthenticationStrategy</code>.</li><li><b>Repository:</b> <code>HttpSessionSecurityContextRepository</code> saves the SecurityContext in the session.</li><li><b>ConcurrentSessionFilter</b> checks whether the session was marked expired.</li></ul>`,
@@ -1084,7 +1119,8 @@ class BadCounter {
             r`spring.security.oauth2.resourceserver.jwt.jwk-set-uri=https://auth.example.com/jwks
 
 # OUTPUT:
-# keys fetched once and cached; each request verifies locally in microseconds (varies)`],
+# keys fetched once and cached;
+each request verifies locally in microseconds (varies)`],
         [`<p>Scenario: moving a monolith to many instances on Kubernetes.</p><ul><li><b>Step 1:</b> find session usage with a search for <code>getSession</code>.</li><li><b>Step 2:</b> move shared state to Redis through Spring Session, or to tokens.</li><li><b>Step 3:</b> test a rolling restart.</li><li><b>Interview angle:</b> discuss the twelve-factor rule of stateless processes.</li></ul>`,
             r`# application.properties
 spring.session.store-type=redis

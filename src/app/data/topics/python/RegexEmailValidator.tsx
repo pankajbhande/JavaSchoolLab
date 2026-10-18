@@ -6,14 +6,14 @@ export const regexEmailValidator: Topic = {
     beginner: [
         {
             content: `<h4>The Task</h4>
-Write a function <code>is_valid_email(text)</code> that accepts sensible addresses like <code>asha@gmail.com</code> and rejects obvious mistakes: a missing <code>@</code>, two <code>@</code> signs, spaces, or a domain without an extension.<br><br>
+Write a function <code>is_valid_email(text)</code> that accepts sensible addresses like <code>abaji@gmail.com</code> and rejects obvious mistakes: a missing <code>@</code>, two <code>@</code> signs, spaces, or a domain without an extension.<br><br>
 <b>Concepts practised:</b> character classes, quantifiers, non-capturing groups, <code>re.compile</code> and <code>fullmatch</code>.`
         },
         {
             content: `<h4>Step 1: Break an Address into Parts</h4>
 <table class="w-full border border-gray-700 border-collapse [&_th]:border [&_td]:border [&_td]:px-2  [&_th]:py-2  ">
 <tr><th>Part</th><th>Example</th><th>Pattern</th></tr>
-<tr class='text-center'><td>Local part</td><td><code>ravi.kumar+news</code></td><td><code>[A-Za-z0-9._%+-]+</code></td></tr>
+<tr class='text-center'><td>Local part</td><td><code>raoji.kumar+news</code></td><td><code>[A-Za-z0-9._%+-]+</code></td></tr>
 <tr class='text-center'><td>The @ sign</td><td><code>@</code></td><td><code>@</code></td></tr>
 <tr class='text-center'><td>Domain labels</td><td><code>mail.co</code></td><td><code>[A-Za-z0-9-]+(?:\\.[A-Za-z0-9-]+)*</code></td></tr>
 <tr class='text-center'><td>Top-level domain</td><td><code>.in</code></td><td><code>\\.[A-Za-z]{2,}</code></td></tr>
@@ -36,8 +36,8 @@ def is_valid_email(text):
     return EMAIL.fullmatch(text.strip()) is not None
 
 tests = [
-    "asha@gmail.com",
-    "ravi.kumar+news@mail.co.in",
+    "abaji@gmail.com",
+    "raoji.kumar+news@mail.co.in",
     "user@localhost",
     "no-at-sign.com",
     "two@@mail.com",
@@ -49,8 +49,8 @@ for t in tests:
     print(f"{t:<28} {is_valid_email(t)}")
 
 # OUTPUT:
-# asha@gmail.com               True
-# ravi.kumar+news@mail.co.in   True
+# abaji@gmail.com              True
+# raoji.kumar+news@mail.co.in  True
 # user@localhost               False
 # no-at-sign.com               False
 # two@@mail.com                False
@@ -67,11 +67,11 @@ Without <code>fullmatch</code>, the same pattern can <b>extract</b> addresses fr
 
 EMAIL = re.compile(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(?:\\.[A-Za-z0-9-]+)*\\.[A-Za-z]{2,}")
 
-text = "Contact asha@gmail.com or ravi@yahoo.co.in."
+text = "Contact abaji@gmail.com or raoji@yahoo.co.in."
 print(EMAIL.findall(text))
 
 # OUTPUT:
-# ['asha@gmail.com', 'ravi@yahoo.co.in']`
+# ['abaji@gmail.com', 'raoji@yahoo.co.in']`
             ]
         }
     ],
@@ -107,11 +107,11 @@ import pytest
 from validators import is_valid_email
 
 @pytest.mark.parametrize("email, expected", [
-    ("asha@gmail.com", True),
-    ("ravi.kumar+news@mail.co.in", True),
+    ("abaji@gmail.com", True),
+    ("raoji.kumar+news@mail.co.in", True),
     ("two@@mail.com", False),
     ("user@localhost", False),
-    ("  asha@gmail.com  ", True),          # surrounding spaces are stripped
+    ("  abaji@gmail.com  ", True),          # surrounding spaces are stripped
 ])
 def test_is_valid_email(email, expected):
     assert is_valid_email(email) == expected`

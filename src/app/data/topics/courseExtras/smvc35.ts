@@ -27,10 +27,10 @@ class HelloControllerTest {
 
     @Test
     void greets() throws Exception {
-        when(service.greet("Asha")).thenReturn("Hello Asha");
-        mockMvc.perform(get("/hello").param("name", "Asha"))
+        when(service.greet("Abaji")).thenReturn("Hello Abaji");
+        mockMvc.perform(get("/hello").param("name", "Abaji"))
             .andExpect(status().isOk())
-            .andExpect(content().string("Hello Asha"));
+            .andExpect(content().string("Hello Abaji"));
     }
 }
 
@@ -54,10 +54,10 @@ class UserControllerTest {
 
     @Test
     void returnsUser() throws Exception {
-        when(users.find(1L)).thenReturn(new User(1L, "Ravi"));
+        when(users.find(1L)).thenReturn(new User(1L, "Raoji"));
         mvc.perform(get("/users/1").accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.name").value("Ravi"));
+            .andExpect(jsonPath("$.name").value("Raoji"));
     }
 }
 
@@ -235,11 +235,11 @@ mvc.perform(get("/users/99")).andExpect(status().isNotFound());
 
 mvc.perform(post("/users")
         .contentType(MediaType.APPLICATION_JSON)
-        .content(om.writeValueAsString(new UserDto("Asha", 25))))
+        .content(om.writeValueAsString(new UserDto("Abaji", 25))))
     .andExpect(status().isCreated());
 
 // OUTPUT:
-// POST /users  {"name":"Asha","age":25} -> 201`]],
+// POST /users  {"name":"Abaji","age":25} -> 201`]],
         [['File upload.',
             r`MockMultipartFile f = new MockMultipartFile(
     "file", "a.txt", "text/plain", "hello".getBytes());
@@ -266,7 +266,7 @@ mvc.perform(multipart("/upload").file(f))
             '<b>Extract the result</b> with <code>andReturn()</code> when you need to deserialize the body and assert in plain Java.',
             '<b>AssertJ style</b>: Spring 6.2 adds <code>MockMvcTester</code> for fluent assertions, but classic matchers remain the common choice.'],
         [['F', 'How do you check the status code?', 'andExpect(status().isOk()) or another status matcher.'],
-            ['F', 'How do you check a JSON field?', 'andExpect(jsonPath("$.name").value("Ravi")).'],
+            ['F', 'How do you check a JSON field?', 'andExpect(jsonPath("$.name").value("Raoji")).'],
             ['M', 'What does content().json() do?', 'Compares the body with expected JSON, leniently unless strict mode is set.'],
             ['M', 'How do you test a redirect?', 'Use status().is3xxRedirection() and redirectedUrl("/target").'],
             ['S', 'How do you read the body into an object?', 'Call andReturn() and use ObjectMapper on getResponse().getContentAsString().'],
@@ -280,7 +280,7 @@ mvc.perform(multipart("/upload").file(f))
 
 // OUTPUT:
 // Status = 200, Content-Type = application/json
-// Body = {"id":1,"name":"Ravi","roles":["USER","ADMIN"]}`],
+// Body = {"id":1,"name":"Raoji","roles":["USER","ADMIN"]}`],
             ['View and model.',
                 r`mvc.perform(get("/home"))
     .andExpect(status().isOk())
@@ -288,7 +288,7 @@ mvc.perform(multipart("/upload").file(f))
     .andExpect(model().attributeExists("user"));
 
 // OUTPUT:
-// View name = home, Model = {user=User[name=Ravi]}`]],
+// View name = home, Model = {user=User[name=Raoji]}`]],
         [['Redirect after POST.',
             r`mvc.perform(post("/orders").param("item", "pen"))
     .andExpect(status().is3xxRedirection())
@@ -302,7 +302,7 @@ User u = om.readValue(res.getResponse().getContentAsString(), User.class);
 System.out.println(u.getName());
 
 // OUTPUT:
-// Ravi`]]
+// Raoji`]]
     ),
     'mvc-exception-testing': x(
         ['<b>Exception testing</b> checks that errors thrown by controllers or services are turned into the right HTTP status and body, usually by <code>@ExceptionHandler</code> or <code>@RestControllerAdvice</code>.',
@@ -385,7 +385,7 @@ violations.forEach(c -> System.out.println(c.getPropertyPath()
 // name must not be blank`]],
         [['Valid request passes.',
             r`mvc.perform(post("/users").contentType("application/json")
-        .content("{\"name\":\"Asha\",\"age\":25}"))
+        .content("{\"name\":\"Abaji\",\"age\":25}"))
     .andExpect(status().isCreated());
 
 // OUTPUT:
@@ -403,7 +403,7 @@ violations.forEach(c -> System.out.println(c.getPropertyPath()
         ['<b>Security testing</b> checks that endpoints reject anonymous users and allow the right roles, using <code>spring-security-test</code> with MockMvc.',
             '<b>@WithMockUser</b> runs a test as a fake logged-in user: <code>@WithMockUser(username = &quot;admin&quot;, roles = &quot;ADMIN&quot;)</code>.',
             '<b>Expected codes</b>: 401 for unauthenticated REST calls, 403 for an authenticated user without permission, and a redirect to login for form login.'],
-        ['<b>Request post-processors</b>: <code>.with(user(&quot;bob&quot;).roles(&quot;USER&quot;))</code>, <code>.with(csrf())</code> and <code>.with(jwt())</code> shape a single request.',
+        ['<b>Request post-processors</b>: <code>.with(user(&quot;baji&quot;).roles(&quot;USER&quot;))</code>, <code>.with(csrf())</code> and <code>.with(jwt())</code> shape a single request.',
             '<b>Setup</b>: <code>@WebMvcTest</code> applies the security filter chain when your <code>SecurityFilterChain</code> bean is imported with <code>@Import</code>.',
             '<b>Method security</b>: <code>@PreAuthorize</code> can be tested with <code>@WithMockUser</code> in a <code>@SpringBootTest</code> or slice that enables it.'],
         ['<b>CSRF</b>: POST, PUT and DELETE return 403 without <code>.with(csrf())</code> even for an authorized user.',
@@ -442,7 +442,7 @@ class AdminSecurityTest {
 // OUTPUT:
 // Status = 201 (403 without csrf())`]],
         [['Role forbidden.',
-            r`mvc.perform(get("/admin").with(user("bob").roles("USER")))
+            r`mvc.perform(get("/admin").with(user("baji").roles("USER")))
     .andExpect(status().isForbidden());
 
 // OUTPUT:
@@ -487,7 +487,7 @@ class HelloController {
 }
 
 // OUTPUT: (timestamp and pid vary)
-// 2026-10-08T10:00:00.000  INFO 4321 --- [nio-8080-exec-1] c.s.HelloController : Hello requested for Asha`],
+// 2026-10-08T10:00:00.000  INFO 4321 --- [nio-8080-exec-1] c.s.HelloController : Hello requested for Abaji`],
             ['Logging an exception.',
                 r`try {
     service.pay(42L);
@@ -543,12 +543,15 @@ logging.logback.rollingpolicy.max-history=14
 logging.logback.rollingpolicy.max-file-size=10MB
 
 # OUTPUT:
-# logs/app.log created; com.shop logs at DEBUG, others at INFO`],
+# logs/app.log created;
+com.shop logs at DEBUG, others at INFO`],
             ['logback-spring.xml with profiles.',
                 r`<configuration>
   <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
     <encoder>
-      <pattern>%d{HH:mm:ss} %-5level [%thread] %logger{30} - %msg%n</pattern>
+      <pattern>%d{HH:mm:ss}
+      %-5level [%thread] %logger{30}
+      - %msg%n</pattern>
     </encoder>
   </appender>
   <springProfile name="dev">
@@ -568,7 +571,8 @@ logging.logback.rollingpolicy.max-file-size=10MB
     <maxFileSize>10MB</maxFileSize>
     <maxHistory>14</maxHistory>
   </rollingPolicy>
-  <encoder><pattern>%d %-5level %logger{30} - %msg%n</pattern></encoder>
+  <encoder><pattern>%d %-5level %logger{30}
+  - %msg%n</pattern></encoder>
 </appender>
 
 <!-- OUTPUT -->
@@ -785,7 +789,7 @@ System.out.println(req.getMethod() + " " + req.getRequestURI()
         .accept(MediaType.APPLICATION_JSON)
         .header("If-Match", "\"v2\"")
         .cookie(new Cookie("lang", "en"))
-        .content("{\"name\":\"Neha\"}"))
+        .content("{\"name\":\"Netaji\"}"))
     .andExpect(status().isOk());
 
 // OUTPUT:
@@ -836,7 +840,7 @@ mvc.perform(asyncDispatch(started))
     .andExpect(cookie().exists("SESSION"));
 
 // OUTPUT:
-// Body = [{"id":1,"name":"Asha"},{"id":2,"name":"Ravi"}]`],
+// Body = [{"id":1,"name":"Abaji"},{"id":2,"name":"Raoji"}]`],
         [`<p>Mistakes:</p><ul><li><b>String equality on JSON</b> breaks on field order or spacing.</li><li><b>Wrong path</b>: <code>$.items[0]</code> vs <code>$[0]</code> for a root array.</li><li><b>Lenient json</b> hiding extra fields when a contract needs strict.</li><li><b>Dates</b>: compare formatted strings, which depend on Jackson settings.</li></ul>`,
             r`// WRONG: depends on exact serialization
 // .andExpect(content().string("{\"id\":1,\"name\":\"A\"}"))
@@ -975,20 +979,20 @@ void rejectsBad(String json) throws Exception {
     ),
     'mvc-security-testing': dv(
         [`<p>How the test security works:</p><ul><li><b>Filter chain:</b> MockMvc built with <code>springSecurity()</code> (automatic in Boot) adds the <code>FilterChainProxy</code> before the DispatcherServlet.</li><li><b>@WithMockUser:</b> a <code>TestExecutionListener</code> stores an <code>Authentication</code> in the <code>SecurityContext</code> before the test.</li><li><b>Post-processors:</b> per-request changes put the user in the repository used by the filters.</li><li><b>Failures:</b> <code>ExceptionTranslationFilter</code> turns AccessDenied into 401, 403 or a redirect.</li></ul>`,
-            r`@Test @WithMockUser(username = "bob", roles = "USER")
+            r`@Test @WithMockUser(username = "baji", roles = "USER")
 void whoAmI() {
     Authentication a = SecurityContextHolder.getContext().getAuthentication();
     System.out.println(a.getName() + " " + a.getAuthorities());
 }
 
 // OUTPUT:
-// bob [ROLE_USER]`],
+// baji [ROLE_USER]`],
         [`<p>Tools:</p><ul><li><code>@WithMockUser</code>, <code>@WithAnonymousUser</code>, <code>@WithUserDetails</code>.</li><li><code>user()</code>, <code>httpBasic()</code>, <code>csrf()</code>, <code>jwt()</code>, <code>opaqueToken()</code>, <code>oauth2Login()</code>.</li><li><code>SecurityMockMvcResultMatchers.authenticated()</code> and <code>unauthenticated()</code>.</li><li><code>formLogin()</code> request builder to test login.</li></ul>`,
-            r`mvc.perform(formLogin("/login").user("bob").password("secret"))
-    .andExpect(authenticated().withUsername("bob"))
+            r`mvc.perform(formLogin("/login").user("baji").password("secret"))
+    .andExpect(authenticated().withUsername("baji"))
     .andExpect(redirectedUrl("/"));
 
-mvc.perform(get("/api/data").with(httpBasic("bob", "secret")))
+mvc.perform(get("/api/data").with(httpBasic("baji", "secret")))
     .andExpect(status().isOk());
 
 // OUTPUT:
@@ -1034,7 +1038,7 @@ System.out.println(log.isDebugEnabled());
         [`<p>Syntax and variants:</p><ul><li>Levels: <code>trace</code>, <code>debug</code>, <code>info</code>, <code>warn</code>, <code>error</code>.</li><li>Fluent API (SLF4J 2): <code>log.atInfo().addKeyValue(&quot;id&quot;, 1).log(&quot;done&quot;)</code>.</li><li>Markers for tagging, MDC for context.</li><li>Lombok <code>@Slf4j</code> or <code>@Log4j2</code> annotations.</li><li>Group levels in Boot: <code>logging.group.web=...</code>.</li></ul>`,
             r`log.atInfo()
    .addKeyValue("orderId", 42)
-   .addKeyValue("user", "asha")
+   .addKeyValue("user", "abaji")
    .log("Order placed");
 
 MDC.put("reqId", "r-1");
@@ -1080,7 +1084,9 @@ class CorrelationFilter extends OncePerRequestFilter {
     'mvc-logback': dv(
         [`<p>How Logback works inside Spring Boot:</p><ul><li><b>Starter:</b> <code>spring-boot-starter-logging</code> brings logback-classic, <code>log4j-to-slf4j</code> and <code>jul-to-slf4j</code>.</li><li><b>LoggingSystem:</b> <code>LogbackLoggingSystem</code> loads <code>logback-spring.xml</code> (or defaults) and maps the <code>logging.*</code> properties.</li><li><b>Pipeline:</b> Logger, then level check, then Appenders, each with an Encoder that formats the event.</li><li><b>Additivity:</b> child loggers pass events to parent appenders unless <code>additivity=&quot;false&quot;</code>.</li></ul>`,
             r`# Boot default console pattern is built from these properties
-logging.pattern.console=%d{HH:mm:ss.SSS} %-5level [%thread] %logger{36} - %msg%n
+logging.pattern.console=%d{HH:mm:ss.SSS}
+%-5level [%thread] %logger{36}
+- %msg%n
 logging.level.org.springframework.web=DEBUG
 
 # OUTPUT:

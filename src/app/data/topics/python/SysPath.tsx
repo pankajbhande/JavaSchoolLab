@@ -135,7 +135,7 @@ $env:PYTHONPATH = "D:\\libs\\common"
 python -c "import sys; print(sys.path[1])"
 
 # macOS / Linux
-PYTHONPATH=/home/asha/libs/common python3 -c "import sys; print(sys.path[1])"
+PYTHONPATH=/home/abaji/libs/common python3 -c "import sys; print(sys.path[1])"
 
 # OUTPUT (e.g.):
 # D:\\libs\\common`

@@ -63,7 +63,7 @@ print(p1 == (1, 2))      # not a Point - falls back to identity
     def __repr__(self):
         return f"Student({self.name!r}, {self.marks})"
 
-students = [Student("Asha", 91), Student("Ravi", 78)]
+students = [Student("Abaji", 91), Student("Raoji", 78)]
 print(sorted(students))
 
 # OUTPUT:
@@ -81,13 +81,13 @@ print(sorted(students))
             return NotImplemented
         return self.marks < other.marks
 
-students = [Student("Asha", 91), Student("Ravi", 78), Student("Kiran", 85)]
+students = [Student("Abaji", 91), Student("Raoji", 78), Student("Kanhoji", 85)]
 print(sorted(students))
 print(min(students), max(students))
 
 # OUTPUT:
-# [Student('Ravi', 78), Student('Kiran', 85), Student('Asha', 91)]
-# Student('Ravi', 78) Student('Asha', 91)`
+# [Student('Raoji', 78), Student('Kanhoji', 85), Student('Abaji', 91)]
+# Student('Raoji', 78) Student('Abaji', 91)`
             ]
         },
         {

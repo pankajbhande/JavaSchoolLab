@@ -23,22 +23,22 @@ print([ch.upper() for ch in "abc"])
             r`prices = [100, 250, 40]
 with_tax = [round(p * 1.18, 2) for p in prices]
 print(with_tax)
-names = ["  asha ", "RAVI", " Meena"]
+names = ["  abaji ", "RAOJI", " Moropant"]
 print([n.strip().title() for n in names])
 
 # OUTPUT:
 # [118.0, 295.0, 47.2]
-# ['Asha', 'Ravi', 'Meena']`],
+# ['Abaji', 'Raoji', 'Moropant']`],
         [`Cleaning rows, extracting a column, converting types, building URLs or SQL parameter lists, and flattening results are comprehension jobs in almost every Python codebase.`,
             r`# Real-time: parse lines of "name,score" into records
-lines = ["asha,90", "ravi,75", "meena,82"]
+lines = ["abaji,90", "raoji,75", "moropant,82"]
 records = [(n, int(s)) for n, s in (line.split(",") for line in lines)]
 print(records)
 scores = [s for _, s in records]
 print(scores, sum(scores) / len(scores))
 
 # OUTPUT:
-# [('asha', 90), ('ravi', 75), ('meena', 82)]
+# [('abaji', 90), ('raoji', 75), ('moropant', 82)]
 # [90, 75, 82] 82.33333333333333`],
         [`<b>Advantages:</b> concise and declarative, usually faster than <code>append</code> in a loop, and the loop variable stays local to the comprehension.`,
             r`import timeit
@@ -170,7 +170,7 @@ print([grade(m) for m in [95, 80, 60]])
 
     'Dictionary Comprehensions': dd(
         [`A <b>dict comprehension</b> builds a dictionary with <code>{key_expr: value_expr for item in iterable if cond}</code>. If two items produce the same key the later one wins.`,
-            r`names = ["asha", "ravi", "meena"]
+            r`names = ["abaji", "raoji", "moropant"]
 lengths = {n: len(n) for n in names}
 print(lengths)
 squares = {n: n * n for n in range(1, 5) if n != 3}
@@ -178,17 +178,17 @@ print(squares)
 print({v: k for k, v in lengths.items()})      # invert a dict
 
 # OUTPUT:
-# {'asha': 4, 'ravi': 4, 'meena': 5}
+# {'abaji': 5, 'raoji': 5, 'moropant': 8}
 # {1: 1, 2: 4, 4: 16}
-# {4: 'ravi', 5: 'meena'}`],
+# {5: 'raoji', 8: 'moropant'}`],
         [`Lookups need dictionaries; raw data arrives as lists or pairs. A dict comprehension builds an index, a mapping or an inverted table in one readable line.`,
             r`# Build an index so lookups are O(1) instead of a list scan
-users = [{"id": 7, "name": "Asha"}, {"id": 9, "name": "Ravi"}]
+users = [{"id": 7, "name": "Abaji"}, {"id": 9, "name": "Raoji"}]
 by_id = {u["id"]: u for u in users}
 print(by_id[9]["name"])
 
 # OUTPUT:
-# Ravi`],
+# Raoji`],
         [`Indexing records by id, filtering configuration, converting types of values, inverting mappings, and counting occurrences.`,
             r`# Real-time: filter and convert environment-style settings
 env = {"PORT": "8080", "DEBUG": "true", "TIMEOUT": "30", "NAME": "api"}
@@ -214,12 +214,12 @@ print({ch: text.count(ch) for ch in text})  # duplicates collapse
 # {'h': 1, 'e': 1, 'l': 2, 'o': 1}`],
         [`<b>Disadvantages:</b> duplicate keys silently overwrite earlier ones, so data can be lost; complex ones are hard to read.`,
             r`# Disadvantage: inverting a dict with duplicate values loses entries
-grades = {"asha": "A", "ravi": "B", "meena": "A"}
+grades = {"abaji": "A", "raoji": "B", "moropant": "A"}
 inverted = {g: n for n, g in grades.items()}
-print(inverted)                            # 'asha' was overwritten by 'meena'
+print(inverted)                            # 'abaji' was overwritten by 'moropant'
 
 # OUTPUT:
-# {'A': 'meena', 'B': 'ravi'}`],
+# {'A': 'moropant', 'B': 'raoji'}`],
         [`<b>Limitations:</b> keys must be hashable; you cannot group several values under one key without a helper (use <code>defaultdict</code>); order of evaluation is key before value.`,
             r`# Limitation: unhashable key
 try:
@@ -229,7 +229,7 @@ except TypeError as e:
 
 # Grouping needs defaultdict, not a comprehension
 from collections import defaultdict
-grades = {"asha": "A", "ravi": "B", "meena": "A"}
+grades = {"abaji": "A", "raoji": "B", "moropant": "A"}
 groups = defaultdict(list)
 for n, g in grades.items():
     groups[g].append(n)
@@ -237,7 +237,7 @@ print(dict(groups))
 
 # OUTPUT:
 # TypeError: unhashable type: 'list'
-# {'A': ['asha', 'meena'], 'B': ['ravi']}`],
+# {'A': ['abaji', 'moropant'], 'B': ['raoji']}`],
         `
    {  k.lower()  :  int(v)   for k, v in env.items()   if v.isdigit() }
       └─ key ──┘   └ value ┘  └──────── source ───────┘ └── filter ──┘

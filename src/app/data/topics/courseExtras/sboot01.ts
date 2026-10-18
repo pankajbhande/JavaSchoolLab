@@ -33,7 +33,9 @@ ctx.close();
 // Hello Spring`],
             ['Component scanning.',
                 r`@Component
-class Clock { String now() { return "12:00"; } }
+class Clock {
+    String now() { return "12:00"; }
+}
 
 @Configuration @ComponentScan
 class Cfg { }
@@ -317,8 +319,12 @@ void total() {
 // OUTPUT:
 // Tests run: 1, Failures: 0`],
             ['Circular failure.',
-                r`@Service class A { A(B b) { } }
-@Service class B { B(A a) { } }
+                r`@Service class A {
+    A(B b) { }
+}
+@Service class B {
+    B(A a) { }
+}
 
 // OUTPUT:
 // APPLICATION FAILED TO START
@@ -769,7 +775,9 @@ class Pipeline {
         [`<p>Mistakes:</p><ul><li><b>Ambiguity:</b> two beans of one type without qualifier.</li><li><b>Missing scan:</b> class has no stereotype or is outside the base package.</li><li><b>Static fields:</b> cannot be injected.</li><li><b>Mixing new and DI:</b> objects made with new are invisible to Spring.</li></ul>`,
             r`@Component class Impl1 implements Svc { }
 @Component class Impl2 implements Svc { }
-@Component class User { User(Svc s) { } }
+@Component class User {
+    User(Svc s) { }
+}
 
 // OUTPUT:
 // NoUniqueBeanDefinitionException: expected single matching bean
@@ -872,11 +880,17 @@ class Shipper {
 // OUTPUT:
 // ship() -> untracked   (when no Tracker bean exists)`],
         [`<p>Mistakes:</p><ul><li><b>Too many parameters:</b> split the class.</li><li><b>Circular reference:</b> A needs B and B needs A.</li><li><b>Logic in constructor:</b> keep it to assignments.</li></ul>`,
-            r`@Service class A { A(B b) { } }
-@Service class B { B(A a) { } }
+            r`@Service class A {
+    A(B b) { }
+}
+@Service class B {
+    B(A a) { }
+}
 // FIX: move shared code to C, or inject B with @Lazy in A
 
-@Service class A2 { A2(@Lazy B2 b) { } }
+@Service class A2 {
+    A2(@Lazy B2 b) { }
+}
 
 // OUTPUT:
 // Application starts: A2 receives a lazy proxy of B2`],
@@ -1012,7 +1026,10 @@ class OrderService {
 // after
 private final A a;
 private final B b;
-OrderService(A a, B b) { this.a = a; this.b = b; }
+OrderService(A a, B b) {
+    this.a = a;
+    this.b = b;
+}
 
 // OUTPUT:
 // behavior unchanged; tests no longer need @InjectMocks`]

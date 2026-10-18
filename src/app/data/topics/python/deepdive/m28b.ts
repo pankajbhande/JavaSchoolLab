@@ -439,8 +439,8 @@ def add_friendship(a, b):          # undirected: add both directions
     friends[a].add(b)
     friends[b].add(a)
 
-add_friendship("Ann", "Bob")
-add_friendship("Bob", "Cy")
+add_friendship("Ann", "Baji")
+add_friendship("Baji", "Cy")
 add_friendship("Ann", "Di")
 
 # friends of friends of Ann (excluding Ann and her direct friends)
@@ -449,7 +449,7 @@ fof = set().union(*(friends[f] for f in direct)) - direct - {"Ann"}
 print(sorted(direct), sorted(fof))
 
 # OUTPUT:
-# ['Bob', 'Di'] ['Cy']`],
+# ['Baji', 'Di'] ['Cy']`],
         [`Maps and GPS, social networks, recommendation engines, dependency managers, network topologies and fraud detection are graph problems. A basic real task is counting isolated groups (connected components).`,
             r`edges = [(1, 2), (2, 3), (4, 5)]
 nodes = [1, 2, 3, 4, 5, 6]
@@ -564,23 +564,23 @@ print(sorted(words, reverse=True))
 # ['fig', 'kiwi', 'pear', 'apple']
 # ['pear', 'kiwi', 'fig', 'apple']`],
         [`Leaderboards, product listings, log timelines and payroll reports all sort records on several fields. Negating a number sorts it descending inside a tuple key.`,
-            r`staff = [("Ann", "IT", 90), ("Bob", "HR", 70), ("Cy", "IT", 95), ("Di", "HR", 80)]
+            r`staff = [("Ann", "IT", 90), ("Baji", "HR", 70), ("Cy", "IT", 95), ("Di", "HR", 80)]
 # department A-Z, then salary high-to-low
 for name, dept, pay in sorted(staff, key=lambda s: (s[1], -s[2])):
     print(dept, name, pay)
 
 # OUTPUT:
 # HR Di 80
-# HR Bob 70
+# HR Baji 70
 # IT Cy 95
 # IT Ann 90`],
         [`<b>Advantages:</b> Timsort is stable (equal items keep their original order), adaptive (fast on nearly sorted data) and worst-case O(n log n). Stability allows multi-pass sorting.`,
-            r`rows = [("Ann", "IT"), ("Bob", "HR"), ("Cy", "IT"), ("Di", "HR")]
-by_dept = sorted(rows, key=lambda r: r[1])    # Bob stays before Di, Ann before Cy
+            r`rows = [("Ann", "IT"), ("Baji", "HR"), ("Cy", "IT"), ("Di", "HR")]
+by_dept = sorted(rows, key=lambda r: r[1])    # Baji stays before Di, Ann before Cy
 print(by_dept)
 
 # OUTPUT:
-# [('Bob', 'HR'), ('Di', 'HR'), ('Ann', 'IT'), ('Cy', 'IT')]`],
+# [('Baji', 'HR'), ('Di', 'HR'), ('Ann', 'IT'), ('Cy', 'IT')]`],
         [`<b>Disadvantages:</b> comparison sorts cannot beat O(n log n), and naive algorithms such as bubble sort are O(n^2), which collapses on large inputs.`,
             r`def bubble_sort(a):
     comparisons = swaps = 0

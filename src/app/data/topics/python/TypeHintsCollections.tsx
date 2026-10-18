@@ -42,14 +42,14 @@ print(min_max([4, 9, 2]))
             content: `<h4>Fixed-Length vs Variable-Length Tuples</h4>
 A tuple hint lists the type of <b>each position</b>. To mean "a tuple of any length, all the same type", add <code>...</code>.`,
             codeExamples: [
-                `student: tuple[str, int, float] = ("Asha", 21, 8.7)    # exactly 3 items
+                `student: tuple[str, int, float] = ("Abaji", 21, 8.7)    # exactly 3 items
 rgb: tuple[int, int, int] = (255, 128, 0)
 marks: tuple[int, ...] = (70, 85, 90, 65)               # any number of ints
 
 print(student[0], rgb, len(marks))
 
 # OUTPUT:
-# Asha (255, 128, 0) 4`
+# Abaji (255, 128, 0) 4`
             ]
         },
         {
@@ -57,13 +57,13 @@ print(student[0], rgb, len(marks))
 Types nest just like the data does.`,
             codeExamples: [
                 `class_marks: dict[str, list[int]] = {
-    "Asha": [91, 85],
-    "Ravi": [72, 68],
+    "Abaji": [91, 85],
+    "Raoji": [72, 68],
 }
 matrix: list[list[float]] = [[1.0, 2.0], [3.0, 4.0]]
 edges: list[tuple[str, str]] = [("A", "B"), ("B", "C")]
 
-print(class_marks["Asha"][1], matrix[1][0], edges[0])
+print(class_marks["Abaji"][1], matrix[1][0], edges[0])
 
 # OUTPUT:
 # 85 3.0 ('A', 'B')`
@@ -75,8 +75,8 @@ print(class_marks["Asha"][1], matrix[1][0], edges[0])
                 `scores: list[int] = [70, 80]
 scores.append("ninety")
 
-ages: dict[str, int] = {"Asha": 21}
-ages[42] = "Ravi"
+ages: dict[str, int] = {"Abaji": 21}
+ages[42] = "Raoji"
 
 # The code runs (lists and dicts accept anything), but:
 # mypy reports (wording may vary by version):

@@ -197,7 +197,7 @@ class Calc {
 // OUTPUT: (varies)
 // hundred=100 lang=en`],
             ['Selection and projection.',
-                r`List<Person> people = List.of(new Person("Ann", 30), new Person("Bob", 12));
+                r`List<Person> people = List.of(new Person("Ann", 30), new Person("Baji", 12));
 StandardEvaluationContext ctx = new StandardEvaluationContext();
 ctx.setVariable("people", people);
 Object names = new SpelExpressionParser()
@@ -565,7 +565,9 @@ class ShopApplicationTests {
     id 'org.springframework.boot' version '3.3.0'
     id 'io.spring.dependency-management' version '1.1.5'
 }
-java { toolchain { languageVersion = JavaLanguageVersion.of(17) } }
+java {
+    toolchain { languageVersion = JavaLanguageVersion.of(17) }
+}
 repositories { mavenCentral() }
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
@@ -784,7 +786,8 @@ logging.level.com.demo=DEBUG
 spring.jpa.show-sql=true
 
 # OUTPUT:
-# prod: quiet logs, bigger pool; dev: SQL printed, small pool`],
+# prod: quiet logs, bigger pool;
+dev: SQL printed, small pool`],
         [`<p>Real scenario: one image deployed to three clusters. Kubernetes sets <code>SPRING_PROFILES_ACTIVE=prod</code> and database settings through a secret; the jar is never rebuilt. Tests use <code>@ActiveProfiles("test")</code> with an in-memory database.</p><ul><li>Same build, different config.</li><li>Secrets stay out of the repository.</li></ul>`,
             r`# Kubernetes container env
 SPRING_PROFILES_ACTIVE=prod
@@ -932,9 +935,15 @@ public class DataSourceAutoConfiguration {
         [`<p>Side by side:</p><ul><li><b>Build:</b> hand managed versions vs starters and BOM.</li><li><b>Server:</b> external Tomcat vs embedded.</li><li><b>Config:</b> XML or Java config vs properties and conventions.</li><li><b>Ops:</b> custom monitoring vs Actuator.</li><li><b>Testing:</b> manual context setup vs <code>@SpringBootTest</code> and slices.</li></ul>`,
             r`<!-- classic: web.xml / WebApplicationInitializer + WAR -->
 public class Init extends AbstractAnnotationConfigDispatcherServletInitializer {
-    protected Class<?>[] getRootConfigClasses() { return new Class<?>[] { RootConfig.class }; }
-    protected Class<?>[] getServletConfigClasses() { return new Class<?>[] { WebConfig.class }; }
-    protected String[] getServletMappings() { return new String[] { "/" }; }
+    protected Class<?>[] getRootConfigClasses() {
+        return new Class<?>[] { RootConfig.class };
+    }
+    protected Class<?>[] getServletConfigClasses() {
+        return new Class<?>[] { WebConfig.class };
+    }
+    protected String[] getServletMappings() {
+        return new String[] { "/" };
+    }
 }
 
 // Boot: nothing of the above is needed
@@ -1038,7 +1047,9 @@ class BuildEndpoint {
             r`# application.properties
 logging.file.name=logs/app.log
 logging.level.org.springframework.web=INFO
-logging.pattern.console=%d{HH:mm:ss} %-5level %logger{20} - %msg%n
+logging.pattern.console=%d{HH:mm:ss}
+%-5level %logger{20}
+- %msg%n
 spring.main.banner-mode=off
 
 # OUTPUT:

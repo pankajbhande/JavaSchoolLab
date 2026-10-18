@@ -74,7 +74,7 @@ Add <code>@name.setter</code> to run code when the attribute is assigned. The va
             raise ValueError("marks must be between 0 and 100")
         self._marks = value
 
-s = Student("Asha", 88)
+s = Student("Abaji", 88)
 s.marks = 95
 print(s.marks)
 s.marks = 120

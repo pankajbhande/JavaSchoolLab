@@ -142,8 +142,13 @@ System.out.println("direct=" + buf.isDirect() + " cap=" + buf.capacity());
             ['S', 'Can new Foo() avoid the heap?', 'Yes. If escape analysis shows the object does not escape, the JIT may replace it with local scalars.']],
         [['Defaults before the constructor.',
             r`class Box {
-    int n;  boolean ok;  String s;
-    Box() { System.out.println(n + " " + ok + " " + s); n = 7; }
+    int n;
+    boolean ok;
+    String s;
+    Box() {
+        System.out.println(n + " " + ok + " " + s);
+        n = 7;
+    }
 }
 Box b = new Box();
 System.out.println(b.n);
@@ -152,12 +157,17 @@ System.out.println(b.n);
 // 0 false null
 // 7`],
             ['Initialization order.',
-                r`class P { P() { System.out.println("P ctor"); } }
+                r`class P {
+    P() { System.out.println("P ctor"); }
+}
 class C extends P {
     int x = init("field");
     { System.out.println("instance block"); }
     C() { System.out.println("C ctor"); }
-    static int init(String s) { System.out.println(s); return 1; }
+    static int init(String s) {
+        System.out.println(s);
+        return 1;
+    }
 }
 new C();
 
@@ -168,7 +178,10 @@ new C();
 // C ctor`]],
         [['Object size with JOL.',
             r`// dependency: org.openjdk.jol:jol-core
-class Point { int x; int y; }
+class Point {
+    int x;
+    int y;
+}
 System.out.println(ClassLayout.parseClass(Point.class).toPrintable());
 
 // OUTPUT: (64-bit, compressed class pointers, typical)
@@ -221,7 +234,10 @@ System.out.println(a);
 // hi! true
 // hi!`],
             ['Pass by value of the reference.',
-                r`static void change(StringBuilder sb) { sb.append("X"); sb = new StringBuilder("new"); }
+                r`static void change(StringBuilder sb) {
+    sb.append("X");
+    sb = new StringBuilder("new");
+}
 StringBuilder s = new StringBuilder("old");
 change(s);
 System.out.println(s);
@@ -267,7 +283,10 @@ System.out.println(data.length);
             ['S', 'Where do virtual thread stacks live?', 'They are stored as stack chunk objects on the heap while unmounted, and run on a carrier thread stack when mounted.']],
         [['See both areas.',
             r`static int depth;
-static void recurse() { depth++; recurse(); }
+static void recurse() {
+    depth++;
+    recurse();
+}
 public static void main(String[] args) {
     int local = 5;                       // stack
     int[] arr = new int[3];              // reference on stack, array on heap
@@ -460,7 +479,10 @@ System.out.println(p.equals(q) + " " + (p == q));
 // OUTPUT:
 // true false`],
         [`<p>Common mistakes:</p><ul><li><b>Calling an overridable method in a constructor:</b> the subclass field is still at its default.</li><li><b>Allocating in a hot loop:</b> <code>new Integer</code> or short-lived temp objects; use primitives.</li><li><b>Creating an object per call:</b> for expensive objects like <code>Pattern</code> or <code>DateTimeFormatter</code>, make them <code>static final</code>.</li><li><b>Assuming zero size:</b> an empty object still takes 16 bytes.</li></ul>`,
-            r`class A { A() { show(); } void show() {} }
+            r`class A {
+    A() { show(); }
+    void show() {}
+}
 class B extends A {
     String name = "bee";
     void show() { System.out.println(name); }   // runs before name is set
@@ -556,7 +578,11 @@ t.start();
         [`<p>Common mistakes:</p><ul><li><b>Saying "objects are on the stack":</b> only the reference is, unless the JIT scalar-replaces the object.</li><li><b>Raising -Xss to hide infinite recursion:</b> fix the base case instead.</li><li><b>Large local arrays in recursion:</b> the array is on the heap, but deep recursion still overflows with big frames.</li><li><b>Sharing a mutable heap object between threads without a lock.</b></li><li><b>Setting -Xmx equal to container memory:</b> there is no room left for metaspace and thread stacks.</li></ul>`,
             r`static int sum(int n) { return n + sum(n - 1); }    // no base case
 // Fix: add the base case, or loop
-static int sum2(int n) { int s = 0; for (int i = 1; i <= n; i++) s += i; return s; }
+static int sum2(int n) {
+    int s = 0;
+    for (int i = 1; i <= n; i++) s += i;
+    return s;
+}
 System.out.println(sum2(100_000));
 
 // OUTPUT:

@@ -20,12 +20,12 @@ Three things make a closure:<br>
 hello = make_greeting("Hello")
 namaste = make_greeting("Namaste")
 
-print(hello("Asha"))
-print(namaste("Ravi"))
+print(hello("Abaji"))
+print(namaste("Raoji"))
 
 # OUTPUT:
-# Hello, Asha!
-# Namaste, Ravi!`
+# Hello, Abaji!
+# Namaste, Raoji!`
             ]
         },
         {

@@ -19,14 +19,14 @@ BEGIN
 END$$
 DELIMITER ;
 
-INSERT INTO users (email) VALUES ('  Alice@Example.COM ');   -- messy input
+INSERT INTO users (email) VALUES ('  Anaji@Example.COM ');   -- messy input
 SELECT id, email FROM users;                                  -- stored value is clean
 
 -- OUTPUT:
 -- +----+-------------------+
 -- | id | email             |
 -- +----+-------------------+
--- |  1 | alice@example.com |
+-- |  1 | anaji@example.com |
 -- +----+-------------------+`],
         [`Rules that must always hold - defaults, normalisation, validation - are safest when the database enforces them, because every client (web app, batch job, DBA console) goes through the same door. BEFORE triggers are the only place where you can <b>fix or reject</b> data before it touches the table; CHECK constraints can reject but cannot rewrite.`,
             r`-- Reject invalid data with SIGNAL (custom error) before it is written
@@ -348,15 +348,15 @@ BEGIN
 END$$
 DELIMITER ;
 
-INSERT INTO customers2 VALUES (1, 'Asha', 'Pune');
+INSERT INTO customers2 VALUES (1, 'Abaji', 'Pune');
 UPDATE customers2 SET city = 'Mumbai' WHERE id = 1;
 SELECT tbl, pk, action, old_row, new_row FROM audit_log;
 
 -- OUTPUT:
--- +------------+----+--------+--------------------------------------+---------------------------------------+
--- | tbl        | pk | action | old_row                              | new_row                               |
--- +------------+----+--------+--------------------------------------+---------------------------------------+
--- | customers2 | 1  | U      | {"city": "Pune", "name": "Asha"}     | {"city": "Mumbai", "name": "Asha"}    |
+-- +------------+----+--------+-----------------------------------+-------------------------------------+
+-- | tbl        | pk | action | old_row                           | new_row                             |
+-- +------------+----+--------+-----------------------------------+-------------------------------------+
+-- | customers2 | 1  | U      | {"city": "Pune", "name": "Abaji"} | {"city": "Mumbai", "name": "Abaji"} |
 -- +------------+----+--------+--------------------------------------+---------------------------------------+`],
         [`<b>Advantages:</b> captures every writer; same transaction as the change (no audit gap); no application code; before and after images are both available.`,
             r`-- Advantage: audit rows roll back together with the change - no phantom history
@@ -374,7 +374,7 @@ SELECT COUNT(*) AS audit_rows FROM salary_audit WHERE new_amount = 99999;
         [`<b>Disadvantages:</b> write amplification (every write becomes two), the audit table grows without bound, the user is the <i>connection</i> user (an app pool shows one account, not the end user), and you need three triggers per table.`,
             r`-- Disadvantage: with a shared pool account, CURRENT_USER() is useless for "who"
 -- Workaround: the app sets a session variable, the trigger reads it
-SET @app_user = 'priya.sharma';        -- set by the app after taking a connection
+SET @app_user = 'prataprao.sharma';        -- set by the app after taking a connection
 -- inside the trigger:   COALESCE(@app_user, CURRENT_USER())
 SELECT COALESCE(@app_user, CURRENT_USER()) AS actor;
 
@@ -382,7 +382,7 @@ SELECT COALESCE(@app_user, CURRENT_USER()) AS actor;
 -- +--------------+
 -- | actor        |
 -- +--------------+
--- | priya.sharma |
+-- | prataprao.sharma |
 -- +--------------+`],
         [`<b>Limitations:</b> triggers do not fire for TRUNCATE, for DROP TABLE, or for cascading FK deletes; they see only row data, not the SQL text; bulk loads with <code>LOAD DATA</code> do fire row triggers but slowly; and a user with TRIGGER or SUPER privilege can drop the trigger and silently stop auditing.`,
             r`-- Limitation: TRUNCATE bypasses row triggers entirely
@@ -472,14 +472,14 @@ GROUP  BY c.id;                                  -- no stored counter to drift
         [`<b>Costs of avoiding them:</b> rules must be re-implemented in every client, a script or DBA can bypass them, and you must handle consistency yourself (transactions, idempotent jobs).`,
             r`-- Without a trigger, a bypassing writer skips the rule entirely
 -- App enforces "email lower-case"; a raw script does not:
-INSERT INTO users (email) VALUES ('BOB@EXAMPLE.COM');
+INSERT INTO users (email) VALUES ('BAJI@EXAMPLE.COM');
 SELECT email FROM users WHERE id = 2;
 
 -- OUTPUT:
 -- +-----------------+
 -- | email           |
 -- +-----------------+
--- | BOB@EXAMPLE.COM |    <- rule silently not applied
+-- | BAJI@EXAMPLE.COM |    <- rule silently not applied
 -- +-----------------+`],
         [`<b>Limitations to remember:</b> triggers are not fired by cascading FK actions, are not allowed on views, and a bulk operation multiplies their cost by the row count - measure before you ship.`,
             r`-- Measure the trigger tax: same bulk insert with and without the trigger

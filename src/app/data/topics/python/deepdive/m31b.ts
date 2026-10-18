@@ -368,7 +368,7 @@ print(view.balance)
 # OUTPUT:
 # 150`],
         [`Reads and writes have different needs: writes want normalised data and strict rules; reads want pre-joined, denormalised rows and massive scale. One model compromises on both.`,
-            r`customers = {1: "Asha"}                   # write model: normalised tables
+            r`customers = {1: "Abaji"}                   # write model: normalised tables
 orders = [{"id": 10, "cust": 1, "total": 50}]
 
 read_model = [                              # read model: denormalised, no join at query time
@@ -378,7 +378,7 @@ read_model = [                              # read model: denormalised, no join 
 print(read_model)
 
 # OUTPUT:
-# [{'id': 10, 'customer': 'Asha', 'total': 50}]`],
+# [{'id': 10, 'customer': 'Abaji', 'total': 50}]`],
         [`Applications dispatch commands (change something, return nothing meaningful) to command handlers and queries (return data, change nothing) to query handlers, often scaling the read database separately.`,
             r`store = {}
 
@@ -391,11 +391,11 @@ def get_user(query):                        # query handler: pure read
 COMMANDS = {"create_user": create_user}
 QUERIES = {"get_user": get_user}
 
-COMMANDS["create_user"]({"id": 1, "name": "Asha"})
+COMMANDS["create_user"]({"id": 1, "name": "Abaji"})
 print(QUERIES["get_user"]({"id": 1}))
 
 # OUTPUT:
-# Asha`],
+# Abaji`],
         [`<b>Advantages:</b> read and write sides optimised and scaled independently, simple query models, and clearer intent. Projections answer questions in constant time.`,
             r`from collections import Counter
 

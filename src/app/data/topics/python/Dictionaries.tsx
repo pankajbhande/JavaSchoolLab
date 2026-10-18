@@ -70,23 +70,23 @@ print(stock["pencil"])
             content: `<h4>Adding, Updating and Deleting</h4>
 Assigning to a key adds it if it is new and replaces the value if it exists.`,
             codeExamples: [
-                `marks = {"Asha": 80}
+                `marks = {"Abaji": 80}
 
-marks["Ravi"] = 72           # add
-marks["Asha"] = 85           # update
+marks["Raoji"] = 72           # add
+marks["Abaji"] = 85           # update
 print(marks)
 
-removed = marks.pop("Ravi")  # remove and return the value
+removed = marks.pop("Raoji")  # remove and return the value
 print(removed, marks)
 
-marks["Kiran"] = 90
-del marks["Asha"]            # remove without returning
+marks["Kanhoji"] = 90
+del marks["Abaji"]            # remove without returning
 print(marks)
 
 # OUTPUT:
-# {'Asha': 85, 'Ravi': 72}
-# 72 {'Asha': 85}
-# {'Kiran': 90}`
+# {'Abaji': 85, 'Raoji': 72}
+# 72 {'Abaji': 85}
+# {'Kanhoji': 90}`
             ]
         },
         {
@@ -126,7 +126,7 @@ for w in words:
     counts[w] = counts.get(w, 0) + 1
 print(counts)
 
-students = [("Asha", "CSE"), ("Ravi", "ECE"), ("Kiran", "CSE")]
+students = [("Abaji", "CSE"), ("Raoji", "ECE"), ("Kanhoji", "CSE")]
 by_branch = {}
 for name, branch in students:
     by_branch.setdefault(branch, []).append(name)
@@ -134,7 +134,7 @@ print(by_branch)
 
 # OUTPUT:
 # {'to': 2, 'be': 2, 'or': 1, 'not': 1}
-# {'CSE': ['Asha', 'Kiran'], 'ECE': ['Ravi']}`
+# {'CSE': ['Abaji', 'Kanhoji'], 'ECE': ['Raoji']}`
             ]
         },
         {
@@ -198,7 +198,7 @@ APIs and config files are mostly nested dicts and lists. Chain <code>.get()</cod
             codeExamples: [
                 `order = {
     "id": 42,
-    "customer": {"name": "Asha", "address": {"city": "Pune"}},
+    "customer": {"name": "Abaji", "address": {"city": "Pune"}},
     "items": [{"sku": "PEN", "qty": 3}, {"sku": "BOOK", "qty": 1}],
 }
 

@@ -685,10 +685,10 @@ import java.util.List;
 
 public class ForEachRemoveBug {
     public static void main(String[] args) {
-        List<String> names = new ArrayList<>(List.of("Pankaj", "Rahul", "Anu"));
+        List<String> names = new ArrayList<>(List.of("Pankaj", "Raghunath", "Anu"));
         try {
             for (String name : names) {
-                // Must not be the second-to-last element ("Rahul" here): removing that
+                // Must not be the second-to-last element ("Raghunath" here): removing that
                 // leaves cursor == size, so hasNext() is false and NO exception is thrown.
                 if (name.equals("Pankaj")) {
                     names.remove(name);     // structural modification during for-each
@@ -707,11 +707,11 @@ import java.util.List;
 
 public class SafeIteratorRemove {
     public static void main(String[] args) {
-        List<String> names = new ArrayList<>(List.of("Pankaj", "Rahul", "Anu"));
+        List<String> names = new ArrayList<>(List.of("Pankaj", "Raghunath", "Anu"));
         Iterator<String> it = names.iterator();
         while (it.hasNext()) {
             String name = it.next();
-            if (name.equals("Rahul")) {
+            if (name.equals("Raghunath")) {
                 it.remove();               // safe: removes through the iterator itself
             }
         }

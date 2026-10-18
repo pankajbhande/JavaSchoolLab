@@ -177,7 +177,7 @@ If <code>__init__</code> raises, the object is never handed back to the caller -
         self.balance = balance
 
 try:
-    acc = Account("Asha", -100)
+    acc = Account("Abaji", -100)
 except ValueError as e:
     print("Not created:", e)
 

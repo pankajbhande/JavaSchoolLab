@@ -37,11 +37,11 @@ An inner function can <b>read</b> the outer function's parameters and local vari
     for subject in marks:
         print(line(subject))
 
-report("Asha", {"Maths": 91, "Physics": 84})
+report("Abaji", {"Maths": 91, "Physics": 84})
 
 # OUTPUT:
-# Asha: Maths = 91
-# Asha: Physics = 84`
+# Abaji: Maths = 91
+# Abaji: Physics = 84`
             ]
         },
         {
@@ -56,12 +56,12 @@ The outer function can return its inner function instead of calling it. The retu
 hello = make_greeter("Hello")
 namaste = make_greeter("Namaste")
 
-print(hello("Asha"))
-print(namaste("Ravi"))
+print(hello("Abaji"))
+print(namaste("Raoji"))
 
 # OUTPUT:
-# Hello, Asha!
-# Namaste, Ravi!`
+# Hello, Abaji!
+# Namaste, Raoji!`
             ]
         },
         {
@@ -122,7 +122,7 @@ b = make_greeter("Hi")
 
 print(a is b)
 print(a.__code__ is b.__code__)
-print(a("Ravi") == b("Ravi"))
+print(a("Raoji") == b("Raoji"))
 
 # OUTPUT:
 # False

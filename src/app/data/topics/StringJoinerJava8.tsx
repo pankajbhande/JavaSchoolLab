@@ -102,8 +102,8 @@ public class MergeStringJoinerExample {
 
 <h5>1. Building delimited strings (such as CSV)</h5>
 <pre><code>StringJoiner joiner = new StringJoiner(", ");
-joiner.add("Alice").add("Bob").add("Charlie");
-System.out.println(joiner);   // Alice, Bob, Charlie</code></pre>
+joiner.add("Anaji").add("Baji").add("Chimnaji");
+System.out.println(joiner);   // Anaji, Baji, Chimnaji</code></pre>
 
 <h5>2. Formatting output with prefix and suffix</h5>
 <pre><code>StringJoiner joiner = new StringJoiner(", ", "[", "]");

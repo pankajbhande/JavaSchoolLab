@@ -298,9 +298,9 @@ print(unicodedata.normalize("NFC", b) == a)
 print("Hi", name)
 print("a", "b", "c", sep="-", end="!\n")
 
-# OUTPUT (example, user typed Asha):
-# Name: Asha
-# Hi Asha
+# OUTPUT (example, user typed Abaji):
+# Name: Abaji
+# Hi Abaji
 # a-b-c!`],
         [`Programs need to take data from a user and show results. Because input always returns text, convert before calculating.`,
             r`age = int(input("Age: "))       # str -> int
@@ -345,14 +345,14 @@ except EOFError:
 # Value: no input available`],
         [`<b>Limitations:</b> it is strictly line-based and echoes what is typed (use <code>getpass</code> for passwords). Tests can feed it a fake stdin.`,
             r`import io, sys
-sys.stdin = io.StringIO("alice\nsecret\n")   # fake keyboard
+sys.stdin = io.StringIO("anaji\nsecret\n")   # fake keyboard
 user = input()                               # one line at a time, newline removed
 pwd = input()
 print(user, pwd)
 sys.stdin = sys.__stdin__                    # restore
 
 # OUTPUT:
-# alice secret`],
+# anaji secret`],
         `
    keyboard ──► stdin ──► input("Q: ") ──► str ──► int()/float() ──► logic
                                                                       │

@@ -155,7 +155,7 @@ Returning a list from a class lets callers modify its internals. Returning a tup
             codeExamples: [
                 `class Classroom:
     def __init__(self):
-        self._students = ["Asha", "Ravi"]
+        self._students = ["Abaji", "Raoji"]
 
     def students_list(self):
         return self._students              # exposes internal state
@@ -173,7 +173,7 @@ except AttributeError as error:
     print("Blocked:", error)
 
 # OUTPUT:
-# ('Asha', 'Ravi', 'Intruder')
+# ('Abaji', 'Raoji', 'Intruder')
 # Blocked: 'tuple' object has no attribute 'append'`
             ]
         },

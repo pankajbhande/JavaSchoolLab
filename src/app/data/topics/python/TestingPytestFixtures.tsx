@@ -74,7 +74,7 @@ def db():
     conn.close()                             # teardown
 
 def test_insert(db):
-    db.execute("INSERT INTO users VALUES ('Asha')")
+    db.execute("INSERT INTO users VALUES ('Abaji')")
     count = db.execute("SELECT COUNT(*) FROM users").fetchone()[0]
     assert count == 1
 
@@ -128,7 +128,7 @@ import pytest
 
 @pytest.fixture
 def customer():
-    return {"name": "Asha", "email": "asha@mail.com"}
+    return {"name": "Abaji", "email": "abaji@mail.com"}
 
 # tests/test_orders.py   (no import of conftest needed)
 def test_customer_email(customer):
@@ -163,8 +163,8 @@ def test_save(tmp_path):
     assert (tmp_path / "note.txt").read_text(encoding="utf-8") == "hi"
 
 def test_greet(capsys):
-    greet("Ravi")
-    assert capsys.readouterr().out == "Hello, Ravi!\\n"
+    greet("Raoji")
+    assert capsys.readouterr().out == "Hello, Raoji!\\n"
 
 def test_api_url(monkeypatch):
     monkeypatch.setenv("API_URL", "http://localhost:8000")
@@ -190,8 +190,8 @@ def make_user():
     created.clear()                  # cleanup for everything the test made
 
 def test_roles(make_user):
-    admin = make_user("Asha", role="admin")
-    student = make_user("Ravi")
+    admin = make_user("Abaji", role="admin")
+    student = make_user("Raoji")
     assert admin["role"] == "admin"
     assert student["role"] == "student"`
             ]

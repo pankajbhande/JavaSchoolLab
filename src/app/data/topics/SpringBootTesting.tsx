@@ -224,14 +224,14 @@ class UserControllerTest {
 
     @Test
     void createUser_returns201AndEchoesBody() throws Exception {
-        when(userService.save(any())).thenReturn(new UserDto(2, "Ravi"));
+        when(userService.save(any())).thenReturn(new UserDto(2, "Raoji"));
 
         mockMvc.perform(post("/api/users")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{\\"name\\":\\"Ravi\\"}"))
+                .content("{\\"name\\":\\"Raoji\\"}"))
                .andExpect(status().isOk())
                .andExpect(jsonPath("$.id").value(2))
-               .andExpect(jsonPath("$.name").value("Ravi"));
+               .andExpect(jsonPath("$.name").value("Raoji"));
     }
 }
 // OUTPUT:

@@ -682,8 +682,8 @@ public List<Order> myOrders() {
 // No arguments -> key = SimpleKey.EMPTY -> ONE entry for everyone.
 //
 // OUTPUT:
-// alice calls first  -> MISS -> alice's orders cached under ""
-// bob calls second   -> HIT  -> bob is shown ALICE'S ORDERS
+// anaji calls first  -> MISS -> anaji's orders cached under ""
+// baji calls second   -> HIT  -> baji is shown ANAJI'S ORDERS
 //
 // Nothing throws. Nothing is logged. In a single-user test it is
 // invisible.

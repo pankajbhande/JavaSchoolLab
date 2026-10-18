@@ -19,7 +19,7 @@ def hello(name):
 import greetings
 
 print("main: __name__ =", __name__)
-print(greetings.hello("Asha"))
+print(greetings.hello("Abaji"))
 
 # OUTPUT (python greetings.py):
 # greetings: __name__ = __main__
@@ -27,7 +27,7 @@ print(greetings.hello("Asha"))
 # OUTPUT (python main.py):
 # greetings: __name__ = greetings
 # main: __name__ = __main__
-# Hello, Asha!`
+# Hello, Abaji!`
             ]
         },
         {
@@ -77,7 +77,7 @@ Put the script's work in a <code>main()</code> function and call it from the gua
             codeExamples: [
                 `# report.py
 def load_marks():
-    return {"Asha": 91, "Ravi": 78}
+    return {"Abaji": 91, "Raoji": 78}
 
 def main():
     marks = load_marks()
@@ -88,8 +88,8 @@ if __name__ == "__main__":
     main()
 
 # OUTPUT (python report.py):
-# Asha: 91
-# Ravi: 78`
+# Abaji: 91
+# Raoji: 78`
             ]
         }
     ],
@@ -169,15 +169,15 @@ if __name__ == "__main__":
     raise SystemExit(main())
 
 # In a test or the REPL:
-# >>> main(["Asha", "--times", "2"])
-# Hello, Asha!
-# Hello, Asha!
+# >>> main(["Abaji", "--times", "2"])
+# Hello, Abaji!
+# Hello, Abaji!
 # 0`
             ]
         },
         {
             content: `<h3>Entry Points: Installed Commands</h3>
-When you package a project, you can expose <code>main()</code> as a real command. After <code>pip install .</code>, typing <code>greet Asha</code> in a terminal calls <code>greet:main</code> - no <code>python</code> prefix or <code>__name__</code> guard involved.`,
+When you package a project, you can expose <code>main()</code> as a real command. After <code>pip install .</code>, typing <code>greet Abaji</code> in a terminal calls <code>greet:main</code> - no <code>python</code> prefix or <code>__name__</code> guard involved.`,
             codeExamples: [
                 `# pyproject.toml
 [project]

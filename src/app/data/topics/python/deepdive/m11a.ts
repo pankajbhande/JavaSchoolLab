@@ -102,14 +102,14 @@ print(next(it, "DONE"))     # default instead of StopIteration
 # y
 # DONE`],
         [`You need manual control when a plain <code>for</code> is not enough: peeking at the first item, pulling a header row then processing the rest, or pairing items.`,
-            r`rows = iter(["id,name", "1,Ann", "2,Bob"])
+            r`rows = iter(["id,name", "1,Ann", "2,Baji"])
 header = next(rows).split(",")        # take the first row manually
 for line in rows:                     # the loop continues with the REST
     print(dict(zip(header, line.split(","))))
 
 # OUTPUT:
 # {'id': '1', 'name': 'Ann'}
-# {'id': '2', 'name': 'Bob'}`],
+# {'id': '2', 'name': 'Baji'}`],
         [`Used in CSV/log readers (skip header), reading fixed-size blocks from a file or socket with the two-argument form, and writing parsers that look ahead.`,
             r`import io
 stream = io.StringIO("abcdefg")
@@ -514,7 +514,7 @@ print(sum(squared(evens(numbers()))))   # 4 + 16 + 36
 # 56`],
         [`Log analysis, ETL jobs, CSV/JSON-lines processing, web-scraping crawlers and ML data loaders all stream records through stages.`,
             r`import io, csv
-data = io.StringIO("name,age\nAnn,31\nBob,17\nCy,45\n")
+data = io.StringIO("name,age\nAnn,31\nBaji,17\nCy,45\n")
 
 def rows(f):
     yield from csv.DictReader(f)

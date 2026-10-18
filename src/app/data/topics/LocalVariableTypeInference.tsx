@@ -81,7 +81,7 @@ import java.util.*;
 public class VarIntermediate {
     public static void main(String[] args) throws Exception {
         // var in for-each loop
-        var names = List.of("Alice", "Bob", "Charlie");
+        var names = List.of("Anaji", "Baji", "Chimnaji");
         for (var name : names) {
             System.out.println(name.toUpperCase());
         }

@@ -363,7 +363,8 @@ class WhoAmIController {
 management.health.readinessstate.enabled=true
 
 # OUTPUT:
-# GET /actuator/health/readiness -> {"status":"UP"} when ready
+# GET /actuator/health/readiness -> {"status":"UP"}
+when ready
 # balancer health check path: /actuator/health/readiness`]]
     ),
     'mvc-reverse-proxy': x(
@@ -586,7 +587,7 @@ class HelloController {
 }
 
 // OUTPUT:
-// GET /hello?name=Asha -> renders hello.html with name = Asha`],
+// GET /hello?name=Abaji -> renders hello.html with name = Abaji`],
             ['A REST variant.',
                 r`@RestController
 @RequestMapping("/api")
@@ -600,7 +601,7 @@ class GreetingApi {
 }
 
 // OUTPUT:
-// GET /api/greet/Asha -> {"message":"Hello Asha"}`]],
+// GET /api/greet/Abaji -> {"message":"Hello Abaji"}`]],
         [['Test the layer with MockMvc.',
             r`@WebMvcTest(GreetingApi.class)
 class GreetingApiTest {
@@ -608,9 +609,9 @@ class GreetingApiTest {
 
     @Test
     void greets() throws Exception {
-        mvc.perform(get("/api/greet/Asha"))
+        mvc.perform(get("/api/greet/Abaji"))
            .andExpect(status().isOk())
-           .andExpect(jsonPath("$.message").value("Hello Asha"));
+           .andExpect(jsonPath("$.message").value("Hello Abaji"));
     }
 }
 
@@ -620,7 +621,7 @@ class GreetingApiTest {
                 r`logging.level.org.springframework.web.servlet.DispatcherServlet=DEBUG
 
 # OUTPUT:
-# GET "/api/greet/Asha", parameters={}
+# GET "/api/greet/Abaji", parameters={}
 # Mapped to com.shop.GreetingApi#greet(String)
 # Completed 200 OK`]]
     ),
@@ -694,17 +695,23 @@ export const smvc42Deep: Record<string, Deep> = {
     'mvc-rate-limiting': dv(
         [`<p>A limiter is a small state machine per client key.</p><ul><li><b>Token bucket:</b> a bucket holds up to N tokens, refilled at a steady rate; each request takes one, and an empty bucket means 429.</li><li><b>Fixed window:</b> a counter resets each interval; cheap, but allows a double burst around the boundary.</li><li><b>Sliding window:</b> counts requests in the last interval; fairer, costs more memory.</li><li><b>Where it runs:</b> a <code>HandlerInterceptor.preHandle</code> returns false to stop the chain before the controller.</li></ul>`,
             r`class TokenBucket {
-    private final long capacity; private final double refillPerSec;
-    private double tokens; private long last = System.nanoTime();
+    private final long capacity;
+    private final double refillPerSec;
+    private double tokens;
+    private long last = System.nanoTime();
     TokenBucket(long capacity, double refillPerSec) {
-        this.capacity = capacity; this.refillPerSec = refillPerSec;
+        this.capacity = capacity;
+        this.refillPerSec = refillPerSec;
         this.tokens = capacity;
     }
     synchronized boolean tryConsume() {
         long now = System.nanoTime();
         tokens = Math.min(capacity, tokens + (now - last) / 1e9 * refillPerSec);
         last = now;
-        if (tokens >= 1) { tokens -= 1; return true; }
+        if (tokens >= 1) {
+            tokens -= 1;
+            return true;
+        }
         return false;
     }
 }
@@ -776,7 +783,8 @@ MDC.remove("requestId");            // filter finally block
 // INFO [abc] processing order 42`],
         [`<p>Options and variants:</p><ul><li><b>Manual filter:</b> small and clear, good for one service.</li><li><b>Micrometer Tracing:</b> adds <code>traceId</code> and <code>spanId</code> to the MDC automatically with a bridge (Brave or OpenTelemetry).</li><li><b>Header formats:</b> W3C <code>traceparent</code>, or B3 headers.</li><li><b>Sampling:</b> <code>management.tracing.sampling.probability</code> controls how many traces are exported.</li></ul>`,
             r`management.tracing.sampling.probability=0.1
-logging.pattern.level=%5p [$` + r`{spring.application.name:},%X{traceId:-},%X{spanId:-}]
+logging.pattern.level=%5p [$` + r`{spring.application.name:},%X{traceId:-},%X{spanId:-}
+]
 
 # OUTPUT:
 # INFO [shop-api,6f2e9d41a1c04b7e,a91c33b2e0f1d455] Order created`],
@@ -886,7 +894,8 @@ Restart=on-failure
 WantedBy=multi-user.target
 
 # OUTPUT:
-# systemctl start shop -> active (running); stop sends SIGTERM, exit 143 is success`],
+# systemctl start shop -> active (running);
+stop sends SIGTERM, exit 143 is success`],
         [`<p>Common mistakes:</p><ul><li><b>Dev settings in prod:</b> H2 console, <code>ddl-auto=create</code>, debug logging.</li><li><b>Secrets in the repository:</b> use environment variables.</li><li><b>No memory limit:</b> JVM sized to the host, not the container.</li><li><b>Exposing all actuator endpoints:</b> publish only health, info and metrics, and protect the rest.</li><li><b>Running as root.</b></li></ul>`,
             r`spring.jpa.hibernate.ddl-auto=validate
 spring.h2.console.enabled=false
@@ -894,7 +903,8 @@ management.endpoints.web.exposure.include=health,info
 management.endpoint.env.enabled=false
 
 # OUTPUT:
-# schema is only validated, never changed by the app; sensitive endpoints stay hidden`],
+# schema is only validated, never changed by the app;
+sensitive endpoints stay hidden`],
         [`<p>Performance and tuning:</p><ul><li>Set heap with <code>-XX:MaxRAMPercentage</code> and leave room for metaspace and threads.</li><li>Use layered jars so image rebuilds are small and fast.</li><li>Consider CDS or AOT to cut startup time.</li><li>Connection pool size should match the database capacity across all instances.</li></ul>`,
             r`FROM eclipse-temurin:17-jre AS runtime
 WORKDIR /app
@@ -903,7 +913,8 @@ COPY target/extracted/application/ ./
 ENTRYPOINT ["java", "org.springframework.boot.loader.launch.JarLauncher"]
 
 # OUTPUT:
-# dependency layer is cached; only the small application layer changes per build`],
+# dependency layer is cached;
+only the small application layer changes per build`],
         [`<p>Real-world scenario: weekly zero-downtime release of a shop API.</p><ul><li>CI builds, tests and pushes the image.</li><li>Kubernetes does a rolling update with readiness probes.</li><li>Flyway migrations are additive, so old pods still work.</li><li>Rollback is redeploying the previous image tag.</li></ul>`,
             r`# deployment excerpt
 readinessProbe:
@@ -964,10 +975,13 @@ minReplicas: 3
 maxReplicas: 30
 metrics:
   - type: Resource
-    resource: { name: cpu, target: { type: Utilization, averageUtilization: 65 } }
+    resource: {
+        name: cpu, target: { type: Utilization, averageUtilization: 65 }
+    }
 
 # OUTPUT:
-# traffic rises -> pods scale from 3 toward 30; balancer includes each pod once ready`]
+# traffic rises -> pods scale from 3 toward 30;
+balancer includes each pod once ready`]
     ),
     'mvc-reverse-proxy': dv(
         [`<p>What the app really sees:</p><ul><li>The TCP connection comes from the proxy, so <code>getRemoteAddr()</code> is the proxy address.</li><li>The scheme is http because TLS ended at the proxy.</li><li>With <code>ForwardedHeaderFilter</code> (framework strategy) the request is wrapped, so <code>getScheme</code>, <code>getServerName</code>, <code>getRemoteAddr</code> and URL building use the forwarded values.</li><li>With the <code>native</code> strategy Tomcat's <code>RemoteIpValve</code> does the same.</li></ul>`,
@@ -1041,7 +1055,8 @@ location /events/ {
 }
 
 # OUTPUT:
-# WebSocket handshake returns 101; event stream arrives without delay`],
+# WebSocket handshake returns 101;
+event stream arrives without delay`],
         [`<p>Common mistakes:</p><ul><li><b>502 Bad Gateway:</b> the app is down or the port is wrong.</li><li><b>504 Gateway Timeout:</b> <code>proxy_read_timeout</code> too short.</li><li><b>413:</b> <code>client_max_body_size</code> too small.</li><li><b>Missing Host header:</b> app sees 127.0.0.1.</li><li><b>Forgetting reload:</b> run <code>nginx -t</code> and then reload.</li></ul>`,
             r`# diagnose
 // tail -f /var/log/nginx/error.log
@@ -1094,7 +1109,8 @@ server.tomcat.accesslog.pattern=%h %l %u %t "%r" %s %b %D
 server.tomcat.threads.max=100
 
 # OUTPUT:
-# at most 100 requests in flight; up to 30 of them use the database at once`],
+# at most 100 requests in flight;
+up to 30 of them use the database at once`],
         [`<p>Tuning approach:</p><ul><li>Measure first: busy threads, queue time, p99 latency, with Micrometer.</li><li>Load test with realistic traffic (JMeter, Gatling, k6).</li><li>For blocking I/O workloads try virtual threads on Java 21.</li><li>For very high concurrency of waiting calls consider a reactive stack instead of ever larger pools.</li></ul>`,
             r`spring.threads.virtual.enabled=true
 
@@ -1102,7 +1118,8 @@ server.tomcat.threads.max=100
 // GET /actuator/metrics/http.server.requests
 
 # OUTPUT:
-# requests run on virtual threads; the platform thread cap no longer limits blocking calls`],
+# requests run on virtual threads;
+the platform thread cap no longer limits blocking calls`],
         [`<p>Real-world scenario: latency spikes at peak time.</p><ul><li>Metrics show busy threads at the maximum and requests queuing.</li><li>A thread dump shows most threads waiting for the database pool.</li><li>Fix: add an index to the slow query and size the pool; scale out one instance.</li><li>Threads were not the problem, the downstream was.</li></ul>`,
             r`// jstack output excerpt
 // "http-nio-8080-exec-41" WAITING
@@ -1199,9 +1216,15 @@ class OrderController {
         [`<p>Configuration variants:</p><ul><li><b>Boot:</b> auto-configured; tune with <code>spring.mvc.*</code>.</li><li><b>Java config:</b> <code>AbstractAnnotationConfigDispatcherServletInitializer</code> for non-Boot apps.</li><li><b>web.xml:</b> classic declaration with a servlet-mapping.</li><li><b>Multiple servlets:</b> a <code>ServletRegistrationBean</code> for an extra DispatcherServlet.</li></ul>`,
             r`public class AppInit
         extends AbstractAnnotationConfigDispatcherServletInitializer {
-    protected Class<?>[] getRootConfigClasses() { return new Class[] { RootConfig.class }; }
-    protected Class<?>[] getServletConfigClasses() { return new Class[] { WebConfig.class }; }
-    protected String[] getServletMappings() { return new String[] { "/" }; }
+    protected Class<?>[] getRootConfigClasses() {
+        return new Class[] { RootConfig.class };
+    }
+    protected Class<?>[] getServletConfigClasses() {
+        return new Class[] { WebConfig.class };
+    }
+    protected String[] getServletMappings() {
+        return new String[] { "/" };
+    }
 }
 
 // OUTPUT:

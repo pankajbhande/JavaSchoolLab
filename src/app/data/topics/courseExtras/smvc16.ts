@@ -91,8 +91,12 @@ ResponseEntity<Void> create(@RequestBody String title) {
 class UserController {
     @GetMapping            List<UserDto> list(Pageable p)        { return null; }
     @GetMapping("/{id}")   UserDto get(@PathVariable Long id)    { return null; }
-    @PostMapping           ResponseEntity<UserDto> create(@Valid @RequestBody UserDto d) { return null; }
-    @PutMapping("/{id}")   UserDto replace(@PathVariable Long id, @Valid @RequestBody UserDto d) { return null; }
+    @PostMapping           ResponseEntity<UserDto> create(@Valid @RequestBody UserDto d) {
+        return null;
+    }
+    @PutMapping("/{id}")   UserDto replace(@PathVariable Long id, @Valid @RequestBody UserDto d) {
+        return null;
+    }
     @DeleteMapping("/{id}") ResponseEntity<Void> delete(@PathVariable Long id) { return null; }
 }
 
@@ -151,8 +155,8 @@ class HelloController {
 }
 
 // OUTPUT:
-// GET /hello?name=Asha
-// {"message":"Hello Asha"}`],
+// GET /hello?name=Abaji
+// {"message":"Hello Abaji"}`],
             ['Path variable and status.',
                 r`@GetMapping("/items/{id}")
 ResponseEntity<String> item(@PathVariable int id) {
@@ -170,8 +174,8 @@ class HelloControllerTest {
 
     @Test
     void greets() throws Exception {
-        mvc.perform(get("/hello?name=Asha"))
-           .andExpect(jsonPath("$.message").value("Hello Asha"));
+        mvc.perform(get("/hello?name=Abaji"))
+           .andExpect(jsonPath("$.message").value("Hello Abaji"));
     }
 }
 
@@ -234,7 +238,7 @@ class C {
             r`mvc.perform(get("/users/1"))
    .andExpect(status().isOk())
    .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-   .andExpect(jsonPath("$.name").value("Asha"));
+   .andExpect(jsonPath("$.name").value("Abaji"));
 
 // OUTPUT:
 // Content-Type: application/json`],
@@ -275,8 +279,8 @@ ResponseEntity<UserDto> create(@Valid @RequestBody UserDto dto) {
 }
 
 // OUTPUT:
-// POST /users {"name":"Asha","email":"a@x.com"}
-// 201 {"name":"Asha","email":"a@x.com"}`],
+// POST /users {"name":"Abaji","email":"a@x.com"}
+// 201 {"name":"Abaji","email":"a@x.com"}`],
             ['List body.',
                 r`@PostMapping("/bulk")
 int bulk(@RequestBody List<String> names) {
@@ -288,7 +292,7 @@ int bulk(@RequestBody List<String> names) {
         [['Test with MockMvc.',
             r`mvc.perform(post("/users")
         .contentType(MediaType.APPLICATION_JSON)
-        .content("{\"name\":\"Asha\",\"email\":\"a@x.com\"}"))
+        .content("{\"name\":\"Abaji\",\"email\":\"a@x.com\"}"))
    .andExpect(status().isCreated());
 
 // OUTPUT:
@@ -348,12 +352,12 @@ ResponseEntity<List<Product>> all() {
 // Tests run: 1, Failures: 0`],
             ['Hide a field.',
                 r`class Account {
-    public String user = "asha";
+    public String user = "abaji";
     @JsonIgnore public String password = "secret";
 }
 
 // OUTPUT:
-// {"user":"asha"}`]]
+// {"user":"abaji"}`]]
     ),
 
     'mvc-jackson': x(
@@ -379,9 +383,9 @@ record Person(
     @JsonIgnore String password,
     String nickname) {}
 
-// new Person("Asha", "pw", null) serializes to:
+// new Person("Abaji", "pw", null) serializes to:
 // OUTPUT:
-// {"full_name":"Asha"}`],
+// {"full_name":"Abaji"}`],
             ['Boot properties.',
                 r`spring.jackson.property-naming-strategy=SNAKE_CASE
 spring.jackson.default-property-inclusion=non_null
@@ -404,7 +408,7 @@ class PersonJsonTest {
 
     @Test
     void writes() throws Exception {
-        assertThat(json.write(new Person("Asha", "pw", null)))
+        assertThat(json.write(new Person("Abaji", "pw", null)))
             .hasJsonPathStringValue("$.full_name");
     }
 }
@@ -440,12 +444,12 @@ System.out.println(json + " -> " + back);
 // OUTPUT:
 // {"name":"pen","qty":3} -> Item[name=pen, qty=3]`],
             ['Tree model.',
-                r`JsonNode root = om.readTree("{\"user\":{\"name\":\"Asha\"},\"tags\":[\"a\",\"b\"]}");
+                r`JsonNode root = om.readTree("{\"user\":{\"name\":\"Abaji\"},\"tags\":[\"a\",\"b\"]}");
 System.out.println(root.path("user").path("name").asText());
 System.out.println(root.get("tags").size());
 
 // OUTPUT:
-// Asha
+// Abaji
 // 2`]],
         [['Inject and use.',
             r`@Service
@@ -544,11 +548,11 @@ class MoneySerializer extends JsonSerializer<BigDecimal> {
             r`record Login(String user, String password) {}
 
 Login l = new ObjectMapper()
-    .readValue("{\"user\":\"asha\",\"password\":\"pw\"}", Login.class);
+    .readValue("{\"user\":\"abaji\",\"password\":\"pw\"}", Login.class);
 System.out.println(l.user());
 
 // OUTPUT:
-// asha`],
+// abaji`],
             ['Creator and alias.',
                 r`class Customer {
     final String name;
@@ -559,12 +563,13 @@ System.out.println(l.user());
 }
 
 // OUTPUT:
-// {"full_name":"Asha"} and {"name":"Asha"} both give name = Asha`]],
+// {"full_name":"Abaji"} and {"name":"Abaji"} both give name = Abaji`]],
         [['Strict unknown fields.',
             r`spring.jackson.deserialization.fail-on-unknown-properties=true
 
 # OUTPUT:
-# POST {"user":"a","extra":1} -> 400 Unrecognized field "extra"`],
+# POST {"user":"a","extra":1}
+-> 400 Unrecognized field "extra"`],
             ['Type mismatch test.',
                 r`mvc.perform(post("/orders")
         .contentType(MediaType.APPLICATION_JSON)
@@ -720,7 +725,7 @@ class NoteController {
 @PostMapping("/users") User add(@RequestBody User u) { return u; }
 
 // OUTPUT:
-// First form: {"name":null}; second form: {"name":"Asha"}`],
+// First form: {"name":null}; second form: {"name":"Abaji"}`],
         [`<p>Performance tips for controllers:</p><ul><li>Keep methods short and non-blocking in logic.</li><li>Use <code>Callable</code> or virtual threads (<code>spring.threads.virtual.enabled=true</code> in Boot 3.2+) for blocking calls under load.</li><li>Avoid reading the body twice.</li><li>Return DTOs with only needed fields.</li><li>Cache read-heavy responses with <code>Cache-Control</code>.</li></ul>`,
             r`spring.threads.virtual.enabled=true
 server.tomcat.threads.max=200
@@ -825,10 +830,10 @@ String opt(@RequestBody(required = false) Map<String, Object> m) {
 // POST /opt (no body)        -> empty`],
         [`<p>Mistakes and fixes:</p><ul><li><b>Missing Content-Type:</b> add the header in the client.</li><li><b>No default constructor in a plain class:</b> add one, or use a record.</li><li><b>Single quotes or trailing commas:</b> invalid JSON gives 400.</li><li><b>Mixing @RequestBody and @ModelAttribute</b> for the same data.</li><li><b>Date format mismatch:</b> send ISO text like 2026-10-08.</li><li><b>Reading getInputStream after @RequestBody:</b> the stream is already consumed.</li></ul>`,
             r`// WRONG client call
-// curl -X POST /users -d '{"name":"Asha"}'            -> 415 (form content type)
+// curl -X POST /users -d '{"name":"Abaji"}'            -> 415 (form content type)
 
 // RIGHT
-// curl -X POST /users -H "Content-Type: application/json" -d '{"name":"Asha"}'
+// curl -X POST /users -H "Content-Type: application/json" -d '{"name":"Abaji"}'
 
 // OUTPUT:
 // 415 Unsupported Media Type, then 201 Created`],
@@ -1015,7 +1020,7 @@ class AuditJson {
 }
 
 // OUTPUT:
-// {"action":"LOGIN","user":"asha","at":"2026-10-08T10:15:30"}`]
+// {"action":"LOGIN","user":"abaji","at":"2026-10-08T10:15:30"}`]
     ),
 
     'mvc-json-serialization': dv(
@@ -1024,10 +1029,10 @@ class AuditJson {
 record User(String name, Address address, List<String> roles) {}
 
 System.out.println(om.writeValueAsString(
-    new User("Asha", new Address("Pune"), List.of("ADMIN"))));
+    new User("Abaji", new Address("Pune"), List.of("ADMIN"))));
 
 // OUTPUT:
-// {"name":"Asha","address":{"city":"Pune"},"roles":["ADMIN"]}`],
+// {"name":"Abaji","address":{"city":"Pune"},"roles":["ADMIN"]}`],
         [`<p>Serialization options:</p><ul><li><b>@JsonValue</b> writes a whole object as one value (good for enums).</li><li><b>@JsonSerialize(using = ...)</b> per property serializer.</li><li><b>@JsonUnwrapped</b> flattens a nested object.</li><li><b>@JsonView</b> field groups.</li><li><b>Enums</b> write their name by default; change with <code>WRITE_ENUMS_USING_TO_STRING</code>.</li><li><b>Maps</b> become objects; keys must be strings or convertible.</li></ul>`,
             r`enum Status { ACTIVE("A"), CLOSED("C");
     private final String code;
@@ -1037,9 +1042,9 @@ System.out.println(om.writeValueAsString(
 record Name(String first, String last) {}
 record Person(@JsonUnwrapped Name name, Status status) {}
 
-// new Person(new Name("Asha","Rao"), Status.ACTIVE)
+// new Person(new Name("Abaji","Rao"), Status.ACTIVE)
 // OUTPUT:
-// {"first":"Asha","last":"Rao","status":"A"}`],
+// {"first":"Abaji","last":"Rao","status":"A"}`],
         [`<p>Mistakes and fixes:</p><ul><li><b>Bidirectional entities:</b> StackOverflowError; use DTOs.</li><li><b>Hibernate lazy proxy:</b> fetch inside the transaction or use a DTO.</li><li><b>Getter side effects:</b> any <code>getX()</code> method is treated as a property; rename it or add <code>@JsonIgnore</code>.</li><li><b>Double precision surprises:</b> use <code>BigDecimal</code> with a formatter for money.</li><li><b>Time zones:</b> store UTC and let clients convert.</li></ul>`,
             r`class Order {
     public List<Line> lines;
@@ -1061,17 +1066,20 @@ record Person(@JsonUnwrapped Name name, Status status) {}
 // OUTPUT:
 // [{"name":"a","qty":1},{"name":"b","qty":2}, ...]  written without holding all rows`],
         [`<p>Real-world scenario: an API that returns different detail by audience.</p><ul><li>Public view: id and name.</li><li>Admin view: adds email and audit fields.</li><li>Use <code>@JsonView</code> on the DTO and the controller method.</li></ul>`,
-            r`class Views { interface Public {} interface Admin extends Public {} }
+            r`class Views {
+    interface Public {}
+    interface Admin extends Public {}
+}
 
 record UserView(@JsonView(Views.Public.class) String name,
                 @JsonView(Views.Admin.class) String email) {}
 
 @GetMapping("/users/{id}")
 @JsonView(Views.Public.class)
-UserView get(@PathVariable long id) { return new UserView("Asha", "a@x.com"); }
+UserView get(@PathVariable long id) { return new UserView("Abaji", "a@x.com"); }
 
 // OUTPUT:
-// {"name":"Asha"}`]
+// {"name":"Abaji"}`]
     ),
 
     'mvc-json-deserialization': dv(

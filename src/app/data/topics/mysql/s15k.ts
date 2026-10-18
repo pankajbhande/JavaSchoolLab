@@ -11,20 +11,20 @@ CREATE TABLE order_flat (
     PRIMARY KEY (order_id, product_id)
 );
 INSERT INTO order_flat VALUES
- (1,7,'Pen', 10.00,'Asha','Pune', 3),
- (1,8,'Book',50.00,'Asha','Pune', 1),
- (2,7,'Pen', 10.00,'Ravi','Delhi',5);
+ (1,7,'Pen', 10.00,'Abaji','Pune', 3),
+ (1,8,'Book',50.00,'Abaji','Pune', 1),
+ (2,7,'Pen', 10.00,'Raoji','Delhi',5);
 SELECT * FROM order_flat;
 
 -- OUTPUT:
--- +----------+------------+--------------+------------+-----------+-----------+------+
--- | order_id | product_id | product_name | unit_price | cust_name | cust_city | qty  |
--- +----------+------------+--------------+------------+-----------+-----------+------+
--- |        1 |          7 | Pen          |      10.00 | Asha      | Pune      |    3 |
--- |        1 |          8 | Book         |      50.00 | Asha      | Pune      |    1 |
--- |        2 |          7 | Pen          |      10.00 | Ravi      | Delhi     |    5 |
--- +----------+------------+--------------+------------+-----------+-----------+------+
--- "Pen/10.00" and "Asha/Pune" are repeated: product_id -> name,price  and  order_id -> customer.`],
+-- +----------+------------+--------------+------------+-----------+-----------+-----+
+-- | order_id | product_id | product_name | unit_price | cust_name | cust_city | qty |
+-- +----------+------------+--------------+------------+-----------+-----------+-----+
+-- |        1 |          7 | Pen          |      10.00 | Abaji     | Pune      |   3 |
+-- |        1 |          8 | Book         |      50.00 | Abaji     | Pune      |   1 |
+-- |        2 |          7 | Pen          |      10.00 | Raoji     | Delhi     |   5 |
+-- +----------+------------+--------------+------------+-----------+-----------+-----+
+-- "Pen/10.00" and "Abaji/Pune" are repeated: product_id -> name,price  and  order_id -> customer.`],
         [`Redundant copies drift apart. A single price change must touch every row that repeats it, and missing one produces a database that contradicts itself, which no query can fix afterwards.`,
             r`-- Update anomaly: the price is changed on only one of the Pen rows
 UPDATE order_flat SET unit_price = 12.00 WHERE order_id = 1 AND product_id = 7;
@@ -96,13 +96,13 @@ DELETE FROM order_flat WHERE product_id = 8;     -- product 8 is now unknown to 
         [`A table is in <b>First Normal Form</b> when every column holds a single atomic value (no lists in a cell), there are no repeating column groups (phone1, phone2, phone3), and every row is uniquely identifiable by a key.`,
             r`-- Violates 1NF: a list inside one column
 CREATE TABLE person_bad (id INT PRIMARY KEY, name VARCHAR(20), phones VARCHAR(60));
-INSERT INTO person_bad VALUES (1,'Asha','98450,98451'),(2,'Ravi','99000');
+INSERT INTO person_bad VALUES (1,'Abaji','98450,98451'),(2,'Raoji','99000');
 
 -- 1NF fix: one phone per row in a child table
 CREATE TABLE person (id INT PRIMARY KEY, name VARCHAR(20));
 CREATE TABLE person_phone (person_id INT, phone VARCHAR(15),
     PRIMARY KEY (person_id, phone), FOREIGN KEY (person_id) REFERENCES person(id));
-INSERT INTO person VALUES (1,'Asha'),(2,'Ravi');
+INSERT INTO person VALUES (1,'Abaji'),(2,'Raoji');
 INSERT INTO person_phone VALUES (1,'98450'),(1,'98451'),(2,'99000');
 SELECT * FROM person_phone ORDER BY person_id, phone;
 
@@ -124,10 +124,10 @@ JOIN person_phone pp ON pp.person_id = p.id
 WHERE pp.phone = '98451';
 
 -- OUTPUT (both):
--- +------+
--- | name |
--- +------+
--- | Asha |
+-- +-------+
+-- | name  |
+-- +-------+
+-- | Abaji |
 -- +------+`],
         [`Spreadsheet imports often arrive with repeating columns (phone1, phone2, phone3). Converting them to rows is a routine ETL step, here written with UNION ALL.`,
             r`CREATE TABLE import_wide (id INT, phone1 VARCHAR(15), phone2 VARCHAR(15), phone3 VARCHAR(15));
@@ -159,9 +159,9 @@ INSERT INTO person_phone VALUES (1,'98450');       -- duplicate phone for the sa
 -- OUTPUT (first query):          OUTPUT (insert):
 -- +------+-------------+         ERROR 1062 (23000): Duplicate entry '1-98450' for key
 -- | name | phone_count |         'person_phone.PRIMARY'
--- +------+-------------+
--- | Asha |           2 |
--- | Ravi |           1 |
+-- +-------+---+
+-- | Abaji | 2 |
+-- | Raoji | 1 |
 -- +------+-------------+`],
         [`<b>Disadvantages:</b> more rows and more joins, and displaying the data as one line needs aggregation to put the list back together.`,
             r`SELECT p.name, GROUP_CONCAT(pp.phone ORDER BY pp.phone) AS phones
@@ -169,11 +169,11 @@ FROM person p JOIN person_phone pp ON pp.person_id = p.id
 GROUP BY p.id, p.name ORDER BY p.id;
 
 -- OUTPUT:
--- +------+-------------+
--- | name | phones      |
--- +------+-------------+
--- | Asha | 98450,98451 |
--- | Ravi | 99000       |
+-- +-------+-------------+
+-- | name  | phones      |
+-- +-------+-------------+
+-- | Abaji | 98450,98451 |
+-- | Raoji | 99000       |
 -- +------+-------------+`],
         [`<b>Limitations:</b> "atomic" depends on how the data is used. A DATE has year, month and day parts yet is treated as atomic because queries use it as a unit, and MySQL allows JSON columns, which hold structured values by design.`,
             r`SELECT d, YEAR(d) AS y, MONTH(d) AS m
@@ -187,12 +187,12 @@ FROM (SELECT DATE '2026-10-06' AS d) AS t;       -- one atomic column, parts ext
 -- +------------+------+------+`],
         `
    NOT 1NF                          1NF
-   ┌────┬──────┬─────────────┐      ┌────┬──────┐     ┌───────────┬───────┐
-   │ id │ name │ phones      │      │ id │ name │     │ person_id │ phone │
-   ├────┼──────┼─────────────┤      ├────┼──────┤     ├───────────┼───────┤
-   │  1 │ Asha │ 98450,98451 │ ──►  │  1 │ Asha │◄────│     1     │ 98450 │
-   └────┴──────┴─────────────┘      └────┴──────┘     │     1     │ 98451 │
-        list in one cell                               └───────────┴───────┘
+   ┌────┬───────┬─────────────┐      ┌────┬───────┐     ┌───────────┬───────┐
+   │ id │ name  │ phones      │      │ id │ name  │     │ person_id │ phone │
+   ├────┼───────┼─────────────┤      ├────┼───────┤     ├───────────┼───────┤
+   │  1 │ Abaji │ 98450,98451 │ ──►  │  1 │ Abaji │◄────│     1     │ 98450 │
+   └────┴───────┴─────────────┘      └────┴───────┘     │     1     │ 98451 │
+        list in one cell                                 └───────────┴───────┘
 `,
         `1NF is non-negotiable for data you filter, join or constrain. For opaque payloads that you only store and return (webhook bodies, user preferences), a JSON column is a pragmatic exception, but index any field you search through a generated column and keep a relational column for anything with an integrity rule.`
     ),
@@ -269,7 +269,7 @@ FROM order_item i JOIN product p ON p.product_id = i.product_id WHERE i.order_id
         [`<b>Limitations:</b> 2NF only matters for composite keys. A table with a single-column primary key is automatically in 2NF, yet it can still hold transitive dependencies (see 3NF).`,
             r`-- Single-column PK, so automatically 2NF, but dept_name depends on dept_id, not on emp_id
 CREATE TABLE emp (emp_id INT PRIMARY KEY, name VARCHAR(20), dept_id INT, dept_name VARCHAR(20));
-INSERT INTO emp VALUES (1,'Asha',10,'IT'),(2,'Ravi',10,'IT');
+INSERT INTO emp VALUES (1,'Abaji',10,'IT'),(2,'Raoji',10,'IT');
 SELECT dept_id, dept_name, COUNT(*) AS copies FROM emp GROUP BY dept_id, dept_name;
 
 -- OUTPUT:

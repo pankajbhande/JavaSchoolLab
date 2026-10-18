@@ -72,7 +72,7 @@ FROM   order_items oi JOIN products p ON p.id = oi.product_id;
             r`CREATE TABLE customers   (id INT PRIMARY KEY, name VARCHAR(50));
 CREATE TABLE orders      (id INT PRIMARY KEY, customer_id INT, status VARCHAR(10));
 CREATE TABLE order_items (order_id INT, product_id INT, qty INT, unit_price DECIMAL(10,2));
-INSERT INTO customers   VALUES (1,'Asha'),(2,'Ravi');
+INSERT INTO customers   VALUES (1,'Abaji'),(2,'Raoji');
 INSERT INTO orders      VALUES (1,1,'PAID'),(2,1,'PAID'),(3,2,'CANCELLED');
 INSERT INTO order_items VALUES (1,1,2,50.00),(2,2,1,20.00),(3,1,1,50.00);
 
@@ -84,10 +84,10 @@ GROUP  BY c.id, c.name
 ORDER  BY revenue DESC;
 
 -- OUTPUT:
--- +------+---------+
--- | name | revenue |
--- +------+---------+
--- | Asha |  120.00 |
+-- +-------+---------+
+-- | name  | revenue |
+-- +-------+---------+
+-- | Abaji | 120.00  |
 -- +------+---------+`],
         [`<b>Advantages:</b> foreign keys, CHECK constraints and the composite primary key make bad data impossible at the database level, not just in application code.`,
             r`CREATE TABLE products (id INT PRIMARY KEY, name VARCHAR(50));
@@ -446,9 +446,9 @@ SHOW TABLES;
             r`CREATE TABLE job_skills       (job_id INT, skill_id INT);
 CREATE TABLE candidate_skills (candidate_id INT, skill_id INT);
 CREATE TABLE candidates       (id INT, name VARCHAR(20));
-INSERT INTO candidates       VALUES (1,'Asha'),(2,'Ravi');
+INSERT INTO candidates       VALUES (1,'Abaji'),(2,'Raoji');
 INSERT INTO job_skills       VALUES (1,1),(1,2);          -- job 1 needs Java(1), SQL(2)
-INSERT INTO candidate_skills VALUES (1,1),(1,2),(2,1);    -- Asha: both, Ravi: Java only
+INSERT INTO candidate_skills VALUES (1,1),(1,2),(2,1);    -- Abaji: both, Raoji: Java only
 
 SELECT c.name,
        COUNT(*)                                             AS matched,
@@ -460,11 +460,11 @@ GROUP  BY c.id, c.name
 ORDER  BY matched DESC;
 
 -- OUTPUT:
--- +------+---------+----------+
--- | name | matched | required |
--- +------+---------+----------+
--- | Asha |       2 |        2 |
--- | Ravi |       1 |        2 |
+-- +-------+---------+----------+
+-- | name  | matched | required |
+-- +-------+---------+----------+
+-- | Abaji |       2 |        2 |
+-- | Raoji |       1 |        2 |
 -- +------+---------+----------+`],
         [`Candidates search by title, and recruiters track the funnel: how many applications are at each status for a job.`,
             r`CREATE TABLE applications (job_id INT, candidate_id INT, status VARCHAR(12));

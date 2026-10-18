@@ -577,13 +577,13 @@ FROM staff e JOIN staff m ON m.id = e.manager_id WHERE e.salary > m.salary;
 
 -- OUTPUT:
 -- employee | salary | manager | manager_salary
--- Kiran    |  90000 | Ravi    |          80000`],
+-- Kanhoji  |  90000 | Raoji   | 80000`],
             ['Correlated subquery version.',
                 r`SELECT name FROM staff e WHERE salary > (SELECT salary FROM staff m WHERE m.id = e.manager_id);
 
 -- OUTPUT:
 -- name
--- Kiran`]],
+-- Kanhoji`]],
         [['Earning more than any ancestor.',
             r`WITH RECURSIVE anc AS (
   SELECT id, manager_id AS anc_id FROM staff WHERE manager_id IS NOT NULL
@@ -592,7 +592,7 @@ SELECT DISTINCT e.name FROM staff e JOIN anc a ON a.id = e.id JOIN staff x ON x.
 
 -- OUTPUT:
 -- name
--- Kiran`],
+-- Kanhoji`],
             ['Index for the join.',
                 r`ALTER TABLE staff ADD INDEX idx_manager (manager_id);
 
@@ -621,25 +621,25 @@ SELECT DISTINCT e.name FROM staff e JOIN anc a ON a.id = e.id JOIN staff x ON x.
 WHERE (e.dept, e.salary) IN (SELECT dept, MAX(salary) FROM emp GROUP BY dept);
 
 -- OUTPUT:
--- dept | name  | salary
--- HR   | Asha  |  60000
--- IT   | Meena |  70000`],
+-- dept | name     | salary
+-- HR   | Abaji    | 60000
+-- IT   | Moropant | 70000`],
             ['Top 3 per department.',
                 r`SELECT dept, name, salary FROM (SELECT dept, name, salary, DENSE_RANK() OVER (PARTITION BY dept ORDER BY salary DESC) AS rk FROM emp) t WHERE rk <= 3 ORDER BY dept, salary DESC;
 
 -- OUTPUT:
--- dept | name  | salary
---   10 | Asha  |  60000
---   10 | Ravi  |  45000
---   20 | Meena |  70000`]],
+-- dept | name     | salary
+--   10 | Abaji    | 60000
+--   10 | Raoji    | 45000
+--   20 | Moropant | 70000`]],
         [['Lateral join version.',
             r`SELECT d.name, t.name AS employee, t.salary FROM departments d JOIN LATERAL (SELECT name, salary FROM emp e WHERE e.dept = d.id ORDER BY salary DESC LIMIT 3) t;
 
 -- OUTPUT:
 -- name | employee | salary
--- HR   | Asha     |  60000
--- HR   | Ravi     |  45000
--- IT   | Meena    |  70000`],
+-- HR   | Abaji    | 60000
+-- HR   | Raoji    | 45000
+-- IT   | Moropant | 70000`],
             ['Supporting index.',
                 r`ALTER TABLE emp ADD INDEX idx_dept_salary (dept, salary);
 
@@ -766,34 +766,34 @@ SELECT CONCAT(REPEAT('  ', lvl), name) AS chart FROM org ORDER BY path;
 
 -- OUTPUT:
 -- chart
--- Anita
---   Meena
---   Ravi
---     Kiran`],
+-- Annaji
+--   Moropant
+--   Raoji
+--     Kanhoji`],
             ['Team size per manager.',
                 r`WITH RECURSIVE t AS (SELECT id AS mgr, id AS member FROM staff UNION ALL SELECT t.mgr, s.id FROM t JOIN staff s ON s.manager_id = t.member)
 SELECT s.name, COUNT(*) - 1 AS team_size FROM t JOIN staff s ON s.id = t.mgr GROUP BY t.mgr, s.name HAVING team_size > 0;
 
 -- OUTPUT:
--- name  | team_size
--- Anita | 3
--- Ravi  | 1`]],
+-- name   | team_size
+-- Annaji | 3
+-- Raoji  | 1`]],
         [['Closure table for fast subtrees.',
             r`CREATE TABLE staff_closure (ancestor INT, descendant INT, depth INT, PRIMARY KEY (ancestor, descendant), INDEX idx_desc (descendant));
 SELECT s.name FROM staff_closure c JOIN staff s ON s.id = c.descendant WHERE c.ancestor = 1 AND c.depth > 0;
 
 -- OUTPUT:
 -- name
--- Ravi
--- Meena
--- Kiran`],
+-- Raoji
+-- Moropant
+-- Kanhoji`],
             ['Materialized path.',
                 r`SELECT name FROM staff WHERE path LIKE '/1/2/%';
 
 -- OUTPUT:
 -- name
--- Ravi
--- Kiran`]]
+-- Raoji
+-- Kanhoji`]]
     ),
 
     'Customers Who Never Ordered': x(
@@ -817,7 +817,7 @@ SELECT s.name FROM staff_closure c JOIN staff s ON s.id = c.descendant WHERE c.a
 
 -- OUTPUT:
 -- id | name
---  2 | Ravi`],
+--  2 | Raoji`],
             ['NOT EXISTS with a date window.',
                 r`SELECT c.id FROM customers c WHERE NOT EXISTS (SELECT 1 FROM orders o WHERE o.customer_id = c.id AND o.created_at >= NOW() - INTERVAL 90 DAY);
 

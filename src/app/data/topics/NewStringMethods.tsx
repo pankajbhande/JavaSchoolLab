@@ -77,11 +77,11 @@ public class StringMethodsIntermediate {
         // Processing multi-line text
         String csvData = """
             Name, Age, City
-            Alice, 30, New York
+            Anaji, 30, New York
 
-            Bob, 25, London
+            Baji, 25, London
 
-            Charlie, 35, Tokyo
+            Chimnaji, 35, Tokyo
             """;
 
         // Filter out blank lines and strip whitespace
@@ -114,9 +114,9 @@ public class StringMethodsIntermediate {
 
 // OUTPUT:
 // Name, Age, City
-// Alice, 30, New York
-// Bob, 25, London
-// Charlie, 35, Tokyo
+// Anaji, 30, New York
+// Baji, 25, London
+// Chimnaji, 35, Tokyo
 // ----------------------------------------
 // | Name          | Age |
 // ----------------------------------------

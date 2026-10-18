@@ -103,14 +103,15 @@ class BookControllerTest {
 }
 
 // OUTPUT:
-// {"user_name":"Asha","joined":"2024-05-01"}`],
+// {"user_name":"Abaji","joined":"2024-05-01"}`],
             ['Boot properties for Jackson.',
                 r`spring.jackson.property-naming-strategy=SNAKE_CASE
 spring.jackson.default-property-inclusion=non_null
 spring.jackson.serialization.write-dates-as-timestamps=false
 
 # OUTPUT:
-# {"first_name":"Asha","created_at":"2024-05-01T10:15:30"}  (null fields omitted)`]],
+# {"first_name":"Abaji","created_at":"2024-05-01T10:15:30"}
+(null fields omitted)`]],
         [['Define your own converter bean.',
             r`@Bean
 MappingJackson2HttpMessageConverter jsonConverter() {
@@ -128,7 +129,7 @@ class UserJsonTest {
     @Test
     void renamesField() throws Exception {
         mvc.perform(get("/users/1"))
-           .andExpect(jsonPath("$.user_name").value("Asha"))
+           .andExpect(jsonPath("$.user_name").value("Abaji"))
            .andExpect(jsonPath("$.password").doesNotExist());
     }
 }
@@ -164,7 +165,7 @@ public ResponseEntity<User> create(@RequestBody User u) {
 // OUTPUT:
 // HTTP/1.1 201 Created
 // Location: /users/7
-// {"id":7,"name":"Asha"}`],
+// {"id":7,"name":"Abaji"}`],
             ['Find returns 200 or 404.',
                 r`@GetMapping("/users/{id}")
 public ResponseEntity<User> find(@PathVariable long id) {
@@ -174,7 +175,7 @@ public ResponseEntity<User> find(@PathVariable long id) {
 }
 
 // OUTPUT:
-// GET /users/7   -> 200 {"id":7,"name":"Asha"}
+// GET /users/7   -> 200 {"id":7,"name":"Abaji"}
 // GET /users/99  -> 404 (empty body)`]],
         [['Custom headers.',
             r`@GetMapping("/ping")
@@ -194,7 +195,7 @@ public ResponseEntity<String> ping() {
                 r`@Test
 void createReturns201() throws Exception {
     mvc.perform(post("/users").contentType("application/json")
-            .content("{\"name\":\"Asha\"}"))
+            .content("{\"name\":\"Abaji\"}"))
        .andExpect(status().isCreated())
        .andExpect(header().string("Location", "/users/7"));
 }
@@ -280,27 +281,27 @@ mvc.perform(post("/orders").content("{}")).andExpect(status().isBadRequest());
 @RequestMapping("/api/v1/users")
 class UserV1Controller {
     @GetMapping("/{id}")
-    UserV1 get(@PathVariable long id) { return new UserV1("Asha Rao"); }
+    UserV1 get(@PathVariable long id) { return new UserV1("Abaji Rao"); }
 }
 @RestController
 @RequestMapping("/api/v2/users")
 class UserV2Controller {
     @GetMapping("/{id}")
-    UserV2 get(@PathVariable long id) { return new UserV2("Asha", "Rao"); }
+    UserV2 get(@PathVariable long id) { return new UserV2("Abaji", "Rao"); }
 }
 
 // OUTPUT:
-// GET /api/v1/users/1 -> {"name":"Asha Rao"}
-// GET /api/v2/users/1 -> {"firstName":"Asha","lastName":"Rao"}`],
+// GET /api/v1/users/1 -> {"name":"Abaji Rao"}
+// GET /api/v2/users/1 -> {"firstName":"Abaji","lastName":"Rao"}`],
             ['Header versioning.',
                 r`@GetMapping(path = "/api/users/{id}", headers = "X-API-VERSION=1")
-UserV1 v1(@PathVariable long id) { return new UserV1("Asha Rao"); }
+UserV1 v1(@PathVariable long id) { return new UserV1("Abaji Rao"); }
 
 @GetMapping(path = "/api/users/{id}", headers = "X-API-VERSION=2")
-UserV2 v2(@PathVariable long id) { return new UserV2("Asha", "Rao"); }
+UserV2 v2(@PathVariable long id) { return new UserV2("Abaji", "Rao"); }
 
 // OUTPUT:
-// GET /api/users/1  X-API-VERSION: 2 -> {"firstName":"Asha","lastName":"Rao"}
+// GET /api/users/1  X-API-VERSION: 2 -> {"firstName":"Abaji","lastName":"Rao"}
 // no matching header -> 404 or 400 (varies)`]],
         [['Media type versioning.',
             r`@GetMapping(path = "/api/users/{id}",
@@ -312,9 +313,9 @@ UserV2 v2(@PathVariable long id) { ... }
 // Accept: application/json            -> falls to another handler (varies)`],
             ['Test both versions.',
                 r`mvc.perform(get("/api/v1/users/1"))
-   .andExpect(jsonPath("$.name").value("Asha Rao"));
+   .andExpect(jsonPath("$.name").value("Abaji Rao"));
 mvc.perform(get("/api/v2/users/1"))
-   .andExpect(jsonPath("$.firstName").value("Asha"));
+   .andExpect(jsonPath("$.firstName").value("Abaji"));
 
 // OUTPUT:
 // Tests run: 2, Failures: 0`]]
@@ -586,7 +587,8 @@ public String raw(@RequestBody String json) throws Exception {
 server.servlet.encoding.force=true
 
 # OUTPUT:
-# Content-Type: text/plain;charset=UTF-8`],
+# Content-Type: text/plain;
+charset=UTF-8`],
             ['Test text output.',
                 r`mvc.perform(post("/echo").contentType("text/plain").content("hello"))
    .andExpect(status().isOk())
@@ -681,7 +683,7 @@ Jackson2ObjectMapperBuilderCustomizer customizer() {
 }
 
 // OUTPUT:
-// {"name":"Asha","joined":"2024-05-01"}   (null fields omitted)`],
+// {"name":"Abaji","joined":"2024-05-01"}   (null fields omitted)`],
         [`<p>Common mistakes:</p><ul><li><b>new ObjectMapper() in code:</b> it ignores Boot settings; inject the bean.</li><li><b>No default constructor:</b> deserialization fails; use records or <code>@JsonCreator</code>.</li><li><b>Bidirectional entities:</b> infinite recursion; use DTOs or <code>@JsonManagedReference</code>.</li><li><b>Dates as numbers:</b> turn off <code>WRITE_DATES_AS_TIMESTAMPS</code>.</li></ul>`,
             r`// Wrong: ignores spring.jackson settings
 ObjectMapper bad = new ObjectMapper();
@@ -839,10 +841,10 @@ class OrderErrors {
     'mvc-api-versioning': dv(
         [`<p>Versioning works through request mapping conditions that <code>RequestMappingHandlerMapping</code> evaluates.</p><ul><li><b>Conditions:</b> patterns, <code>params</code>, <code>headers</code>, <code>consumes</code>, <code>produces</code>.</li><li><b>Most specific wins:</b> if several mappings match, Spring compares the conditions and picks the best.</li><li><b>No match:</b> 404, 400 for missing params, 406 or 415 for media types.</li><li><b>Custom:</b> a <code>RequestCondition</code> can implement version ranges.</li></ul>`,
             r`@GetMapping(path = "/api/users/{id}", params = "version=2")
-UserV2 v2(@PathVariable long id) { return new UserV2("Asha", "Rao"); }
+UserV2 v2(@PathVariable long id) { return new UserV2("Abaji", "Rao"); }
 
 @GetMapping(path = "/api/users/{id}", params = "version=1")
-UserV1 v1(@PathVariable long id) { return new UserV1("Asha Rao"); }
+UserV1 v1(@PathVariable long id) { return new UserV1("Abaji Rao"); }
 
 // OUTPUT:
 // GET /api/users/1?version=2 -> v2 body
@@ -862,9 +864,15 @@ class VersionConfig implements WebMvcConfigurer {
         [`<p>Common mistakes:</p><ul><li><b>Versioning too early or too often:</b> prefer additive changes.</li><li><b>Copy-pasting controllers:</b> bugs get fixed in one version only.</li><li><b>No default version:</b> clients without the header fail.</li><li><b>Never retiring old versions.</b></li></ul>`,
             r`// Right: shared service, thin versioned controllers
 @RestController @RequestMapping("/api/v1/users")
-class V1 { V1(UserService s) {...}  UserV1 get(long id) { return map1(s.get(id)); } }
+class V1 {
+    V1(UserService s) {...}
+    UserV1 get(long id) { return map1(s.get(id)); }
+}
 @RestController @RequestMapping("/api/v2/users")
-class V2 { V2(UserService s) {...}  UserV2 get(long id) { return map2(s.get(id)); } }
+class V2 {
+    V2(UserService s) {...}
+    UserV2 get(long id) { return map2(s.get(id)); }
+}
 
 // OUTPUT:
 // one UserService, two response shapes`],
@@ -882,13 +890,13 @@ ResponseEntity<UserV1> v1(@PathVariable long id) {
 // Deprecation: true
 // Sunset: Wed, 31 Dec 2025 23:59:59 GMT`],
         [`<p>Scenario: v1 returned a single name field; the new mobile app needs first and last name. v2 is added, v1 stays for old apps for six months, then is removed after traffic drops to zero.</p>`,
-            r`// v1 clients: {"name":"Asha Rao"}
-// v2 clients: {"firstName":"Asha","lastName":"Rao"}
+            r`// v1 clients: {"name":"Abaji Rao"}
+// v2 clients: {"firstName":"Abaji","lastName":"Rao"}
 // both served by UserService.get(id) returning a rich domain object
 
 // OUTPUT:
-// GET /api/v1/users/1 -> {"name":"Asha Rao"}
-// GET /api/v2/users/1 -> {"firstName":"Asha","lastName":"Rao"}`]
+// GET /api/v1/users/1 -> {"name":"Abaji Rao"}
+// GET /api/v2/users/1 -> {"firstName":"Abaji","lastName":"Rao"}`]
     ),
 
     'mvc-rest-api-best-practices': dv(
@@ -1007,17 +1015,20 @@ System.out.println(p + " " + json + " " + list.size());
 // OUTPUT:
 // Point[x=1, y=2] {"x":1,"y":2} 1`],
         [`<p>Useful variants:</p><ul><li><b>JsonNode / Map</b> for dynamic payloads.</li><li><b>@JsonView</b> to expose different fields to different callers.</li><li><b>@JsonAnySetter</b> for unknown fields.</li><li><b>Gson</b> as an alternative converter.</li><li><b>JSON Patch and Merge Patch</b> media types for PATCH.</li></ul>`,
-            r`public class Views { public interface Public {} public interface Admin extends Public {} }
+            r`public class Views {
+    public interface Public {}
+    public interface Admin extends Public {}
+}
 class User {
     @JsonView(Views.Public.class) public String name;
     @JsonView(Views.Admin.class)  public String email;
 }
 @GetMapping("/users/1")
 @JsonView(Views.Public.class)
-User one() { return new User("Asha", "a@x.com"); }
+User one() { return new User("Abaji", "a@x.com"); }
 
 // OUTPUT:
-// {"name":"Asha"}`],
+// {"name":"Abaji"}`],
         [`<p>Common mistakes:</p><ul><li><b>Lombok or class without accessors:</b> empty JSON <code>{}</code>.</li><li><b>Unknown property errors</b> outside Boot; configure <code>FAIL_ON_UNKNOWN_PROPERTIES</code>.</li><li><b>Wrong date format</b> or timestamps.</li><li><b>Enum mismatch:</b> a bad value gives 400.</li><li><b>Primitive vs wrapper:</b> a missing int becomes 0, a missing Integer becomes null.</li></ul>`,
             r`class Bad { private String name; }          // no getter: serializes as {}
 record Good(String name) {}                   // accessor: {"name":"x"}
@@ -1120,9 +1131,13 @@ String quoted() { return "\"hello\""; }   // manual JSON string literal
 // /quoted -> "hello"`],
         [`<p>Common mistakes:</p><ul><li><b>Garbled characters:</b> charset not UTF-8.</li><li><b>Expecting quotes</b> around a returned String in a JSON API.</li><li><b>Returning String from @Controller</b> and getting a view name lookup.</li><li><b>Large String bodies</b> held fully in memory.</li></ul>`,
             r`// Wrong in @Controller: looks for a view named "ok"
-@Controller class A { @GetMapping("/a") String a() { return "ok"; } }
+@Controller class A {
+    @GetMapping("/a") String a() { return "ok"; }
+}
 // Right
-@Controller class B { @GetMapping("/b") @ResponseBody String b() { return "ok"; } }
+@Controller class B {
+    @GetMapping("/b") @ResponseBody String b() { return "ok"; }
+}
 
 // OUTPUT:
 // /a -> 404 or template not found    /b -> ok`],

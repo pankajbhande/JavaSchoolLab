@@ -108,12 +108,12 @@ with zipfile.ZipFile(buffer) as zf:
 
 conn = sqlite3.connect(":memory:")
 conn.execute("CREATE TABLE accounts (name TEXT, balance INTEGER)")
-conn.execute("INSERT INTO accounts VALUES ('Asha', 1000)")
+conn.execute("INSERT INTO accounts VALUES ('Abaji', 1000)")
 conn.commit()
 
 try:
     with conn:                      # commit on success, rollback on error
-        conn.execute("UPDATE accounts SET balance = balance - 300 WHERE name = 'Asha'")
+        conn.execute("UPDATE accounts SET balance = balance - 300 WHERE name = 'Abaji'")
         raise ValueError("payment gateway failed")
 except ValueError as error:
     print("Error:", error)

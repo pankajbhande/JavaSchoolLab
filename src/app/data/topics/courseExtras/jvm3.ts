@@ -24,7 +24,9 @@ export const jvm3Extras: Record<string, Extra> = {
     static int created = 0;
     Counter() { created++; }
 }
-new Counter(); new Counter(); new Counter();
+new Counter();
+new Counter();
+new Counter();
 System.out.println(Counter.created);
 
 // OUTPUT:
@@ -34,7 +36,10 @@ System.out.println(Counter.created);
     static int a = init("a");
     static { System.out.println("static block"); }
     static int b = init("b");
-    static int init(String n) { System.out.println("init " + n); return 1; }
+    static int init(String n) {
+        System.out.println("init " + n);
+        return 1;
+    }
 }
 new Boot();
 
@@ -79,7 +84,10 @@ System.out.println(Service.get() == Service.get());
             ['S', 'How big is an object with one int field on a 64-bit JVM?', 'Usually 16 bytes: 12 byte header, 4 byte int, with compressed class pointers (varies by flags).'],
             ['S', 'How do you inspect object layout?', 'Use the JOL library with ClassLayout.parseClass(X.class).toPrintable().']],
         [['Separate copies.',
-            r`class Dog { String name; Dog(String n) { name = n; } }
+            r`class Dog {
+    String name;
+    Dog(String n) { name = n; }
+}
 Dog a = new Dog("Rex");
 Dog b = new Dog("Max");
 a.name = "Rocky";
@@ -88,21 +96,29 @@ System.out.println(a.name + " " + b.name);
 // OUTPUT:
 // Rocky Max`],
             ['Defaults.',
-                r`class Box { int n; boolean ok; String s; double d; }
+                r`class Box {
+    int n;
+    boolean ok;
+    String s;
+    double d;
+}
 Box b = new Box();
 System.out.println(b.n + " " + b.ok + " " + b.s + " " + b.d);
 
 // OUTPUT:
 // 0 false null 0.0`]],
         [['Shared reference.',
-            r`class Person { String name; Person(String n) { name = n; } }
+            r`class Person {
+    String name;
+    Person(String n) { name = n; }
+}
 Person p1 = new Person("Ann");
 Person p2 = p1;
-p2.name = "Bob";
+p2.name = "Baji";
 System.out.println(p1.name);
 
 // OUTPUT:
-// Bob`],
+// Baji`],
             ['Local needs init.',
                 r`class T {
     int field;
@@ -297,7 +313,10 @@ export const jvm3Deep: Record<string, Deep> = {
             r`class Config {
     static final String NAME = "app";            // compile-time constant, inlined
     static final List<String> ITEMS = new ArrayList<>();
-    static { ITEMS.add("a"); System.out.println("Config initialized"); }
+    static {
+        ITEMS.add("a");
+        System.out.println("Config initialized");
+    }
 }
 System.out.println(Config.NAME);                  // does not trigger init
 System.out.println(Config.ITEMS);                 // triggers init
@@ -311,7 +330,10 @@ System.out.println(Config.ITEMS);                 // triggers init
     static volatile boolean running = true;
     static final AtomicInteger HITS = new AtomicInteger();
 }
-enum Registry { INSTANCE; final Map<String, Integer> map = new ConcurrentHashMap<>(); }
+enum Registry {
+    INSTANCE;
+    final Map<String, Integer> map = new ConcurrentHashMap<>();
+}
 Flags.HITS.incrementAndGet();
 Registry.INSTANCE.map.put("x", 1);
 System.out.println(Flags.HITS + " " + Registry.INSTANCE.map);
@@ -321,12 +343,12 @@ System.out.println(Flags.HITS + " " + Registry.INSTANCE.map);
         [`<p>Common mistakes:</p><ul><li><b>Static for instance data:</b> all objects overwrite one value; make the field non-static.</li><li><b>Unsynchronized mutable static:</b> data races; use atomics or locks.</li><li><b>Unbounded static cache:</b> memory leak; use a bounded cache with eviction.</li><li><b>Static initialization order cycles:</b> a class sees a default value of another; avoid circular statics.</li><li><b>Static holding a Context or request:</b> blocks class loader unload.</li></ul>`,
             r`class User { static String name; }       // BUG: shared by every user
 User.name = "Ann";
-User.name = "Bob";
+User.name = "Baji";
 System.out.println(User.name);
 class Fixed { String name; }                 // FIX: one value per object
 
 // OUTPUT:
-// Bob`],
+// Baji`],
         [`<p>Tuning and sizing:</p><ul><li><b>Bound caches:</b> a size limit or <code>WeakHashMap</code> or soft references.</li><li><b>Prefer constants:</b> immutable statics add no GC cost.</li><li><b>Heap dumps:</b> look for GC Roots of type "class" to find static retention.</li><li><b>Static init cost:</b> heavy work delays first use; consider lazy holders.</li></ul>`,
             r`// jcmd <pid> GC.heap_dump leak.hprof
 // open in Eclipse MAT: Leak Suspects, path to GC roots, exclude weak references
@@ -347,7 +369,11 @@ public class Cleanup implements ServletContextListener {
     'instance-variables-memory': dv(
         [`<p>Each object is a block on the heap: header plus fields.</p><ul><li><b>Header:</b> mark word (8 bytes) and class pointer (4 bytes compressed).</li><li><b>Fields:</b> primitives stored inline; object fields store a reference.</li><li><b>Alignment:</b> total size rounds up to a multiple of 8 bytes.</li><li><b>Allocation:</b> fast pointer bump in a thread-local buffer (TLAB).</li><li><b>Escape analysis:</b> the JIT may avoid heap allocation of objects that do not escape.</li></ul>`,
             r`// with JOL: System.out.println(ClassLayout.parseClass(P.class).toPrintable());
-class P { int id; long score; boolean ok; }
+class P {
+    int id;
+    long score;
+    boolean ok;
+}
 
 // OUTPUT: (varies by JVM flags)
 // P object internals:
@@ -374,7 +400,10 @@ System.out.println(c.a + c.b + " " + new Point(3, 4));
 // init block
 // 3 Point[x=3, y=4]`],
         [`<p>Common mistakes:</p><ul><li><b>Public mutable fields:</b> break encapsulation; use private and accessors.</li><li><b>Uninitialized reference:</b> null causes <code>NullPointerException</code>.</li><li><b>Shared mutable field across threads:</b> needs synchronization.</li><li><b>Calling an overridable method in a constructor:</b> sees defaults of the subclass fields.</li><li><b>Wrong equals on == :</b> compare objects with <code>equals</code>.</li></ul>`,
-            r`class Parent { Parent() { hello(); } void hello() {} }
+            r`class Parent {
+    Parent() { hello(); }
+    void hello() {}
+}
 class Kid extends Parent {
     String msg = "hi";
     @Override void hello() { System.out.println(msg); }   // msg is still null
@@ -396,7 +425,8 @@ new Kid();
     final double[] price = new double[5_000_000];
 }
 Ticks t = new Ticks();
-t.time[0] = 1L; t.price[0] = 99.5;
+t.time[0] = 1L;
+t.price[0] = 99.5;
 System.out.println(t.price[0]);
 
 // OUTPUT:

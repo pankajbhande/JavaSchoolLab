@@ -191,8 +191,8 @@ class PolicyControllerTest {
     @Test
     void getAllReturnsJsonArray() throws Exception {
         when(policyService.getAllPolicy()).thenReturn(List.of(
-                new Policy(1, "101", "1000", "Ram",   "ram@gmail.com",   "2020", "active"),
-                new Policy(2, "102", "2000", "Shyam", "shyam@gmail.com", "2021", "active")));
+                new Policy(1, "101", "1000", "Rajaram",   "ram@gmail.com",   "2020", "active"),
+                new Policy(2, "102", "2000", "Shahaji", "shyam@gmail.com", "2021", "active")));
 
         mockMvc.perform(get("/api/policies"))
                .andDo(print())
@@ -200,13 +200,13 @@ class PolicyControllerTest {
                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                .andExpect(jsonPath("$", hasSize(2)))
                .andExpect(jsonPath("$[0].policyNumber").value("101"))
-               .andExpect(jsonPath("$[1].name").value("Shyam"));
+               .andExpect(jsonPath("$[1].name").value("Shahaji"));
     }
 
     @Test
     void getByIdBindsThePathVariable() throws Exception {
         when(policyService.getPolicyById(3)).thenReturn(
-                new Policy(3, "103", "1000", "Shyam", "shyam@gmail.com", "2022", "active"));
+                new Policy(3, "103", "1000", "Shahaji", "shyam@gmail.com", "2022", "active"));
 
         mockMvc.perform(get("/api/policies/{id}", 3))
                .andExpect(status().isOk())
@@ -217,14 +217,14 @@ class PolicyControllerTest {
 
     @Test
     void postCreatesAndReturns201WithLocation() throws Exception {
-        Policy saved = new Policy(9, "P-900", "500", "Ram",
+        Policy saved = new Policy(9, "P-900", "500", "Rajaram",
                                   "ram@gmail.com", "5012", "active");
         when(policyService.savePolicy(any(Policy.class))).thenReturn(saved);
 
         mockMvc.perform(post("/api/policies")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content("{\\"policyNumber\\":\\"P-900\\",\\"premiumAmount\\":\\"500\\"," +
-                             "\\"name\\":\\"Ram\\",\\"email\\":\\"ram@gmail.com\\"," +
+                             "\\"name\\":\\"Rajaram\\",\\"email\\":\\"ram@gmail.com\\"," +
                              "\\"claimNumber\\":\\"5012\\",\\"status\\":\\"active\\"}"))
                .andExpect(status().isCreated())
                .andExpect(header().string("Location", "/api/policies/9"))
@@ -252,7 +252,7 @@ class PolicyControllerTest {
 //           Headers = [Location:"/api/policies/9",
 //                      Content-Type:"application/json"]
 //              Body = {"id":9,"policyNumber":"P-900","premiumAmount":"500",
-//                      "name":"Ram","email":"ram@gmail.com",
+//                      "name":"Rajaram","email":"ram@gmail.com",
 //                      "claimNumber":"5012","status":"active"}
 //
 // Tests run: 4, Failures: 0
@@ -274,7 +274,7 @@ The chain reads like the HTTP conversation itself. Everything on the left of the
 <tr><td>status().isOk() / isCreated() / isNotFound() / isBadRequest()</td><td>The response status code. There are named methods for the whole range, plus <code>status().is(418)</code>.</td></tr>
 <tr><td>content().contentType(MediaType.APPLICATION_JSON)</td><td>The Content-Type header the converter chose.</td></tr>
 <tr><td>content().json(expectedJson)</td><td>Whole-body comparison that ignores field order and, by default, tolerates extra fields. Far less brittle than <code>content().string(...)</code>.</td></tr>
-<tr><td>jsonPath("$.name").value("Ram")</td><td>One field, addressed by JSONPath. <code>$[0]</code> indexes an array, <code>$..email</code> searches recursively.</td></tr>
+<tr><td>jsonPath("$.name").value("Rajaram")</td><td>One field, addressed by JSONPath. <code>$[0]</code> indexes an array, <code>$..email</code> searches recursively.</td></tr>
 <tr><td>jsonPath("$.password").doesNotExist()</td><td>A field is absent - the assertion that stops you leaking a hash into a response body.</td></tr>
 <tr><td>header().string("Location", "...")</td><td>A response header.</td></tr>
 <tr><td>view().name(...) / model().attribute(...)</td><td>For a classic MVC controller returning a template name rather than JSON.</td></tr>
@@ -315,7 +315,7 @@ void missingContentTypeIs415() throws Exception {
 @Test
 void deserialiseTheBodyAndAssertOnTheObject() throws Exception {
     when(policyService.getPolicyById(3)).thenReturn(
-            new Policy(3, "103", "1000", "Shyam", "shyam@x.com", "2022", "active"));
+            new Policy(3, "103", "1000", "Shahaji", "shyam@x.com", "2022", "active"));
 
     String body = mockMvc.perform(get("/api/policies/3"))
                          .andExpect(status().isOk())
@@ -330,8 +330,8 @@ void deserialiseTheBodyAndAssertOnTheObject() throws Exception {
 // OUTPUT of a jsonPath mismatch - it names the path, which is what
 // makes these failures quick to read:
 // java.lang.AssertionError: JSON path "$.name"
-// Expected: "Ram"
-//      but: was "Ramesh"
+// Expected: "Rajaram"
+//      but: was "Ramchandra"
 
 // OUTPUT when the field simply is not in the JSON:
 // java.lang.AssertionError: No value at JSON path "$.policyNo"
@@ -407,14 +407,14 @@ class PolicyRepositoryTest {
 
     @Test
     void findByPolicyNumberReturnsTheRow() {
-        entityManager.persistAndFlush(new Policy(null, "P-101", "1000", "Ram",
+        entityManager.persistAndFlush(new Policy(null, "P-101", "1000", "Rajaram",
                 "ram@gmail.com", "C-1", "active"));
         entityManager.clear();          // force a real SELECT, not a cache hit
 
         Optional<Policy> found = policyRepository.findByPolicyNumber("P-101");
 
         assertTrue(found.isPresent());
-        assertEquals("Ram", found.get().getName());
+        assertEquals("Rajaram", found.get().getName());
     }
 
     @Test
@@ -507,7 +507,7 @@ class PolicyEndToEndIT {
 
     @Test
     void saveThenReadItBack() {
-        Policy request = new Policy(null, "P-777", "1500", "Ram",
+        Policy request = new Policy(null, "P-777", "1500", "Rajaram",
                                     "ram@gmail.com", "C-77", "active");
 
         ResponseEntity<Policy> created =
@@ -1206,7 +1206,7 @@ class PolicyControllerManualSetupTest {
 //                        assertThat(mvc.get().uri("/api/policies/1"))
 //                              .hasStatusOk()
 //                              .bodyJson().extractingPath("$.name")
-//                              .isEqualTo("Ram");
+//                              .isEqualTo("Rajaram");
 // WebTestClient      - fluent, works against WebFlux, a real port, or a
 //                      bound MockMvc. The default choice on Boot 3.
 // TestRestTemplate   - blocking, RestTemplate-shaped, does not throw on

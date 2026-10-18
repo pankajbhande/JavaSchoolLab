@@ -429,13 +429,13 @@ class UserRepository:                       # in-memory implementation
         return list(self._data.values())
 
 repo = UserRepository()
-repo.add(User(1, "Asha"))
-repo.add(User(2, "Ravi"))
+repo.add(User(1, "Abaji"))
+repo.add(User(2, "Raoji"))
 print(repo.get(1))
 print(len(repo.all()))
 
 # OUTPUT:
-# User(id=1, name='Asha')
+# User(id=1, name='Abaji')
 # 2`],
         [`If business code contains SQL, switching database, testing without a database, or caching all mean editing business logic. A repository isolates persistence so the domain stays pure.`,
             r`from dataclasses import dataclass
@@ -446,7 +446,7 @@ class User:
     name: str
 
 class InMemoryRepo:
-    def __init__(self): self._d = {1: User(1, "Asha")}
+    def __init__(self): self._d = {1: User(1, "Abaji")}
     def get(self, i): return self._d.get(i)
 
 class UserService:                          # knows only "something with get()"
@@ -460,7 +460,7 @@ print(service.greet(1))
 print(service.greet(9))
 
 # OUTPUT:
-# Hello Asha
+# Hello Abaji
 # unknown user`],
         [`Typical apps have one repository per aggregate (UserRepository, OrderRepository) with SQL, ORM or REST implementations behind the same interface. Here the same service runs unchanged on SQLite.`,
             r`import sqlite3
@@ -489,11 +489,11 @@ class UserService:
         return f"Hello {u.name}" if u else "unknown user"
 
 repo = SqliteUserRepo()
-repo.add(User(1, "Asha"))
+repo.add(User(1, "Abaji"))
 print(UserService(repo).greet(1))           # same service code as with the in-memory repo
 
 # OUTPUT:
-# Hello Asha`],
+# Hello Abaji`],
         [`<b>Advantages:</b> persistence-agnostic domain, trivial fakes for unit tests, one place for queries and caching, easier migration between storage technologies.`,
             r`class FakeRepo:                             # test double: a plain dict
     def __init__(self): self.saved = {}
@@ -503,12 +503,12 @@ def register(repo, name):                   # business logic under test
     repo.add(name.lower(), name)
 
 repo = FakeRepo()
-register(repo, "ASHA")
-assert repo.saved == {"asha": "ASHA"}       # no database, runs in microseconds
+register(repo, "ABAJI")
+assert repo.saved == {"abaji": "ABAJI"}       # no database, runs in microseconds
 print("test passed:", repo.saved)
 
 # OUTPUT:
-# test passed: {'asha': 'ASHA'}`],
+# test passed: {'abaji': 'ABAJI'}`],
         [`<b>Disadvantages:</b> extra layer and boilerplate, leaky abstractions (generic <code>all()</code> forces clients to filter in memory), and a growing zoo of <code>find_by_x</code> methods.`,
             r`ROWS = [{"id": i} for i in range(1000)]
 
@@ -573,10 +573,10 @@ class Notifier:
     def welcome(self, user):
         return self.sender.send(user, "Welcome!")
 
-print(Notifier(EmailSender()).welcome("asha"))
+print(Notifier(EmailSender()).welcome("abaji"))
 
 # OUTPUT:
-# email to asha: Welcome!`],
+# email to abaji: Welcome!`],
         [`When a class builds its own dependencies it is welded to them: you cannot switch to SMS, and you cannot test without sending real emails.`,
             r`class EmailSender:
     def send(self, to, msg): return f"email to {to}: {msg}"
@@ -592,12 +592,12 @@ class Notifier:
     def __init__(self, sender): self.sender = sender
     def welcome(self, user): return self.sender.send(user, "Welcome!")
 
-print(BadNotifier().welcome("ravi"))        # always email
-print(Notifier(SmsSender()).welcome("ravi"))  # caller chooses
+print(BadNotifier().welcome("raoji"))        # always email
+print(Notifier(SmsSender()).welcome("raoji"))  # caller chooses
 
 # OUTPUT:
-# email to ravi: Welcome!
-# sms to ravi: Welcome!`],
+# email to raoji: Welcome!
+# sms to raoji: Welcome!`],
         [`In production you inject real clients (database, mail, HTTP); in unit tests you inject fakes that record calls. FastAPI's <code>Depends()</code> is dependency injection built into the framework.`,
             r`class FakeSender:                           # test double
     def __init__(self): self.sent = []

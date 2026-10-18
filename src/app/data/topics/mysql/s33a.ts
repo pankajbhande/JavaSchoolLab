@@ -28,7 +28,7 @@ SELECT id, email FROM users WHERE id = 0 OR 1=1;
 -- +----+-------------------+
 -- |  1 | admin@corp.com    |
 -- |  2 | ann@corp.com      |
--- |  3 | bob@corp.com      |
+-- |  3 | baji@corp.com      |
 -- +----+-------------------+`],
         [`Real breaches (Heartland, TalkTalk, countless CMS plugins) used injection to dump tables. Typical attack styles: UNION-based data theft, error-based, boolean/time-blind, and stacked queries where the driver allows multi-statements.`,
             r`-- UNION-based exfiltration: attacker appends a second SELECT with the same column count.

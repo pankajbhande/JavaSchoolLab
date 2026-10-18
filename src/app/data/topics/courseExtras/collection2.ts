@@ -43,11 +43,15 @@ m.forEach((k, v) -> System.out.println(k + ":" + v));
 // a=1
 // a:1`],
             ['Two sum with a map.',
-                r`int[] a = {2, 7, 11, 15}; int target = 9;
+                r`int[] a = {2, 7, 11, 15};
+int target = 9;
 Map<Integer, Integer> seen = new HashMap<>();
 for (int i = 0; i < a.length; i++) {
     Integer j = seen.get(target - a[i]);
-    if (j != null) { System.out.println(j + "," + i); break; }
+    if (j != null) {
+        System.out.println(j + "," + i);
+        break;
+    }
     seen.put(a[i], i);
 }
 
@@ -73,7 +77,10 @@ for (int i = 0; i < a.length; i++) {
             ['S', 'Cost versus HashMap?', 'Extra memory and slightly slower writes for linking, but faster iteration.']],
         [['Insertion order preserved.',
             r`Map<String, Integer> m = new LinkedHashMap<>();
-m.put("z", 1); m.put("a", 2); m.put("m", 3); m.put("z", 9);
+m.put("z", 1);
+m.put("a", 2);
+m.put("m", 3);
+m.put("z", 9);
 System.out.println(m);
 
 // OUTPUT:
@@ -82,14 +89,18 @@ System.out.println(m);
                 r`Map<String, Integer> lru = new LinkedHashMap<>(16, 0.75f, true) {
     @Override protected boolean removeEldestEntry(Map.Entry<String, Integer> e) { return size() > 2; }
 };
-lru.put("a", 1); lru.put("b", 2); lru.get("a"); lru.put("c", 3);
+lru.put("a", 1);
+lru.put("b", 2);
+lru.get("a");
+lru.put("c", 3);
 System.out.println(lru.keySet());
 
 // OUTPUT:
 // [a, c]`]],
         [['Sequenced map (Java 21).',
             r`SequencedMap<String, Integer> m = new LinkedHashMap<>();
-m.put("a", 1); m.put("b", 2);
+m.put("a", 1);
+m.put("b", 2);
 m.putFirst("z", 0);
 System.out.println(m + " " + m.firstEntry() + " " + m.reversed());
 
@@ -97,11 +108,13 @@ System.out.println(m + " " + m.firstEntry() + " " + m.reversed());
 // {z=0, a=1, b=2} z=0 {b=2, a=1, z=0}`],
             ['Ordered JSON-like output.',
                 r`Map<String, Object> user = new LinkedHashMap<>();
-user.put("id", 1); user.put("name", "Asha"); user.put("role", "admin");
+user.put("id", 1);
+user.put("name", "Abaji");
+user.put("role", "admin");
 System.out.println(user);
 
 // OUTPUT:
-// {id=1, name=Asha, role=admin}`]]
+// {id=1, name=Abaji, role=admin}`]]
     ),
 
     'treemap': x(
@@ -135,7 +148,9 @@ System.out.println();
 // F C A`]],
         [['Reverse order map.',
             r`TreeMap<String, Integer> m = new TreeMap<>(Comparator.reverseOrder());
-m.put("a", 1); m.put("c", 3); m.put("b", 2);
+m.put("a", 1);
+m.put("c", 3);
+m.put("b", 2);
 System.out.println(m);
 
 // OUTPUT:
@@ -166,7 +181,8 @@ System.out.println(q.pollFirstEntry() + " " + q);
             ['S', 'What is Properties?', 'A Hashtable subclass of String keys and values, used to load and store configuration.']],
         [['Hashtable basics.',
             r`Hashtable<String, Integer> t = new Hashtable<>();
-t.put("a", 1); t.put("b", 2);
+t.put("a", 1);
+t.put("b", 2);
 try { t.put(null, 3); } catch (NullPointerException e) { System.out.println("null not allowed"); }
 System.out.println(t.get("a") + " " + t.size());
 
@@ -182,7 +198,8 @@ System.out.println(p.getProperty("db.url") + " " + p.getProperty("db.user", "roo
 // jdbc:mysql://localhost/app root`]],
         [['Atomic update with ConcurrentHashMap.',
             r`ConcurrentHashMap<String, Integer> m = new ConcurrentHashMap<>();
-m.merge("hits", 1, Integer::sum); m.merge("hits", 1, Integer::sum);
+m.merge("hits", 1, Integer::sum);
+m.merge("hits", 1, Integer::sum);
 System.out.println(m);
 
 // OUTPUT:
@@ -217,8 +234,12 @@ System.out.println(t);
             ['S', 'What error indicates a broken compareTo?', 'IllegalArgumentException: Comparison method violates its general contract!']],
         [['Natural ordering.',
             r`class Student implements Comparable<Student> {
-    final String name; final int marks;
-    Student(String n, int m) { name = n; marks = m; }
+    final String name;
+    final int marks;
+    Student(String n, int m) {
+        name = n;
+        marks = m;
+    }
     public int compareTo(Student o) { return Integer.compare(marks, o.marks); }
     public String toString() { return name + ":" + marks; }
 }
@@ -272,14 +293,14 @@ System.out.println(new HashSet<>(List.of(x, y)).size() + " " + new TreeSet<>(Lis
             ['S', 'Why use comparingInt over a lambda with subtraction?', 'It avoids overflow and boxing and reads clearly.']],
         [['Multi-field sorting.',
             r`record Emp(String dept, String name, int sal) {}
-List<Emp> l = new ArrayList<>(List.of(new Emp("IT", "Ravi", 80), new Emp("HR", "Asha", 70), new Emp("IT", "Anil", 80)));
+List<Emp> l = new ArrayList<>(List.of(new Emp("IT", "Raoji", 80), new Emp("HR", "Abaji", 70), new Emp("IT", "Anantrao", 80)));
 l.sort(Comparator.comparing(Emp::dept).thenComparing(Emp::sal, Comparator.reverseOrder()).thenComparing(Emp::name));
 l.forEach(System.out::println);
 
 // OUTPUT:
-// Emp[dept=HR, name=Asha, sal=70]
-// Emp[dept=IT, name=Anil, sal=80]
-// Emp[dept=IT, name=Ravi, sal=80]`],
+// Emp[dept=HR, name=Abaji, sal=70]
+// Emp[dept=IT, name=Anantrao, sal=80]
+// Emp[dept=IT, name=Raoji, sal=80]`],
             ['Null-safe sorting.',
                 r`List<String> l = new ArrayList<>(Arrays.asList("b", null, "a"));
 l.sort(Comparator.nullsLast(Comparator.naturalOrder()));
@@ -289,7 +310,8 @@ System.out.println(l);
 // [a, b, null]`]],
         [['PriorityQueue with comparator.',
             r`PriorityQueue<int[]> pq = new PriorityQueue<>(Comparator.comparingInt(a -> a[1]));
-pq.add(new int[]{1, 30}); pq.add(new int[]{2, 10});
+pq.add(new int[]{1, 30});
+pq.add(new int[]{2, 10});
 System.out.println(pq.poll()[0]);
 
 // OUTPUT:
@@ -376,18 +398,38 @@ s = new HashSet<>(s);                // rebuild a compact table
             ['S', 'What if two keys have equal hash and equals false?', 'They stay in the same bucket as separate nodes.']],
         [['Simplified HashMap.',
             r`class MiniMap<K, V> {
-    static class Node<K, V> { K k; V v; Node<K, V> next; Node(K k, V v, Node<K, V> n) { this.k = k; this.v = v; next = n; } }
+    static class Node<K, V> {
+        K k;
+        V v;
+        Node<K, V> next;
+        Node(K k, V v, Node<K, V> n) {
+            this.k = k;
+            this.v = v;
+            next = n;
+        }
+    }
     @SuppressWarnings("unchecked") Node<K, V>[] table = new Node[16];
-    int idx(Object k) { int h = k.hashCode(); h ^= (h >>> 16); return (table.length - 1) & h; }
+    int idx(Object k) {
+        int h = k.hashCode();
+        h ^= (h >>> 16);
+        return (table.length - 1) & h;
+    }
     void put(K k, V v) {
         int i = idx(k);
-        for (Node<K, V> n = table[i]; n != null; n = n.next) if (n.k.equals(k)) { n.v = v; return; }
+        for (Node<K, V> n = table[i]; n != null; n = n.next) if (n.k.equals(k)) {
+            n.v = v;
+            return;
+        }
         table[i] = new Node<>(k, v, table[i]);
     }
-    V get(K k) { for (Node<K, V> n = table[idx(k)]; n != null; n = n.next) if (n.k.equals(k)) return n.v; return null; }
+    V get(K k) {
+        for (Node<K, V> n = table[idx(k)]; n != null; n = n.next) if (n.k.equals(k)) return n.v;
+        return null;
+    }
 }
 MiniMap<String, Integer> m = new MiniMap<>();
-m.put("a", 1); m.put("a", 2);
+m.put("a", 1);
+m.put("a", 2);
 System.out.println(m.get("a"));
 
 // OUTPUT:
@@ -400,7 +442,12 @@ System.out.println((16 - 1) & spread);
 // OUTPUT:
 // (a bucket index between 0 and 15)`]],
         [['Bad hashCode degrades lookups.',
-            r`class Bad { final int v; Bad(int v){this.v=v;} public int hashCode(){return 1;} public boolean equals(Object o){return o instanceof Bad b && b.v==v;} }
+            r`class Bad {
+    final int v;
+    Bad(int v){this.v=v;}
+    public int hashCode(){return 1;}
+    public boolean equals(Object o){return o instanceof Bad b && b.v==v;}
+}
 Map<Bad, Integer> m = new HashMap<>();
 for (int i = 0; i < 20_000; i++) m.put(new Bad(i), i);
 System.out.println(m.size());     // all in one bucket: O(n) per lookup (not Comparable, so no tree benefit)
@@ -442,7 +489,9 @@ System.out.println(new TreeMap<>(stock) + " " + parts + " " + new TreeMap<>(lens
             r`Map<String, Integer> m = new HashMap<>();
 m.put("x", null);
 System.out.println(m.get("x") + " " + m.containsKey("x") + " " + m.get("y"));
-try { Stream.of("a", "a").collect(Collectors.toMap(s -> s, s -> 1)); } catch (IllegalStateException e) { System.out.println(e.getMessage()); }
+try {
+    Stream.of("a", "a").collect(Collectors.toMap(s -> s, s -> 1));
+} catch (IllegalStateException e) { System.out.println(e.getMessage()); }
 
 // OUTPUT:
 // null true null
@@ -468,7 +517,9 @@ System.out.println(totals);
     'linkedhashmap': dv(
         [`LinkedHashMap extends HashMap; each entry (<code>LinkedHashMap.Entry</code>) has <code>before</code> and <code>after</code> links forming a doubly linked list. The map calls hooks (<code>afterNodeAccess</code>, <code>afterNodeInsertion</code>) which HashMap defines for exactly this subclass. With access order, afterNodeAccess moves the entry to the tail.`,
             r`LinkedHashMap<String, Integer> m = new LinkedHashMap<>(16, 0.75f, true);
-m.put("a", 1); m.put("b", 2); m.put("c", 3);
+m.put("a", 1);
+m.put("b", 2);
+m.put("c", 3);
 m.get("a");
 System.out.println(m.keySet());
 
@@ -477,18 +528,29 @@ System.out.println(m.keySet());
         [`LRU cache template: capacity, access order, eviction hook. Add synchronization via <code>Collections.synchronizedMap</code> for simple sharing, or use Caffeine for time based expiry, statistics and concurrency.`,
             r`class LruCache<K, V> extends LinkedHashMap<K, V> {
     private final int max;
-    LruCache(int max) { super(max + 1, 0.75f, true); this.max = max; }
+    LruCache(int max) {
+        super(max + 1, 0.75f, true);
+        this.max = max;
+    }
     @Override protected boolean removeEldestEntry(Map.Entry<K, V> eldest) { return size() > max; }
 }
 Map<String, String> cache = Collections.synchronizedMap(new LruCache<>(2));
-cache.put("1", "a"); cache.put("2", "b"); cache.get("1"); cache.put("3", "c");
+cache.put("1", "a");
+cache.put("2", "b");
+cache.get("1");
+cache.put("3", "c");
 System.out.println(cache.keySet());
 
 // OUTPUT:
 // [1, 3]`],
         [`Mistakes: forgetting access order true (becomes FIFO), reading from multiple threads without sync (get mutates the list), and returning eviction logic that removes in the wrong condition. Test eviction order.`,
-            r`Map<Integer, String> fifo = new LinkedHashMap<>(4, 0.75f, false) { protected boolean removeEldestEntry(Map.Entry<Integer, String> e) { return size() > 2; } };
-fifo.put(1, "a"); fifo.put(2, "b"); fifo.get(1); fifo.put(3, "c");
+            r`Map<Integer, String> fifo = new LinkedHashMap<>(4, 0.75f, false) {
+    protected boolean removeEldestEntry(Map.Entry<Integer, String> e) { return size() > 2; }
+};
+fifo.put(1, "a");
+fifo.put(2, "b");
+fifo.get(1);
+fifo.put(3, "c");
 System.out.println(fifo.keySet());
 
 // OUTPUT:
@@ -500,7 +562,9 @@ String v = cache.get("key", k -> loadFromDb(k));
 // OUTPUT:
 // loads once per key and expires after 10 minutes`],
         [`Real-world: preserving the order of request parameters, ordered configuration, and a recent-searches list limited to the latest 5 items.`,
-            r`Map<String, Boolean> recent = new LinkedHashMap<>(8, 0.75f, true) { protected boolean removeEldestEntry(Map.Entry<String, Boolean> e) { return size() > 5; } };
+            r`Map<String, Boolean> recent = new LinkedHashMap<>(8, 0.75f, true) {
+    protected boolean removeEldestEntry(Map.Entry<String, Boolean> e) { return size() > 5; }
+};
 for (String q : List.of("a", "b", "c", "d", "e", "f")) recent.put(q, true);
 System.out.println(recent.keySet());
 
@@ -525,7 +589,8 @@ System.out.println(rates.floorEntry(q).getValue());          // rate in force on
 // 1.5`],
         [`Mistakes: a Comparator inconsistent with equals (keys silently collapse), mutating keys after insert, null keys, mixing key types, and using TreeMap when HashMap suffices. A comparator must define a total order.`,
             r`TreeMap<String, Integer> m = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
-m.put("Java", 1); m.put("JAVA", 2);
+m.put("Java", 1);
+m.put("JAVA", 2);
 System.out.println(m + " " + m.size());
 
 // OUTPUT:
@@ -576,7 +641,11 @@ synchronized (sm) { for (var e : sm.entrySet()) { /* safe iteration */ } }
 // NPE`],
         [`One lock for the whole table serializes every operation, limiting throughput as threads grow. ConcurrentHashMap reads without locking and locks per bin on writes, so it scales much better.`,
             r`Map<Integer, Integer> a = new Hashtable<>(), b = new ConcurrentHashMap<>();
-Runnable w = () -> { for (int i = 0; i < 200_000; i++) { a.put(i, i); b.put(i, i); } };
+Runnable w = () -> { for (int i = 0; i < 200_000; i++) {
+    a.put(i, i);
+    b.put(i, i);
+}
+};
 ExecutorService ex = Executors.newFixedThreadPool(8);
 for (int i = 0; i < 8; i++) ex.submit(w);
 ex.shutdown();
@@ -585,7 +654,8 @@ ex.shutdown();
 // (ConcurrentHashMap completes noticeably faster under contention)`],
         [`Real-world: legacy JNDI environments and JDBC connection properties still use Hashtable and Properties; convert to Map at the edge.`,
             r`Properties props = new Properties();
-props.setProperty("user", "app"); props.setProperty("password", "secret");
+props.setProperty("user", "app");
+props.setProperty("password", "secret");
 Map<String, String> asMap = props.stringPropertyNames().stream().collect(Collectors.toMap(k -> k, props::getProperty));
 System.out.println(new TreeMap<>(asMap).keySet());
 
@@ -672,7 +742,8 @@ System.out.println(l);
 // [-1, 0, 2147483647]`],
         [`Performance: comparingInt avoids boxing; cache costly keys; sort primitives with Arrays.sort(int[]) (dual-pivot quicksort), and use parallelSort for very large arrays.`,
             r`int[] a = new Random(1).ints(5_000_000).toArray();
-long t = System.nanoTime(); Arrays.parallelSort(a);
+long t = System.nanoTime();
+Arrays.parallelSort(a);
 System.out.println("ms=" + (System.nanoTime() - t) / 1_000_000);
 
 // OUTPUT: (varies)
@@ -698,7 +769,8 @@ System.out.println(copy.equals(s) + " " + (s.hashCode() == copy.hashCode()));
         [`Set equality: two sets are equal if they have the same size and every element of one is contained in the other; set hashCode is the sum of element hash codes (order independent). <code>retainAll</code> and <code>removeAll</code> perform bulk work; choose the smaller set to iterate for speed.`,
             r`Set<Integer> a = new HashSet<>(List.of(1, 2, 3)), b = new HashSet<>(List.of(3, 2, 1));
 System.out.println(a.equals(b) + " " + a.hashCode());
-Set<Integer> diff = new HashSet<>(a); diff.removeAll(Set.of(2));
+Set<Integer> diff = new HashSet<>(a);
+diff.removeAll(Set.of(2));
 System.out.println(diff);
 
 // OUTPUT:
@@ -764,8 +836,13 @@ System.out.println(m.get(new Key("x", 1)));        // record gives value-based e
 // v`],
         [`Real-world: debugging a slow lookup. A bad hashCode (such as returning a constant, or only the first field) causes one huge bucket; fix with a hash over all identity fields.`,
             r`class Sku { final String code; final int rev;
-    Sku(String c, int r) { code = c; rev = r; }
-    @Override public boolean equals(Object o) { return o instanceof Sku s && s.code.equals(code) && s.rev == rev; }
+    Sku(String c, int r) {
+        code = c;
+        rev = r;
+    }
+    @Override public boolean equals(Object o) {
+        return o instanceof Sku s && s.code.equals(code) && s.rev == rev;
+    }
     @Override public int hashCode() { return Objects.hash(code, rev); }
 }
 System.out.println(new Sku("A", 1).hashCode() == new Sku("A", 1).hashCode());

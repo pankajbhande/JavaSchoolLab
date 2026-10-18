@@ -1,12 +1,13 @@
 ﻿// Re-arranges every Core Java topic into one fixed learning flow:
 //   1 Introduction  2 Need of This Topic  3 Advantages  4 Disadvantages  5 Why We Learn This Topic
 //   6 Basic Concepts  7 Intermediate Concepts  8 Advanced Concepts  9 Code for Each Concept
-//   10 Examples  11 Interview Questions  12 Quick Revision
+//   10 Examples  11 Quick Revision (interview questions are shown in the right pane, not in the notes)
 // Existing blocks (original content, extras and deep dives) are classified by tab and heading and
 // moved into the matching section; nothing is dropped. Sections 1-6 go to the Basic tab and
 // sections 7-12 to the Expert tab, so reading order across the two tabs is 1 to 12.
 
 import type { ContentBlock, Topic } from '../../types';
+import { splitInterview, type QA } from './interviewQA';
 
 /** Short authored overview for one topic (sections 1-5 and 12). */
 export interface Overview {
@@ -22,7 +23,10 @@ export interface Overview {
 export const o = (intro: string, need: string, adv: string[], dis: string[], why: string[], revision: string[]): Overview =>
     ({ intro, need, adv, dis, why, revision });
 
-const list = (items: string[]) => `<ul>\n${items.map(i => `<li>${i}</li>`).join('\n')}\n</ul>`;
+/** Bolds a short lead label ("Secure: ...") so each point can be scanned by its label. */
+const boldLabel = (i: string) => i.replace(/^([^:<.,]{2,50}?):(?=\s)/, '<strong>$1:</strong>');
+
+const list = (items: string[]) => `<ul>\n${items.map(i => `<li>${boldLabel(i)}</li>`).join('\n')}\n</ul>`;
 
 const SECTION_TITLES: Record<number, string> = {
     1: 'Introduction',
@@ -38,6 +42,11 @@ const SECTION_TITLES: Record<number, string> = {
     11: 'Interview Questions',
     12: 'Quick Revision'
 };
+
+const INTERVIEW_HEADING = /<h[2-6][^>]*>[^<]*interview[^<]*<\/h[2-6]>/i;
+
+/** Section 11. Its questions are shown in the right pane, so the notes skip it and Quick Revision becomes 11. */
+const INTERVIEW_SECTION = 11;
 
 const firstHeading = (html: string): string => {
     const m = html.match(/<h[1-6][^>]*>([\s\S]*?)<\/h[1-6]>/);
@@ -71,12 +80,7 @@ function classify(tab: 'beginner' | 'intermediate' | 'expert', block: ContentBlo
     else if (/^Deep Dive: Common Mistakes/i.test(h)) { section = 9; order = 3; b = retitle(block, 'Advanced Code: Common Mistakes &amp; Fixes'); }
     else if (/^Deep Dive: Performance/i.test(h)) { section = 9; order = 4; b = retitle(block, 'Advanced Code: Performance &amp; Tuning'); }
     else if (/^Deep Dive: Real-World/i.test(h)) { section = 9; order = 5; b = retitle(block, 'Advanced Code: Real-World Scenario'); }
-    else if (/interview/i.test(h)) {
-        section = 11;
-        const mine = /^Interview Questions (&|and) Answers$/i.test(h);
-        order = mine ? 9 : 1;
-        if (mine) b = { ...block, content: stepQA(block.content) };
-    }
+    else if (/interview/i.test(h)) { section = INTERVIEW_SECTION; order = 1; }
     // original template blocks carry their own "1. Definition" style numbers; drop them so they do not clash with section numbers
     if (section <= 5 || (section === 10 && /^\d+\./.test(h))) b = retitle(b, h.replace(/^\d+\.\s*/, ''));
     return { section, order, block: b };
@@ -85,8 +89,8 @@ function classify(tab: 'beginner' | 'intermediate' | 'expert', block: ContentBlo
 const MARK = '<mark style="background:#fde68a;color:#1f2937;padding:0 4px;border-radius:3px;font-weight:600">';
 
 /** Highlights key terms: tagged <code>/<b> text and identifiers such as camelCase names, Dotted.names and ALL_CAPS. */
-function highlight(html: string): string {
-    const terms = /\b(?:[A-Za-z_]+\.[A-Za-z_]+(?:\(\))?|[a-z]+[A-Z][A-Za-z]*(?:\(\))?|[A-Z][a-z]+[A-Z][A-Za-z]*|[A-Z]{3,}[A-Za-z]*|[A-Za-z]+\(\))/g;
+export function highlight(html: string): string {
+    const terms = /\b(?:[A-Za-z_]+(?:\.[A-Za-z_]+)+(?:\(\))?|[a-z]+[A-Z][A-Za-z]*(?:\(\))?|[A-Z][a-z]+[A-Z][A-Za-z]*|[A-Z]{3,}[A-Za-z0-9]*|[A-Za-z]+\(\))/g;
     return html
         .replace(/<(code|b)>([\s\S]*?)<\/\1>/g, (_m, tag, inner) => `${MARK}<${tag}>${inner}</${tag}></mark>`)
         .split(/(<[^>]+>)/)
@@ -100,7 +104,7 @@ function highlight(html: string): string {
         .join('');
 }
 
-/** Turns each answer into numbered steps (sentence by sentence) with highlighted key terms. */
+/** Key terms highlighted in the overview points. */
 const KEY_TERMS = new RegExp('\\b(?:' + [
     'threads?', 'locks?', 'monitor', 'race conditions?', 'deadlock', 'volatile', 'synchroni[sz]\\w*', 'atomic\\w*', 'visibility', 'heap', 'stack', 'metaspace',
     'bytecode', 'JVM', 'JIT', 'JDK', 'JRE', 'garbage collect\\w*', 'immutable', 'thread-safe', 'references?', 'objects?', 'class(?:es)?', 'interfaces?', 'abstract',
@@ -109,35 +113,20 @@ const KEY_TERMS = new RegExp('\\b(?:' + [
     'serializ\\w*', 'reflection', 'annotations?', 'enums?', 'records?', 'sealed', 'virtual threads?', 'pattern matching', 'switch', 'optional', 'checked', 'unchecked'
 ].join('|') + ')\\b', 'gi');
 
-const STOP = new Set(['what', 'which', 'when', 'where', 'does', 'that', 'with', 'from', 'this', 'there', 'their', 'about', 'between', 'should', 'would', 'could', 'happens', 'happen', 'difference']);
-
-function stepQA(html: string): string {
-    return html.replace(/<p><b>Q\. ([\s\S]*?)<\/b><br\/>([\s\S]*?)<\/p>/g, (_m, q, a) => {
-        const qWords = new Set((String(q).toLowerCase().match(/[a-z]{5,}/g) ?? []).filter(w => !STOP.has(w)));
-        const steps = String(a)
-            .split(/(?<=[.;])\s+(?=[A-Za-z<])|;\s*|,\s+then\s+|,\s+(?=so\s|which\s|because\s|but\s|while\s|and then\s)|\s+(?=because\s)/)
-            .map(s => s.trim().replace(/[;,]$/, ''))
-            .filter(s => s.length > 2)
-            .map(s => s.charAt(0).toUpperCase() + s.slice(1));
-        // highlight words that link the answer back to the question
-        const link = (s: string) => highlight(s).split(/(<[^>]+>)/).map((p, i, arr) => {
-            if (p.startsWith('<')) return p;
-            const before = arr.slice(0, i).join('');
-            if ((before.match(/<mark/g) ?? []).length > (before.match(/<\/mark>/g) ?? []).length) return p;
-            return p
-                .replace(KEY_TERMS, t => `${MARK}${t}</mark>`)
-                .split(/(<[^>]+>)/).map((q, j, arr2) => {
-                    if (q.startsWith('<')) return q;
-                    const b2 = arr2.slice(0, j).join('');
-                    if ((b2.match(/<mark/g) ?? []).length > (b2.match(/<\/mark>/g) ?? []).length) return q;
-                    return q.replace(/\b[A-Za-z]{5,}\b/g, w => qWords.has(w.toLowerCase()) ? `${MARK}${w}</mark>` : w);
-                }).join('');
-        }).join('');
-        const body = steps.length > 1
-            ? `<ol>${steps.map((s, i) => `<li>${link(s)}</li>`).join('')}</ol>`
-            : `<ol><li>${link(steps[0] ?? '')}</li></ol>`;
-        return `<p><b>Q. ${q}</b></p>${body}`;
-    });
+/** Splits prose into one point per sentence and highlights the key terms in each. */
+function bulletize(text: string): string {
+    const points = text
+        .split(/(?<=[.;])\s+(?=[A-Za-z<(])/)
+        .map(p => p.trim().replace(/[;]$/, ''))
+        .filter(p => p.length > 2)
+        .map(p => p.charAt(0).toUpperCase() + p.slice(1));
+    const mark = (s: string) => highlight(s).split(/(<[^>]+>)/).map((p, i, arr) => {
+        if (p.startsWith('<')) return p;
+        const before = arr.slice(0, i).join('');
+        if ((before.match(/<mark/g) ?? []).length > (before.match(/<\/mark>/g) ?? []).length) return p;
+        return p.replace(KEY_TERMS, t => `${MARK}${t}</mark>`);
+    }).join('');
+    return list(points.map(mark));
 }
 
 // a line that opens a block element, or is a closing block tag, is kept as is (never wrapped in <p>)
@@ -170,8 +159,17 @@ export function pointwise(html: string): string {
 /** Builds the 12-section layout for one topic. */
 export function layoutTopic(topic: Topic, ov: Overview | undefined): Topic {
     const placed: Placed[] = [];
+    const interview: QA[] = [];
     (['beginner', 'intermediate', 'expert'] as const).forEach(tab =>
-        (topic[tab] ?? []).forEach((block, i) => {
+        (topic[tab] ?? []).forEach((original, i) => {
+            // an interview heading in the middle of a block: its questions go to the right pane, the text above stays put
+            let block = original;
+            const at = original.content.search(INTERVIEW_HEADING);
+            if (at > 0) {
+                const { qa, rest } = splitInterview(original.content.slice(at));
+                interview.push(...qa);
+                block = { ...original, content: original.content.slice(0, at) + rest };
+            }
             const p = classify(tab, block);
             if (p.section <= 5) {
                 // The text of the original Definition/Purpose/Need/Advantages/Disadvantages blocks is merged into the
@@ -185,6 +183,13 @@ export function layoutTopic(topic: Topic, ov: Overview | undefined): Topic {
                 }
                 return;
             }
+            if (p.section === INTERVIEW_SECTION) {
+                // questions go to the right pane; anything else in the block (e.g. a summary table) stays in the notes, under Examples
+                const { qa, rest } = splitInterview(p.block.content);
+                interview.push(...qa);
+                if (rest || p.block.codeExamples?.length) placed.push({ section: 10, order: 4000 + i, block: { ...p.block, content: rest } });
+                return;
+            }
             // keep original relative order inside a section: tab first, then position
             placed.push({ ...p, order: p.order * 1000 + (tab === 'beginner' ? 0 : tab === 'intermediate' ? 300 : 600) + i });
         }));
@@ -193,8 +198,8 @@ export function layoutTopic(topic: Topic, ov: Overview | undefined): Topic {
 
     const fixed: Record<number, ContentBlock[]> = {};
     if (ov) {
-        fixed[1] = [{ content: `<p>${ov.intro}</p>` }];
-        fixed[2] = [{ content: `<p>${ov.need}</p>` }];
+        fixed[1] = [{ content: bulletize(ov.intro) }];
+        fixed[2] = [{ content: bulletize(ov.need) }];
         fixed[3] = [{ content: list(ov.adv) }];
         fixed[4] = [{ content: list(ov.dis) }];
         fixed[5] = [{ content: list(ov.why) }];
@@ -204,14 +209,15 @@ export function layoutTopic(topic: Topic, ov: Overview | undefined): Topic {
     const sections = (from: number, to: number): ContentBlock[] => {
         const out: ContentBlock[] = [];
         for (let n = from; n <= to; n++) {
+            if (n === INTERVIEW_SECTION) continue; // interview questions live in the right pane, not in the notes
             const blocks = [...(fixed[n] ?? []), ...bySection(n)].map(b => ({ ...b, content: pointwise(b.content) }));
             if (!blocks.length) continue;
             // the section heading lives inside its first block so it shares one card (no orphaned heading)
-            const head = `<h2>${n}. ${SECTION_TITLES[n]}</h2>`;
+            const head = `<h2>${n > INTERVIEW_SECTION ? n - 1 : n}. ${SECTION_TITLES[n]}</h2>`;
             out.push({ ...blocks[0], content: head + '\n' + blocks[0].content }, ...blocks.slice(1));
         }
         return out;
     };
 
-    return { ...topic, beginner: sections(1, 6), intermediate: [], expert: sections(7, 12) };
+    return { ...topic, beginner: sections(1, 6), intermediate: [], expert: sections(7, 12), ...(interview.length ? { interviewQA: interview } : {}) };
 }

@@ -256,7 +256,10 @@ public void destroy() {
             r`public class LifeServlet extends HttpServlet {
     public void init()    { log("init"); }
     protected void doGet(HttpServletRequest q, HttpServletResponse p)
-            throws IOException { log("service"); p.getWriter().print("ok"); }
+            throws IOException {
+                log("service");
+                p.getWriter().print("ok");
+            }
     public void destroy() { log("destroy"); }
 }
 
@@ -314,7 +317,7 @@ public class LoginServlet extends HttpServlet {
 
 // OUTPUT:
 // GET  /login          -> 200, shows the form
-// POST /login (user=ravi) -> 302 Location: /app/home?u=ravi`],
+// POST /login (user=raoji) -> 302 Location: /app/home?u=raoji`],
             ['Sharing one code path.',
                 r`@Override
 protected void doPost(HttpServletRequest req, HttpServletResponse resp)
@@ -400,14 +403,14 @@ public class PingServlet extends HttpServlet {
             r`protected void doGet(HttpServletRequest req, HttpServletResponse resp)
         throws IOException {
     resp.setContentType("application/json;charset=UTF-8");
-    resp.getWriter().write("{\"id\":7,\"name\":\"Asha\"}");
+    resp.getWriter().write("{\"id\":7,\"name\":\"Abaji\"}");
 }
 
 // OUTPUT:
 // HTTP/1.1 200
 // Content-Type: application/json;charset=UTF-8
 //
-// {"id":7,"name":"Asha"}`],
+// {"id":7,"name":"Abaji"}`],
             ['File download.',
                 r`protected void doGet(HttpServletRequest req, HttpServletResponse resp)
         throws IOException {
@@ -597,7 +600,10 @@ protected void service(HttpServletRequest req, HttpServletResponse resp)
     String method = req.getMethod();
     if (method.equals("GET")) {
         long lm = getLastModified(req);
-        if (lm == -1) { doGet(req, resp); return; }
+        if (lm == -1) {
+            doGet(req, resp);
+            return;
+        }
         // otherwise compare If-Modified-Since and maybe send 304
     } else if (method.equals("POST")) {
         doPost(req, resp);
@@ -767,8 +773,8 @@ public void destroy() {
     resp.getWriter().println("name=" + name);
 }
 
-// OUTPUT: (POST name=Asha, content-type form-urlencoded)
-// name=Asha`],
+// OUTPUT: (POST name=Abaji, content-type form-urlencoded)
+// name=Abaji`],
         [`<p>Variants of request handling:</p><ul><li><b>Other verbs:</b> <code>doPut</code>, <code>doDelete</code>, <code>doHead</code>, <code>doOptions</code> for REST style APIs.</li><li><b>Forms:</b> HTML forms only send GET and POST, so PUT and DELETE come from JavaScript.</li><li><b>JSON bodies:</b> read the body with <code>req.getReader()</code> and parse it with a JSON library.</li><li><b>Multipart:</b> add <code>@MultipartConfig</code> and use <code>req.getPart("file")</code>.</li><li><b>Multi-value:</b> <code>getParameterValues()</code> for checkboxes and <code>getParameterMap()</code> for all.</li></ul>`,
             r`@WebServlet("/api/items")
 @MultipartConfig(maxFileSize = 2_000_000)

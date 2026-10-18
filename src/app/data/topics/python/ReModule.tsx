@@ -159,7 +159,7 @@ Flags change how a pattern is interpreted. Combine them with <code>|</code>.
 
 print(re.findall(r"python", "Python PYTHON python", re.IGNORECASE))
 
-text = "id: 1\\nname: Asha\\nid: 2"
+text = "id: 1\\nname: Abaji\\nid: 2"
 print(re.findall(r"^id: (\\d+)", text))
 print(re.findall(r"^id: (\\d+)", text, re.MULTILINE))
 
@@ -200,13 +200,13 @@ m = re.search(r"(?P<day>\\d{2})-(?P<month>\\d{2})-(?P<year>\\d{4})", "Due on 15-
 print(m.group(0), m.group(1), m.group("year"))
 print(m.groupdict())
 
-emails = "asha@gmail.com, ravi@yahoo.com"
+emails = "abaji@gmail.com, raoji@yahoo.com"
 print(re.findall(r"(\\w+)@(\\w+)\\.com", emails))
 
 # OUTPUT:
 # 15-08-2026 15 2026
 # {'day': '15', 'month': '08', 'year': '2026'}
-# [('asha', 'gmail'), ('ravi', 'yahoo')]`
+# [('abaji', 'gmail'), ('raoji', 'yahoo')]`
             ]
         },
         {

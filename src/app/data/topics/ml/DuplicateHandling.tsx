@@ -100,7 +100,7 @@ print(f"Accuracy WITHOUT leakage (deduped before split):        {clean_acc:.3f}"
             content: `<h3>Exact vs Near-Duplicate Detection</h3>
 <ul>
 <li><strong>Exact duplicates</strong> - rows identical across all columns (or a defined key subset, like transaction ID) are found with <code>duplicated()</code>/<code>drop_duplicates()</code>, an efficient, deterministic check.</li>
-<li><strong>Near-duplicates (fuzzy duplicates)</strong> - rows that represent the same real-world entity but differ slightly due to formatting, typos, or partial updates (e.g. "John Smith, 123 Main St" vs "Jon Smith, 123 Main Street") require <strong>fuzzy matching</strong> - comparing string similarity (e.g. Levenshtein distance) or matching on a normalized subset of fields (name + phone number, ignoring address formatting) rather than requiring exact equality.</li>
+<li><strong>Near-duplicates (fuzzy duplicates)</strong> - rows that represent the same real-world entity but differ slightly due to formatting, typos, or partial updates (e.g. "Jiva Smith, 123 Main St" vs "Jon Smith, 123 Main Street") require <strong>fuzzy matching</strong> - comparing string similarity (e.g. Levenshtein distance) or matching on a normalized subset of fields (name + phone number, ignoring address formatting) rather than requiring exact equality.</li>
 <li>Near-duplicate detection is inherently a judgment call with a tunable threshold - too strict and real duplicates are missed, too loose and genuinely different records get incorrectly merged, so it typically needs manual review of borderline matches rather than a single automated cutoff.</li>
 </ul>
 <h3>Duplicates and the Train/Test Split Order</h3>
@@ -115,7 +115,7 @@ import pandas as pd
 from difflib import SequenceMatcher
 
 df = pd.DataFrame({
-    "customer_name": ["John Smith", "Jon Smith", "Priya Patel", "Amit Verma"],
+    "customer_name": ["Jiva Smith", "Jon Smith", "Prataprao Patel", "Anandrao Verma"],
     "phone": ["9998887771", "9998887771", "9112223334", "9556667778"],
 })
 
@@ -132,10 +132,10 @@ for i in range(len(df)):
 
 print("Likely near-duplicate pairs (same phone, similar name):", flagged_pairs)
 # OUTPUT:
-# Likely near-duplicate pairs (same phone, similar name): [('John Smith', 'Jon Smith', 0.9)]`
+# Likely near-duplicate pairs (same phone, similar name): [('Jiva Smith', 'Jon Smith', 0.9)]`
             ],
             codeExplanations: [
-                `Exact-match <code>duplicated()</code> would completely miss "John Smith" vs "Jon Smith" - the strings are different, so pandas would treat them as two distinct customers. This fuzzy approach instead combines a strong, reliable signal (identical <code>phone</code> number) with a string similarity score (<code>SequenceMatcher.ratio()</code>, ranging 0 to 1) on the name field, flagging pairs that share a phone number AND have a high name similarity (above 0.8 here) as likely referring to the same real customer with a typo. This kind of fuzzy detection needs a chosen threshold and ideally a human review step for borderline cases, since it trades perfect precision for the ability to catch duplicates that exact matching cannot see at all.`
+                `Exact-match <code>duplicated()</code> would completely miss "Jiva Smith" vs "Jon Smith" - the strings are different, so pandas would treat them as two distinct customers. This fuzzy approach instead combines a strong, reliable signal (identical <code>phone</code> number) with a string similarity score (<code>SequenceMatcher.ratio()</code>, ranging 0 to 1) on the name field, flagging pairs that share a phone number AND have a high name similarity (above 0.8 here) as likely referring to the same real customer with a typo. This kind of fuzzy detection needs a chosen threshold and ideally a human review step for borderline cases, since it trades perfect precision for the ability to catch duplicates that exact matching cannot see at all.`
             ]
         },
         {
@@ -184,7 +184,7 @@ print("Rows after correct dedup (keeps both real purchases):     ", len(correct)
             content: `<h3>Interview Questions</h3>
 <table class="w-full border border-gray-700 border-collapse [&_th]:border [&_td]:border [&_td]:px-2 [&_th]:py-2">
 <tr><th>Question</th><th>Answer</th></tr>
-<tr class='text-center'><td>How do exact duplicates and near-duplicates differ, and how would you detect each?</td><td>Exact duplicates are rows identical across all (or a defined key subset of) columns, detected reliably and efficiently with <code>duplicated()</code>/<code>drop_duplicates()</code>; near-duplicates represent the same real-world entity with slight formatting or typo differences (e.g. "Jon Smith" vs "John Smith") and require fuzzy matching - comparing string similarity or matching on a normalized subset of strongly identifying fields - since exact equality checks would miss them entirely</td></tr>
+<tr class='text-center'><td>How do exact duplicates and near-duplicates differ, and how would you detect each?</td><td>Exact duplicates are rows identical across all (or a defined key subset of) columns, detected reliably and efficiently with <code>duplicated()</code>/<code>drop_duplicates()</code>; near-duplicates represent the same real-world entity with slight formatting or typo differences (e.g. "Jon Smith" vs "Jiva Smith") and require fuzzy matching - comparing string similarity or matching on a normalized subset of strongly identifying fields - since exact equality checks would miss them entirely</td></tr>
 <tr class='text-center'><td>Why can duplicate rows cause data leakage, and how do you prevent it?</td><td>If the same record (or its near-identical twin) is split so that one copy lands in the training set and the other in the test set, the model is effectively evaluated on data it already memorized during training, producing an artificially inflated accuracy that won't hold up on genuinely unseen data; the fix is to always deduplicate the full dataset BEFORE performing the train/test split, guaranteeing no record can appear on both sides</td></tr>
 <tr class='text-center'><td>Why is it risky to deduplicate on the wrong subset of columns?</td><td>If the chosen key doesn't actually uniquely identify a real-world event, rows that are genuinely different (e.g. the same customer legitimately buying the same item twice on the same day) can get incorrectly collapsed into one, silently deleting real data; the dedup key must be chosen based on what truly makes two records the same event in that specific domain - ideally a genuine unique identifier like a transaction or order ID rather than just a plausible-looking combination of fields</td></tr>
 </table>`

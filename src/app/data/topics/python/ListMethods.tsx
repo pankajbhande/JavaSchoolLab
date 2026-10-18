@@ -63,17 +63,17 @@ print(sorted((3, 1, 2), reverse=True))
             content: `<h4>Sorting with key=</h4>
 <code>key</code> is a function applied to each item; items are sorted by its result.`,
             codeExamples: [
-                `names = ["sheru", "Pankaj", "dheeraj", "Asha"]
+                `names = ["sheru", "Pankaj", "dheeraj", "Abaji"]
 print(sorted(names, key=str.lower))      # case-insensitive
 print(sorted(names, key=len))            # shortest first
 
-students = [("Pankaj", 88), ("Sheru", 74), ("Asha", 95)]
+students = [("Pankaj", 88), ("Sheru", 74), ("Abaji", 95)]
 print(sorted(students, key=lambda s: s[1], reverse=True))
 
 # OUTPUT:
-# ['Asha', 'dheeraj', 'Pankaj', 'sheru']
-# ['Asha', 'sheru', 'Pankaj', 'dheeraj']
-# [('Asha', 95), ('Pankaj', 88), ('Sheru', 74)]`
+# ['Abaji', 'dheeraj', 'Pankaj', 'sheru']
+# ['sheru', 'Abaji', 'Pankaj', 'dheeraj']
+# [('Abaji', 95), ('Pankaj', 88), ('Sheru', 74)]`
             ]
         },
         {
@@ -123,7 +123,7 @@ Return a <b>tuple</b> from the key function: tuples compare element by element. 
 
 students = [
     {"name": "Sheru", "marks": 88},
-    {"name": "Asha", "marks": 95},
+    {"name": "Abaji", "marks": 95},
     {"name": "Pankaj", "marks": 88},
 ]
 
@@ -135,8 +135,8 @@ by_name = sorted(students, key=itemgetter("name"))
 print([s["name"] for s in by_name])
 
 # OUTPUT:
-# ['Asha', 'Pankaj', 'Sheru']
-# ['Asha', 'Pankaj', 'Sheru']`
+# ['Abaji', 'Pankaj', 'Sheru']
+# ['Abaji', 'Pankaj', 'Sheru']`
             ]
         },
         {

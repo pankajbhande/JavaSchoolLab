@@ -154,9 +154,9 @@ print(", ".join(sorted(tags)))          # stable output every run
 Like the list/tuple pair, sets have an immutable twin. A <code>frozenset</code> is hashable, so it can be a dictionary key or an item inside another set.`,
             codeExamples: [
                 `team_sizes = {
-    frozenset({"Asha", "Ravi"}): 2,
+    frozenset({"Abaji", "Raoji"}): 2,
 }
-print(team_sizes[frozenset({"Ravi", "Asha"})])
+print(team_sizes[frozenset({"Raoji", "Abaji"})])
 
 frozen = frozenset([1, 2])
 frozen.add(3)

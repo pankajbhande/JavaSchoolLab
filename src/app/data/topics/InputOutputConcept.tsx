@@ -39,15 +39,15 @@ public class InputDemo {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Enter your name: ");
-        // Simulating what would happen if the user typed "Priya" and pressed Enter:
-        String name = "Priya"; // in a real program: scanner.nextLine();
+        // Simulating what would happen if the user typed "Prataprao" and pressed Enter:
+        String name = "Prataprao"; // in a real program: scanner.nextLine();
         System.out.println("Hello, " + name + "!");
         scanner.close();
     }
 }
 // OUTPUT:
 // Enter your name:
-// Hello, Priya!`]
+// Hello, Prataprao!`]
         },
         {
             content: `<h3>Reading Different Types of Input</h3>

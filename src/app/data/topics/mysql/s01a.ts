@@ -8,14 +8,14 @@ export const s01a: Record<string, DeepDive> = {
 CREATE DATABASE school_demo;                 -- new empty database
 USE school_demo;                             -- make it the current one
 CREATE TABLE student (id INT, name VARCHAR(40));   -- structure for the facts
-INSERT INTO student VALUES (1, 'Asha');      -- store a fact
+INSERT INTO student VALUES (1, 'Abaji');      -- store a fact
 SELECT * FROM student;                       -- read it back
 
 -- OUTPUT:
--- +------+------+
--- | id   | name |
--- +------+------+
--- |    1 | Asha |
+-- +----+-------+
+-- | id | name  |
+-- +----+-------+
+-- |  1 | Abaji |
 -- +------+------+`],
         [`Spreadsheets and text files break down when many users write at once, when data must stay consistent after a power cut, or when you must find one row among millions in milliseconds. A database solves sharing, integrity, speed and security together.`,
             r`-- Finding one row in a file means scanning it all; a database uses an index
@@ -84,14 +84,14 @@ CREATE TABLE dept (id INT PRIMARY KEY, name VARCHAR(30));
 CREATE TABLE emp  (id INT PRIMARY KEY, name VARCHAR(30), dept_id INT,
                    FOREIGN KEY (dept_id) REFERENCES dept(id));   -- relation between tables
 INSERT INTO dept VALUES (1,'IT');
-INSERT INTO emp  VALUES (10,'Ravi',1);
+INSERT INTO emp  VALUES (10,'Raoji',1);
 SELECT e.name, d.name AS dept FROM emp e JOIN dept d ON d.id = e.dept_id;
 
 -- OUTPUT:
--- +------+------+
--- | name | dept |
--- +------+------+
--- | Ravi | IT   |
+-- +-------+------+
+-- | name  | dept |
+-- +-------+------+
+-- | Raoji | IT   |
 -- +------+------+`],
         [`Older file-based or hierarchical systems duplicated data and let programs break it. The relational model removes redundancy and lets the engine guarantee that references stay valid.`,
             r`-- Without relations, a typo creates an orphan; with an FK the engine refuses it
@@ -234,15 +234,15 @@ CREATE TABLE student (
     name VARCHAR(30),                          -- column 2
     age  INT                                   -- column 3
 );
-INSERT INTO student VALUES (1,'Asha',20),(2,'Ravi',22);   -- two rows
+INSERT INTO student VALUES (1,'Abaji',20),(2,'Raoji',22);   -- two rows
 SELECT * FROM student;
 
 -- OUTPUT:
--- +------+------+------+
--- | id   | name | age  |
--- +------+------+------+
--- |    1 | Asha |   20 |
--- |    2 | Ravi |   22 |
+-- +----+-------+-----+
+-- | id | name  | age |
+-- +----+-------+-----+
+-- |  1 | Abaji |  20 |
+-- |  2 | Raoji |  22 |
 -- +------+------+------+`],
         [`Splitting data into tables of one subject each (students, courses) avoids repeating facts. Columns with types let the engine validate and store compactly; rows let you address one entity.`,
             r`-- Column types reject nonsense: age must be a number
@@ -257,10 +257,10 @@ FROM student
 WHERE age > 20;             -- rows
 
 -- OUTPUT:
--- +------+------+
--- | name | age  |
--- +------+------+
--- | Ravi |   22 |
+-- +-------+-----+
+-- | name  | age |
+-- +-------+-----+
+-- | Raoji |  22 |
 -- +------+------+`],
         [`<b>Advantages:</b> a uniform, easy-to-picture model; every row has the same shape so tools, indexes and reports are simple.`,
             r`-- Introspect the shape of any table
@@ -280,11 +280,11 @@ SELECT name FROM student;                       -- order not promised
 SELECT name FROM student ORDER BY name DESC;    -- order guaranteed
 
 -- OUTPUT (second query):
--- +------+
--- | name |
--- +------+
--- | Ravi |
--- | Asha |
+-- +-------+
+-- | name  |
+-- +-------+
+-- | Raoji |
+-- | Abaji |
 -- +------+`],
         [`<b>Limitations:</b> max 4096 columns per table (InnoDB about 1017), 64 characters for identifiers, and 65,535 bytes of row width excluding BLOB/TEXT.`,
             r`-- Identifier names are limited to 64 characters
@@ -295,12 +295,12 @@ CREATE TABLE this_table_name_is_deliberately_made_far_too_long_to_be_accepted_by
         `
    Database: uni
    └── Table: student
-        ┌────┬──────┬─────┐
-        │ id │ name │ age │   <- columns (name + type)
-        ├────┼──────┼─────┤
-        │  1 │ Asha │  20 │   <- row (one record)
-        │  2 │ Ravi │  22 │
-        └────┴──────┴─────┘
+        ┌────┬───────┬─────┐
+        │ id │ name  │ age │   <- columns (name + type)
+        ├────┼───────┼─────┤
+        │  1 │ Abaji │  20 │   <- row (one record)
+        │  2 │ Raoji │  22 │
+        └────┴───────┴─────┘
 `,
         `Model one entity per table, name things consistently (snake_case, singular or plural, but pick one) and give every table a primary key. Prefer narrow, well-typed columns; they shrink indexes and buffer-pool usage far more than they cost in design time.`
     ),

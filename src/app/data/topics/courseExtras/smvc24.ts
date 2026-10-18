@@ -42,7 +42,8 @@ class UploadController {
     <button type="submit">Upload</button>
 </form>
 
-<!-- OUTPUT: the browser sends Content-Type: multipart/form-data; boundary=... -->
+<!-- OUTPUT: the browser sends Content-Type: multipart/form-data;
+boundary=... -->
 // OUTPUT:
 // POST /upload 200 OK  body: notes.txt (1204 bytes)`]],
         [['Test the upload with MockMvc.',
@@ -732,9 +733,9 @@ String profile(@RequestPart("meta") UserMeta meta,
 }
 
 // OUTPUT:
-// curl -F 'meta={"name":"Asha","email":"a@x.com"};type=application/json' \
+// curl -F 'meta={"name":"Abaji","email":"a@x.com"};type=application/json' \
 //      -F "photo=@me.png" http://localhost:8080/profile
-// Asha photo=true`],
+// Abaji photo=true`],
         [`<p>Typical upload mistakes:</p><ul><li><b>Missing enctype:</b> the form sends text only, so the file is null or empty. Fix: add <code>enctype="multipart/form-data"</code>.</li><li><b>Wrong part name:</b> <code>MissingServletRequestPartException</code>; match the <code>name</code> attribute.</li><li><b>Relative path with transferTo:</b> it resolves against the temp directory in some containers; use an absolute path.</li><li><b>Using the original name as the path:</b> traversal risk.</li><li><b>Reading the file twice:</b> <code>getInputStream()</code> can be called again, but save once and reuse the stored copy.</li><li><b>Setting Content-Type header by hand in a client:</b> the boundary is then missing.</li></ul>`,
             r`// WRONG: client controlled name and relative path
 file.transferTo(new File(file.getOriginalFilename()));
@@ -1328,7 +1329,9 @@ class SeedLoader implements ApplicationRunner {
 
     SeedLoader(@Value("classpath:seed/products.json") Resource seed,
                ObjectMapper mapper, ProductRepository repo) {
-        this.seed = seed; this.mapper = mapper; this.repo = repo;
+        this.seed = seed;
+        this.mapper = mapper;
+        this.repo = repo;
     }
 
     @Override
@@ -1492,7 +1495,7 @@ UploadTicket ticket(@RequestParam String fileName, Principal user) {
 }
 
 // OUTPUT:
-// {"url":"https://storage.example.com/bucket/asha/3f1c-intro.mp4?sig=...",
-//  "objectKey":"asha/3f1c-intro.mp4"}   (varies)`]
+// {"url":"https://storage.example.com/bucket/abaji/3f1c-intro.mp4?sig=...",
+//  "objectKey":"abaji/3f1c-intro.mp4"}   (varies)`]
     )
 };

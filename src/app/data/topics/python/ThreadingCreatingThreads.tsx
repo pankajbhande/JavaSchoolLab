@@ -96,18 +96,18 @@ def greet(name, times):
     for i in range(times):
         print(f"Hello {name} {i}")
 
-t = threading.Thread(target=greet, args=("Asha", 2))
+t = threading.Thread(target=greet, args=("Abaji", 2))
 t.start()
 t.join()
 print("done")
 
 # OUTPUT:
-# Hello Asha 0
-# Hello Asha 1
+# Hello Abaji 0
+# Hello Abaji 1
 # done`
             ],
             codeExplanations: [
-                `The worker thread runs greet("Asha", 2). join() makes the main thread wait for it, which is why "done" is printed last. Without join(), "done" could appear first or in the middle, because the two threads run independently.`
+                `The worker thread runs greet("Abaji", 2). join() makes the main thread wait for it, which is why "done" is printed last. Without join(), "done" could appear first or in the middle, because the two threads run independently.`
             ]
         },
         {

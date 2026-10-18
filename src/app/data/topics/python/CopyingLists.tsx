@@ -139,13 +139,13 @@ If a class stores a list it was given, the caller can still change it from outsi
     def students(self):
         return tuple(self._students)         # read-only view for callers
 
-names = ["Asha", "Ravi"]
+names = ["Abaji", "Raoji"]
 course = Course(names)
 names.append("Hacker")
 print(course.students)
 
 # OUTPUT:
-# ('Asha', 'Ravi')`
+# ('Abaji', 'Raoji')`
             ]
         },
         {

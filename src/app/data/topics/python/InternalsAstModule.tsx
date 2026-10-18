@@ -136,8 +136,8 @@ source = """def greet(name):
     print("Hello", name)
 
 def main():
-    greet("Asha")
-    greet("Ravi")
+    greet("Abaji")
+    greet("Raoji")
 """
 
 class CallFinder(ast.NodeVisitor):

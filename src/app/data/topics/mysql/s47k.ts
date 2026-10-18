@@ -303,17 +303,17 @@ SHOW GRANTS FOR 'shop_app'@'10.0.%';
             r`CREATE ROLE 'reporting_ro';
 GRANT SELECT ON shop.* TO 'reporting_ro';
 
-CREATE USER 'meena'@'%' IDENTIFIED BY 'An0ther!Secret-ChangeMe';
-GRANT 'reporting_ro' TO 'meena'@'%';
-SET DEFAULT ROLE 'reporting_ro' TO 'meena'@'%';             -- active at login
-SHOW GRANTS FOR 'meena'@'%';
+CREATE USER 'moropant'@'%' IDENTIFIED BY 'An0ther!Secret-ChangeMe';
+GRANT 'reporting_ro' TO 'moropant'@'%';
+SET DEFAULT ROLE 'reporting_ro' TO 'moropant'@'%';             -- active at login
+SHOW GRANTS FOR 'moropant'@'%';
 
 -- OUTPUT:
 -- +-----------------------------------------+
--- | Grants for meena@%                      |
+-- | Grants for moropant@%                      |
 -- +-----------------------------------------+
--- | GRANT USAGE ON *.* TO 'meena'@'%'       |
--- | GRANT 'reporting_ro'@'%' TO 'meena'@'%' |
+-- | GRANT USAGE ON *.* TO 'moropant'@'%'       |
+-- | GRANT 'reporting_ro'@'%' TO 'moropant'@'%' |
 -- +-----------------------------------------+`],
         [`Production accounts must connect over TLS and use strong passwords. Enforce both on the server and per user.`,
             r`ALTER USER 'shop_app'@'10.0.%' REQUIRE SSL;                 -- this user may only connect over TLS
@@ -344,7 +344,7 @@ ORDER  BY user;
 -- +-----------+------+-----------------------+------------------+
 -- | user      | host | plugin                | password_expired |
 -- +-----------+------+-----------------------+------------------+
--- | meena     | %    | caching_sha2_password | N                |
+-- | moropant     | %    | caching_sha2_password | N                |
 -- | old_admin | %    | mysql_native_password | N                |   <- review or drop
 -- +-----------+------+-----------------------+------------------+`],
         [`<b>Disadvantages:</b> broad grants (ALL on *.*) hide risk. Column-level privileges hide sensitive columns such as email or salary from reporting users, at the price of more grants to manage.`,
@@ -357,7 +357,7 @@ SELECT id, email FROM shop.customers LIMIT 1;           -- email not granted
 -- +----+-------+
 -- | id | name  |
 -- +----+-------+
--- |  1 | Asha  |
+-- |  1 | Abaji |
 -- +----+-------+
 -- ERROR 1143 (42000): SELECT command denied to user 'report'@'localhost' for column 'email' in table 'customers'`],
         [`<b>Limitations:</b> encryption at rest needs a keyring (component_keyring_file or a KMS) configured first; without it the ALTER fails. File import/export is limited by secure_file_priv. Neither protects against SQL injection, which only parameterised queries stop.`,

@@ -106,13 +106,13 @@ print((lambda s: s.upper())("hi"))     # defined and called immediately
 # 36 11 3
 # HI`],
         [`Many functions take a function argument (<code>sorted(key=)</code>, <code>max(key=)</code>, GUI callbacks). Writing a full <code>def</code> for a one-line rule is noisy; a lambda keeps it inline.`,
-            r`people = [("Asha", 30), ("Ravi", 25), ("Meena", 35)]
+            r`people = [("Abaji", 30), ("Raoji", 25), ("Moropant", 35)]
 print(sorted(people, key=lambda p: p[1]))        # by age
 print(max(people, key=lambda p: p[1])[0])        # oldest
 
 # OUTPUT:
-# [('Ravi', 25), ('Asha', 30), ('Meena', 35)]
-# Meena`],
+# [('Raoji', 25), ('Abaji', 30), ('Moropant', 35)]
+# Moropant`],
         [`Sorting keys, button callbacks, pandas <code>apply</code>, quick filters, and dispatch tables.`,
             r`# Real-time: dispatch table of tiny strategies
 discount = {
@@ -359,7 +359,7 @@ print(list(map(lambda x, y: x + y, [1, 2, 3], [10, 20])))
 
     'zip() & enumerate()': dd(
         [`<code>zip(a, b, ...)</code> pairs up items from several iterables. <code>enumerate(it, start=0)</code> yields (index, item) pairs. Both are lazy and are normally used in <code>for</code> loops.`,
-            r`names = ["Asha", "Ravi", "Meena"]
+            r`names = ["Abaji", "Raoji", "Moropant"]
 marks = [90, 75, 82]
 for name, mark in zip(names, marks):
     print(name, mark)
@@ -368,13 +368,13 @@ for i, name in enumerate(names, start=1):
 print(dict(zip(names, marks)))
 
 # OUTPUT:
-# Asha 90
-# Ravi 75
-# Meena 82
-# 1 Asha
-# 2 Ravi
-# 3 Meena
-# {'Asha': 90, 'Ravi': 75, 'Meena': 82}`],
+# Abaji 90
+# Raoji 75
+# Moropant 82
+# 1 Abaji
+# 2 Raoji
+# 3 Moropant
+# {'Abaji': 90, 'Raoji': 75, 'Moropant': 82}`],
         [`Parallel lists and "I need the position too" come up constantly. <code>range(len(x))</code> loops and manual counters are error-prone and unreadable by comparison.`,
             r`# Unpythonic vs Pythonic
 items = ["a", "b", "c"]
@@ -423,11 +423,11 @@ print(list(zip_longest([1, 2, 3], ["a"], fillvalue="-")))
 # OUTPUT:
 # [(1, 'a'), (2, '-'), (3, '-')]`],
         `
-   names  = [Asha, Ravi, Meena]        enumerate(names, 1)
-   marks  = [ 90,   75,   82 ]          (1, Asha)
-              │     │     │             (2, Ravi)
-              ▼     ▼     ▼             (3, Meena)
-   zip ──► (Asha,90) (Ravi,75) (Meena,82)
+   names  = [Abaji, Raoji, Moropant]        enumerate(names, 1)
+   marks  = [ 90,   75,   82 ]          (1, Abaji)
+              │     │     │             (2, Raoji)
+              ▼     ▼     ▼             (3, Moropant)
+   zip ──► (Abaji,90) (Raoji,75) (Moropant,82)
 `,
         `Use <code>zip(strict=True)</code> by default in new code to surface length bugs. Prefer iterating over objects (dataclasses) to juggling parallel lists; parallel arrays are a sign that a record type is missing.`
     ),

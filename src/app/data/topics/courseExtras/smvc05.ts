@@ -184,7 +184,10 @@ public String search(@RequestParam String q,
             ['Pitfall: changing data in GET.',
                 r`// WRONG: a crawler or prefetch could delete data
 @GetMapping("/delete/{id}")
-public String bad(@PathVariable int id) { repo.deleteById(id); return "x"; }
+public String bad(@PathVariable int id) {
+    repo.deleteById(id);
+    return "x";
+}
 
 // RIGHT
 @DeleteMapping("/{id}")
@@ -225,13 +228,13 @@ public class UserController {
 }
 
 // OUTPUT:
-// POST /users {"name":"Asha"} -> 201 Created
+// POST /users {"name":"Abaji"} -> 201 Created
 // Location: /users/1
-// Created Asha`],
+// Created Abaji`],
             ['Test the POST.',
                 r`mvc.perform(post("/users")
         .contentType(MediaType.APPLICATION_JSON)
-        .content("{\"name\":\"Asha\"}"))
+        .content("{\"name\":\"Abaji\"}"))
    .andExpect(status().isCreated())
    .andExpect(header().string("Location", "/users/1"));
 
@@ -291,14 +294,14 @@ public class UserController {
 }
 
 // OUTPUT:
-// PUT /users/5 {"name":"Ravi","email":"r@x.com"} -> 200 same JSON
+// PUT /users/5 {"name":"Raoji","email":"r@x.com"} -> 200 same JSON
 // PUT /users/9 ...                                -> 404`],
             ['Test the PUT.',
                 r`mvc.perform(put("/users/5")
         .contentType(MediaType.APPLICATION_JSON)
-        .content("{\"name\":\"Ravi\",\"email\":\"r@x.com\"}"))
+        .content("{\"name\":\"Raoji\",\"email\":\"r@x.com\"}"))
    .andExpect(status().isOk())
-   .andExpect(jsonPath("$.name").value("Ravi"));
+   .andExpect(jsonPath("$.name").value("Raoji"));
 
 // OUTPUT:
 // Tests run: 1, Failures: 0`]],
@@ -343,7 +346,7 @@ spring.mvc.hiddenmethod.filter.enabled=true
 public class UserController {
 
     private final Map<Integer, String> db =
-        new HashMap<>(Map.of(5, "Asha"));
+        new HashMap<>(Map.of(5, "Abaji"));
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable int id) {
@@ -408,7 +411,7 @@ public class UserController {
     public Map<String, Object> patch(@PathVariable int id,
                                      @RequestBody Map<String, Object> changes) {
         Map<String, Object> user = new HashMap<>(
-            Map.of("name", "Asha", "email", "old@x.com"));
+            Map.of("name", "Abaji", "email", "old@x.com"));
         user.putAll(changes);          // only sent keys change
         return user;
     }
@@ -416,13 +419,13 @@ public class UserController {
 
 // OUTPUT:
 // PATCH /users/1 {"email":"new@x.com"}
-// -> {"name":"Asha","email":"new@x.com"} (key order varies)`],
+// -> {"name":"Abaji","email":"new@x.com"} (key order varies)`],
             ['Test the PATCH.',
                 r`mvc.perform(patch("/users/1")
         .contentType(MediaType.APPLICATION_JSON)
         .content("{\"email\":\"new@x.com\"}"))
    .andExpect(status().isOk())
-   .andExpect(jsonPath("$.name").value("Asha"))
+   .andExpect(jsonPath("$.name").value("Abaji"))
    .andExpect(jsonPath("$.email").value("new@x.com"));
 
 // OUTPUT:
@@ -778,7 +781,7 @@ public Map<String, String> greet(@RequestParam(defaultValue = "world") String na
 }
 
 // OUTPUT:
-// GET /greet?name=Asha -> {"message":"Hello Asha"}
+// GET /greet?name=Abaji -> {"message":"Hello Abaji"}
 // GET /greet           -> {"message":"Hello world"}`],
         [`<p>Options of <code>@GetMapping</code>:</p><ul><li><b>path / value:</b> one or many URLs.</li><li><b>params, headers:</b> extra conditions.</li><li><b>produces:</b> media type of the response, for example JSON or XML.</li><li><b>No path:</b> inherits the class path.</li><li><b>Return types:</b> object, <code>ResponseEntity</code>, <code>Optional</code> wrapped by you, or a view name in a <code>@Controller</code>.</li></ul>`,
             r`@GetMapping("/{id}")
@@ -840,7 +843,7 @@ public ResponseEntity<String> signup(@Valid @RequestBody Signup s) {
 }
 
 // OUTPUT:
-// POST /signup {"name":"Asha","email":"a@x.com"} -> 201 welcome Asha
+// POST /signup {"name":"Abaji","email":"a@x.com"} -> 201 welcome Abaji
 // POST /signup {"name":"","email":"bad"}          -> 400 Bad Request`],
         [`<p>Variants of POST handling:</p><ul><li><b>JSON:</b> <code>@RequestBody</code>.</li><li><b>Form:</b> <code>application/x-www-form-urlencoded</code> with <code>@RequestParam</code> or <code>@ModelAttribute</code>.</li><li><b>File upload:</b> <code>multipart/form-data</code> with <code>MultipartFile</code>.</li><li><b>Response:</b> 201 plus Location, or 200 with a body, or a redirect.</li></ul>`,
             r`@PostMapping(path = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -864,7 +867,7 @@ String bad(User u) { return u.getName(); }       // name is null
 String good(@RequestBody User u) { return u.getName(); }
 
 // OUTPUT:
-// before: null     after: Asha`],
+// before: null     after: Abaji`],
         [`<p>Performance and safety:</p><ul><li><b>Size limits:</b> <code>spring.servlet.multipart.max-file-size</code> and server max post size.</li><li><b>Streaming:</b> for big uploads stream to storage instead of loading into memory.</li><li><b>Idempotency key:</b> an <code>Idempotency-Key</code> header lets you ignore replays.</li><li><b>Async:</b> return <code>Callable</code> or use a queue for slow work and answer 202 Accepted.</li></ul>`,
             r`# application.properties
 spring.servlet.multipart.max-file-size=5MB

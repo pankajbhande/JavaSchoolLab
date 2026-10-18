@@ -76,9 +76,9 @@ for o in orders:
     print(o.id, c.name)
 
 # OUTPUT:
-# 1 Asha
-# 2 Ravi
-# 3 Asha        (4 queries executed)`],
+# 1 Abaji
+# 2 Raoji
+# 3 Abaji        (4 queries executed)`],
         [`Each query has a network round trip (0.3-2 ms). For N=1000 that is a second of pure latency and 1000 lock-free but wasteful statements, which grows with data and appears only in production.`,
             r`-- What the server sees: 1001 near-identical statements
 SELECT id, customer_id FROM orders LIMIT 1000;
@@ -105,9 +105,9 @@ SELECT id, name FROM customers WHERE id IN (1, 2);
 
 -- OUTPUT:
 -- id | name
---  1 | Asha
---  2 | Ravi
---  3 | Asha`],
+--  1 | Abaji
+--  2 | Raoji
+--  3 | Abaji`],
         [`<b>Fix disadvantages:</b> a JOIN of one-to-many duplicates parent columns (row explosion) and fetching too much wastes memory; batch IN needs a second query and in-memory stitching.`,
             r`-- Parent with 3 items joined => parent repeated 3 times
 SELECT o.id, i.sku FROM orders o JOIN order_items i ON i.order_id = o.id WHERE o.id = 1;

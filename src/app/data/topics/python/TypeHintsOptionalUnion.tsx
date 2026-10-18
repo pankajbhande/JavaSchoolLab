@@ -28,7 +28,7 @@ A very common case is "a value, or <code>None</code>". Write <code>str | None</c
                 `from typing import Optional
 
 def find_email(user_id: int) -> str | None:
-    emails = {1: "asha@mail.com", 2: "ravi@mail.com"}
+    emails = {1: "abaji@mail.com", 2: "raoji@mail.com"}
     return emails.get(user_id)
 
 def find_phone(user_id: int) -> Optional[str]:    # same meaning, older style
@@ -37,7 +37,7 @@ def find_phone(user_id: int) -> Optional[str]:    # same meaning, older style
 print(find_email(1), find_email(99), find_phone(1))
 
 # OUTPUT:
-# asha@mail.com None None`
+# abaji@mail.com None None`
             ]
         },
         {
@@ -52,13 +52,13 @@ def shout_safe(name: str | None) -> str:
         return "ANONYMOUS"
     return name.upper()                    # here name is known to be str
 
-print(shout_safe("asha"), shout_safe(None))
+print(shout_safe("abaji"), shout_safe(None))
 
 # mypy reports for shout() (wording may vary by version):
 # error: Item "None" of "str | None" has no attribute "upper"  [union-attr]
 #
 # OUTPUT:
-# ASHA ANONYMOUS`,
+# ABAJI ANONYMOUS`,
                 `def describe(value: int | str) -> str:
     if isinstance(value, int):
         return f"number {value + 1}"       # value is int here
@@ -117,10 +117,10 @@ print(type(int | None))
 A <code>-&gt; X | None</code> return type forces every caller to handle <code>None</code>. That is right when "not found" is a normal outcome (searching, <code>dict.get</code>). When the absence means something went wrong, <b>raise an exception</b> and keep the return type plain - the checker then doesn't make every caller add <code>None</code> checks.`,
             codeExamples: [
                 `def find_user(user_id: int) -> str | None:     # "not found" is normal
-    return {1: "Asha"}.get(user_id)
+    return {1: "Abaji"}.get(user_id)
 
 def load_user(user_id: int) -> str:             # absence is an error
-    users = {1: "Asha"}
+    users = {1: "Abaji"}
     if user_id not in users:
         raise KeyError(f"no user {user_id}")
     return users[user_id]
@@ -131,7 +131,7 @@ load_user(5)
 
 # OUTPUT:
 # None
-# Asha
+# Abaji
 # KeyError: 'no user 5'`
             ]
         },

@@ -24,9 +24,9 @@ SELECT e.id, e.name, d.name AS dept FROM emp e JOIN departments d ON d.id = e.de
 SELECT * FROM emp_dept WHERE dept = 'HR';
 
 -- OUTPUT:
--- id | name | dept
---  1 | Asha | HR
---  2 | Ravi | HR`],
+-- id | name  | dept
+--  1 | Abaji | HR
+--  2 | Raoji | HR`],
             ['Replace and drop.',
                 r`CREATE OR REPLACE VIEW emp_dept AS SELECT e.id, e.name, d.name AS dept, e.salary FROM emp e JOIN departments d ON d.id = e.dept;
 DROP VIEW IF EXISTS emp_dept;
@@ -215,9 +215,9 @@ DELIMITER ;
 CALL emp_by_dept(10);
 
 -- OUTPUT:
--- id | name | salary
---  1 | Asha |  60000
---  2 | Ravi |  45000`],
+-- id | name  | salary
+--  1 | Abaji | 60000
+--  2 | Raoji | 45000`],
             ['Transactional procedure.',
                 r`DELIMITER //
 CREATE PROCEDURE transfer(IN a INT, IN b INT, IN amt DECIMAL(10,2))
@@ -362,7 +362,7 @@ CALL top_salary(@n); SELECT @n;
 
 -- OUTPUT:
 -- @n
--- Meena`],
+-- Moropant`],
             ['NULL in IF is not true.',
                 r`SELECT IF(NULL > 5, 'yes', 'no') AS result;
 
@@ -623,10 +623,10 @@ SELECT name, bonus(salary) AS b FROM emp;
 CALL give_bonus();
 
 -- OUTPUT:
--- name  | b
--- Asha  | 6000
--- Ravi  | 4500
--- Meena | 7000`],
+-- name     | b
+-- Abaji    | 6000
+-- Raoji    | 4500
+-- Moropant | 7000`],
             ['Function cannot control transactions.',
                 r`CREATE FUNCTION f() RETURNS INT BEGIN COMMIT; RETURN 1; END;
 
@@ -671,12 +671,12 @@ BEGIN
   SET NEW.email = LOWER(TRIM(NEW.email));
 END //
 DELIMITER ;
-INSERT INTO users (email) VALUES ('  Asha@Example.COM ');
+INSERT INTO users (email) VALUES ('  Abaji@Example.COM ');
 SELECT email FROM users ORDER BY id DESC LIMIT 1;
 
 -- OUTPUT:
 -- email
--- asha@example.com`],
+-- abaji@example.com`],
             ['Validation with SIGNAL.',
                 r`DELIMITER //
 CREATE TRIGGER trg_acct_bu BEFORE UPDATE ON acct
@@ -769,7 +769,7 @@ SELECT COUNT(*) FROM orders_archive;
             'Protect the audit table with privileges: app users can INSERT via trigger but not UPDATE/DELETE.'],
         [['F', 'What is audit logging?', 'Recording who changed what and when.'],
             ['F', 'How can triggers help?', 'They automatically write a row to an audit table on each insert, update or delete.'],
-            ['M', 'How do you capture the application user?', 'Set a session variable at connection start (<code>SET @app_user = "asha"</code>) and read it in the trigger.'],
+            ['M', 'How do you capture the application user?', 'Set a session variable at connection start (<code>SET @app_user = "abaji"</code>) and read it in the trigger.'],
             ['M', 'Why make the audit table append-only?', 'To prevent tampering; grant only INSERT to writers and SELECT to auditors.'],
             ['S', 'Triggers vs binlog CDC for auditing?', 'Triggers are simple and transactional but add write cost; CDC from the binlog is asynchronous and adds no write overhead.'],
             ['S', 'How do you keep an audit table manageable?', 'Partition by month, compress or archive old partitions, index by (table, row id, time).']],
@@ -783,13 +783,13 @@ BEGIN
   VALUES ('emp', NEW.id, 'UPDATE', JSON_OBJECT('salary', OLD.salary), JSON_OBJECT('salary', NEW.salary), CURRENT_USER(), @app_user);
 END //
 DELIMITER ;
-SET @app_user = 'asha';
+SET @app_user = 'abaji';
 UPDATE emp SET salary = 62000 WHERE id = 1;
 SELECT tbl, row_id, old_data, new_data, app_user FROM audit_log;
 
 -- OUTPUT:
 -- tbl | row_id | old_data          | new_data          | app_user
--- emp |      1 | {"salary": 61000} | {"salary": 62000} | asha`],
+-- emp |      1 | {"salary": 61000} | {"salary": 62000} | abaji`],
             ['Append-only privileges.',
                 r`REVOKE UPDATE, DELETE ON shop.audit_log FROM 'app'@'%';
 GRANT SELECT ON shop.audit_log TO 'auditor'@'%';
@@ -891,9 +891,9 @@ DELIMITER ;
 CALL list_names();
 
 -- OUTPUT: (three result sets)
--- Asha
--- Ravi
--- Meena`],
+-- Abaji
+-- Raoji
+-- Moropant`],
             ['Accumulate in a cursor.',
                 r`DELIMITER //
 CREATE PROCEDURE total_salary(OUT p_total INT)

@@ -65,13 +65,13 @@ class Person(BaseModel):          # schema the model must follow
 client = OpenAI()
 out = client.beta.chat.completions.parse(
     model="gpt-4o-mini",
-    messages=[{"role": "user", "content": "Asha is 30 years old."}],
+    messages=[{"role": "user", "content": "Abaji is 30 years old."}],
     response_format=Person,
 )
 print(out.choices[0].message.parsed)
 
 # OUTPUT (example):
-# name='Asha' age=30`],
+# name='Abaji' age=30`],
         [`<b>Disadvantages:</b> latency (seconds), per-token cost, non-deterministic output, vendor lock-in, and your data leaves your network. Failures are routine: rate limits, timeouts, 5xx.`,
             r`import time, random
 from openai import OpenAI, RateLimitError, APIConnectionError

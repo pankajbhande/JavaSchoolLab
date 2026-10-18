@@ -36,7 +36,7 @@ A complete, runnable program. Save it in a file and run it with python.`,
 
 
 def main():
-    text = "Contact asha@example.com or ravi@mail.in. Call 98765 43210 or 91234 56789."
+    text = "Contact abaji@example.com or raoji@mail.in. Call 98765 43210 or 91234 56789."
 
     emails = re.findall(r"[\\w.]+@[\\w.]+\\w", text)
     print("Emails :", emails)
@@ -54,9 +54,9 @@ if __name__ == "__main__":
     main()
 
 # OUTPUT:
-# Emails : ['asha@example.com', 'ravi@mail.in']
+# Emails : ['abaji@example.com', 'raoji@mail.in']
 # Numbers: ['98765 43210', '91234 56789']
-# Masked : Contact asha@example.com or ravi@mail.in. Call XXXXX 43210 or XXXXX 56789.
+# Masked : Contact abaji@example.com or raoji@mail.in. Call XXXXX 43210 or XXXXX 56789.
 # Digits : 20`
             ],
             codeExplanations: [
@@ -138,13 +138,13 @@ In the replacement string, <code>\\1</code>, <code>\\2</code> (or <code>\\g&lt;n
             codeExamples: [
                 `import re
 
-print(re.sub(r"(\\w+)@(\\w+)\\.com", r"\\2: \\1", "asha@example.com"))
+print(re.sub(r"(\\w+)@(\\w+)\\.com", r"\\2: \\1", "abaji@example.com"))
 
 print(re.sub(r"(?P<d>\\d{2})/(?P<m>\\d{2})/(?P<y>\\d{4})",
              r"\\g<y>-\\g<m>-\\g<d>", "05/10/2026"))
 
 # OUTPUT:
-# example: asha
+# example: abaji
 # 2026-10-05`
             ]
         },

@@ -345,7 +345,7 @@ public class ArrayPitfallDemo {
         System.out.println("After removing index 1: " + Arrays.toString(tokens));
 
         // DISADVANTAGE 5: shallow copy shares the objects
-        Student[] original = { new Student("Aarav"), new Student("Isha") };
+        Student[] original = { new Student("Ajabrao"), new Student("Isha") };
         Student[] shallow = Arrays.copyOf(original, original.length);
         shallow[0].name = "CHANGED";
         System.out.println("WRONG shallow copy, original[0] is now: " + original[0].name);
@@ -440,7 +440,7 @@ public class ArrayRealTimeDemo {
         System.out.println("Free seats: " + freeSeats + " of " + (4 * 6));
 
         // Real time: monthly attendance, 3 students across 5 working days
-        String[] students = {"Aditi", "Vikram", "Sneha"};
+        String[] students = {"Aditi", "Vyankoji", "Suryaji"};
         boolean[][] attendance = {
             {true, true, false, true, true},
             {true, false, false, true, false},
@@ -480,8 +480,8 @@ public class ArrayRealTimeDemo {
 // Free seats: 20 of 24
 // ATTENDANCE SUMMARY
 // Aditi    present 4 of 5  80.0 percent  ELIGIBLE
-// Vikram   present 2 of 5  40.0 percent  SHORT OF ATTENDANCE
-// Sneha    present 5 of 5  100.0 percent  ELIGIBLE
+// Vyankoji present 2 of 5  40.0 percent  SHORT OF ATTENDANCE
+// Suryaji  present 5 of 5  100.0 percent  ELIGIBLE
 // Notes  : [2000, 500, 200, 100]
 // Counts : [3, 8, 5, 12]
 // Cash in machine: Rs 12200`

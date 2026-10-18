@@ -261,17 +261,17 @@ public class CollegePortalThreadBasics {
 
         // WRONG WAY (point 3): everything on one thread, students wait in a queue
         long start = System.currentTimeMillis();
-        printMarkSheet("Amit");
-        printMarkSheet("Priya");
-        printMarkSheet("Rahul");
+        printMarkSheet("Anandrao");
+        printMarkSheet("Prataprao");
+        printMarkSheet("Raghunath");
         long single = System.currentTimeMillis() - start;
         System.out.println("Single thread time: " + single + " ms");
 
         // RIGHT WAY (points 2 and 3): one thread per student, work overlaps
         start = System.currentTimeMillis();
-        Thread t1 = new Thread(() -> printMarkSheet("Amit"), "Printer-1");
-        Thread t2 = new Thread(() -> printMarkSheet("Priya"), "Printer-2");
-        Thread t3 = new Thread(() -> printMarkSheet("Rahul"), "Printer-3");
+        Thread t1 = new Thread(() -> printMarkSheet("Anandrao"), "Printer-1");
+        Thread t2 = new Thread(() -> printMarkSheet("Prataprao"), "Printer-2");
+        Thread t3 = new Thread(() -> printMarkSheet("Raghunath"), "Printer-3");
         t1.start();
         t2.start();
         t3.start();
@@ -284,13 +284,13 @@ public class CollegePortalThreadBasics {
 }
 // OUTPUT (times are approximate, order of the three printer lines can change):
 // Program started on thread: main
-// Mark sheet ready for Amit (printed by main)
-// Mark sheet ready for Priya (printed by main)
-// Mark sheet ready for Rahul (printed by main)
+// Mark sheet ready for Anandrao (printed by main)
+// Mark sheet ready for Prataprao (printed by main)
+// Mark sheet ready for Raghunath (printed by main)
 // Single thread time: 903 ms
-// Mark sheet ready for Priya (printed by Printer-2)
-// Mark sheet ready for Amit (printed by Printer-1)
-// Mark sheet ready for Rahul (printed by Printer-3)
+// Mark sheet ready for Prataprao (printed by Printer-2)
+// Mark sheet ready for Anandrao (printed by Printer-1)
+// Mark sheet ready for Raghunath (printed by Printer-3)
 // Multi thread time: 305 ms`
                                 ]
                             },
@@ -391,7 +391,7 @@ public class IrctcBookingSimulation {
     }
 
     public static void main(String[] args) throws InterruptedException {
-        String[] passengers = {"Amit", "Priya", "Rahul", "Sneha", "Vikram"};
+        String[] passengers = {"Anandrao", "Prataprao", "Raghunath", "Suryaji", "Vyankoji"};
 
         Thread[] counters = new Thread[passengers.length];
         long start = System.currentTimeMillis();
@@ -413,16 +413,16 @@ public class IrctcBookingSimulation {
     }
 }
 // OUTPUT (line order between passengers changes on every run):
-// Amit searching seats in Deccan Queen on thread Counter-1
-// Priya searching seats in Deccan Queen on thread Counter-2
-// Rahul searching seats in Deccan Queen on thread Counter-3
-// Sneha searching seats in Deccan Queen on thread Counter-4
-// Vikram searching seats in Deccan Queen on thread Counter-5
-// Amit ticket confirmed, fare 1450 rupees
-// Priya ticket confirmed, fare 1450 rupees
-// Rahul ticket confirmed, fare 1450 rupees
-// Sneha ticket confirmed, fare 1450 rupees
-// Vikram ticket confirmed, fare 1450 rupees
+// Anandrao searching seats in Deccan Queen on thread Counter-1
+// Prataprao searching seats in Deccan Queen on thread Counter-2
+// Raghunath searching seats in Deccan Queen on thread Counter-3
+// Suryaji searching seats in Deccan Queen on thread Counter-4
+// Vyankoji searching seats in Deccan Queen on thread Counter-5
+// Anandrao ticket confirmed, fare 1450 rupees
+// Prataprao ticket confirmed, fare 1450 rupees
+// Raghunath ticket confirmed, fare 1450 rupees
+// Suryaji ticket confirmed, fare 1450 rupees
+// Vyankoji ticket confirmed, fare 1450 rupees
 // All 5 bookings finished in about 210 ms`
                                 ]
                             }

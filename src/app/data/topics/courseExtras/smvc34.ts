@@ -36,8 +36,10 @@ export const smvc34Extras: Record<string, Extra> = {
 // </body>`],
             ['A fragment with parameters.',
                 r`<!-- fragments/alerts.html -->
-<div th:fragment="alert(kind, text)" th:class="'alert alert-' + $` + r`{kind}">
-    <span th:text="$` + r`{text}">message</span>
+<div th:fragment="alert(kind, text)" th:class="'alert alert-' + $` + r`{kind}
+">
+    <span th:text="$` + r`{text}
+">message</span>
 </div>
 
 <!-- caller -->
@@ -111,10 +113,12 @@ class HomeViewTest {
             ['Layout without a library.',
                 r`<!-- layouts/base.html -->
 <html th:fragment="layout(title, content)">
-<head><title th:replace="$` + r`{title}">Default</title></head>
+<head><title th:replace="$` + r`{title}
+">Default</title></head>
 <body>
     <nav>Home | Orders</nav>
-    <main th:replace="$` + r`{content}">content</main>
+    <main th:replace="$` + r`{content}
+">content</main>
 </body>
 </html>
 
@@ -178,8 +182,8 @@ class LayoutTest {
 </body>
 </html>
 
-// OUTPUT: (user "asha" with ROLE_USER)
-// Orders link and "Hello asha"; the Admin link is not rendered`],
+// OUTPUT: (user "abaji" with ROLE_USER)
+// Orders link and "Hello abaji"; the Admin link is not rendered`],
             ['Logout form with CSRF.',
                 r`<form th:action="@{/logout}" method="post">
     <button type="submit">Log out</button>
@@ -262,9 +266,9 @@ class MenuTest {
     void returnsViewName() {
         HelloController c = new HelloController();
         Model model = new ExtendedModelMap();
-        String view = c.hello("Asha", model);
+        String view = c.hello("Abaji", model);
         assertEquals("hello", view);
-        assertEquals("Asha", model.getAttribute("name"));
+        assertEquals("Abaji", model.getAttribute("name"));
     }
 }
 
@@ -290,7 +294,7 @@ class MenuTest {
         [['F', 'What does @WebMvcTest load?', 'Only the web layer: controllers, controller advice, filters and converters.'],
             ['F', 'What is MockMvc?', 'A tool to call controllers with fake requests without starting a real server.'],
             ['M', 'Why do you need @MockBean in a controller test?', 'The slice does not load services, so the controller dependency must be supplied as a mock.'],
-            ['M', 'How do you check JSON output?', 'Use jsonPath, for example andExpect(jsonPath(&quot;$.name&quot;).value(&quot;Asha&quot;)).'],
+            ['M', 'How do you check JSON output?', 'Use jsonPath, for example andExpect(jsonPath(&quot;$.name&quot;).value(&quot;Abaji&quot;)).'],
             ['S', 'Why does a POST test return 403 with Spring Security?', 'The CSRF token is missing; add .with(csrf()) to the request.'],
             ['S', 'How do you test exception handlers?', 'Make the mock service throw, then assert the status and body produced by the @ControllerAdvice.']],
         [['GET test with a mocked service.',
@@ -301,10 +305,10 @@ class UserControllerTest {
 
     @Test
     void returnsUser() throws Exception {
-        when(service.find(1L)).thenReturn(new User(1L, "Asha"));
+        when(service.find(1L)).thenReturn(new User(1L, "Abaji"));
         mvc.perform(get("/users/1"))
            .andExpect(status().isOk())
-           .andExpect(jsonPath("$.name").value("Asha"));
+           .andExpect(jsonPath("$.name").value("Abaji"));
     }
 }
 
@@ -326,7 +330,7 @@ void rejectsBlankName() throws Exception {
         [['Test a view controller.',
             r`@Test
 void showsListView() throws Exception {
-    when(service.all()).thenReturn(List.of(new User(1L, "Asha")));
+    when(service.all()).thenReturn(List.of(new User(1L, "Abaji")));
     mvc.perform(get("/users/list"))
        .andExpect(status().isOk())
        .andExpect(view().name("users/list"))
@@ -393,7 +397,7 @@ void missingOrderThrows() {
 void placesOrderAsNew() {
     ArgumentCaptor<Order> captor = ArgumentCaptor.forClass(Order.class);
     when(repo.save(any(Order.class))).thenAnswer(i -> i.getArgument(0));
-    service.place("Asha", 2);
+    service.place("Abaji", 2);
     verify(repo).save(captor.capture());
     assertEquals("NEW", captor.getValue().getStatus());
 }
@@ -438,7 +442,7 @@ class UserFlowIT {
     @Test
     void createsUser() throws Exception {
         mvc.perform(post("/users").contentType(MediaType.APPLICATION_JSON)
-                .content("{\"name\":\"Asha\"}"))
+                .content("{\"name\":\"Abaji\"}"))
            .andExpect(status().isCreated());
         assertEquals(1, repo.count());
     }
@@ -531,9 +535,9 @@ void divideByZeroThrows() {
             ['Grouped assertions.',
                 r`@Test
 void userFields() {
-    User u = new User("Asha", 30);
+    User u = new User("Abaji", 30);
     assertAll("user",
-        () -> assertEquals("Asha", u.getName()),
+        () -> assertEquals("Abaji", u.getName()),
         () -> assertEquals(30, u.getAge()));
 }
 
@@ -558,14 +562,14 @@ void userFields() {
             ['S', 'When is @MockBean better than @Mock?', 'When the mock must replace a bean in the Spring context, for example in @WebMvcTest.']],
         [['Stub and verify.',
             r`UserRepository repo = mock(UserRepository.class);
-when(repo.findById(1L)).thenReturn(Optional.of(new User(1L, "Asha")));
+when(repo.findById(1L)).thenReturn(Optional.of(new User(1L, "Abaji")));
 
 Optional<User> u = repo.findById(1L);
 System.out.println(u.get().getName());
 verify(repo, times(1)).findById(1L);
 
 // OUTPUT:
-// Asha`],
+// Abaji`],
             ['Argument matchers and void methods.',
                 r`EmailSender sender = mock(EmailSender.class);
 doThrow(new IllegalStateException("smtp down"))
@@ -581,12 +585,12 @@ try {
 // smtp down`]],
         [['ArgumentCaptor.',
             r`ArgumentCaptor<Order> cap = ArgumentCaptor.forClass(Order.class);
-service.place("Asha", 2);
+service.place("Abaji", 2);
 verify(repo).save(cap.capture());
 System.out.println(cap.getValue().getCustomer());
 
 // OUTPUT:
-// Asha`],
+// Abaji`],
             ['Spy on a real list.',
                 r`List<String> spy = spy(new ArrayList<>());
 spy.add("a");
@@ -613,15 +617,15 @@ System.out.println(spy.get(0) + " " + spy.size());
             ['S', 'Why does a redirect test not follow the redirect?', 'MockMvc does not follow redirects; assert status().is3xxRedirection() and redirectedUrl().'],
             ['S', 'How do you test async controller methods?', 'Check asyncStarted(), take the MvcResult and call perform(asyncDispatch(result)).']],
         [['GET with parameter.',
-            r`mvc.perform(get("/greet").param("name", "Asha"))
+            r`mvc.perform(get("/greet").param("name", "Abaji"))
    .andDo(print())
    .andExpect(status().isOk())
-   .andExpect(content().string("Hello Asha"));
+   .andExpect(content().string("Hello Abaji"));
 
 // OUTPUT:
 // MockHttpServletRequest: HTTP Method = GET, Request URI = /greet
 // Status = 200
-// Body = Hello Asha`],
+// Body = Hello Abaji`],
             ['Redirect after POST.',
                 r`mvc.perform(post("/orders").with(csrf())
         .param("item", "pen").param("qty", "2"))
@@ -635,7 +639,7 @@ System.out.println(spy.get(0) + " " + spy.size());
             r`MockMvc mvc = MockMvcBuilders
     .standaloneSetup(new GreetController())
     .build();
-mvc.perform(get("/greet?name=Asha")).andExpect(status().isOk());
+mvc.perform(get("/greet?name=Abaji")).andExpect(status().isOk());
 
 // OUTPUT:
 // passes without starting any Spring context`],
@@ -645,7 +649,7 @@ String body = res.getResponse().getContentAsString();
 System.out.println(body);
 
 // OUTPUT:
-// {"id":1,"name":"Asha"}`]]
+// {"id":1,"name":"Abaji"}`]]
     )
 };
 
@@ -654,8 +658,10 @@ export const smvc34Deep: Record<string, Deep> = {
         [`<p>A fragment is just a part of a parsed template that the engine can locate by name or selector.</p><ul><li><b>Lookup:</b> <code>~{file :: name}</code> asks the <code>SpringResourceTemplateResolver</code> for <code>templates/file.html</code>.</li><li><b>Markup selectors:</b> the engine looks for an element with a matching <code>th:fragment</code> or a CSS-like selector.</li><li><b>Context:</b> the fragment runs with the same model variables, locale and request as the page.</li><li><b>Parameters:</b> the arguments become local variables inside the fragment.</li></ul>`,
             r`<!-- fragments/forms.html -->
 <div th:fragment="field(label, name)">
-    <label th:text="$` + r`{label}">Label</label>
-    <input type="text" th:name="$` + r`{name}"/>
+    <label th:text="$` + r`{label}
+">Label</label>
+    <input type="text" th:name="$` + r`{name}
+"/>
 </div>
 
 <!-- user.html -->
@@ -693,10 +699,13 @@ spring.thymeleaf.suffix=.html
         [`<p>Real world: an admin portal with one <code>fragments/</code> folder holding <code>header</code>, <code>sidebar</code>, <code>pagination(page)</code> and <code>alert(kind, text)</code>. Every page reuses them, and a design change touches one file.</p>`,
             r`<!-- fragments/pagination.html -->
 <nav th:fragment="pagination(page)">
-    <a th:if="$` + r`{page.hasPrevious()}"
+    <a th:if="$` + r`{page.hasPrevious()}
+"
        th:href="@{/orders(page=$` + r`{page.number - 1})}">Prev</a>
-    <span th:text="$` + r`{page.number + 1}">1</span>
-    <a th:if="$` + r`{page.hasNext()}"
+    <span th:text="$` + r`{page.number + 1}
+">1</span>
+    <a th:if="$` + r`{page.hasNext()}
+"
        th:href="@{/orders(page=$` + r`{page.number + 1})}">Next</a>
 </nav>
 
@@ -916,7 +925,10 @@ class BadTest { @Autowired MockMvc mvc; }
 
 // RIGHT
 @WebMvcTest(UserController.class)
-class GoodTest { @Autowired MockMvc mvc; @MockBean UserService service; }
+class GoodTest {
+    @Autowired MockMvc mvc;
+    @MockBean UserService service;
+}
 
 // OUTPUT:
 // WRONG: UnsatisfiedDependencyException: No qualifying bean of type UserService
@@ -933,10 +945,10 @@ class GoodTest { @Autowired MockMvc mvc; @MockBean UserService service; }
         [`<p>Real world: a REST API has a controller test for every endpoint covering success, validation error, not found and forbidden. These tests act as living documentation of the contract, and they catch changes in status codes and JSON fields before release.</p>`,
             r`@Test
 void createReturns201WithLocation() throws Exception {
-    when(service.create(any())).thenReturn(new User(7L, "Asha"));
+    when(service.create(any())).thenReturn(new User(7L, "Abaji"));
     mvc.perform(post("/users").with(csrf())
             .contentType(MediaType.APPLICATION_JSON)
-            .content("{\"name\":\"Asha\"}"))
+            .content("{\"name\":\"Abaji\"}"))
        .andExpect(status().isCreated())
        .andExpect(header().string("Location", endsWith("/users/7")));
 }
@@ -968,7 +980,7 @@ class TransferServiceTest {
             r`@Test
 void savesAndNotifies() {
     given(repo.save(any(Order.class))).willAnswer(i -> i.getArgument(0));
-    service.place("Asha", 2);
+    service.place("Abaji", 2);
     InOrder order = inOrder(repo, notifier);
     order.verify(repo).save(any(Order.class));
     order.verify(notifier).orderPlaced(any());
@@ -1236,12 +1248,12 @@ mvc.perform(multipart("/upload").file(file).with(csrf()))
 // Tests run: 1, Failures: 0, Errors: 0`],
         [`<p>Mistakes:</p><ul><li><b>Expecting a followed redirect:</b> check the redirect URL instead.</li><li><b>No content type on POST body:</b> gives 415.</li><li><b>Missing Accept header:</b> may give 406 for JSON.</li><li><b>Forgetting charset or encoding</b> for non-ASCII text in <code>content().string</code>.</li><li><b>Assuming container behaviour:</b> error pages and some filters are not part of MockMvc.</li></ul>`,
             r`// WRONG: body is sent without a content type -> 415
-mvc.perform(post("/users").content("{\"name\":\"Asha\"}"))
+mvc.perform(post("/users").content("{\"name\":\"Abaji\"}"))
    .andExpect(status().isCreated());
 
 // RIGHT
 mvc.perform(post("/users").contentType(MediaType.APPLICATION_JSON)
-        .content("{\"name\":\"Asha\"}"))
+        .content("{\"name\":\"Abaji\"}"))
    .andExpect(status().isCreated());
 
 // OUTPUT:

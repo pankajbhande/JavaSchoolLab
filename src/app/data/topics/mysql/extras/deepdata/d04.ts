@@ -19,8 +19,8 @@ SELECT name FROM emp e WHERE EXISTS (SELECT 1 FROM departments d WHERE d.id = e.
 
 -- OUTPUT:
 -- name
--- Asha
--- Ravi`],
+-- Abaji
+-- Raoji`],
         [`Mistakes: functions on indexed columns, implicit type conversion, OR chains that defeat indexes, and forgetting precedence. The fix is to keep the column bare, compare matching types and use parentheses or UNION.`,
             r`-- bad: function on the column
 SELECT id FROM emp WHERE YEAR(hired) = 2024;
@@ -42,8 +42,8 @@ SELECT name FROM emp WHERE dept = 20 OR dept = 10 AND salary > 100000;     -- me
 SELECT id, name, dept, salary FROM emp WHERE 1=1 AND dept = 10 AND salary >= 50000 ORDER BY id LIMIT 50;
 
 -- OUTPUT:
--- id | name | dept | salary
---  1 | Asha |   10 |  60000`]
+-- id | name  | dept | salary
+--  1 | Abaji |   10 | 60000`]
     ),
 
     'ORDER BY': dv(
@@ -63,8 +63,8 @@ CREATE INDEX idx_dept_sal_desc ON emp (dept ASC, salary DESC);
 
 -- OUTPUT:
 -- name  | dept | salary
--- Asha  |   10 |  60000
--- Ravi  |   10 |  45000`],
+-- Abaji |   10 | 60000
+-- Raoji |   10 | 45000`],
         [`Mistakes: relying on implicit order, ordering without LIMIT on huge sets, ordering by a different column than the index, and unstable pagination from ties. Always add the primary key as the last sort key.`,
             r`SELECT id, created_at FROM posts ORDER BY created_at DESC LIMIT 10 OFFSET 10;          -- ties may repeat or skip rows between pages
 SELECT id, created_at FROM posts ORDER BY created_at DESC, id DESC LIMIT 10 OFFSET 10;   -- deterministic
@@ -230,8 +230,8 @@ LIMIT 5;                                -- 7
 WITH ranked AS (SELECT name, salary, RANK() OVER (ORDER BY salary DESC) AS rk FROM emp) SELECT * FROM ranked WHERE rk <= 3;
 
 -- OUTPUT:
--- name  | yearly
--- Meena | 840000`],
+-- name     | yearly
+-- Moropant | 840000`],
         [`Mistakes: using a SELECT alias in WHERE, a window function in WHERE, or expecting ORDER BY to run before GROUP BY. These fail because the earlier phase does not know about the later one.`,
             r`SELECT salary * 12 AS yearly FROM emp WHERE yearly > 600000;
 SELECT name FROM emp WHERE ROW_NUMBER() OVER (ORDER BY salary) = 1;
@@ -308,14 +308,14 @@ SELECT name FROM emp WHERE dept IN (10, 20) AND NOT name LIKE 'R%';
 
 -- OUTPUT:
 -- name
--- Asha
--- Meena`],
+-- Abaji
+-- Moropant`],
         [`Mistakes: precedence surprises, NOT with NULL data (the rewrite is not equivalent when NULLs exist), and OR across different columns which blocks single-index access. Use UNION ALL with a guard for performance.`,
             r`SELECT name FROM emp WHERE dept = 10 OR dept = 20 AND salary > 60000;     -- AND first
 SELECT name FROM emp WHERE (dept = 10 OR dept = 20) AND salary > 60000;   -- intended
 
 -- OUTPUT:
--- first : Asha, Ravi, Meena       second: Meena`],
+-- first : Abaji, Raoji, Moropant       second: Moropant`],
         [`Rewrite a slow OR over two indexed columns as two index lookups combined with UNION ALL, removing the overlap in the second branch.`,
             r`SELECT id FROM orders WHERE customer_id = 7 OR sales_rep_id = 9;
 SELECT id FROM orders WHERE customer_id = 7
@@ -405,11 +405,11 @@ SELECT id FROM customers WHERE name_rev LIKE CONCAT(REVERSE('sha'), '%');
 -- id
 -- 1           (finds names ending with "sha" using an index range)`],
         [`Real-world: type-ahead search. Prefix LIKE with a limit and an index returns the first suggestions in milliseconds.`,
-            r`SELECT id, name FROM customers WHERE name LIKE 'asha%' ORDER BY name LIMIT 8;
+            r`SELECT id, name FROM customers WHERE name LIKE 'abaji%' ORDER BY name LIMIT 8;
 
 -- OUTPUT:
 -- id | name
---  1 | Asha
+--  1 | Abaji
 -- 14 | Ashank`]
     ),
 
@@ -582,8 +582,8 @@ UPDATE contacts SET mobile = NULLIF(TRIM(mobile), '');
 SELECT IF(salary > 50000, 'high', 'normal') AS band, CASE WHEN bonus IS NULL THEN 'none' ELSE 'yes' END AS has_bonus FROM emp;
 
 -- OUTPUT:
--- name | best_phone
--- Asha | 98765`],
+-- name  | best_phone
+-- Abaji | 98765`],
         [`Mistakes: COALESCE on an indexed column inside WHERE (index lost), turning NULL into 0 in aggregates and distorting averages, and relying on IFNULL when portability matters. Keep NULL as unknown where that is the truth.`,
             r`SELECT AVG(score) AS avg_ignoring_null, AVG(COALESCE(score, 0)) AS avg_treating_missing_as_zero FROM results;
 SELECT id FROM results WHERE COALESCE(score, 0) = 0;                       -- no index use
@@ -620,8 +620,8 @@ SELECT campaign, ROUND(100 * orders / NULLIF(visits, 0), 2) AS conversion_pct FR
        GROUP_CONCAT(name ORDER BY name SEPARATOR ', ') AS names, ROUND(STDDEV_POP(salary), 0) AS spread FROM emp;
 
 -- OUTPUT:
--- depts | high_earners | dept10_payroll | names             | spread
---     2 |            2 |         105000 | Asha, Meena, Ravi |  10274`],
+-- depts | high_earners | dept10_payroll | names                  | spread
+--     2 |            2 |         105000 | Abaji, Moropant, Raoji | 10274`],
         [`Mistakes: SUM on an empty set is NULL (use COALESCE), AVG ignoring NULLs unexpectedly, COUNT(col) when COUNT(*) was meant, and summing after a one-to-many join (double counting).`,
             r`SELECT SUM(qty) AS total, COALESCE(SUM(qty), 0) AS total_or_zero FROM order_items WHERE order_id = 999;
 SELECT SUM(o.total) FROM orders o JOIN order_items i ON i.order_id = o.id;                 -- order total repeated per item

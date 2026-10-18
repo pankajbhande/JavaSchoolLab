@@ -38,11 +38,11 @@ public class RegisterController {
 
 // OUTPUT:
 // GET  /register       -> 200 view "register"
-// POST /register name=Asha -> prints "Registering Asha", 302 Location: /register/done`],
+// POST /register name=Abaji -> prints "Registering Abaji", 302 Location: /register/done`],
             ['Test the submission with MockMvc.',
                 r`mockMvc.perform(post("/register")
-        .param("name", "Asha")
-        .param("email", "asha@example.com"))
+        .param("name", "Abaji")
+        .param("email", "abaji@example.com"))
     .andExpect(status().is3xxRedirection())
     .andExpect(redirectedUrl("/register/done"));
 
@@ -59,7 +59,7 @@ public String submit(RegisterForm form, RedirectAttributes ra) {
 
 // OUTPUT:
 // POST /register   -> 302 /register/done
-// GET  /register/done -> model contains msg = "Welcome Asha" (shown once)`],
+// GET  /register/done -> model contains msg = "Welcome Abaji" (shown once)`],
             ['Plain HTML form with CSRF (Thymeleaf).',
                 r`<form th:action="@{/register}" method="post">
     <input type="text" name="name"/>
@@ -94,10 +94,10 @@ public String submit(RegisterForm form, RedirectAttributes ra) {
     private LocalDate deliveryDate;
     // getters and setters omitted
 }
-// POST /order?customer=Ravi&address.city=Pune&deliveryDate=2026-11-01
+// POST /order?customer=Raoji&address.city=Pune&deliveryDate=2026-11-01
 
 // OUTPUT:
-// form.customer = Ravi
+// form.customer = Raoji
 // form.address.city = Pune
 // form.deliveryDate = 2026-11-01`],
             ['Restrict bound fields.',
@@ -105,10 +105,10 @@ public String submit(RegisterForm form, RedirectAttributes ra) {
 public void init(WebDataBinder binder) {
     binder.setAllowedFields("name", "email");
 }
-// POST /register?name=Asha&email=a@x.com&role=ADMIN
+// POST /register?name=Abaji&email=a@x.com&role=ADMIN
 
 // OUTPUT:
-// name = Asha, email = a@x.com, role = null (ignored)`]],
+// name = Abaji, email = a@x.com, role = null (ignored)`]],
         [['Bind a list of items.',
             r`public class CartForm {
     private List<Item> items = new ArrayList<>();
@@ -176,7 +176,10 @@ public class CourseController {
             r`@ModelAttribute("countries")
 List<String> countries() { return List.of("IN", "US"); }
 
-@GetMapping("/new")  String blank(Model m) { m.addAttribute("form", new F()); return "f"; }
+@GetMapping("/new")  String blank(Model m) {
+    m.addAttribute("form", new F());
+    return "f";
+}
 @PostMapping("/new") String save(@ModelAttribute("form") F f) { return "f"; }
 
 // OUTPUT:
@@ -228,10 +231,10 @@ public String form(Model model) {
 public String send(ContactForm form) {
     return "redirect:/thanks";
 }
-// POST /contact name=Asha&message=Hi
+// POST /contact name=Abaji&message=Hi
 
 // OUTPUT:
-// form = ContactForm[name=Asha, message=Hi]`]],
+// form = ContactForm[name=Abaji, message=Hi]`]],
         [['Pre-filled edit form.',
             r`@GetMapping("/users/{id}/edit")
 public String edit(@PathVariable long id, Model model) {
@@ -241,14 +244,16 @@ public String edit(@PathVariable long id, Model model) {
 }
 
 // OUTPUT:
-// GET /users/7/edit -> form fields show name=Asha, email=asha@example.com`],
+// GET /users/7/edit -> form fields show name=Abaji, email=abaji@example.com`],
             ['Thymeleaf binding.',
-                r`<form th:object="$` + r`{form}" th:action="@{/users}" method="post">
+                r`<form th:object="$` + r`{form}
+" th:action="@{/users}
+" method="post">
     <input type="text" th:field="*{name}"/>
 </form>
 
 <!-- OUTPUT: rendered -->
-// <input type="text" id="name" name="name" value="Asha"/>`]]
+// <input type="text" id="name" name="name" value="Abaji"/>`]]
     ),
     'mvc-form-dto': x(
         ['<b>Form DTO</b> is a data transfer object designed only for one form: it holds just the fields the user may send and the rules to check them.',
@@ -290,7 +295,7 @@ public String signup(@Valid SignupForm form, BindingResult br) {
 }
 
 // OUTPUT:
-// User{name=Asha, email=asha@example.com, passwordHash=$2a$10... (varies)}`]],
+// User{name=Abaji, email=abaji@example.com, passwordHash=$2a$10... (varies)}`]],
         [['Mass assignment blocked.',
             r`// SignupForm has no "role" field
 // POST /signup?name=A&email=a@x.com&password=secret123&role=ADMIN
@@ -564,7 +569,9 @@ public String signup(@Valid SignupForm form, BindingResult br) {
 
 // signup.html
 // <input th:field="*{email}" th:errorclass="error"/>
-// <span th:if="$` + r`{#fields.hasErrors('email')}" th:errors="*{email}">msg</span>
+// <span th:if="$` + r`{#fields.hasErrors('email')}
+" th:errors="*{email}
+">msg</span>
 
 // OUTPUT:
 // <input name="email" value="bad" class="error"/>
@@ -642,7 +649,7 @@ model.addAttribute("form", new RegisterForm());
 // Fix: input name="name" must equal the setter setName
 
 // OUTPUT:
-// after the fix the form renders and POST binds name = Asha`],
+// after the fix the form renders and POST binds name = Abaji`],
         [`<p>Performance and tuning:</p><ul><li>Binding is cheap; keep the form small and avoid binding large graphs.</li><li>Set <code>server.tomcat.max-http-form-post-size</code> and multipart limits to block huge bodies.</li><li>Use PRG so the heavy page is a cacheable GET.</li><li>Enable compression for rendered pages with <code>server.compression.enabled=true</code>.</li></ul>`,
             r`# application.properties
 server.tomcat.max-http-form-post-size=1MB
@@ -660,7 +667,7 @@ class RegisterControllerTest {
 
     @Test void validSubmitRedirects() throws Exception {
         mvc.perform(post("/register").with(csrf())
-                .param("name", "Asha").param("email", "a@x.com"))
+                .param("name", "Abaji").param("email", "a@x.com"))
            .andExpect(redirectedUrl("/register/done"));
     }
 }
@@ -673,7 +680,7 @@ class RegisterControllerTest {
             r`WebDataBinder binder = new WebDataBinder(new PersonForm(), "personForm");
 binder.setConversionService(new DefaultFormattingConversionService());
 MutablePropertyValues pv = new MutablePropertyValues();
-pv.add("name", "Asha");
+pv.add("name", "Abaji");
 pv.add("age", "x");
 binder.bind(pv);
 System.out.println(binder.getBindingResult().getFieldErrorCount());
@@ -688,7 +695,7 @@ void init(WebDataBinder b) {
 }
 
 // OUTPUT:
-// "  Asha " -> "Asha"; empty string -> null; id and role never bound`],
+// "  Abaji " -> "Abaji"; empty string -> null; id and role never bound`],
         [`<p>Common mistakes:</p><ul><li><b>Binding entities:</b> mass assignment risk.</li><li><b>Missing setters or getters:</b> value stays null.</li><li><b>Primitive for optional field:</b> empty input gives a typeMismatch; use the wrapper type.</li><li><b>Date without format:</b> parsing fails for ISO strings in some locales.</li><li><b>Ignoring BindingResult:</b> conversion errors become a 400.</li></ul>`,
             r`// WRONG: int price, form field left empty -> typeMismatch error
 // private int price;
@@ -709,10 +716,10 @@ void limit(WebDataBinder b) { b.setAutoGrowCollectionLimit(50); }
     @Valid private List<LineForm> lines = new ArrayList<>();
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) private LocalDate due;
 }
-// POST customer=Ravi&lines[0].sku=A1&lines[0].qty=2&due=2026-11-01
+// POST customer=Raoji&lines[0].sku=A1&lines[0].qty=2&due=2026-11-01
 
 // OUTPUT:
-// OrderForm{customer=Ravi, lines=[A1 x2], due=2026-11-01}`]
+// OrderForm{customer=Raoji, lines=[A1 x2], due=2026-11-01}`]
     ),
     'mvc-modelattribute': dv(
         [`<p>How it works:</p><ul><li>Before the handler, <code>RequestMappingHandlerAdapter</code> invokes every <code>@ModelAttribute</code> method of the controller (and its advice) and fills the <code>ModelAndViewContainer</code>.</li><li>For a parameter, <code>ModelAttributeMethodProcessor</code> first looks in the model (or session attributes), else creates the object by constructor.</li><li>It binds, optionally validates, then adds the object and its <code>BindingResult</code> to the model.</li></ul>`,
@@ -796,7 +803,8 @@ class WizardController {
     private final String city;
     private final String zip;
     public AddressForm(String city, String zip) {
-        this.city = city; this.zip = zip;
+        this.city = city;
+        this.zip = zip;
     }
 }
 
@@ -865,7 +873,10 @@ String update(@PathVariable long id, @Valid ProductForm f, BindingResult br) {
 // OUTPUT:
 // the id in the path is authoritative; a forged hidden field has no effect`],
         [`<p>Performance: DTOs add a copy, which is negligible; MapStruct avoids reflection. Use projections for read-only list pages instead of loading entities.</p>`,
-            r`interface ProductRow { String getName(); BigDecimal getPrice(); }
+            r`interface ProductRow {
+    String getName();
+    BigDecimal getPrice();
+}
 List<ProductRow> findAllBy();
 
 // OUTPUT:
@@ -1072,8 +1083,12 @@ NotBlank=This field is required
 # the first matching key wins: "Email is required"`],
         [`<p>Display options:</p><ul><li><b>Per field:</b> <code>th:errors="*{field}"</code>.</li><li><b>All errors:</b> <code>#fields.allErrors()</code> in a <code>th:each</code> loop.</li><li><b>Global:</b> <code>#fields.hasGlobalErrors()</code>.</li><li><b>Summary:</b> <code>th:errors="*"</code>.</li><li><b>JSP:</b> <code>form:errors</code> tag.</li></ul>`,
             r`<!-- signup.html -->
-<form th:object="$` + r`{signupForm}" th:action="@{/signup}" method="post">
-  <div th:if="$` + r`{#fields.hasGlobalErrors()}" th:errors="*{global}"></div>
+<form th:object="$` + r`{signupForm}
+" th:action="@{/signup}
+" method="post">
+  <div th:if="$` + r`{#fields.hasGlobalErrors()}
+" th:errors="*{global}
+"></div>
   <input th:field="*{email}" th:errorclass="is-invalid"/>
   <small th:errors="*{email}"></small>
 </form>
@@ -1094,7 +1109,8 @@ spring.messages.cache-duration=-1
 spring.messages.fallback-to-system-locale=false
 
 # OUTPUT:
-# messages cached forever; no surprise language fallback`],
+# messages cached forever;
+no surprise language fallback`],
         [`<p>Scenario: one handler advice that turns validation failures into a consistent JSON error for the API and HTML re-display for the web form.</p>`,
             r`@RestControllerAdvice(basePackages = "com.shop.api")
 class ApiAdvice {

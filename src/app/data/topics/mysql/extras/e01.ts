@@ -22,13 +22,13 @@ export const e01: Record<string, Extra> = {
             r`CREATE DATABASE IF NOT EXISTS school;
 USE school;
 CREATE TABLE students (id INT PRIMARY KEY, name VARCHAR(40));
-INSERT INTO students VALUES (1,'Asha'),(2,'Ravi');
+INSERT INTO students VALUES (1,'Abaji'),(2,'Raoji');
 SELECT * FROM students;
 
 -- OUTPUT:
 -- id | name
---  1 | Asha
---  2 | Ravi`],
+--  1 | Abaji
+--  2 | Raoji`],
             ['List all databases on the server and show which one is currently selected.',
                 r`SHOW DATABASES;
 SELECT DATABASE();
@@ -53,7 +53,7 @@ GROUP  BY table_schema;
 -- school       |            1`],
             ['Data survives a reconnect because it is stored by the server, not the session.',
                 r`-- session 1
-INSERT INTO school.students VALUES (3,'Meena');
+INSERT INTO school.students VALUES (3,'Moropant');
 -- exit, reconnect (session 2)
 SELECT COUNT(*) FROM school.students;
 
@@ -240,7 +240,7 @@ SHOW TABLES;
 
 -- OUTPUT:
 -- id | name
---  1 | Asha`]],
+--  1 | Abaji`]],
         [['The schema as a catalog: list every schema with its table count.',
             r`SELECT table_schema, COUNT(*) AS tables
 FROM   information_schema.tables
@@ -287,8 +287,8 @@ INSERT INTO orders VALUES (1, 5);
 -- OUTPUT:
 -- ERROR 1452 (23000): Cannot add or update a child row: a foreign key constraint fails`],
             ['Insert a duplicate primary key and read the error.',
-                r`INSERT INTO customers VALUES (1,'Asha');
-INSERT INTO customers VALUES (1,'Ravi');
+                r`INSERT INTO customers VALUES (1,'Abaji');
+INSERT INTO customers VALUES (1,'Raoji');
 
 -- OUTPUT:
 -- ERROR 1062 (23000): Duplicate entry '1' for key 'customers.PRIMARY'`]],
@@ -298,7 +298,7 @@ SELECT o.id AS order_id, c.name FROM orders o JOIN customers c ON c.id = o.custo
 
 -- OUTPUT:
 -- order_id | name
---       10 | Asha`],
+--       10 | Abaji`],
             ['See the restrict rule in action when deleting the parent.',
                 r`DELETE FROM customers WHERE id = 1;
 
@@ -379,12 +379,12 @@ SELECT * FROM enrollments ORDER BY student_id, course_id;
   balance DECIMAL(10,2) NOT NULL DEFAULT 0,
   CONSTRAINT chk_balance CHECK (balance >= 0)
 );
-INSERT INTO accounts (id, owner, balance) VALUES (1,'Asha',-5);
+INSERT INTO accounts (id, owner, balance) VALUES (1,'Abaji',-5);
 
 -- OUTPUT:
 -- ERROR 3819 (HY000): Check constraint 'chk_balance' is violated.`],
             ['Insert a row using the default balance.',
-                r`INSERT INTO accounts (id, owner) VALUES (2,'Ravi');
+                r`INSERT INTO accounts (id, owner) VALUES (2,'Raoji');
 SELECT id, balance FROM accounts WHERE id = 2;
 
 -- OUTPUT:
@@ -425,25 +425,25 @@ WHERE  table_schema = DATABASE() AND table_name = 'accounts';
         [['Create <code>persons</code> and <code>passports</code> as one-to-one and try to add two passports for one person.',
             r`CREATE TABLE persons (id INT PRIMARY KEY, name VARCHAR(30));
 CREATE TABLE passports (person_id INT PRIMARY KEY, number VARCHAR(15), FOREIGN KEY (person_id) REFERENCES persons(id));
-INSERT INTO persons VALUES (1,'Asha');
+INSERT INTO persons VALUES (1,'Abaji');
 INSERT INTO passports VALUES (1,'P123'),(1,'P999');
 
 -- OUTPUT:
 -- ERROR 1062 (23000): Duplicate entry '1' for key 'passports.PRIMARY'`],
             ['List persons without a passport.',
-                r`INSERT INTO persons VALUES (2,'Ravi');
+                r`INSERT INTO persons VALUES (2,'Raoji');
 INSERT INTO passports VALUES (1,'P123');
 SELECT p.name FROM persons p LEFT JOIN passports pp ON pp.person_id = p.id WHERE pp.person_id IS NULL;
 
 -- OUTPUT:
 -- name
--- Ravi`]],
+-- Raoji`]],
         [['Read both halves with a join.',
             r`SELECT p.name, pp.number FROM persons p JOIN passports pp ON pp.person_id = p.id;
 
 -- OUTPUT:
--- name | number
--- Asha | P123`],
+-- name  | number
+-- Abaji | P123`],
             ['UNIQUE foreign key alternative with its own id.',
                 r`CREATE TABLE licenses (id INT PRIMARY KEY AUTO_INCREMENT, person_id INT UNIQUE NOT NULL, no VARCHAR(15),
   FOREIGN KEY (person_id) REFERENCES persons(id));
@@ -474,14 +474,14 @@ INSERT INTO licenses (person_id, no) VALUES (1,'L56');
             r`CREATE TABLE customers (id INT PRIMARY KEY, name VARCHAR(30));
 CREATE TABLE orders (id INT PRIMARY KEY, customer_id INT NOT NULL, total DECIMAL(8,2),
   FOREIGN KEY (customer_id) REFERENCES customers(id));
-INSERT INTO customers VALUES (1,'Asha'),(2,'Ravi');
+INSERT INTO customers VALUES (1,'Abaji'),(2,'Raoji');
 INSERT INTO orders VALUES (10,1,500),(11,1,250);
 SELECT c.name, COUNT(o.id) AS orders FROM customers c LEFT JOIN orders o ON o.customer_id = c.id GROUP BY c.id, c.name;
 
 -- OUTPUT:
--- name | orders
--- Asha |      2
--- Ravi |      0`],
+-- name  | orders
+-- Abaji | 2
+-- Raoji | 0`],
             ['Find customers who have more than one order.',
                 r`SELECT customer_id FROM orders GROUP BY customer_id HAVING COUNT(*) > 1;
 
@@ -492,8 +492,8 @@ SELECT c.name, COUNT(o.id) AS orders FROM customers c LEFT JOIN orders o ON o.cu
             r`SELECT c.name, SUM(o.total) AS spent FROM customers c JOIN orders o ON o.customer_id = c.id GROUP BY c.id, c.name;
 
 -- OUTPUT:
--- name | spent
--- Asha | 750.00`],
+-- name  | spent
+-- Abaji | 750.00`],
             ['ON DELETE CASCADE removes children with the parent.',
                 r`ALTER TABLE orders DROP FOREIGN KEY orders_ibfk_1;
 ALTER TABLE orders ADD FOREIGN KEY (customer_id) REFERENCES customers(id) ON DELETE CASCADE;
@@ -527,16 +527,16 @@ CREATE TABLE courses  (id INT PRIMARY KEY, title VARCHAR(30));
 CREATE TABLE enrolments (student_id INT, course_id INT, enrolled_on DATE,
   PRIMARY KEY (student_id, course_id),
   FOREIGN KEY (student_id) REFERENCES students(id), FOREIGN KEY (course_id) REFERENCES courses(id));
-INSERT INTO students VALUES (1,'Asha'),(2,'Ravi');
+INSERT INTO students VALUES (1,'Abaji'),(2,'Raoji');
 INSERT INTO courses VALUES (10,'SQL'),(11,'Java');
 INSERT INTO enrolments VALUES (1,10,'2026-01-05'),(1,11,'2026-01-06'),(2,10,'2026-01-07');
 SELECT s.name, c.title FROM students s JOIN enrolments e ON e.student_id=s.id JOIN courses c ON c.id=e.course_id ORDER BY s.name, c.title;
 
 -- OUTPUT:
--- name | title
--- Asha | Java
--- Asha | SQL
--- Ravi | SQL`],
+-- name  | title
+-- Abaji | Java
+-- Abaji | SQL
+-- Raoji | SQL`],
             ['Count students per course.',
                 r`SELECT c.title, COUNT(*) AS students FROM courses c JOIN enrolments e ON e.course_id=c.id GROUP BY c.id, c.title;
 
@@ -545,12 +545,12 @@ SELECT s.name, c.title FROM students s JOIN enrolments e ON e.student_id=s.id JO
 -- SQL   |        2
 -- Java  |        1`]],
         [['Students not enrolled in anything.',
-            r`INSERT INTO students VALUES (3,'Meena');
+            r`INSERT INTO students VALUES (3,'Moropant');
 SELECT s.name FROM students s LEFT JOIN enrolments e ON e.student_id = s.id WHERE e.student_id IS NULL;
 
 -- OUTPUT:
 -- name
--- Meena`],
+-- Moropant`],
             ['Duplicate links are rejected by the composite key.',
                 r`INSERT INTO enrolments VALUES (1,10,'2026-02-01');
 
@@ -585,20 +585,20 @@ SELECT s.name FROM students s LEFT JOIN enrolments e ON e.student_id = s.id WHER
 
 -- OUTPUT:
 -- name
--- Ravi
--- Meena`]],
+-- Raoji
+-- Moropant`]],
         [['A relational join combining two relations.',
             r`SELECT s.name, c.title FROM students s JOIN enrolments e ON e.student_id=s.id JOIN courses c ON c.id=e.course_id WHERE s.id = 2;
 
 -- OUTPUT:
--- name | title
--- Ravi | SQL`],
+-- name  | title
+-- Raoji | SQL`],
             ['Set difference with NOT EXISTS (students not in any course).',
                 r`SELECT name FROM students s WHERE NOT EXISTS (SELECT 1 FROM enrolments e WHERE e.student_id = s.id);
 
 -- OUTPUT:
 -- name
--- Meena`]]
+-- Moropant`]]
     ),
 
     'SQL vs MySQL': x(

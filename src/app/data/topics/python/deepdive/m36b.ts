@@ -155,14 +155,14 @@ print("CSRF protection holds under XSS:", not injected_js_can_read)
             r`import sqlite3
 db = sqlite3.connect(":memory:")
 db.execute("CREATE TABLE users(name TEXT, pw TEXT)")
-db.execute("INSERT INTO users VALUES ('ada', 'x'), ('bob', 'y')")
+db.execute("INSERT INTO users VALUES ('ada', 'x'), ('baji', 'y')")
 
 name = "' OR '1'='1"                                    # attacker input
 vulnerable = f"SELECT * FROM users WHERE name = '{name}'"
 print(db.execute(vulnerable).fetchall())                # returns EVERY user
 
 # OUTPUT:
-# [('ada', 'x'), ('bob', 'y')]`],
+# [('ada', 'x'), ('baji', 'y')]`],
         [`A single injectable field can leak, modify or delete the whole database or lead to remote code execution. It remains in the OWASP Top 10 because string-built queries are still common.`,
             r`import sqlite3
 db = sqlite3.connect(":memory:")

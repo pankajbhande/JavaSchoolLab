@@ -36,10 +36,10 @@ Grades: TypeAlias = dict[str, list[int]]
 def average_by_student(grades: Grades) -> dict[str, float]:
     return {name: sum(m) / len(m) for name, m in grades.items()}
 
-print(average_by_student({"Asha": [80, 90], "Ravi": [70, 75]}))
+print(average_by_student({"Abaji": [80, 90], "Raoji": [70, 75]}))
 
 # OUTPUT:
-# {'Asha': 85.0, 'Ravi': 72.5}`
+# {'Abaji': 85.0, 'Raoji': 72.5}`
             ]
         },
         {
@@ -120,7 +120,7 @@ UserId = NewType("UserId", int)
 OrderId = NewType("OrderId", int)
 
 def get_user_name(uid: UserId) -> str:
-    return {42: "Asha"}.get(uid, "unknown")
+    return {42: "Abaji"}.get(uid, "unknown")
 
 uid = UserId(42)
 oid = OrderId(42)
@@ -130,9 +130,9 @@ print(get_user_name(oid))        # runs, but the checker objects
 print(get_user_name(42))         # runs, but the checker objects
 
 # OUTPUT:
-# Asha <class 'int'>
-# Asha
-# Asha
+# Abaji <class 'int'>
+# Abaji
+# Abaji
 #
 # mypy reports (wording may vary by version):
 # error: Argument 1 to "get_user_name" has incompatible type "OrderId"; expected "UserId"

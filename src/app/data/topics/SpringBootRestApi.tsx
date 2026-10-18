@@ -135,10 +135,10 @@ public class EmployeeController {
     }
 }
 // REQUEST BODY (POST http://localhost:8080/employees):
-// { "id": 2, "name": "Neha" }
+// { "id": 2, "name": "Netaji" }
 //
 // OUTPUT:
-// Received employee: 2 - Neha`]
+// Received employee: 2 - Netaji`]
         }
     ],
 
@@ -228,7 +228,7 @@ public class EmployeeController {
 // OUTPUT (sample flow):
 // POST /api/employees {"name":"Pankaj"}   -> 201 Created  {"id":1,"name":"Pankaj"}
 // GET  /api/employees/1                   -> 200 OK       {"id":1,"name":"Pankaj"}
-// PUT  /api/employees/1 {"name":"Neha"}   -> 200 OK       {"id":1,"name":"Neha"}
+// PUT  /api/employees/1 {"name":"Netaji"}   -> 200 OK       {"id":1,"name":"Netaji"}
 // DELETE /api/employees/1                 -> 204 No Content
 // GET  /api/employees/1                   -> 404 Not Found`]
         },

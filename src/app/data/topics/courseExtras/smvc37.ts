@@ -105,12 +105,12 @@ public class CsvView implements View {
     public void render(Map<String, ?> model, HttpServletRequest req,
                        HttpServletResponse res) throws Exception {
         res.setContentType("text/csv");
-        res.getWriter().write("id,name\n1,Asha\n");
+        res.getWriter().write("id,name\n1,Abaji\n");
     }
 }
 
 // OUTPUT:
-// controller returns "users.csv" -> body "id,name" and "1,Asha"`],
+// controller returns "users.csv" -> body "id,name" and "1,Abaji"`],
             ['Register it.',
                 r`@Bean
 ViewResolver csvViewResolver() {
@@ -171,7 +171,7 @@ public class CurrentUserResolver implements HandlerMethodArgumentResolver {
 }
 
 // OUTPUT:
-// header X-User: asha -> parameter value "asha"`],
+// header X-User: abaji -> parameter value "abaji"`],
             ['Register and use.',
                 r`@Configuration
 public class WebConfig implements WebMvcConfigurer {
@@ -184,14 +184,14 @@ public class WebConfig implements WebMvcConfigurer {
 String me(@CurrentUser String user) { return "hi " + user; }
 
 // OUTPUT:
-// GET /me with X-User: asha -> hi asha`]],
+// GET /me with X-User: abaji -> hi abaji`]],
         [['MockMvc success and failure.',
-            r`mockMvc.perform(get("/me").header("X-User", "asha"))
-    .andExpect(content().string("hi asha"));
+            r`mockMvc.perform(get("/me").header("X-User", "abaji"))
+    .andExpect(content().string("hi abaji"));
 mockMvc.perform(get("/me")).andExpect(status().isUnauthorized());
 
 // OUTPUT:
-// 200 hi asha
+// 200 hi abaji
 // 401 Unauthorized`],
             ['Resolving a Pageable-like parameter.',
                 r`public record Paging(int page, int size) { }
@@ -305,7 +305,7 @@ public class WebConfig implements WebMvcConfigurer {
         [['Controller using the type.',
             r`@GetMapping("/export")
 CsvResult export() {
-    return new CsvResult(List.of("id,name", "1,Asha"));
+    return new CsvResult(List.of("id,name", "1,Abaji"));
 }
 
 // OUTPUT:
@@ -313,7 +313,7 @@ CsvResult export() {
             ['MockMvc assertion.',
                 r`mockMvc.perform(get("/export"))
     .andExpect(content().contentType("text/csv"))
-    .andExpect(content().string("id,name\n1,Asha"));
+    .andExpect(content().string("id,name\n1,Abaji"));
 
 // OUTPUT:
 // Status = 200
@@ -799,7 +799,7 @@ Order place(@CurrentUser User user, @RequestBody @Valid NewOrder body) {
 }
 
 // OUTPUT:
-// POST /orders -> 201 {"id":7,"owner":"asha"}`]
+// POST /orders -> 201 {"id":7,"owner":"abaji"}`]
     ),
     'mvc-handlermethodargumentresolver': dv(
         [`<p>Internals:</p><ul><li><b>Setup:</b> <code>RequestMappingHandlerAdapter.afterPropertiesSet</code> builds the default resolver list plus custom ones.</li><li><b>Composite:</b> <code>HandlerMethodArgumentResolverComposite</code> wraps the list.</li><li><b>Call:</b> <code>InvocableHandlerMethod</code> resolves each parameter, then calls the method by reflection.</li><li><b>Defaults order:</b> annotation resolvers (<code>@RequestParam</code>, <code>@PathVariable</code>), type resolvers (<code>Model</code>, <code>HttpServletRequest</code>), custom ones, then catch-all fallbacks.</li></ul>`,
@@ -998,7 +998,7 @@ public class UpperFactory implements AnnotationFormatterFactory<Upper> {
 }
 
 // OUTPUT:
-// field annotated @Upper stores "asha" as "ASHA"`],
+// field annotated @Upper stores "abaji" as "ABAJI"`],
         [`<p>Mistakes:</p><ul><li><b>Shared SimpleDateFormat:</b> not thread safe.</li><li><b>Swallowing errors:</b> returning null on bad input hides problems; throw <code>ParseException</code>.</li><li><b>Expecting JSON effect:</b> Jackson does not use formatters.</li><li><b>Ignoring the Locale:</b> decimal separators differ between locales.</li></ul>`,
             r`// WRONG: shared mutable formatter field
 private final SimpleDateFormat f = new SimpleDateFormat("dd-MM-yyyy");
@@ -1175,7 +1175,8 @@ public void afterCompletion(HttpServletRequest q, HttpServletResponse s,
             res.setStatus(500);
             res.setContentType("application/json");
             mapper.writeValue(res.getWriter(), Map.of("error", ex.getMessage()));
-        } catch (IOException e) { return null; }
+        } catch (IOException e) { return null;
+        }
         return new ModelAndView();
     }
 }

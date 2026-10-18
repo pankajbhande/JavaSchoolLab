@@ -86,10 +86,10 @@ Related exceptions share a parent class, so one handler can cover the whole fami
     except LookupError:              # missing key OR empty list
         return None
 
-scores = {"Asha": [91, 88], "Ravi": []}
-print(first_score(scores, "Asha"))
-print(first_score(scores, "Ravi"))   # IndexError
-print(first_score(scores, "Kiran"))  # KeyError
+scores = {"Abaji": [91, 88], "Raoji": []}
+print(first_score(scores, "Abaji"))
+print(first_score(scores, "Raoji"))   # IndexError
+print(first_score(scores, "Kanhoji"))  # KeyError
 
 print(issubclass(FileNotFoundError, OSError), issubclass(KeyError, LookupError))
 

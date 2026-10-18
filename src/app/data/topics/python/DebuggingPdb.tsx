@@ -20,7 +20,7 @@ Since Python 3.7, calling the built-in <code>breakpoint()</code> anywhere stops 
 
 print(average([120, 80, 100]))`,
                 `# A session in the terminal (path varies):
-# > /home/asha/avg.py(4)average()
+# > /home/abaji/avg.py(4)average()
 # -> return total / len(prices)
 # (Pdb) p total
 # 300
@@ -28,7 +28,7 @@ print(average([120, 80, 100]))`,
 # (3, [120, 80, 100])
 # (Pdb) n
 # --Return--
-# > /home/asha/avg.py(4)average()->100.0
+# > /home/abaji/avg.py(4)average()->100.0
 # -> return total / len(prices)
 # (Pdb) c
 # 100.0`
@@ -76,7 +76,7 @@ for order in orders:
     # ... process order ...`,
                 `# The same with pdb commands instead of editing the code:
 # (Pdb) b 4, order["id"] == 9000
-# Breakpoint 1 at /home/asha/orders.py:4
+# Breakpoint 1 at /home/abaji/orders.py:4
 # (Pdb) c`
             ]
         },
@@ -88,7 +88,7 @@ You don't have to predict where a crash will happen. <b>Post-mortem</b> debuggin
 • In code: <code>pdb.post_mortem()</code> inside an <code>except</code> block.`,
             codeExamples: [
                 `# python -m pdb shop.py   (session output varies)
-# > /home/asha/shop.py(1)<module>()
+# > /home/abaji/shop.py(1)<module>()
 # -> def total(prices):
 # (Pdb) c
 # Traceback (most recent call last):
@@ -96,12 +96,12 @@ You don't have to predict where a crash will happen. <b>Post-mortem</b> debuggin
 # ZeroDivisionError: division by zero
 # Uncaught exception. Entering post mortem debugging
 # Running 'cont' or 'step' will restart the program
-# > /home/asha/shop.py(6)average_price()
+# > /home/abaji/shop.py(6)average_price()
 # -> return total(prices) / len(prices)
 # (Pdb) p prices
 # []
 # (Pdb) u
-# > /home/asha/shop.py(9)report()
+# > /home/abaji/shop.py(9)report()
 # -> avg = average_price(list(cart.values()))
 # (Pdb) p cart
 # {}`

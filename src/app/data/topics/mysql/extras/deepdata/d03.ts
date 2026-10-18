@@ -129,12 +129,12 @@ SELECT index_name, ROUND(stat_value * @@innodb_page_size / 1048576, 1) AS mb FRO
   country CHAR(2) NOT NULL CHECK (country REGEXP '^[A-Z]{2}$'),
   UNIQUE KEY uq_email (email)
 );
-INSERT INTO customers (email, country) VALUES (LOWER(TRIM('  Asha@Example.COM ')), 'IN');
+INSERT INTO customers (email, country) VALUES (LOWER(TRIM('  Abaji@Example.COM ')), 'IN');
 SELECT email, country FROM customers;
 
 -- OUTPUT:
 -- email             | country
--- asha@example.com  | IN`]
+-- abaji@example.com  | IN`]
     ),
 
     'TEXT, MEDIUMTEXT & LONGTEXT': dv(
@@ -220,8 +220,8 @@ SELECT qtr, COUNT(*) AS days FROM calendar GROUP BY qtr;
             r`SELECT name, birth_date, TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) AS age, TIMESTAMPDIFF(MONTH, join_date, CURDATE()) AS months_employed FROM staff;
 
 -- OUTPUT: (example)
--- name | birth_date | age | months_employed
--- Asha | 1995-08-20 |  30 |              42`]
+-- name  | birth_date | age | months_employed
+-- Abaji | 1995-08-20 |  30 | 42`]
     ),
 
     'DATETIME vs TIMESTAMP': dv(
@@ -544,12 +544,12 @@ SELECT table_name, column_name, column_default FROM information_schema.columns W
         [`Real-world: required business fields are NOT NULL with CHECKs, optional ones are NULL, and "unknown vs none" is modelled explicitly (for example a separate boolean).`,
             r`CREATE TABLE customers (id BIGINT PRIMARY KEY AUTO_INCREMENT, name VARCHAR(80) NOT NULL, phone VARCHAR(20) NULL,
   marketing_opt_in BOOLEAN NOT NULL DEFAULT FALSE, CHECK (phone IS NULL OR phone REGEXP '^[0-9+ -]{7,20}$'));
-INSERT INTO customers (name, phone) VALUES ('Asha', '+91 98765 43210');
+INSERT INTO customers (name, phone) VALUES ('Abaji', '+91 98765 43210');
 SELECT name, COALESCE(phone, 'no phone') AS phone, marketing_opt_in FROM customers;
 
 -- OUTPUT:
--- name | phone           | marketing_opt_in
--- Asha | +91 98765 43210 |                0`]
+-- name  | phone           | marketing_opt_in
+-- Abaji | +91 98765 43210 | 0`]
     ),
 
     'CHECK Constraint': dv(
@@ -658,8 +658,8 @@ SELECT e.name AS employee, e.salary * 12 AS yearly, UPPER(LEFT(e.name, 3)) AS co
 SELECT id, name, dept FROM emp ORDER BY id;                -- explicit, stable contract
 
 -- OUTPUT:
--- id | name | dept
---  1 | Asha |   10`],
+-- id | name  | dept
+--  1 | Abaji | 10`],
         [`Select only needed columns and rows. Narrow projections enable covering indexes and cut network and memory. Compare the data volume returned.`,
             r`SELECT COUNT(*) AS rows_n, ROUND(SUM(LENGTH(body))/1048576) AS body_mb FROM articles;
 SELECT id, title FROM articles ORDER BY id DESC LIMIT 20;

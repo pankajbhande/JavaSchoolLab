@@ -837,8 +837,8 @@ SELECT bal FROM acct WHERE id = 1;
             r`-- rule: at least one doctor must be on call
 -- A: SELECT COUNT(*) FROM oncall WHERE on_call = 1;   -- 2
 -- B: SELECT COUNT(*) FROM oncall WHERE on_call = 1;   -- 2
--- A: UPDATE oncall SET on_call = 0 WHERE doctor = 'Asha';
--- B: UPDATE oncall SET on_call = 0 WHERE doctor = 'Ravi';
+-- A: UPDATE oncall SET on_call = 0 WHERE doctor = 'Abaji';
+-- B: UPDATE oncall SET on_call = 0 WHERE doctor = 'Raoji';
 -- both commit
 
 -- OUTPUT:
@@ -846,7 +846,7 @@ SELECT bal FROM acct WHERE id = 1;
             ['Fix with locking read.',
                 r`START TRANSACTION;
 SELECT COUNT(*) FROM oncall WHERE on_call = 1 FOR UPDATE;
-UPDATE oncall SET on_call = 0 WHERE doctor = 'Asha';
+UPDATE oncall SET on_call = 0 WHERE doctor = 'Abaji';
 COMMIT;
 
 -- OUTPUT:

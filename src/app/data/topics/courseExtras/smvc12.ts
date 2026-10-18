@@ -132,7 +132,7 @@ void invalidStaysOnForm() throws Exception {
 
 @Test
 void validRedirects() throws Exception {
-    mvc.perform(post("/signup").param("name", "Asha"))
+    mvc.perform(post("/signup").param("name", "Abaji"))
        .andExpect(redirectedUrl("/signup/done"));
 }
 
@@ -191,12 +191,12 @@ public String create(UserForm form) {      // implicit @ModelAttribute
 }
 
 // OUTPUT:
-// POST /users  name=Asha&age=25   ->  Asha is 25`],
+// POST /users  name=Abaji&age=25   ->  Abaji is 25`],
             ['Test the binding.',
                 r`@Test
 void binds() throws Exception {
-    mvc.perform(post("/users").param("name", "Asha").param("age", "25"))
-       .andExpect(content().string("Asha is 25"));
+    mvc.perform(post("/users").param("name", "Abaji").param("age", "25"))
+       .andExpect(content().string("Abaji is 25"));
 }
 
 // OUTPUT:
@@ -337,8 +337,8 @@ public String hello(String name, int times) {   // both are request params
 }
 
 // OUTPUT:
-// GET /hello?name=Ravi&times=2 -> Ravi x2
-// GET /hello?name=Ravi         -> 500 (int cannot be null)`],
+// GET /hello?name=Raoji&times=2 -> Raoji x2
+// GET /hello?name=Raoji         -> 500 (int cannot be null)`],
             ['Safe version.',
                 r`@GetMapping("/hello")
 @ResponseBody
@@ -462,7 +462,7 @@ public class UserController {
 
 // OUTPUT:
 // POST email=a@b.com&role=ADMIN -> saved  (role ignored)
-// POST name=Asha                -> errors=1 (email required)`],
+// POST name=Abaji                -> errors=1 (email required)`],
             ['Test that the role is ignored.',
                 r`@Test
 void roleNotBound() throws Exception {
@@ -476,14 +476,14 @@ void roleNotBound() throws Exception {
             r`User user = new User();
 WebDataBinder binder = new WebDataBinder(user);
 MutablePropertyValues pvs = new MutablePropertyValues();
-pvs.add("name", "Asha");
+pvs.add("name", "Abaji");
 pvs.add("age", "25");
 binder.bind(pvs);
 System.out.println(user.getName() + " " + user.getAge()
         + " errors=" + binder.getBindingResult().getErrorCount());
 
 // OUTPUT:
-// Asha 25 errors=0`],
+// Abaji 25 errors=0`],
             ['Registering a formatter.',
                 r`@InitBinder
 void init(WebDataBinder binder) {
@@ -503,7 +503,7 @@ void init(WebDataBinder binder) {
             '<b>Trim example</b>: <code>StringTrimmerEditor(true)</code> turns blank input into null, which is handy for optional fields.'],
         ['<b>Run time</b>: it runs for every binder created in a request, so keep it fast and free of database calls.',
             '<b>Pitfall</b>: it does not run for <code>@RequestBody</code> JSON, because Jackson does that conversion, not the binder.',
-            '<b>Testing</b>: check the effect with MockMvc, for example that " Asha " arrives as "Asha".'],
+            '<b>Testing</b>: check the effect with MockMvc, for example that " Abaji " arrives as "Abaji".'],
         [['F', 'What is @InitBinder for?', 'To configure the WebDataBinder, for example register converters or restrict fields.'],
             ['F', 'What does an @InitBinder method return?', 'void.'],
             ['M', 'How do you apply it to one attribute only?', 'Give the attribute name: @InitBinder("user").'],
@@ -528,7 +528,7 @@ public class ProfileController {
 }
 
 // OUTPUT:
-// POST name=%20Asha%20  -> [Asha]
+// POST name=%20Abaji%20  -> [Abaji]
 // POST name=%20%20      -> [null]`],
             ['Global version.',
                 r`@ControllerAdvice
@@ -557,8 +557,8 @@ void customerBinder(WebDataBinder binder) {
             ['MockMvc check.',
                 r`@Test
 void trims() throws Exception {
-    mvc.perform(post("/profile").param("name", "  Asha  "))
-       .andExpect(content().string("[Asha]"));
+    mvc.perform(post("/profile").param("name", "  Abaji  "))
+       .andExpect(content().string("[Abaji]"));
 }
 
 // OUTPUT:
@@ -904,7 +904,7 @@ public String apply(@Valid ApplicationForm form, BindingResult br) {
 }
 
 // OUTPUT:
-// POST name=Asha&email=a@b.com&address.city=Pune&skills=java&skills=sql -> 302`]
+// POST name=Abaji&email=a@b.com&address.city=Pune&skills=java&skills=sql -> 302`]
     ),
 
     'mvc-property-binding': dv(
@@ -1001,7 +1001,10 @@ public class CurrentUserResolver implements HandlerMethodArgumentResolver {
 @Controller
 public class BadController {
     private UserForm form;                // shared between requests!
-    @PostMapping("/u") public String save(UserForm f) { this.form = f; return "ok"; }
+    @PostMapping("/u") public String save(UserForm f) {
+        this.form = f;
+        return "ok";
+    }
 }
 
 // GOOD: keep form data in method arguments only
@@ -1163,7 +1166,7 @@ public class ProfileController {
 }
 
 // OUTPUT:
-// POST name=Asha&role=ADMIN -> name updated, role ignored`]
+// POST name=Abaji&role=ADMIN -> name updated, role ignored`]
     ),
 
     'mvc-initbinder': dv(
@@ -1224,7 +1227,7 @@ public class PortalBinding {
 }
 
 // OUTPUT:
-// "  Asha " -> "Asha", "" -> null, id and createdBy never bound`]
+// "  Abaji " -> "Abaji", "" -> null, id and createdBy never bound`]
     ),
 
     'mvc-property-editors': dv(

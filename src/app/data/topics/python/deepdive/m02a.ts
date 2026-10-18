@@ -57,13 +57,13 @@ else:
 age = 25
 if 18 <= age < 60:                    # no "age >= 18 and age < 60" needed
     print("working age")
-for name in ["Asha", "Ravi"]:         # no index variable needed
+for name in ["Abaji", "Raoji"]:         # no index variable needed
     print("hello", name)
 
 # OUTPUT:
 # working age
-# hello Asha
-# hello Ravi`],
+# hello Abaji
+# hello Raoji`],
         [`<b>Disadvantages:</b> indentation errors change meaning silently, there is no <code>do-while</code> or classic C-style <code>for(;;)</code>, and deep nesting becomes hard to read.`,
             r`# Disadvantage: one wrongly indented line changes the logic, with no error
 total = 0
@@ -227,8 +227,8 @@ else:
             return True
     return False
 
-u = {"logged_in": True, "role": "user", "name": "asha"}
-print(can_delete(u, {"owner": "asha"}), can_delete(u, {"owner": "ravi"}))
+u = {"logged_in": True, "role": "user", "name": "abaji"}
+print(can_delete(u, {"owner": "abaji"}), can_delete(u, {"owner": "raoji"}))
 
 # OUTPUT:
 # True False`],
@@ -496,9 +496,9 @@ def todo():
 # 1 2 4 5`],
         [`Loops often need exceptions to the normal path: stop when found, skip invalid items, or reserve space for code written later. These keywords avoid deep nesting and extra flags.`,
             r`# Search: stop as soon as the answer is found
-names = ["asha", "ravi", "meena", "kiran"]
+names = ["abaji", "raoji", "moropant", "kanhoji"]
 for i, name in enumerate(names):
-    if name == "meena":
+    if name == "moropant":
         print("found at", i)
         break
 else:

@@ -257,7 +257,7 @@ SELECT @@cte_max_recursion_depth AS new_depth;
         [`The anti-join: LEFT JOIN customers to orders and keep rows where the order side is NULL, which means no match was found.`,
             r`CREATE TABLE customers (id INT PRIMARY KEY, name VARCHAR(20));
 CREATE TABLE orders    (id INT PRIMARY KEY, customer_id INT);
-INSERT INTO customers VALUES (1,'Asha'),(2,'Ravi'),(3,'Meena');
+INSERT INTO customers VALUES (1,'Abaji'),(2,'Raoji'),(3,'Moropant');
 INSERT INTO orders    VALUES (1,1),(2,1),(3,3);
 
 SELECT c.id, c.name
@@ -266,15 +266,15 @@ LEFT JOIN orders o ON o.customer_id = c.id
 WHERE  o.id IS NULL;
 
 -- OUTPUT:
--- +----+------+
--- | id | name |
--- +----+------+
--- |  2 | Ravi |
+-- +----+-------+
+-- | id | name  |
+-- +----+-------+
+-- |  2 | Raoji |
 -- +----+------+`],
         [`NOT EXISTS expresses the same idea directly and is often the clearest, because it says "there is no order for this customer".`,
             r`CREATE TABLE customers (id INT PRIMARY KEY, name VARCHAR(20));
 CREATE TABLE orders    (id INT PRIMARY KEY, customer_id INT);
-INSERT INTO customers VALUES (1,'Asha'),(2,'Ravi'),(3,'Meena');
+INSERT INTO customers VALUES (1,'Abaji'),(2,'Raoji'),(3,'Moropant');
 INSERT INTO orders    VALUES (1,1),(2,1),(3,3);
 
 SELECT c.name
@@ -282,15 +282,15 @@ FROM   customers c
 WHERE  NOT EXISTS (SELECT 1 FROM orders o WHERE o.customer_id = c.id);
 
 -- OUTPUT:
--- +------+
--- | name |
--- +------+
--- | Ravi |
+-- +-------+
+-- | name  |
+-- +-------+
+-- | Raoji |
 -- +------+`],
         [`Marketing variation: customers with no order in the last 30 days (win-back campaign). Use a fixed reference date to keep it reproducible.`,
             r`CREATE TABLE customers (id INT PRIMARY KEY, name VARCHAR(20));
 CREATE TABLE orders    (id INT PRIMARY KEY, customer_id INT, created_at DATE);
-INSERT INTO customers VALUES (1,'Asha'),(2,'Ravi'),(3,'Meena');
+INSERT INTO customers VALUES (1,'Abaji'),(2,'Raoji'),(3,'Moropant');
 INSERT INTO orders    VALUES (1,1,'2024-01-05'),(2,1,'2024-02-20'),(3,3,'2023-12-01');
 
 SELECT c.name
@@ -301,11 +301,11 @@ WHERE  NOT EXISTS (SELECT 1 FROM orders o
 ORDER  BY c.name;
 
 -- OUTPUT:
--- +-------+
--- | name  |
--- +-------+
--- | Meena |
--- | Ravi  |
+-- +----------+
+-- | name     |
+-- +----------+
+-- | Moropant |
+-- | Raoji    |
 -- +-------+`],
         [`<b>Advantages:</b> NOT EXISTS is NULL-safe and the optimiser turns it into an efficient anti-join using the index on orders.customer_id.`,
             r`CREATE TABLE orders (id INT PRIMARY KEY, customer_id INT, KEY ix_cust (customer_id));
@@ -320,17 +320,17 @@ EXPLAIN SELECT 1 FROM orders o WHERE NOT EXISTS (SELECT 1 FROM orders x WHERE x.
         [`<b>Disadvantages:</b> NOT IN is a trap. If the subquery returns even one NULL, the comparison becomes unknown and the whole result is empty.`,
             r`CREATE TABLE customers (id INT PRIMARY KEY, name VARCHAR(20));
 CREATE TABLE orders    (id INT PRIMARY KEY, customer_id INT NULL);
-INSERT INTO customers VALUES (1,'Asha'),(2,'Ravi');
+INSERT INTO customers VALUES (1,'Abaji'),(2,'Raoji');
 INSERT INTO orders    VALUES (1,1),(2,NULL);                -- guest order with no customer
 
 SELECT name FROM customers WHERE id NOT IN (SELECT customer_id FROM orders);
 
 -- OUTPUT:
--- Empty set (0.00 sec)        <- Ravi is missing! NOT EXISTS would return him`],
+-- Empty set (0.00 sec)        <- Raoji is missing! NOT EXISTS would return him`],
         [`<b>Limitations:</b> with LEFT JOIN the filter on the right table must go in ON, not WHERE. A WHERE condition on the right side silently turns the outer join into an inner join.`,
             r`CREATE TABLE customers (id INT PRIMARY KEY, name VARCHAR(20));
 CREATE TABLE orders    (id INT PRIMARY KEY, customer_id INT, status VARCHAR(10));
-INSERT INTO customers VALUES (1,'Asha'),(2,'Ravi');
+INSERT INTO customers VALUES (1,'Abaji'),(2,'Raoji');
 INSERT INTO orders    VALUES (1,1,'CANCELLED');
 
 -- Customers with no PAID order
@@ -341,20 +341,20 @@ SELECT c.name FROM customers c LEFT JOIN orders o ON o.customer_id = c.id
 WHERE  o.id IS NULL AND o.status = 'PAID';                            -- wrong: always empty
 
 -- OUTPUT:
--- +------+
--- | name |
--- +------+
--- | Asha |
--- | Ravi |
--- +------+
+-- +-------+
+-- | name  |
+-- +-------+
+-- | Abaji |
+-- | Raoji |
+-- +-------+
 -- Empty set (0.00 sec)`],
         `
-   customers            orders
-   +----+-------+       +----+-------------+
-   | 1  | Asha  |-----> | 1  | customer 1  |
-   | 2  | Ravi  |   X   |    (no match)    |   -> o.id IS NULL  => Ravi
-   | 3  | Meena |-----> | 3  | customer 3  |
-   +----+-------+       +----+-------------+
+   customers               orders
+   +----+----------+       +----+-------------+
+   | 1  | Abaji    |-----> | 1  | customer 1  |
+   | 2  | Raoji    |   X   |    (no match)    |   -> o.id IS NULL  => Raoji
+   | 3  | Moropant |-----> | 3  | customer 3  |
+   +----+----------+       +----+-------------+
 `,
         `Prefer NOT EXISTS (NULL-safe, optimiser-friendly) and index orders.customer_id. Define the business meaning first: never ordered, no paid order, or none recently. For big marketing queries run on a replica or a summary table, not on the primary.`
     ),

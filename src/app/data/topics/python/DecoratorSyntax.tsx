@@ -23,12 +23,12 @@ greet = shout(greet)
 def welcome(name):
     return f"welcome, {name}"
 
-print(greet("asha"))
-print(welcome("ravi"))
+print(greet("abaji"))
+print(welcome("raoji"))
 
 # OUTPUT:
-# HELLO, ASHA
-# WELCOME, RAVI`
+# HELLO, ABAJI
+# WELCOME, RAOJI`
             ]
         },
         {
@@ -160,10 +160,10 @@ def greet(name):
 def plain():
     return "unchanged"
 
-print(greet("asha"), plain())
+print(greet("abaji"), plain())
 
 # OUTPUT:
-# HI ASHA unchanged`
+# HI ABAJI unchanged`
             ]
         },
         {
@@ -189,11 +189,11 @@ class Upi:
         self.vpa = vpa
 
 print(sorted(PLUGINS))
-print(PLUGINS["upi"]("asha@okbank"))
+print(PLUGINS["upi"]("abaji@okbank"))
 
 # OUTPUT:
 # ['upi']
-# Upi({'vpa': 'asha@okbank'})`
+# Upi({'vpa': 'abaji@okbank'})`
             ]
         },
         {

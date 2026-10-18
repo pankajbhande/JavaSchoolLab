@@ -86,18 +86,18 @@ When code does something unexpected, the quickest first step is to <b>look at th
 A bare <code>print(total)</code> prints a number with no clue what it is. Python 3.8+ has a shortcut: <code>f"{x=}"</code> prints the expression <i>and</i> its value.`,
             codeExamples: [
                 `x = 42
-name = "Asha"
+name = "Abaji"
 items = [1, 2, 3]
 
 print(f"{x=}, {name=}")
 print(f"{len(items)=}, {x * 2=}")
 
 # OUTPUT:
-# x=42, name='Asha'
+# x=42, name='Abaji'
 # len(items)=3, x * 2=84`
             ],
             codeExplanations: [
-                `The "=" after an expression inside an f-string prints the source text of the expression, an equals sign, and the repr() of its value. Note name='Asha' shows quotes - a string value is easy to tell apart from a number.`
+                `The "=" after an expression inside an f-string prints the source text of the expression, an equals sign, and the repr() of its value. Note name='Abaji' shows quotes - a string value is easy to tell apart from a number.`
             ]
         },
         {

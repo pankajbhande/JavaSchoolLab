@@ -26,11 +26,11 @@ export const smvc31Extras: Record<string, Extra> = {
 }
 
 // usage in a service
-User u = userRepository.findByEmail("asha@x.com").orElseThrow();
+User u = userRepository.findByEmail("abaji@x.com").orElseThrow();
 System.out.println(u.getName());
 
 // OUTPUT:
-// Asha`],
+// Abaji`],
             ['Custom query with paging.',
                 r`@Query("select u from User u where u.name like %:q%")
 Page<User> search(@Param("q") String q, Pageable pageable);
@@ -47,8 +47,8 @@ class UserRepositoryTest {
 
     @Test
     void findsByEmail() {
-        repo.save(new User("Asha", "asha@x.com"));
-        assertTrue(repo.findByEmail("asha@x.com").isPresent());
+        repo.save(new User("Abaji", "abaji@x.com"));
+        assertTrue(repo.findByEmail("abaji@x.com").isPresent());
     }
 }
 
@@ -109,10 +109,10 @@ public class JdbcUserDao implements UserDao {
 }
 
 // OUTPUT:
-// findById(1) -> Optional[User(1, Asha)]; insert -> 1 row`],
+// findById(1) -> Optional[User(1, Abaji)]; insert -> 1 row`],
             ['Batch insert.',
                 r`List<Object[]> rows = List.of(
-    new Object[]{"Ravi"}, new Object[]{"Meena"});
+    new Object[]{"Raoji"}, new Object[]{"Moropant"});
 int[] counts = jdbc.batchUpdate("insert into users(name) values (?)", rows);
 System.out.println(Arrays.toString(counts));
 
@@ -126,7 +126,7 @@ class JdbcUserDaoTest {
 
     @Test
     void insertsAndReads() {
-        dao.insert(new User(0, "Asha"));
+        dao.insert(new User(0, "Abaji"));
         assertTrue(dao.findById(1).isPresent());
     }
 }
@@ -174,7 +174,10 @@ public class User {
     private String email;
 
     protected User() { }                       // for JPA
-    public User(String name, String email) { this.name = name; this.email = email; }
+    public User(String name, String email) {
+        this.name = name;
+        this.email = email;
+    }
     // getters omitted
 }
 
@@ -208,7 +211,7 @@ class UserEntityTest {
 
     @Test
     void generatesId() {
-        User u = em.persistAndFlush(new User("Asha", "asha@x.com"));
+        User u = em.persistAndFlush(new User("Abaji", "abaji@x.com"));
         assertNotNull(u.getId());
     }
 }
@@ -256,7 +259,7 @@ public UserResponse create(@Valid @RequestBody CreateUserRequest req) {
 }
 
 // OUTPUT:
-// POST {"name":"Asha","email":"asha@x.com"} -> 200 {"id":1,"name":"Asha"}`],
+// POST {"name":"Abaji","email":"abaji@x.com"} -> 200 {"id":1,"name":"Abaji"}`],
             ['Query straight into a DTO.',
                 r`public interface UserRepository extends JpaRepository<User, Long> {
     @Query("select new com.app.UserResponse(u.id, u.name) from User u")
@@ -266,7 +269,7 @@ public UserResponse create(@Valid @RequestBody CreateUserRequest req) {
 System.out.println(repo.findAllResponses());
 
 // OUTPUT:
-// [UserResponse[id=1, name=Asha], UserResponse[id=2, name=Ravi]]`]],
+// [UserResponse[id=1, name=Abaji], UserResponse[id=2, name=Raoji]]`]],
         [['Validation of a DTO with MockMvc.',
             r`@WebMvcTest(UserController.class)
 class UserControllerTest {
@@ -285,7 +288,7 @@ class UserControllerTest {
 // Tests run: 1, Failures: 0, Errors: 0`],
             ['Hidden field is not leaked.',
                 r`mvc.perform(get("/users/1"))
-   .andExpect(jsonPath("$.name").value("Asha"))
+   .andExpect(jsonPath("$.name").value("Abaji"))
    .andExpect(jsonPath("$.password").doesNotExist());
 
 // OUTPUT:
@@ -318,11 +321,11 @@ public interface UserMapper {
 }
 
 // in a service
-UserResponse r = mapper.toResponse(new User("Asha", "asha@x.com"));
+UserResponse r = mapper.toResponse(new User("Abaji", "abaji@x.com"));
 System.out.println(r);
 
 // OUTPUT:
-// UserResponse[id=null, name=Asha]`],
+// UserResponse[id=null, name=Abaji]`],
             ['Manual mapper without a library.',
                 r`@Component
 public class UserMapperManual {
@@ -332,15 +335,15 @@ public class UserMapperManual {
 }
 
 // OUTPUT:
-// new UserMapperManual().toResponse(user) -> UserResponse[id=1, name=Asha]`]],
+// new UserMapperManual().toResponse(user) -> UserResponse[id=1, name=Abaji]`]],
         [['Plain unit test of a mapper.',
             r`class UserMapperTest {
     private final UserMapper mapper = Mappers.getMapper(UserMapper.class);
 
     @Test
     void mapsName() {
-        User u = new User("Asha", "asha@x.com");
-        assertEquals("Asha", mapper.toResponse(u).name());
+        User u = new User("Abaji", "abaji@x.com");
+        assertEquals("Abaji", mapper.toResponse(u).name());
     }
 }
 
@@ -350,11 +353,11 @@ public class UserMapperManual {
                 r`@Mapping(target = "id", ignore = true)
 void update(UpdateUserRequest req, @MappingTarget User user);
 
-mapper.update(new UpdateUserRequest("Asha K"), user);
+mapper.update(new UpdateUserRequest("Abaji K"), user);
 System.out.println(user.getName());
 
 // OUTPUT:
-// Asha K`]]
+// Abaji K`]]
     ),
 
     'mvc-utility-layer': x(
@@ -665,7 +668,7 @@ class OrderControllerTest {
 public class UserApi {
     @GetMapping("/{id}")
     public UserResponse get(@PathVariable Long id) {
-        return new UserResponse(id, "Asha");
+        return new UserResponse(id, "Abaji");
     }
 }
 
@@ -675,7 +678,7 @@ public class UserApi {
 //   .then(u => document.getElementById("name").textContent = u.name);
 
 // OUTPUT:
-// GET /api/users/1 -> 200 {"id":1,"name":"Asha"}; the page shows Asha without reload`],
+// GET /api/users/1 -> 200 {"id":1,"name":"Abaji"}; the page shows Abaji without reload`],
             ['POST JSON from the browser.',
                 r`@PostMapping("/api/users")
 public ResponseEntity<UserResponse> create(@Valid @RequestBody CreateUserRequest req) {
@@ -686,10 +689,10 @@ public ResponseEntity<UserResponse> create(@Valid @RequestBody CreateUserRequest
 // browser (JavaScript)
 // fetch("/api/users", { method: "POST",
 //   headers: { "Content-Type": "application/json" },
-//   body: JSON.stringify({ name: "Ravi", email: "r@x.com" }) });
+//   body: JSON.stringify({ name: "Raoji", email: "r@x.com" }) });
 
 // OUTPUT:
-// 201 {"id":1,"name":"Ravi"}`]],
+// 201 {"id":1,"name":"Raoji"}`]],
         [['MockMvc test of the JSON endpoint.',
             r`@WebMvcTest(UserApi.class)
 class UserApiTest {
@@ -699,7 +702,7 @@ class UserApiTest {
     void returnsJson() throws Exception {
         mvc.perform(get("/api/users/1").accept("application/json"))
            .andExpect(status().isOk())
-           .andExpect(jsonPath("$.name").value("Asha"));
+           .andExpect(jsonPath("$.name").value("Abaji"));
     }
 }
 
@@ -743,7 +746,10 @@ System.out.println(repo.getClass().getInterfaces()[0].getSimpleName());
     @Query("update Order o set o.status = :s where o.id = :id")
     int updateStatus(@Param("id") Long id, @Param("s") String s);
 
-    interface OrderSummary { Long getId(); String getStatus(); }
+    interface OrderSummary {
+        Long getId();
+        String getStatus();
+    }
     List<OrderSummary> findByStatus(String status);
 }
 
@@ -762,7 +768,10 @@ List<User> findByEmail(String email);
 
 // RIGHT: one commit
 @Transactional
-public void saveBoth(User a, User b) { repo.save(a); repo.save(b); }
+public void saveBoth(User a, User b) {
+    repo.save(a);
+    repo.save(b);
+}
 
 // OUTPUT:
 // startup error for the typo; the fixed version starts normally`],
@@ -809,7 +818,7 @@ List<User> found = named.query(
 
 SimpleJdbcInsert insert = new SimpleJdbcInsert(dataSource)
     .withTableName("users").usingGeneratedKeyColumns("id");
-Number key = insert.executeAndReturnKey(Map.of("name", "Meena"));
+Number key = insert.executeAndReturnKey(Map.of("name", "Moropant"));
 System.out.println(found.size() + " " + key);
 
 // OUTPUT: (varies)
@@ -862,7 +871,7 @@ public class ReportDao {
             r`@Transactional
 public void rename(Long id) {
     User u = repo.findById(id).orElseThrow();   // managed
-    u.setName("Asha K");                        // no save() call needed
+    u.setName("Abaji K");                        // no save() call needed
 }                                               // commit: dirty check runs UPDATE
 
 // OUTPUT:
@@ -917,7 +926,10 @@ public class Order {
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderItem> items = new ArrayList<>();
 
-    public void addItem(OrderItem i) { items.add(i); i.setOrder(this); }
+    public void addItem(OrderItem i) {
+        items.add(i);
+        i.setOrder(this);
+    }
 }
 
 // OUTPUT: (varies)
@@ -1034,7 +1046,7 @@ public interface OrderMapper {
 }
 
 // OUTPUT:
-// OrderResponse[id=7, buyer=CustomerDto[name=Asha], items=[...]]`]
+// OrderResponse[id=7, buyer=CustomerDto[name=Abaji], items=[...]]`]
     ),
 
     'mvc-utility-layer': dv(
@@ -1126,7 +1138,8 @@ class MailConfig {
 spring.datasource.url=jdbc:mysql://localhost:3306/shop
 spring.datasource.username=shop
 spring.datasource.password=
-# set DB_PASSWORD in the environment; Boot maps it with:
+# set DB_PASSWORD in the environment;
+Boot maps it with:
 # spring.datasource.password=
 # use the environment variable SPRING_DATASOURCE_PASSWORD instead
 
@@ -1311,7 +1324,10 @@ fetch("/api/users", {
   method: "POST",
   headers: { "Content-Type": "application/json" },
   body: JSON.stringify(u)
-}).then(r => { if (!r.ok) throw new Error(r.status); return r.json(); });
+}).then(r => {
+    if (!r.ok) throw new Error(r.status);
+    return r.json();
+});
 
 // OUTPUT:
 // 201 Created with the saved user as JSON`],
@@ -1325,13 +1341,13 @@ public ResponseEntity<List<Country>> countries() {
 
 // OUTPUT:
 // Cache-Control: max-age=3600 (the browser reuses the response for one hour)`],
-        [`<p>Scenario: live username check on a sign-up form.</p><ul><li>On each pause in typing the page calls <code>GET /api/users/exists?name=asha</code>.</li><li>The controller returns <code>{&quot;taken&quot;:true}</code> using an indexed query.</li><li>The page shows a message with no reload; the server still checks again on submit.</li></ul>`,
+        [`<p>Scenario: live username check on a sign-up form.</p><ul><li>On each pause in typing the page calls <code>GET /api/users/exists?name=abaji</code>.</li><li>The controller returns <code>{&quot;taken&quot;:true}</code> using an indexed query.</li><li>The page shows a message with no reload; the server still checks again on submit.</li></ul>`,
             r`@GetMapping("/api/users/exists")
 public Map<String, Boolean> exists(@RequestParam String name) {
     return Map.of("taken", repo.existsByNameIgnoreCase(name));
 }
 
 // OUTPUT:
-// GET /api/users/exists?name=asha -> {"taken":true}`]
+// GET /api/users/exists?name=abaji -> {"taken":true}`]
     )
 };

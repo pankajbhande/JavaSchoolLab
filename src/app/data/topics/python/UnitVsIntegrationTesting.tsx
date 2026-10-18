@@ -63,11 +63,11 @@ class SqliteRepo:
 
 
 def main():
-    unit = UserService(FakeRepo({1: {"name": "Asha"}}))  # unit: in memory
+    unit = UserService(FakeRepo({1: {"name": "Abaji"}}))  # unit: in memory
 
     conn = sqlite3.connect(":memory:")                   # integration: real SQL
     conn.execute("CREATE TABLE users (id INTEGER PRIMARY KEY, name TEXT)")
-    conn.execute("INSERT INTO users VALUES (1, 'Asha')")
+    conn.execute("INSERT INTO users VALUES (1, 'Abaji')")
     integration = UserService(SqliteRepo(conn))
 
     for label, service in [("unit", unit), ("integration", integration)]:
@@ -79,9 +79,9 @@ if __name__ == "__main__":
     main()
 
 # OUTPUT:
-# unit       : Hello, Asha!
+# unit       : Hello, Abaji!
 # unit       : Hello, guest!
-# integration: Hello, Asha!
+# integration: Hello, Abaji!
 # integration: Hello, guest!`
             ],
             codeExplanations: [
@@ -119,13 +119,13 @@ No database - just a tiny in-memory fake. We are testing only <code>UserService<
     def find(self, user_id):
         return self.data.get(user_id)
 
-service = UserService(FakeRepo({1: {"name": "Asha"}}))
+service = UserService(FakeRepo({1: {"name": "Abaji"}}))
 
 print(service.greet(1))
 print(service.greet(2))
 
 # OUTPUT:
-# Hello, Asha!
+# Hello, Abaji!
 # Hello, guest!`
             ]
         },
@@ -147,7 +147,7 @@ class SqliteRepo:
 
 conn = sqlite3.connect(":memory:")
 conn.execute("CREATE TABLE users (id INTEGER PRIMARY KEY, name TEXT)")
-conn.execute("INSERT INTO users VALUES (1, 'Asha')")
+conn.execute("INSERT INTO users VALUES (1, 'Abaji')")
 
 service = UserService(SqliteRepo(conn))
 
@@ -155,7 +155,7 @@ print(service.greet(1))
 print(service.greet(2))
 
 # OUTPUT:
-# Hello, Asha!
+# Hello, Abaji!
 # Hello, guest!`
             ]
         },
@@ -215,9 +215,9 @@ def db():
 
 @pytest.mark.integration
 def test_round_trip(db):
-    db.execute("INSERT INTO users VALUES (1, 'Asha')")
+    db.execute("INSERT INTO users VALUES (1, 'Abaji')")
     service = UserService(SqliteRepo(db))
-    assert service.greet(1) == "Hello, Asha!"
+    assert service.greet(1) == "Hello, Abaji!"
     assert service.greet(99) == "Hello, guest!"
 
 # Run only the fast tests:        pytest -m "not integration"

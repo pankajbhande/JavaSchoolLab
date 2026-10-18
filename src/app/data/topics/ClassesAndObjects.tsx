@@ -35,12 +35,12 @@ public class Student {
 
     public static void main(String[] args) {
         // Creating object
-        Student student1 = new Student("John", 101);
+        Student student1 = new Student("Jiva", 101);
         student1.displayInfo();
     }
 }
 // OUTPUT:
-// Name: John
+// Name: Jiva
 // Roll Number: 101`
                                 ]
                             }
@@ -258,7 +258,7 @@ e1  ----------------------->   Employee Object #1
                                 id = 101, name = "Pankaj"
 
 e2  ----------------------->   Employee Object #2
-                                id = 102, name = "Rahul"</pre>
+                                id = 102, name = "Raghunath"</pre>
 
 Two objects created from the same class never share instance state - changing <code>e1.name</code> has no effect on <code>e2.name</code>.<br>`,
                                 codeExamples: [
@@ -273,7 +273,7 @@ public class BlueprintDemo {
         e1.id = 101; e1.name = "Pankaj";
 
         Employee e2 = new Employee();
-        e2.id = 102; e2.name = "Rahul";
+        e2.id = 102; e2.name = "Raghunath";
 
         e1.name = "Pankaj Updated";
         System.out.println(e1.name);
@@ -282,7 +282,7 @@ public class BlueprintDemo {
 }
 // OUTPUT:
 // Pankaj Updated
-// Rahul`
+// Raghunath`
                                 ]
                             },
                             {

@@ -28,12 +28,12 @@ public class GreetingController {
         return Map.of("message", "Hello " + name);
     }
 }
-// Browser: fetch('/api/greet?name=Asha').then(r => r.json())
+// Browser: fetch('/api/greet?name=Abaji').then(r => r.json())
 
 // OUTPUT:
 // HTTP/1.1 200
 // Content-Type: application/json
-// {"message":"Hello Asha"}`],
+// {"message":"Hello Abaji"}`],
             ['Test it with MockMvc.',
                 r`@WebMvcTest(GreetingController.class)
 class GreetingControllerTest {
@@ -41,9 +41,9 @@ class GreetingControllerTest {
 
     @Test
     void greets() throws Exception {
-        mvc.perform(get("/api/greet").param("name", "Asha"))
+        mvc.perform(get("/api/greet").param("name", "Abaji"))
            .andExpect(status().isOk())
-           .andExpect(jsonPath("$.message").value("Hello Asha"));
+           .andExpect(jsonPath("$.message").value("Hello Abaji"));
     }
 }
 
@@ -116,7 +116,7 @@ public class TaskController {
 }
 
 // OUTPUT:
-// {"user_name":"asha","joined":"2025-01-15"}`]],
+// {"user_name":"abaji","joined":"2025-01-15"}`]],
         [['Parse JSON by hand with ObjectMapper.',
             r`ObjectMapper om = new ObjectMapper();
 Task t = om.readValue("{\"title\":\"a\",\"done\":true}", Task.class);
@@ -161,7 +161,7 @@ System.out.println(t + " " + json);
 loadUsers();
 
 // OUTPUT:
-// [ 'Asha', 'Ravi' ]`],
+// [ 'Abaji', 'Raoji' ]`],
             ['POST JSON.',
                 r`const res = await fetch('/api/users', {
     method: 'POST',
@@ -260,7 +260,7 @@ public Note add(@RequestParam String text) {
 });
 
 // OUTPUT:
-// #msg shows: Thank you, Asha`]]
+// #msg shows: Thank you, Abaji`]]
     ),
     'mvc-asynchronous-form-submission': x(
         ['<b>Asynchronous form submission</b> means sending the form data with JavaScript in the background and showing the result on the same page, with no full reload.',
@@ -290,7 +290,7 @@ public Note add(@RequestParam String text) {
 });
 
 // OUTPUT:
-// On success: Welcome Asha
+// On success: Welcome Abaji
 // On error:   email must be valid`],
             ['Server with validation.',
                 r`public record Reg(@NotBlank String name, @Email String email) {}
@@ -384,7 +384,10 @@ public String fragment(Model model) {
 public SseEmitter stream() {
     SseEmitter em = new SseEmitter(60_000L);
     executor.submit(() -> {
-        try { em.send("tick"); em.complete(); }
+        try {
+            em.send("tick");
+            em.complete();
+        }
         catch (IOException e) { em.completeWithError(e); }
     });
     return em;
@@ -482,7 +485,7 @@ Book book = b.build().get().uri("/books/1").retrieve().body(Book.class);
 public class HomeController {
     @GetMapping("/hello")
     public String hello(Model model) {
-        model.addAttribute("name", "Asha");
+        model.addAttribute("name", "Abaji");
         return "hello";          // resolves templates/hello.html
     }
 }
@@ -494,11 +497,11 @@ public class HomeController {
     <li th:each="c : #{courses}" th:text="#{c}">Course</li>
 </ul>
 <p th:if="#{false}">hidden</p>
-<a th:href="@{/hello(name='Ravi')}">link</a>
+<a th:href="@{/hello(name='Raoji')}">link</a>
 <!-- real templates use the dollar-brace variable expression for the model -->
 
 // OUTPUT:
-// <a href="/hello?name=Ravi">link</a>`]],
+// <a href="/hello?name=Raoji">link</a>`]],
         [['Test the rendered view.',
             r`@WebMvcTest(HomeController.class)
 class HomeControllerTest {
@@ -509,7 +512,7 @@ class HomeControllerTest {
         mvc.perform(get("/hello"))
            .andExpect(status().isOk())
            .andExpect(view().name("hello"))
-           .andExpect(model().attribute("name", "Asha"));
+           .andExpect(model().attribute("name", "Abaji"));
     }
 }
 
@@ -550,7 +553,8 @@ spring.thymeleaf.encoding=UTF-8
 spring.thymeleaf.mode=HTML
 
 # OUTPUT:
-# Templates reload on each request; view "home" maps to templates/home.html`],
+# Templates reload on each request;
+view "home" maps to templates/home.html`],
             ['Manual configuration (no Boot).',
                 r`@Configuration
 public class ThymeleafConfig {
@@ -686,13 +690,13 @@ public CompletableFuture<Result> convert(@RequestBody Job job) {
 
 @GetMapping("/export")
 public StreamingResponseBody export() {
-    return out -> out.write("id,name\n1,Asha\n".getBytes());
+    return out -> out.write("id,name\n1,Abaji\n".getBytes());
 }
 
 // OUTPUT:
 // POST /convert (Content-Type: text/plain) -> 415 Unsupported Media Type
 // GET /export -> id,name
-//                1,Asha`],
+//                1,Abaji`],
         [`<p>Typical mistakes:</p><ul><li><b>415 error:</b> the client sent the wrong <code>Content-Type</code>; set <code>application/json</code>.</li><li><b>406 error:</b> no converter can produce the <code>Accept</code> type.</li><li><b>HTML error page for AJAX:</b> add a JSON error handler.</li><li><b>Missing @ResponseBody:</b> Spring tries to resolve the returned string as a view name and gives a 404 or template error.</li><li><b>Missing CSRF header:</b> POST gives 403.</li></ul>`,
             r`@Controller
 public class Bad {
@@ -747,10 +751,10 @@ System.out.println(back.equals(o));
 public record Profile(String name, String phone,
                       @JsonProperty("e_mail") String email) {}
 
-System.out.println(om.writeValueAsString(new Profile("Asha", null, "a@x.com")));
+System.out.println(om.writeValueAsString(new Profile("Abaji", null, "a@x.com")));
 
 # OUTPUT:
-# {"name":"Asha","e_mail":"a@x.com"}`],
+# {"name":"Abaji","e_mail":"a@x.com"}`],
         [`<p>Typical mistakes:</p><ul><li><b>Infinite recursion:</b> a bidirectional JPA relation (parent and child point to each other) overflows the stack; use DTOs or <code>@JsonManagedReference</code> with <code>@JsonBackReference</code>.</li><li><b>No default constructor:</b> classes without one and without <code>@JsonCreator</code> fail to deserialize.</li><li><b>Lazy proxies:</b> serializing an unloaded Hibernate proxy fails; map to a DTO.</li><li><b>Number precision:</b> big numbers lose precision in JavaScript; send them as strings.</li></ul>`,
             r`// WRONG: entity with a cycle
 // class Author { List<Book> books; }  class Book { Author author; }
@@ -760,7 +764,7 @@ public record BookDto(long id, String title, String authorName) {}
 BookDto dto = new BookDto(b.getId(), b.getTitle(), b.getAuthor().getName());
 
 // OUTPUT:
-// {"id":1,"title":"Java","authorName":"Asha"}
+// {"id":1,"title":"Java","authorName":"Abaji"}
 // The entity version fails: StackOverflowError (infinite recursion)`],
         [`<p>Performance tips:</p><ul><li><b>Reuse ObjectMapper:</b> it is thread-safe and costly to create.</li><li><b>Smaller output:</b> use DTOs, skip nulls and compress responses.</li><li><b>Streaming:</b> for very large lists use a streaming writer instead of building the whole list.</li><li><b>Afterburner/Blackbird:</b> optional modules that speed up reflection access.</li></ul>`,
             r`@Bean
@@ -793,7 +797,7 @@ console.log((await copy.text()).length);
 
 // OUTPUT:
 // 200 true application/json
-// Asha
+// Abaji
 // 28`],
         [`<p>fetch option reference:</p><ul><li><b>method, headers, body:</b> the request itself.</li><li><b>credentials:</b> <code>same-origin</code>, <code>include</code> or <code>omit</code>.</li><li><b>cache and mode:</b> control browser cache and CORS mode.</li><li><b>signal:</b> cancellation.</li><li><b>Body types:</b> string, <code>FormData</code>, <code>URLSearchParams</code>, <code>Blob</code>.</li></ul>`,
             r`const params = new URLSearchParams({ q: 'java', page: 2 });
@@ -826,7 +830,7 @@ await fetch('/api/users', {
 console.log(user.name, orders.length);
 
 // OUTPUT: (both calls run at the same time)
-// Asha 3`],
+// Abaji 3`],
         [`<p>Scenario: a React or plain JS front end on port 3000 calls a Spring API on 8080.</p><ul><li>The browser blocks the call unless Spring allows the origin.</li><li>Configure CORS once, globally.</li></ul>`,
             r`@Configuration
 public class CorsConfig implements WebMvcConfigurer {
@@ -868,12 +872,12 @@ xhr.done(function (data, status, jq) {
 // updated`],
         [`<p>Typical mistakes:</p><ul><li><b>Form-encoded body to @RequestBody:</b> gives 415; stringify and set the content type.</li><li><b>Synchronous calls:</b> <code>async: false</code> freezes the page and is deprecated.</li><li><b>Using the result outside the callback:</b> the value is not ready yet.</li><li><b>Not stopping the form submit:</b> the page reloads and cancels the call.</li><li><b>Missing CSRF header:</b> 403 on POST.</li></ul>`,
             r`// WRONG: data is sent as a=1&b=2, but the controller expects JSON
-$.post('/api/save', { name: 'Asha' });
+$.post('/api/save', { name: 'Abaji' });
 // RIGHT
 $.ajax({
     url: '/api/save', type: 'POST',
     contentType: 'application/json',
-    data: JSON.stringify({ name: 'Asha' })
+    data: JSON.stringify({ name: 'Abaji' })
 });
 
 // OUTPUT:
@@ -909,8 +913,8 @@ console.log([...fd.entries()]);
 console.log(JSON.stringify(Object.fromEntries(fd)));
 
 // OUTPUT:
-// [ [ 'name', 'Asha' ], [ 'email', 'asha@x.com' ] ]
-// {"name":"Asha","email":"asha@x.com"}`],
+// [ [ 'name', 'Abaji' ], [ 'email', 'abaji@x.com' ] ]
+// {"name":"Abaji","email":"abaji@x.com"}`],
         [`<p>Variants:</p><ul><li><b>JSON body:</b> <code>@Valid @RequestBody</code>.</li><li><b>Form fields:</b> <code>@Valid</code> with a bean and <code>BindingResult</code>.</li><li><b>File plus fields:</b> <code>@RequestPart</code> with <code>MultipartFile</code>.</li><li><b>ProblemDetail:</b> Spring 6 supports RFC 7807 error bodies with <code>ProblemDetail</code>.</li></ul>`,
             r`@PostMapping(value = "/profile", consumes = "multipart/form-data")
 public ProblemDetail upload(@RequestPart("photo") MultipartFile photo,
@@ -928,7 +932,8 @@ public ProblemDetail upload(@RequestPart("photo") MultipartFile photo,
         [`<p>Typical mistakes:</p><ul><li><b>Bean fields not bound:</b> input <code>name</code> attributes do not match the property names.</li><li><b>Multipart size limit:</b> raise <code>spring.servlet.multipart.max-file-size</code>.</li><li><b>No user feedback:</b> errors are logged but not shown.</li><li><b>Setting Content-Type by hand with FormData:</b> breaks the boundary.</li><li><b>Trusting client checks:</b> bypassable with any HTTP tool.</li></ul>`,
             r`// WRONG: boundary missing, Spring cannot parse the parts
 await fetch('/profile', { method: 'POST', body: fd,
-    headers: { 'Content-Type': 'multipart/form-data' } });
+    headers: { 'Content-Type': 'multipart/form-data' }
+    });
 // RIGHT: omit the header, the browser adds the boundary
 await fetch('/profile', { method: 'POST', body: fd });
 
@@ -977,10 +982,10 @@ function addRow(user) {
     row.querySelector('.name').textContent = user.name;
     document.getElementById('rows').appendChild(row);
 }
-addRow({ name: 'Asha' });
+addRow({ name: 'Abaji' });
 
 // OUTPUT:
-// A new row with the name Asha is appended`],
+// A new row with the name Abaji is appended`],
         [`<p>Typical mistakes:</p><ul><li><b>innerHTML with user text:</b> XSS.</li><li><b>Stale state:</b> the page shows an item the server rejected; update only after success.</li><li><b>Lost event handlers:</b> replacing HTML removes listeners; use event delegation on the parent.</li><li><b>Rebuilding the whole list</b> for one change.</li><li><b>No error path:</b> a failed call leaves the spinner on.</li></ul>`,
             r`// WRONG: a comment with a script tag runs in every visitor browser
 list.innerHTML += '<li>' + comment.text + '</li>';
@@ -1083,7 +1088,7 @@ public PaymentStatus payment(@PathVariable long id) {
         [`<p>How Thymeleaf renders a page:</p><ul><li><b>Controller</b> returns a view name and fills the <code>Model</code>.</li><li><b>ThymeleafViewResolver</b> creates a <code>ThymeleafView</code>.</li><li><b>Template engine:</b> the template is found, parsed into a tree of events and cached.</li><li><b>Processors:</b> each <code>th:</code> attribute has a processor that changes the tree using the Spring EL context built from the model.</li><li><b>Output:</b> the result is written to the response writer.</li></ul>`,
             r`@GetMapping("/profile")
 public String profile(Model model) {
-    model.addAttribute("user", new User("Asha", 21));
+    model.addAttribute("user", new User("Abaji", 21));
     return "profile";
 }
 // profile.html (th:text with a variable expression on user.name):
@@ -1118,7 +1123,8 @@ spring.thymeleaf.cache=true
 spring.jpa.open-in-view=false
 
 # OUTPUT:
-# Templates are parsed once; lazy collections must be loaded in the service`],
+# Templates are parsed once;
+lazy collections must be loaded in the service`],
         [`<p>Scenario: a shared layout for an admin site.</p><ul><li>A <code>layout.html</code> holds the header, menu and footer fragments.</li><li>Pages include them with <code>th:replace</code>.</li></ul>`,
             r`<!-- fragments/layout.html -->
 <header th:fragment="header"><a th:href="@{/}">Home</a></header>
@@ -1198,7 +1204,7 @@ public class MailRenderer {
 }
 
 // OUTPUT:
-// <p>Welcome, Asha!</p>`]
+// <p>Welcome, Abaji!</p>`]
     ),
     'mvc-template-resolution-thymeleaf': dv(
         [`<p>Resolution step by step:</p><ul><li><b>View name:</b> the controller returns <code>users/list</code>.</li><li><b>ContentNegotiatingViewResolver</b> and then <code>ThymeleafViewResolver</code> (by order) accept the name; <code>redirect:</code> and <code>forward:</code> are handled here without a template.</li><li><b>Engine:</b> <code>TemplateEngine.process</code> asks resolvers in order; the first one that finds the template wins.</li><li><b>Prefix, name and suffix</b> are joined: <code>classpath:/templates/</code> + <code>users/list</code> + <code>.html</code>.</li></ul>`,

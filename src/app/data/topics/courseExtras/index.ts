@@ -5,8 +5,9 @@
 // Explicit imports (not import.meta.glob) so Node-based scripts can load this too.
 
 import type { Course } from '../../types';
-import { withExtras, type Extra } from '../mysql/extras/extra';
-import { withDeep, type Deep } from '../mysql/extras/deep';
+import type { Extra } from '../mysql/extras/extra';
+import type { Deep } from '../mysql/extras/deep';
+import { applyExtrasWith } from './applyExtras';
 import { hibernateExtras, hibernateDeep } from './hibernate';
 import { jdbcExtras, jdbcDeep } from './jdbc';
 import { angularExtras, angularDeep } from './angular';
@@ -44,7 +45,6 @@ import { jsp5Extras, jsp5Deep } from './jsp5';
 import { jsp6Extras, jsp6Deep } from './jsp6';
 import { jsp7Extras, jsp7Deep } from './jsp7';
 import { springExtras, springDeep } from './springAll';
-import { layoutTopic } from './javaLayout';
 import { javaOverviewById } from './javaOverview';
 
 export const courseExtrasById: Record<string, Extra> = Object.assign(
@@ -131,20 +131,5 @@ export const courseDeepById: Record<string, Deep> = Object.assign(
 
 /** Returns the course with extras and deep dives merged into every topic that has them. */
 export function applyCourseExtras<T extends Course>(course: T): T {
-    type Tp = Course['subTopics'][number]['topics'][number];
-    // Placeholder pages ("This topic is being written ...") are dropped once a topic has real extra content.
-    const PLACEHOLDER = /This topic is being written/;
-    const withoutPlaceholder = (t: Tp): Tp => courseExtrasById[t.id]
-        ? { ...t, beginner: t.beginner?.filter(b => !PLACEHOLDER.test(b.content)), intermediate: t.intermediate?.filter(b => !PLACEHOLDER.test(b.content)), expert: t.expert?.filter(b => !PLACEHOLDER.test(b.content)) }
-        : t;
-    const merge = (t: Tp) => withDeep(withExtras(withoutPlaceholder(t), courseExtrasById[t.id]), courseDeepById[t.id]);
-    // Core Java topics are re-arranged into the fixed 12-section learning flow (see javaLayout.ts).
-    const build = course.id === 'java' ? (t: Parameters<typeof merge>[0]) => layoutTopic(merge(t), javaOverviewById[t.id]) : merge;
-    return {
-        ...course,
-        subTopics: course.subTopics.map(m => ({
-            ...m,
-            topics: m.topics.map(build)
-        }))
-    };
+    return applyExtrasWith(course, { extras: courseExtrasById, deep: courseDeepById, overviews: javaOverviewById });
 }

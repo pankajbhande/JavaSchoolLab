@@ -135,8 +135,8 @@ EXPLAIN SELECT * FROM ord FORCE INDEX (idx_customer) WHERE customer_id BETWEEN 1
     'Composite Index & Leftmost Prefix': dv(
         [`A composite index sorts entries by the first column, then by the second within equal first values, and so on. A lookup can seek only through a prefix of those columns: equality on leading columns, then at most one range. Columns after a range column are used for filtering inside the scanned range, not for seeking.`,
             r`CREATE TABLE emp (id INT PRIMARY KEY, last_name VARCHAR(30), first_name VARCHAR(30), city VARCHAR(30), KEY idx_name_city (last_name, first_name, city));
-EXPLAIN SELECT id FROM emp WHERE last_name = 'Rao' AND first_name = 'Asha';
-EXPLAIN SELECT id FROM emp WHERE first_name = 'Asha';
+EXPLAIN SELECT id FROM emp WHERE last_name = 'Rao' AND first_name = 'Abaji';
+EXPLAIN SELECT id FROM emp WHERE first_name = 'Abaji';
 EXPLAIN SELECT id FROM emp WHERE last_name = 'Rao' AND city = 'Pune';
 
 -- OUTPUT: (example)
@@ -443,11 +443,11 @@ SHOW STATUS LIKE 'Innodb_buffer_pool_read_ahead%';
 -- Innodb_buffer_pool_read_ahead | 912330`],
         [`Real-world: an "admin search" page does a leading-wildcard LIKE on a 50M-row table and times out. Replace it with a FULLTEXT index or a prefix search and add a mandatory filter.`,
             r`ALTER TABLE customers ADD FULLTEXT KEY ft_name_email (name, email);
-SELECT id, name FROM customers WHERE MATCH(name, email) AGAINST ('+asha*' IN BOOLEAN MODE) AND status = 'ACTIVE' LIMIT 20;
+SELECT id, name FROM customers WHERE MATCH(name, email) AGAINST ('+abaji*' IN BOOLEAN MODE) AND status = 'ACTIVE' LIMIT 20;
 
 -- OUTPUT:
 -- id | name
---  1 | Asha`]
+--  1 | Abaji`]
     ),
 
     'Join Algorithms': dv(

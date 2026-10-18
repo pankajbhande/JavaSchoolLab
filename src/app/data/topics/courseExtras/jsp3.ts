@@ -59,13 +59,13 @@ out.println(req.getQueryString());
 // /42
 // sort=asc`],
             ['Attribute for a forward.',
-                r`req.setAttribute("user", "Asha");           // server side only
+                r`req.setAttribute("user", "Abaji");           // server side only
 Object u = req.getAttribute("user");
 out.println(u);
 out.println(req.getParameter("user"));       // not the same thing
 
 // OUTPUT: (no ?user= in the URL)
-// Asha
+// Abaji
 // null`]]
     ),
 
@@ -157,13 +157,13 @@ resp.getWriter().println("<b>bold</b>");
 // <b>bold</b>`],
             ['JSON response.',
                 r`resp.setContentType("application/json;charset=UTF-8");
-resp.getWriter().write("{\"id\":7,\"name\":\"Asha\"}");
+resp.getWriter().write("{\"id\":7,\"name\":\"Abaji\"}");
 
 // OUTPUT:
 // HTTP/1.1 200
 // Content-Type: application/json;charset=UTF-8
 //
-// {"id":7,"name":"Asha"}`]],
+// {"id":7,"name":"Abaji"}`]],
         [['File download.',
             r`resp.setContentType("application/pdf");
 resp.setHeader("Content-Disposition", "attachment; filename=\"report.pdf\"");
@@ -328,8 +328,8 @@ rd.forward(req, resp);        // target chosen by servlet name, not by URL
     resp.getWriter().println(name + " <" + email + ">");
 }
 
-// OUTPUT: (name=Asha&email=asha@example.com)
-// Asha <asha@example.com>`],
+// OUTPUT: (name=Abaji&email=abaji@example.com)
+// Abaji <abaji@example.com>`],
             ['Checkboxes.',
                 r`String[] hobbies = req.getParameterValues("hobby");
 if (hobbies != null) {
@@ -357,8 +357,8 @@ out.println("qty=" + n);
                 r`Map<String, String[]> all = req.getParameterMap();
 all.forEach((k, v) -> out.println(k + " = " + Arrays.toString(v)));
 
-// OUTPUT: (POST name=Asha&hobby=a&hobby=b)
-// name = [Asha]
+// OUTPUT: (POST name=Abaji&hobby=a&hobby=b)
+// name = [Abaji]
 // hobby = [a, b]`]]
     )
 };

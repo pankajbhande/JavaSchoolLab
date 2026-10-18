@@ -322,7 +322,7 @@ public class Team {
 
     public Team() {
         members.add("Pankaj");
-        members.add("Rahul");
+        members.add("Raghunath");
     }
 
     // BAD: exposes internal list directly
@@ -349,8 +349,8 @@ public class Team {
 }
 
 // OUTPUT:
-// After unsafe leak: [Pankaj, Rahul, Hacker]
-// After safe copy:  [Pankaj, Rahul, Hacker]
+// After unsafe leak: [Pankaj, Raghunath, Hacker]
+// After safe copy:  [Pankaj, Raghunath, Hacker]
 // (the safe call shows no "Another"; "Hacker" is there from the earlier leak)`
                                 ]
                             },

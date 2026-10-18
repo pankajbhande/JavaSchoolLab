@@ -65,11 +65,11 @@ SELECT n FROM nums;
 SELECT CONCAT(REPEAT('  ', lvl), name) AS chart, path FROM org ORDER BY path;
 
 -- OUTPUT:
--- chart       | path
--- Anita       | Anita
---   Meena     | Anita > Meena
---   Ravi      | Anita > Ravi
---     Kiran   | Anita > Ravi > Kiran`],
+-- chart  | path
+-- Annaji | Annaji
+--   Moropant     | Annaji > Moropant
+--   Raoji      | Annaji > Raoji
+--     Kanhoji   | Annaji > Raoji > Kanhoji`],
         [`Mistakes: cycles in the data (infinite recursion), UNION instead of UNION ALL where unnecessary, missing index on the parent column, and string columns whose type is fixed by the anchor (path truncated). Cast the anchor to a large enough type and guard against cycles.`,
             r`SET SESSION cte_max_recursion_depth = 50;
 WITH RECURSIVE walk(id, path) AS (
@@ -108,8 +108,8 @@ SELECT name FROM emp WHERE salary > (SELECT AVG(salary) FROM emp);              
 
 -- OUTPUT: (all three)
 -- name
--- Asha
--- Meena`],
+-- Abaji
+-- Moropant`],
         [`Choose by reuse and size: single use and readability → CTE or subquery; several statements or a large intermediate that needs an index → temporary table; durable staging across sessions or failures → a permanent staging table.`,
             r`CREATE TEMPORARY TABLE tmp_totals (customer_id BIGINT PRIMARY KEY, spent DECIMAL(14,2)) AS SELECT customer_id, SUM(total) FROM orders GROUP BY customer_id;
 SELECT c.name, t.spent FROM customers c JOIN tmp_totals t USING (customer_id) WHERE t.spent > 1000;
@@ -117,8 +117,8 @@ SELECT COUNT(*) FROM tmp_totals t JOIN loyalty l ON l.customer_id = t.customer_i
 DROP TEMPORARY TABLE tmp_totals;
 
 -- OUTPUT:
--- name | spent
--- Asha | 1500.00`],
+-- name  | spent
+-- Abaji | 1500.00`],
         [`Mistakes: a CTE used many times with different filters (materialized once without them), temp tables left behind in pooled connections, and temp table names that shadow real tables. Drop temp tables explicitly.`,
             r`CREATE TEMPORARY TABLE emp (id INT);      -- hides the real emp for this session
 SELECT COUNT(*) FROM emp;
@@ -162,10 +162,10 @@ FROM (SELECT 'A' AS name, 100 AS salary UNION ALL SELECT 'B', 100 UNION ALL SELE
 SELECT name FROM (SELECT name, DENSE_RANK() OVER (ORDER BY salary DESC) AS dr FROM emp) t WHERE dr = 2;
 
 -- OUTPUT:
--- dept | name  | salary
---   10 | Asha  |  60000
---   10 | Ravi  |  45000
---   20 | Meena |  70000`],
+-- dept | name     | salary
+--   10 | Abaji    | 60000
+--   10 | Raoji    | 45000
+--   20 | Moropant | 70000`],
         [`Mistakes: using RANK when you need exactly N rows, no tiebreaker (unstable results), and filtering on the window function in WHERE (not allowed). Pick ROW_NUMBER for exactly N, DENSE_RANK for "Nth distinct value".`,
             r`SELECT name FROM emp WHERE ROW_NUMBER() OVER (ORDER BY salary) = 1;
 
@@ -275,17 +275,17 @@ EXPLAIN ANALYZE SELECT order_id, LEAD(status_time) OVER (PARTITION BY order_id O
 FROM emp WINDOW w AS (ORDER BY salary);
 
 -- OUTPUT:
--- name  | salary | first_name | last_default | last_full
--- Ravi  |  45000 | Ravi       | Ravi         | Meena
--- Asha  |  60000 | Ravi       | Asha         | Meena
--- Meena |  70000 | Ravi       | Meena        | Meena`],
+-- name     | salary | first_name | last_default | last_full
+-- Raoji    |  45000 | Raoji      | Raoji        | Moropant
+-- Abaji    |  60000 | Raoji      | Abaji        | Moropant
+-- Moropant |  70000 | Raoji      | Moropant     | Moropant`],
         [`Use FIRST_VALUE to compare each row with the group's best (or oldest), NTH_VALUE for the second best, and spell the frame out for LAST_VALUE. Partition to work per group.`,
             r`SELECT dept, name, salary, FIRST_VALUE(salary) OVER (PARTITION BY dept ORDER BY salary DESC) - salary AS gap_to_top, NTH_VALUE(name, 2) OVER (PARTITION BY dept ORDER BY salary DESC ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) AS runner_up FROM emp;
 
 -- OUTPUT:
--- dept | name | salary | gap_to_top | runner_up
---   10 | Asha |  60000 |          0 | Ravi
---   10 | Ravi |  45000 |      15000 | Ravi`],
+-- dept | name  | salary | gap_to_top | runner_up
+--   10 | Abaji |  60000 |          0 | Raoji
+--   10 | Raoji |  45000 |      15000 | Raoji`],
         [`Mistakes: relying on LAST_VALUE with the default frame, expecting IGNORE NULLS (not supported), and using it where ROW_NUMBER filtering is clearer for "latest row per key". Choose the simplest tool.`,
             r`-- latest status per order: ROW_NUMBER is clearer and index friendly
 SELECT order_id, status FROM (SELECT order_id, status, ROW_NUMBER() OVER (PARTITION BY order_id ORDER BY status_time DESC) AS rn FROM order_status) t WHERE rn = 1;
@@ -314,10 +314,10 @@ SELECT DISTINCT dept, FIRST_VALUE(salary) OVER (PARTITION BY dept ORDER BY salar
             r`SELECT dept, name, salary, SUM(salary) OVER (PARTITION BY dept) AS dept_total, COUNT(*) OVER (PARTITION BY dept) AS dept_n, salary - AVG(salary) OVER (PARTITION BY dept) AS diff_from_avg FROM emp;
 
 -- OUTPUT:
--- dept | name  | salary | dept_total | dept_n | diff_from_avg
---   10 | Asha  |  60000 |     105000 |      2 |          7500
---   10 | Ravi  |  45000 |     105000 |      2 |         -7500
---   20 | Meena |  70000 |      70000 |      1 |             0`],
+-- dept | name     | salary | dept_total | dept_n | diff_from_avg
+--   10 | Abaji    |  60000 |     105000 |      2 | 7500
+--   10 | Raoji    |  45000 |     105000 |      2 | -7500
+--   20 | Moropant |  70000 |      70000 |      1 | 0`],
         [`Frame syntax: <code>ROWS BETWEEN 2 PRECEDING AND CURRENT ROW</code>, <code>RANGE BETWEEN INTERVAL 7 DAY PRECEDING AND CURRENT ROW</code>, <code>UNBOUNDED PRECEDING/FOLLOWING</code>, <code>EXCLUDE</code> is not supported. Name windows with WINDOW and inherit from them.`,
             r`SELECT day, sales,
   SUM(sales) OVER w7 AS last7,
@@ -398,18 +398,18 @@ SELECT a.balance = (SELECT SUM(amount) FROM ledger WHERE account_id = a.id) AS c
 SELECT dept, name, salary FROM ranked WHERE rn <= 2 ORDER BY dept, rn;
 
 -- OUTPUT:
--- dept | name  | salary
---   10 | Asha  |  60000
---   10 | Ravi  |  45000
---   20 | Meena |  70000`],
+-- dept | name     | salary
+--   10 | Abaji    | 60000
+--   10 | Raoji    | 45000
+--   20 | Moropant | 70000`],
         [`Alternatives: DENSE_RANK to include ties, a LATERAL join (8.0.14+) that runs ORDER BY ... LIMIT N per group, and a correlated count. Pick by tie policy and data size.`,
             r`SELECT d.name, t.name AS employee, t.salary FROM departments d JOIN LATERAL (SELECT name, salary FROM emp e WHERE e.dept = d.id ORDER BY salary DESC LIMIT 3) t;
 SELECT e.* FROM emp e WHERE 3 > (SELECT COUNT(*) FROM emp x WHERE x.dept = e.dept AND (x.salary, x.id) > (e.salary, e.id));
 
 -- OUTPUT:
 -- name | employee | salary
--- HR   | Asha     |  60000
--- HR   | Ravi     |  45000`],
+-- HR   | Abaji    | 60000
+-- HR   | Raoji    | 45000`],
         [`Mistakes: no tiebreaker (nondeterministic rows), ROW_NUMBER when ties must all be included, and scanning the whole table for a small N. Choose RANK/DENSE_RANK for ties and index the sort.`,
             r`SELECT dept, name, salary FROM (SELECT dept, name, salary, DENSE_RANK() OVER (PARTITION BY dept ORDER BY salary DESC) AS dr FROM emp) t WHERE dr <= 2;
 
@@ -425,20 +425,20 @@ EXPLAIN ANALYZE SELECT d.name, t.name FROM departments d JOIN LATERAL (SELECT na
             r`SELECT a.name, p.title, p.created_at FROM authors a JOIN LATERAL (SELECT title, created_at FROM posts WHERE author_id = a.id ORDER BY created_at DESC LIMIT 3) p WHERE a.id IN (1, 2, 3);
 
 -- OUTPUT:
--- name | title  | created_at
--- Asha | Post C | 2026-05-01 10:00:00`]
+-- name  | title  | created_at
+-- Abaji | Post C | 2026-05-01 10:00:00`]
     ),
 
     'JSON Data Type & JSON_OBJECT / JSON_ARRAY': dv(
         [`The JSON type validates documents and stores them in a binary format with a lookup table of keys and values, so reading one path does not re-parse the whole document. Values are normalized: object keys are sorted and duplicates removed. Documents are stored with the row (or off-page when large).`,
             r`CREATE TABLE profiles (id INT PRIMARY KEY, data JSON NOT NULL);
-INSERT INTO profiles VALUES (1, JSON_OBJECT('name', 'Asha', 'skills', JSON_ARRAY('SQL', 'Java'), 'active', TRUE));
+INSERT INTO profiles VALUES (1, JSON_OBJECT('name', 'Abaji', 'skills', JSON_ARRAY('SQL', 'Java'), 'active', TRUE));
 INSERT INTO profiles VALUES (2, '{"b": 1, "a": 2, "a": 3}');
 SELECT id, data FROM profiles;
 
 -- OUTPUT:
 -- id | data
---  1 | {"name": "Asha", "active": true, "skills": ["SQL", "Java"]}
+--  1 | {"name": "Abaji", "active": true, "skills": ["SQL", "Java"]}
 --  2 | {"a": 3, "b": 1}                       (keys sorted, last duplicate wins? the first is kept: shows normalization)`],
         [`Build with <code>JSON_OBJECT</code>, <code>JSON_ARRAY</code>, <code>JSON_MERGE_PATCH</code>; modify with <code>JSON_SET</code>, <code>JSON_INSERT</code>, <code>JSON_REPLACE</code>, <code>JSON_REMOVE</code>, <code>JSON_ARRAY_APPEND</code>; aggregate with <code>JSON_ARRAYAGG</code> and <code>JSON_OBJECTAGG</code>.`,
             r`UPDATE profiles SET data = JSON_SET(data, '$.city', 'Pune', '$.active', FALSE) WHERE id = 1;
@@ -448,7 +448,7 @@ SELECT dept, JSON_ARRAYAGG(name) AS names FROM emp GROUP BY dept;
 
 -- OUTPUT:
 -- dept | names
---   10 | ["Asha", "Ravi"]`],
+--   10 | ["Abaji", "Raoji"]`],
         [`Mistakes: invalid JSON strings (error 3140), expecting key order to be kept, storing numbers as strings, and updating large documents in place often (rewrites). Validate with a CHECK and JSON_SCHEMA_VALID.`,
             r`INSERT INTO profiles VALUES (3, '{bad json}');
 ALTER TABLE profiles ADD CONSTRAINT chk_profile CHECK (JSON_SCHEMA_VALID('{"type":"object","required":["name"],"properties":{"name":{"type":"string"}}}', data));
@@ -479,7 +479,7 @@ SELECT name, attrs->>'$.brand' AS brand, JSON_LENGTH(attrs->'$.sizes') AS size_c
 
 -- OUTPUT:
 -- json_value | plain_text | first_skill | age
--- "Asha"     | Asha       | "SQL"       |  30`],
+-- "Abaji"    | Abaji      | "SQL"       | 30`],
         [`Search inside arrays with <code>MEMBER OF</code>, <code>JSON_CONTAINS</code>, <code>JSON_OVERLAPS</code> and <code>JSON_SEARCH</code>; expand arrays to rows with <code>JSON_TABLE</code>; wildcard paths <code>$[*]</code> and <code>$**.key</code> collect many values.`,
             r`SELECT id FROM profiles WHERE 'SQL' MEMBER OF (data->'$.skills');
 SELECT id FROM profiles WHERE JSON_OVERLAPS(data->'$.skills', JSON_ARRAY('Java', 'Go'));

@@ -306,7 +306,8 @@ public class LoggingInterceptor implements HandlerInterceptor {
 // [a1b2c3d4] <-- 200 /products   (id varies)`],
             ['Log pattern with MDC.',
                 r`# application.properties
-logging.pattern.console=%d{HH:mm:ss} [%X{requestId}] %-5level %msg%n
+logging.pattern.console=%d{HH:mm:ss}
+[%X{requestId}] %-5level %msg%n
 
 # OUTPUT:
 # 10:15:02 [a1b2c3d4] INFO  --> GET /products`]],
@@ -593,7 +594,9 @@ management.metrics.distribution.percentiles-histogram.http.server.requests=true
 
 # OUTPUT:
 # GET /actuator/metrics/http.server.requests
-# {"name":"http.server.requests","measurements":[{"statistic":"COUNT","value":42.0}]}`],
+# {
+    "name":"http.server.requests","measurements":[{"statistic":"COUNT","value":42.0}]
+}`],
             ['Test the header.',
                 r`@Test
 void hasTiming() throws Exception {

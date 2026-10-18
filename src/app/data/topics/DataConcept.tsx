@@ -41,7 +41,7 @@ Java has 8 built-in "primitive" types for the most basic kinds of data - whole n
 Beyond primitives, data can also be an <strong>object</strong> - a bundle of related values and behavior, like a String (text), an array (a list of values), or a custom class (e.g. Student). These are called "reference types" because the variable holds a pointer to the data, not the data itself.<br>`,
             codeExamples: [`public class ObjectData {
     public static void main(String[] args) {
-        String name = "Rahul";        // object: a sequence of characters
+        String name = "Raghunath";        // object: a sequence of characters
         int[] marks = {90, 85, 88};    // object: a collection of ints
 
         System.out.println("Name: " + name);
@@ -49,7 +49,7 @@ Beyond primitives, data can also be an <strong>object</strong> - a bundle of rel
     }
 }
 // OUTPUT:
-// Name: Rahul
+// Name: Raghunath
 // First mark: 90`]
         },
         {

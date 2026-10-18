@@ -261,7 +261,7 @@ except TypeError as e:
     def __contains__(self, name):
         return name in self.names
 
-t = Team(["ann", "bob"])
+t = Team(["ann", "baji"])
 print("ann" in t, "zed" in t, "zed" not in t)
 
 # OUTPUT:

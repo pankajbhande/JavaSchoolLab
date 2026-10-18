@@ -30,13 +30,13 @@ Functions become far more useful when they can accept input. Parameters are plac
     }
 
     public static void main(String[] args) {
-        greet("Asha");   // "Asha" is the argument
-        greet("Vikram");
+        greet("Abaji");   // "Abaji" is the argument
+        greet("Vyankoji");
     }
 }
 // OUTPUT:
-// Hello, Asha!
-// Hello, Vikram!`]
+// Hello, Abaji!
+// Hello, Vyankoji!`]
         },
         {
             content: `<h3>Return Values: Getting Data Out</h3>

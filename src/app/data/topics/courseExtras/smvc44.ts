@@ -177,7 +177,7 @@ ResponseEntity<User> create(@RequestBody User u) {
 // OUTPUT:
 // HTTP/1.1 201
 // Location: /users/3
-// {"id":3,"name":"Bob"}`]],
+// {"id":3,"name":"Baji"}`]],
         [['Custom headers and cache.',
             r`@GetMapping("/report")
 ResponseEntity<String> report() {
@@ -195,7 +195,7 @@ ResponseEntity<String> report() {
                 r`@Test
 void createReturnsLocation() throws Exception {
     mvc.perform(post("/users").contentType("application/json")
-            .content("{\"name\":\"Bob\"}"))
+            .content("{\"name\":\"Baji\"}"))
        .andExpect(status().isCreated())
        .andExpect(header().exists("Location"));
 }
@@ -399,7 +399,7 @@ void notAcceptable() throws Exception {
 @RestController
 class UserController {
     @GetMapping("/users")
-    List<String> all() { return List.of("Ann", "Bob"); }
+    List<String> all() { return List.of("Ann", "Baji"); }
 }
 
 // OUTPUT:
@@ -889,7 +889,7 @@ ResponseEntity<Void> delete(@PathVariable long id) {
 // OUTPUT:
 // Accept: text/csv
 // 1,Ann
-// 2,Bob`],
+// 2,Baji`],
         [`<p>Common mistakes:</p><ul><li><b>Missing Content-Type:</b> client sends JSON without the header, so no converter matches (415).</li><li><b>Replacing defaults:</b> <code>configureMessageConverters</code> removes the built-in list.</li><li><b>Two JSON libraries:</b> Gson and Jackson both present can change which one wins.</li><li><b>Reading the body twice:</b> the stream is consumed once; cache it with <code>ContentCachingRequestWrapper</code> in filters.</li><li><b>String body JSON:</b> returning a JSON String from <code>@ResponseBody</code> may be quoted by Jackson if its converter runs first.</li></ul>`,
             r`// WRONG: replaces every default converter
 @Override
@@ -922,9 +922,9 @@ List<User> users() {
 }
 
 // OUTPUT:
-// Accept: application/json -> [{"id":1,"name":"Ann"},{"id":2,"name":"Bob"}]
+// Accept: application/json -> [{"id":1,"name":"Ann"},{"id":2,"name":"Baji"}]
 // Accept: text/csv         -> 1,Ann
-//                             2,Bob`]
+//                             2,Baji`]
     ),
     'mvc-jackson-interview': dv(
         [`<p>How Jackson works inside Spring MVC:</p><ul><li><b>Bean:</b> <code>JacksonAutoConfiguration</code> builds an <code>ObjectMapper</code> with <code>Jackson2ObjectMapperBuilder</code>.</li><li><b>Converter:</b> <code>MappingJackson2HttpMessageConverter</code> wraps that mapper.</li><li><b>Serialization:</b> reflection (cached) finds getters or fields and writes tokens with a <code>JsonGenerator</code>.</li><li><b>Deserialization:</b> a <code>JsonParser</code> reads tokens; Jackson needs a default constructor or a record/creator constructor.</li><li><b>Modules:</b> found through <code>ServiceLoader</code> and Boot beans (JavaTime, Jdk8, ParameterNames).</li></ul>`,
@@ -1136,7 +1136,8 @@ class WebConfig implements WebMvcConfigurer {
     <input type="hidden" name="to" value="attacker"/>
     <input type="hidden" name="amount" value="1000"/>
 </form>
-<script>document.forms[0].submit();</script>
+<script>document.forms[0].submit();
+</script>
 
 // OUTPUT:
 // Without CSRF protection: transfer succeeds using the victim cookie
@@ -1158,7 +1159,10 @@ SecurityFilterChain chain(HttpSecurity http) throws Exception {
         [`<p>Common mistakes:</p><ul><li><b>Disabling globally</b> because of a 403 during development, then forgetting it.</li><li><b>State change on GET:</b> GET is not checked, so a link can trigger it.</li><li><b>Missing token in AJAX:</b> forgetting the header causes 403.</li><li><b>JWT in a cookie:</b> if the browser sends it automatically you are back to needing CSRF protection.</li><li><b>Misreading the 403:</b> the cause is often a missing token, not a role problem.</li></ul>`,
             r`// WRONG: data change on GET
 @GetMapping("/delete/{id}")
-String del(@PathVariable long id) { repo.deleteById(id); return "ok"; }
+String del(@PathVariable long id) {
+    repo.deleteById(id);
+    return "ok";
+}
 
 // RIGHT
 @DeleteMapping("/items/{id}")
@@ -1177,7 +1181,10 @@ server.servlet.session.cookie.http-only=true
 server.servlet.session.cookie.secure=true
 
 # OUTPUT:
-# Set-Cookie: JSESSIONID=...; Secure; HttpOnly; SameSite=Lax`],
+# Set-Cookie: JSESSIONID=...;
+Secure;
+HttpOnly;
+SameSite=Lax`],
         [`<p>Real project: one app with server-rendered admin pages (CSRF on) and a public mobile API (CSRF off, bearer tokens).</p><ul><li><b>Two chains:</b> ordered with <code>@Order</code>.</li><li><b>Tests:</b> verify 403 without token and 200 with it.</li></ul>`,
             r`@Bean @Order(1)
 SecurityFilterChain api(HttpSecurity http) throws Exception {

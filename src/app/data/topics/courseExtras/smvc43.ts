@@ -203,7 +203,8 @@ spring.mvc.view.suffix=.jsp
 spring.thymeleaf.cache=false
 
 # OUTPUT:
-# view names now resolve with the prefix and suffix; Thymeleaf cache is off`]],
+# view names now resolve with the prefix and suffix;
+Thymeleaf cache is off`]],
         [['Redirect after POST.',
             r`@PostMapping("/save")
 String save(Item i) {
@@ -239,10 +240,12 @@ String save(Item i) {
             ['S', 'What is the implicit model?', 'The BindingAwareModelMap that Spring creates for each request and shares with @ModelAttribute methods.']],
         [['The three styles.',
             r`@GetMapping("/a") String a(Model m) {
-    m.addAttribute("msg", "A"); return "page";
+    m.addAttribute("msg", "A");
+    return "page";
 }
 @GetMapping("/b") String b(ModelMap m) {
-    m.addAttribute("msg", "B"); return "page";
+    m.addAttribute("msg", "B");
+    return "page";
 }
 @GetMapping("/c") ModelAndView c() {
     return new ModelAndView("page", "msg", "C");
@@ -299,12 +302,12 @@ class PageController {
 }
 @RestController
 class ApiController {
-    @GetMapping("/api/user") User user() { return new User(1, "Asha"); }
+    @GetMapping("/api/user") User user() { return new User(1, "Abaji"); }
 }
 
 // OUTPUT:
 // GET /home -> HTML from home.html
-// GET /api/user -> {"id":1,"name":"Asha"}`],
+// GET /api/user -> {"id":1,"name":"Abaji"}`],
             ['@ResponseBody on one method.',
                 r`@Controller
 class MixedController {
@@ -327,7 +330,7 @@ class Oops {
             ['Test JSON output.',
                 r`mvc.perform(get("/api/user"))
    .andExpect(content().contentType("application/json"))
-   .andExpect(jsonPath("$.name").value("Asha"));
+   .andExpect(jsonPath("$.name").value("Abaji"));
 
 // OUTPUT:
 // Tests run: 1, Failures: 0`]]
@@ -455,8 +458,8 @@ UserForm api(@RequestBody UserForm u) { return u; }
 String form(@ModelAttribute UserForm u) { return "ok " + u.name(); }
 
 // OUTPUT:
-// POST /api/users {"name":"Asha","age":30} -> {"name":"Asha","age":30}
-// POST /form/users name=Asha&age=30 -> ok Asha`],
+// POST /api/users {"name":"Abaji","age":30} -> {"name":"Abaji","age":30}
+// POST /form/users name=Abaji&age=30 -> ok Abaji`],
             ['Validation with BindingResult.',
                 r`@PostMapping("/register")
 String register(@Valid @ModelAttribute UserForm u, BindingResult br) {
@@ -469,9 +472,9 @@ String register(@Valid @ModelAttribute UserForm u, BindingResult br) {
 // valid input -> 302 /done`]],
         [['Test both bindings.',
             r`mvc.perform(post("/api/users").contentType("application/json")
-       .content("{\"name\":\"Asha\",\"age\":30}"))
+       .content("{\"name\":\"Abaji\",\"age\":30}"))
    .andExpect(status().isOk());
-mvc.perform(post("/form/users").param("name", "Asha").param("age", "30"))
+mvc.perform(post("/form/users").param("name", "Abaji").param("age", "30"))
    .andExpect(status().isOk());
 
 // OUTPUT:
@@ -552,7 +555,10 @@ export const smvc43Deep: Record<string, Deep> = {
         [`<p>Everything happens in <code>DispatcherServlet.doDispatch()</code>.</p><ul><li><b>Lookup:</b> <code>getHandler()</code> asks each HandlerMapping until one returns a chain.</li><li><b>Adapter:</b> <code>getHandlerAdapter()</code> picks the adapter whose <code>supports()</code> is true.</li><li><b>Interceptors:</b> <code>applyPreHandle</code> runs in order, and a false result stops the flow.</li><li><b>Invoke:</b> <code>ha.handle()</code> returns a ModelAndView or null when the body is already written.</li><li><b>Render:</b> <code>processDispatchResult</code> resolves exceptions, then renders the view.</li></ul>`,
             r`// simplified from DispatcherServlet.doDispatch
 HandlerExecutionChain chain = getHandler(request);
-if (chain == null) { noHandlerFound(request, response); return; }
+if (chain == null) {
+    noHandlerFound(request, response);
+    return;
+}
 HandlerAdapter ha = getHandlerAdapter(chain.getHandler());
 if (!chain.applyPreHandle(request, response)) return;
 ModelAndView mv = ha.handle(request, response, chain.getHandler());
@@ -568,7 +574,8 @@ spring.mvc.throw-exception-if-no-handler-found=true
 spring.web.resources.add-mappings=false
 
 # OUTPUT:
-# GET /app/hello -> controller; GET /app/unknown -> NoHandlerFoundException`],
+# GET /app/hello -> controller;
+GET /app/unknown -> NoHandlerFoundException`],
         [`<p>Common mistakes:</p><ul><li><b>Controller not scanned:</b> it sits outside the base package of <code>@SpringBootApplication</code>, so no mapping exists (404).</li><li><b>Wrong servlet path:</b> forgetting the prefix in URLs.</li><li><b>Swallowed exceptions:</b> a broad handler hides root causes.</li><li><b>Blocking calls:</b> long work on the request thread exhausts the pool.</li></ul>`,
             r`// WRONG: package com.other is not under com.shop (the application class)
 package com.other;
@@ -586,7 +593,8 @@ spring.threads.virtual.enabled=true
 server.tomcat.threads.max=200
 
 # OUTPUT:
-# request handling runs on virtual threads; blocking I/O no longer ties up platform threads`],
+# request handling runs on virtual threads;
+blocking I/O no longer ties up platform threads`],
         [`<p>Scenario: a slow endpoint. Turn on DEBUG for the DispatcherServlet and add a timing interceptor to see whether time goes to the handler or to rendering.</p><ul><li><b>preHandle:</b> record the start time.</li><li><b>afterCompletion:</b> log the elapsed time with the handler name.</li></ul>`,
             r`public void afterCompletion(HttpServletRequest q, HttpServletResponse s,
         Object h, Exception ex) {
@@ -631,7 +639,8 @@ String v2(@PathVariable long id) { return "v2:" + id; }
 spring.mvc.pathmatch.matching-strategy=path_pattern_parser
 
 # OUTPUT:
-# no output; the faster matcher is used for all mappings`],
+# no output;
+the faster matcher is used for all mappings`],
         [`<p>Scenario: expose the mappings for debugging. Spring Boot Actuator has a <code>mappings</code> endpoint that lists every handler, which helps find ambiguous or missing routes.</p>`,
             r`# application.properties
 management.endpoints.web.exposure.include=mappings
@@ -651,7 +660,7 @@ Object value = doInvoke(args);                  // reflection call
 returnValueHandlers.handleReturnValue(value, returnType, mavContainer, request);
 
 // OUTPUT:
-// for hello(@RequestParam String n): args=["Asha"], value="hi Asha"`],
+// for hello(@RequestParam String n): args=["Abaji"], value="hi Abaji"`],
         [`<p>Built in resolvers and handlers you meet daily:</p><ul><li><b>Arguments:</b> @RequestParam, @PathVariable, @RequestBody, @RequestHeader, @CookieValue, Model, HttpServletRequest, Principal.</li><li><b>Returns:</b> String view name, ModelAndView, ResponseEntity, void, Callable, DeferredResult, @ResponseBody.</li><li><b>Other adapters:</b> HttpRequestHandlerAdapter and HandlerFunctionAdapter for functional endpoints.</li></ul>`,
             r`@GetMapping("/info")
 ResponseEntity<String> info(@RequestHeader("User-Agent") String ua,
@@ -694,7 +703,10 @@ class InvoiceController {
             r`// conceptual
 for (ViewResolver vr : viewResolvers) {
     View view = vr.resolveViewName("home", locale);
-    if (view != null) { view.render(model, request, response); break; }
+    if (view != null) {
+        view.render(model, request, response);
+        break;
+    }
 }
 
 // OUTPUT:
@@ -726,7 +738,8 @@ spring.mvc.view.prefix=
 spring.web.resources.cache.cachecontrol.max-age=1d
 
 # OUTPUT:
-# templates are parsed once; static assets cached by the browser for a day`],
+# templates are parsed once;
+static assets cached by the browser for a day`],
         [`<p>Scenario: one controller serving both HTML and PDF. A custom View bean for the PDF plus a BeanNameViewResolver ahead of Thymeleaf lets the controller return a name without caring about the format.</p>`,
             r`@GetMapping("/report")
 String report(Model m, @RequestParam(defaultValue = "html") String f) {
@@ -764,11 +777,13 @@ String form(Model m) {
         [`<p>Mistakes:</p><ul><li><b>Using Model with @RestController:</b> data is ignored, only the return body is sent.</li><li><b>Null attribute value:</b> <code>addAttribute(&quot;k&quot;, null)</code> is allowed but the view sees nothing.</li><li><b>Large objects in the model</b> kept in the session by <code>@SessionAttributes</code>.</li><li><b>Redirect leaks:</b> simple values appear in the URL.</li></ul>`,
             r`// WRONG: model values appended to the redirect URL
 @PostMapping("/s1") String s1(Model m) {
-    m.addAttribute("id", 5); return "redirect:/list";   // /list?id=5
+    m.addAttribute("id", 5);
+    return "redirect:/list";  // /list?id=5
 }
 // FIX: use flash attributes
 @PostMapping("/s2") String s2(RedirectAttributes ra) {
-    ra.addFlashAttribute("id", 5); return "redirect:/list";
+    ra.addFlashAttribute("id", 5);
+    return "redirect:/list";
 }
 
 // OUTPUT:
@@ -832,7 +847,7 @@ record UserDto(long id, String name) {}
 
 // OUTPUT:
 // before: HttpMessageNotWritableException: Infinite recursion
-// after: {"id":1,"name":"Asha"}`],
+// after: {"id":1,"name":"Abaji"}`],
         [`<p>Performance: JSON writing is usually cheap; large payloads need paging, compression and streaming.</p><ul><li><b>Paging:</b> never return unbounded lists.</li><li><b>Compression:</b> <code>server.compression.enabled=true</code>.</li><li><b>Streaming:</b> <code>StreamingResponseBody</code> for big downloads.</li></ul>`,
             r`# application.properties
 server.compression.enabled=true
@@ -840,7 +855,8 @@ server.compression.min-response-size=1024
 spring.jackson.default-property-inclusion=non_null
 
 # OUTPUT:
-# responses over 1 KB are gzipped; null fields are omitted`],
+# responses over 1 KB are gzipped;
+null fields are omitted`],
         [`<p>Scenario: one application serving an admin site and a mobile API. Page controllers use @Controller and Thymeleaf, API controllers use @RestController under <code>/api</code>, and each has its own advice class for errors.</p>`,
             r`@RestControllerAdvice(annotations = RestController.class)
 class ApiErrors {
@@ -964,7 +980,7 @@ binder.bind(new ServletRequestParameterPropertyValues(request));
 if (binder.getBindingResult().hasErrors()) { /* BindingResult argument */ }
 
 // OUTPUT:
-// name=Asha&age=30 -> UserForm[name=Asha, age=30]`],
+// name=Abaji&age=30 -> UserForm[name=Abaji, age=30]`],
         [`<p>Variants:</p><ul><li><b>@RequestBody:</b> <code>String</code>, <code>byte[]</code>, <code>Map</code>, DTO, <code>List&lt;DTO&gt;</code>; <code>required = false</code> allows an empty body.</li><li><b>@ModelAttribute:</b> custom name, constructor binding for records, nested properties like <code>address.city</code>.</li><li><b>@RequestPart:</b> parts of multipart requests with JSON.</li><li><b>@InitBinder:</b> restrict allowed fields or add editors.</li></ul>`,
             r`@PostMapping(path = "/upload", consumes = "multipart/form-data")
 String upload(@RequestPart("meta") Meta meta,
@@ -990,7 +1006,8 @@ spring.servlet.multipart.max-file-size=5MB
 spring.jackson.deserialization.fail-on-unknown-properties=true
 
 # OUTPUT:
-# oversized bodies are rejected early; unknown JSON fields cause 400`],
+# oversized bodies are rejected early;
+unknown JSON fields cause 400`],
         [`<p>Scenario: the same registration feature offered as a web form and as a mobile API, sharing one DTO and one service.</p>`,
             r`record Signup(@NotBlank String name, @Email String email) {}
 
@@ -998,13 +1015,15 @@ spring.jackson.deserialization.fail-on-unknown-properties=true
     @PostMapping("/signup")
     String form(@Valid @ModelAttribute Signup s, BindingResult br) {
         if (br.hasErrors()) return "signup";
-        service.register(s); return "redirect:/welcome";
+        service.register(s);
+        return "redirect:/welcome";
     }
 }
 @RestController class ApiSignup {
     @PostMapping("/api/signup")
     ResponseEntity<Void> api(@Valid @RequestBody Signup s) {
-        service.register(s); return ResponseEntity.status(201).build();
+        service.register(s);
+        return ResponseEntity.status(201).build();
     }
 }
 

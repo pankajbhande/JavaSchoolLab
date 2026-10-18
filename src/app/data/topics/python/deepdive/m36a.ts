@@ -4,7 +4,7 @@ import { dd, r, type DeepDive } from './deepDive';
 export const m36a: Record<string, DeepDive> = {
     'Authentication vs Authorization': dd(
         [`<b>Authentication (AuthN)</b> answers "who are you?" (password, token, biometrics). <b>Authorization (AuthZ)</b> answers "what are you allowed to do?" (roles, permissions, policies). AuthN comes first; AuthZ is checked on every action.`,
-            r`USERS = {"ada": {"password_ok": True, "role": "admin"}, "bob": {"password_ok": True, "role": "viewer"}}
+            r`USERS = {"ada": {"password_ok": True, "role": "admin"}, "baji": {"password_ok": True, "role": "viewer"}}
 
 def authenticate(name):            # identity: who?
     u = USERS.get(name)
@@ -14,13 +14,13 @@ def authorize(name, action):       # permission: allowed?
     perms = {"admin": {"read", "delete"}, "viewer": {"read"}}
     return action in perms[USERS[name]["role"]]
 
-who = authenticate("bob")
+who = authenticate("baji")
 print(who, authorize(who, "read"), authorize(who, "delete"))
 
 # OUTPUT:
-# bob True False`],
+# baji True False`],
         [`Confusing the two is a top vulnerability class (OWASP "Broken Access Control"). A logged-in user must still be prevented from reading another user's data.`,
-            r`ORDERS = {1: "ada", 2: "bob"}          # order id -> owner
+            r`ORDERS = {1: "ada", 2: "baji"}          # order id -> owner
 
 def get_order(current_user, order_id):
     if ORDERS[order_id] != current_user:   # object-level authorization (stops IDOR)

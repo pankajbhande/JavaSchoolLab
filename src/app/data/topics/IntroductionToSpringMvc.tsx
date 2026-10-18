@@ -118,7 +118,7 @@ public class UserPageController {
     @GetMapping("/{id}/raw")
     @ResponseBody
     public User getUserRaw(@PathVariable Long id) {
-        return new User(id, "Alice"); // serialized to JSON directly
+        return new User(id, "Anaji"); // serialized to JSON directly
     }
 }`,
                                     `// @RestController - every method's return value IS the response body
@@ -128,7 +128,7 @@ public class UserApiController {
 
     @GetMapping("/{id}")
     public User getUser(@PathVariable Long id) {
-        return new User(id, "Alice"); // written straight to the response as JSON
+        return new User(id, "Anaji"); // written straight to the response as JSON
         // NOTE: "userDetails" here would NOT resolve to a view -
         // returning a String would just send that literal text as the body.
     }
@@ -196,7 +196,7 @@ public class ProductController {
 <tr><th>Annotation</th><th>Extracts data from</th><th>Example URL / body</th></tr>
 <tr class='text-center'><td>@RequestParam</td><td>Query string or form field</td><td>/search?keyword=java&page=2</td></tr>
 <tr class='text-center'><td>@PathVariable</td><td>A segment of the URI template</td><td>/users/42 -&gt; id = 42</td></tr>
-<tr class='text-center'><td>@RequestBody</td><td>The raw HTTP request body, deserialized via an HttpMessageConverter (e.g. JSON -&gt; POJO)</td><td>POST body: {"name":"Alice"}</td></tr>
+<tr class='text-center'><td>@RequestBody</td><td>The raw HTTP request body, deserialized via an HttpMessageConverter (e.g. JSON -&gt; POJO)</td><td>POST body: {"name":"Anaji"}</td></tr>
 </table>
 <br>`,
                                 codeExamples: [
@@ -237,13 +237,13 @@ public class OrderController {
 @RequestMapping("/api/users")
 public class UserApiController {
 
-    // POST body: {"name":"Alice","email":"alice@example.com"}
+    // POST body: {"name":"Anaji","email":"anaji@example.com"}
     @PostMapping
     public String createUser(@RequestBody UserDto user) {
         return "Created user: " + user.getName() + " (" + user.getEmail() + ")";
     }
 }
-// OUTPUT: Created user: Alice (alice@example.com)`
+// OUTPUT: Created user: Anaji (anaji@example.com)`
                                 ]
                             },
                             {
@@ -259,7 +259,7 @@ public class ProfileController {
     @GetMapping("/profile/{id}")
     public String showProfile(@PathVariable Long id, Model model) {
         model.addAttribute("userId", id);
-        model.addAttribute("displayName", "Alice");
+        model.addAttribute("displayName", "Anaji");
         return "profile"; // resolves to profile.jsp / profile.html
     }
 }`,

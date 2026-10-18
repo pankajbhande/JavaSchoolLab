@@ -10,22 +10,22 @@ export const s06k: Record<string, DeepDive> = {
     dept   VARCHAR(20) NOT NULL DEFAULT 'General',
     salary DECIMAL(9,2) NOT NULL
 );
-INSERT INTO emp (name, dept, salary) VALUES ('Asha', 'IT', 60000);      -- one row, columns named
-INSERT INTO emp (name, salary)       VALUES ('Ravi', 45000),            -- many rows, one statement
+INSERT INTO emp (name, dept, salary) VALUES ('Abaji', 'IT', 60000);      -- one row, columns named
+INSERT INTO emp (name, salary)       VALUES ('Raoji', 45000),            -- many rows, one statement
                                             ('Mina', 52000);
 SELECT * FROM emp;
 
 -- OUTPUT:
--- +----+------+---------+----------+
--- | id | name | dept    | salary   |
--- +----+------+---------+----------+
--- |  1 | Asha | IT      | 60000.00 |
--- |  2 | Ravi | General | 45000.00 |
--- |  3 | Mina | General | 52000.00 |
+-- +----+-------+---------+----------+
+-- | id | name  | dept    | salary   |
+-- +----+-------+---------+----------+
+-- |  1 | Abaji | IT      | 60000.00 |
+-- |  2 | Raoji | General | 45000.00 |
+-- |  3 | Mina  | General | 52000.00 |
 -- +----+------+---------+----------+`],
         [`Data enters a database through INSERT: sign-ups, orders, log events, imports. Listing columns explicitly keeps statements valid when someone later adds a column, and multi-row inserts cut network round trips.`,
             r`-- Always name the columns: positional VALUES breaks when the table changes
-INSERT INTO emp VALUES (4, 'Kiran');                 -- wrong number of values
+INSERT INTO emp VALUES (4, 'Kanhoji');                 -- wrong number of values
 
 -- Retrieve the generated key right after inserting
 INSERT INTO emp (name, salary) VALUES ('Dev', 70000);
@@ -107,7 +107,7 @@ SELECT @@max_allowed_packet / 1024 / 1024 AS packet_mb, @@autocommit AS autocomm
     'SELECT Basics': dd(
         [`<b>SELECT</b> reads data without changing it. The minimum form is <code>SELECT columns FROM table</code>. Pick columns (projection), rename them with <code>AS</code>, compute expressions, and use <code>SELECT *</code> only for quick exploration. The result is a set of rows with no guaranteed order.`,
             r`CREATE TABLE emp (id INT PRIMARY KEY, name VARCHAR(30), dept VARCHAR(20), salary DECIMAL(9,2));
-INSERT INTO emp VALUES (1,'Asha','IT',60000),(2,'Ravi','HR',45000),(3,'Mina','IT',52000);
+INSERT INTO emp VALUES (1,'Abaji','IT',60000),(2,'Raoji','HR',45000),(3,'Mina','IT',52000);
 
 SELECT name,                          -- plain column
        salary * 12  AS annual_pay,    -- computed column with alias
@@ -115,12 +115,12 @@ SELECT name,                          -- plain column
 FROM emp;
 
 -- OUTPUT:
--- +------+------------+----------+
--- | name | annual_pay | currency |
--- +------+------------+----------+
--- | Asha |  720000.00 | INR      |
--- | Ravi |  540000.00 | INR      |
--- | Mina |  624000.00 | INR      |
+-- +-------+------------+----------+
+-- | name  | annual_pay | currency |
+-- +-------+------------+----------+
+-- | Abaji | 720000.00  | INR      |
+-- | Raoji | 540000.00  | INR      |
+-- | Mina  |  624000.00 | INR      |
 -- +------+------------+----------+`],
         [`Every report, screen and API list starts with a query. Selecting only the columns you need reduces network traffic, memory and lets the engine answer from an index alone (covering index) instead of reading full rows.`,
             r`-- SELECT without FROM works for calculations and server facts
@@ -143,7 +143,7 @@ SELECT DISTINCT dept FROM emp;     -- unique departments only
 -- +----------+------+
 -- | employee | dept |
 -- +----------+------+
--- | Asha     | IT   |
+-- | Abaji    | IT   |
 -- | Mina     | IT   |
 -- +----------+------+
 -- +------+
@@ -168,10 +168,10 @@ ALTER TABLE emp ADD COLUMN city VARCHAR(20) DEFAULT 'Pune';
 SELECT * FROM emp WHERE id = 1;
 
 -- OUTPUT:
--- +----+------+------+----------+------+
--- | id | name | dept | salary   | city |
--- +----+------+------+----------+------+
--- |  1 | Asha | IT   | 60000.00 | Pune |
+-- +----+-------+------+----------+------+
+-- | id | name  | dept | salary   | city |
+-- +----+-------+------+----------+------+
+-- |  1 | Abaji | IT   | 60000.00 | Pune |
 -- +----+------+------+----------+------+`],
         [`<b>Limitations:</b> a table alias is not visible in the same SELECT list's WHERE for column aliases (aliases cannot be used in WHERE), a result can have at most 4096 columns, and the whole result is held by the server or streamed to the client buffer, so very large results need LIMIT or streaming.`,
             r`SELECT salary * 12 AS annual FROM emp WHERE annual > 600000;     -- alias used in WHERE
@@ -199,7 +199,7 @@ SELECT salary * 12 AS annual FROM emp HAVING annual > 600000;      -- allowed in
     'UPDATE': dd(
         [`<b>UPDATE</b> changes column values in existing rows: <code>UPDATE table SET col = expr WHERE condition</code>. The right-hand side can use the current column values, and several columns can be set in one statement. Without WHERE every row is updated.`,
             r`CREATE TABLE emp (id INT PRIMARY KEY, name VARCHAR(30), dept VARCHAR(20), salary DECIMAL(9,2));
-INSERT INTO emp VALUES (1,'Asha','IT',60000),(2,'Ravi','HR',45000),(3,'Mina','IT',52000);
+INSERT INTO emp VALUES (1,'Abaji','IT',60000),(2,'Raoji','HR',45000),(3,'Mina','IT',52000);
 
 UPDATE emp
 SET salary = salary * 1.10,           -- 10 percent raise, computed from the old value

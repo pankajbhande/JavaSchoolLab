@@ -135,11 +135,11 @@ A filter with several rules is easier to read, test and reuse as a function.`,
                 `def is_valid_email(email):
     return "@" in email and "." in email.split("@")[-1] and " " not in email
 
-emails = ["asha@mail.com", "ravi@mail", "kiran mail@x.com", "sheru@x.in"]
+emails = ["abaji@mail.com", "raoji@mail", "kanhoji mail@x.com", "sheru@x.in"]
 print([e for e in emails if is_valid_email(e)])
 
 # OUTPUT:
-# ['asha@mail.com', 'sheru@x.in']`
+# ['abaji@mail.com', 'sheru@x.in']`
             ]
         },
         {

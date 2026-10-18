@@ -800,7 +800,7 @@ a database.<br>
 <b>Key gotcha:</b> DDL statements in MySQL cause an implicit COMMIT - so you cannot ROLLBACK a CREATE/ALTER/DROP once it has run, even inside a transaction.`,
       codeExamples: [
 `START TRANSACTION;
-INSERT INTO student VALUES (2, 'Ravi', 'Pune');
+INSERT INTO student VALUES (2, 'Raoji', 'Pune');
 CREATE TABLE temp_log (id INT);   -- implicit COMMIT happens here!
 ROLLBACK;
 -- The INSERT is ALSO committed now, because the DDL forced a commit
@@ -855,7 +855,7 @@ VALUES ('Jay', 'pune', 25000);
 
 -- multiple rows at once
 INSERT INTO User (FirstName, City, Salary)
-VALUES ('Ashok', 'pune', 45000), ('Ram', 'pune', 35000);
+VALUES ('Ashok', 'pune', 45000), ('Rajaram', 'pune', 35000);
 
 /*
 RESULT:
@@ -1208,12 +1208,12 @@ ON customers.customerid = accounts.customerid;
 
 /*
 RESULT (every customer, accounts columns NULL if none):
-+--------------+---------------+------------+---------+
-| customername | email         | accountsid | balance |
-+--------------+---------------+------------+---------+
-| Jay Naik     | jay@x.com     |          1 |   25000 |
-| Ram Patil    | ram@x.com     |       NULL |    NULL |
-+--------------+---------------+------------+---------+
++---------------+-----------+------------+---------+
+| customername  | email     | accountsid | balance |
++---------------+-----------+------------+---------+
+| Jay Naik      | jay@x.com |          1 |   25000 |
+| Rajaram Patil | ram@x.com |       NULL |    NULL |
++---------------+-----------+------------+---------+
 */`
       ]
     },

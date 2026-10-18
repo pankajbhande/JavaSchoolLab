@@ -97,7 +97,7 @@ An object's attributes live in a dictionary, <code>obj.__dict__</code>. The buil
         self.name = name
         self.city = city
 
-s = Student("Asha", "Pune")
+s = Student("Abaji", "Pune")
 print(s.__dict__)
 
 field = "city"
@@ -108,10 +108,10 @@ delattr(s, "city")
 print(s.__dict__)
 
 # OUTPUT:
-# {'name': 'Asha', 'city': 'Pune'}
+# {'name': 'Abaji', 'city': 'Pune'}
 # Pune
 # True not set
-# {'name': 'Asha', 'marks': 91}`
+# {'name': 'Abaji', 'marks': 91}`
             ]
         }
     ],
@@ -128,18 +128,18 @@ When you look up a method on an instance, Python returns a <b>bound method</b>: 
     def greet(self, other):
         return f"{self.name} greets {other}"
 
-g = Greeter("Asha")
-print(g.greet("Ravi"))
-print(Greeter.greet(g, "Ravi"))      # identical call
+g = Greeter("Abaji")
+print(g.greet("Raoji"))
+print(Greeter.greet(g, "Raoji"))      # identical call
 
 bound = g.greet                      # a bound method object
-print(bound("Kiran"))
+print(bound("Kanhoji"))
 print(bound.__self__ is g, bound.__func__ is Greeter.greet)
 
 # OUTPUT:
-# Asha greets Ravi
-# Asha greets Ravi
-# Asha greets Kiran
+# Abaji greets Raoji
+# Abaji greets Raoji
+# Abaji greets Kanhoji
 # True True`
             ]
         },

@@ -83,14 +83,14 @@ class FakeNotifier:                       # for tests
 def place_order(customer: str, notifier: Notifier) -> None:
     notifier.send(customer, "Order confirmed")
 
-place_order("asha@mail.com", EmailNotifier())
+place_order("abaji@mail.com", EmailNotifier())
 fake = FakeNotifier()
-place_order("ravi@mail.com", fake)
+place_order("raoji@mail.com", fake)
 print(fake.sent)
 
 # OUTPUT:
-# Email to asha@mail.com: Order confirmed
-# [('ravi@mail.com', 'Order confirmed')]`
+# Email to abaji@mail.com: Order confirmed
+# [('raoji@mail.com', 'Order confirmed')]`
             ]
         }
     ],

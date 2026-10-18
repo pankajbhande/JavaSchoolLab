@@ -157,7 +157,7 @@ export const HtmlandCSS: Course[] = [
                         `, codeExamples: [`<body> 
                         <table> 
                         <tr><th>First_Name</th><th>Last_Name</th><th>Marks</th></tr> 
-                        <tr><td>Patil</td><td>Ram</td><td>60</td></tr> 
+                        <tr><td>Patil</td><td>Rajaram</td><td>60</td></tr> 
                         </table> 
                         </body> 
                         </html>`]
@@ -172,7 +172,7 @@ export const HtmlandCSS: Course[] = [
                         <body> 
                         <table border=”1”> 
                         <tr><th>First_Name</th><th>Last_Name</th><th>Marks</th></tr> 
-                        <tr><td>Patil</td><td>Ram</td><td>60</td></tr> 
+                        <tr><td>Patil</td><td>Rajaram</td><td>60</td></tr> 
                         </table> 
                         </body> 
                         </html> `,
@@ -613,7 +613,7 @@ export const HtmlandCSS: Course[] = [
                         <th>Marks</th>
                         </tr>
                         <tr>
-                        <td>Rahul</td>
+                        <td>Raghunath</td>
                         <td>85</td>
                         </tr>
                         </table>`
@@ -4503,7 +4503,7 @@ Line two    extra spaces removed</div>
                         <p>The <abbr title="World Health Organization">WHO</abbr> was founded in 1948.</p>
 
                         <address>
-                        Written by John Doe<br>
+                        Written by Jiva Doe<br>
                         Visit us at example.com<br>
                         Mumbai, India
                         </address>
@@ -6928,7 +6928,7 @@ built in 17.69s</samp></pre>
 
   <ul>
     <li><bdi>Pankaj</bdi> - 90 points</li>
-    <li><bdi>Ramesh</bdi> - 85 points</li>
+    <li><bdi>Ramchandra</bdi> - 85 points</li>
     <!-- A right-to-left name stays contained -->
     <li><bdi>مستخدم</bdi> - 80 points</li>
   </ul>
@@ -6984,7 +6984,7 @@ built in 17.69s</samp></pre>
 
   <script>
     // Real-world pattern: always isolate untrusted names
-    var users = ["Pankaj", "مستخدم", "Ramesh"];
+    var users = ["Pankaj", "مستخدم", "Ramchandra"];
     var html = users.map(function (n) {
       var bdi = document.createElement("bdi");
       bdi.textContent = n;              // textContent also prevents XSS
@@ -8364,7 +8364,7 @@ built in 17.69s</samp></pre>
     <h3>Comments</h3>
     <!-- REAL 4: user posted link - never trust it with your ranking -->
     <p>
-      Ramesh wrote: check
+      Ramchandra wrote: check
       <a href="https://random-blog.com" rel="ugc nofollow noopener noreferrer"
          target="_blank">this article</a>.
     </p>
@@ -8662,7 +8662,7 @@ built in 17.69s</samp></pre>
       var rows = [
         ["Roll No", "Name", "Marks"],
         ["101", "Pankaj", "88"],
-        ["102", "Ramesh", "91"],
+        ["102", "Ramchandra", "91"],
         ["103", "Sunita", "95"]
       ];
 
@@ -12786,7 +12786,7 @@ A: It changes the base for every relative URL, including fragment links, which c
   <!-- <img src="student.jpg" alt="Student photo" width="300" height="100"> -->
 
   <!-- RIGHT: keep the real ratio of the file -->
-  <img src="student.jpg" alt="Photo of Rahul Sharma" width="240" height="300">
+  <img src="student.jpg" alt="Photo of Raghunath Sharma" width="240" height="300">
 </body>
 </html>`,
                                     ]
@@ -13073,7 +13073,7 @@ A: It changes the base for every relative URL, including fragment links, which c
   <!-- <img src="student.jpg" alt="Student" width="300" height="80"> -->
 
   <!-- RIGHT: point 4, correct ratio -->
-  <img src="student.jpg" alt="Photo of Rahul Sharma" width="240" height="300">
+  <img src="student.jpg" alt="Photo of Raghunath Sharma" width="240" height="300">
 
   <!-- WRONG: point 5, fixed tall banner on a phone leaves ugly gaps -->
   <!-- <img src="banner.jpg" alt="Banner" width="1200" height="600" style="height:600px"> -->
@@ -13418,7 +13418,7 @@ A: It changes the base for every relative URL, including fragment links, which c
   <figure>
     <img src="news/metro.jpg" alt="Pune metro train at Shivajinagar station"
          width="800" height="450">
-    <figcaption>Metro train at Shivajinagar. Photo by Ramesh Patil.</figcaption>
+    <figcaption>Metro train at Shivajinagar. Photo by Ramchandra Patil.</figcaption>
   </figure>
 
   <!-- Point 6: college lab diagram -->
@@ -17471,7 +17471,7 @@ A: It changes the base for every relative URL, including fragment links, which c
                         </tr>
 
                         <tr>
-                        <td>John</td>
+                        <td>Jiva</td>
                         <td>25</td>
                         <td>New York</td>
                         </tr>
@@ -17527,7 +17527,7 @@ A: It changes the base for every relative URL, including fragment links, which c
                         </tr>
 
                         <tr>
-                        <td>John</td>
+                        <td>Jiva</td>
                         <td>25</td>
                         <td>New York</td>
                         </tr>
@@ -17638,7 +17638,7 @@ A: It changes the base for every relative URL, including fragment links, which c
                         </tr>
 
                         <tr>
-                        <td>John</td>
+                        <td>Jiva</td>
                         <td>IT</td>
                         <td>$5000</td>
                         </tr>
@@ -17771,7 +17771,7 @@ A: It changes the base for every relative URL, including fragment links, which c
                         </tr>
                         <tr>
                         <td>1</td>
-                        <td>John</td>
+                        <td>Jiva</td>
                         <td>john@email.com</td>
                         <td>9999999999</td>
                         <td>New York</td>
@@ -21705,7 +21705,7 @@ Why each step matters:
 
   <!-- POINT 2: a comment is also self-contained -->
   <article>
-    <h3>Comment by Ramesh</h3>
+    <h3>Comment by Ramchandra</h3>
     <p>Very helpful, thank you.</p>
   </article>
 
@@ -21762,7 +21762,7 @@ Why each step matters:
     <section>
       <h3>Comments</h3>
       <article>
-        <h4>Ramesh</h4>
+        <h4>Ramchandra</h4>
         <p>Clear explanation.</p>
       </article>
       <article>
@@ -21838,7 +21838,7 @@ Why each step matters:
         <h2>Comments (2)</h2>
 
         <article>
-          <h3>Ramesh</h3>
+          <h3>Ramchandra</h3>
           <p><time datetime="2025-09-05T14:20">2:20 pm</time></p>
           <p>Very useful, thanks.</p>
         </article>
@@ -28703,7 +28703,7 @@ tbody tr:hover { background: #e8f1ff; }
   <thead><tr><th class="frozen">Order</th><th>Customer</th><th>City</th><th>Amount</th><th>Status</th></tr></thead>
   <tbody>
     <tr><td class="frozen">OD1174829</td><td>Anjali Sharma</td><td>Pune</td><td>Rs 2,499</td><td><svg class="icon" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7"/></svg> Delivered</td></tr>
-    <tr><td class="frozen">OD1174830</td><td>Rahul Verma</td><td>Indore</td><td>Rs 899</td><td>In transit</td></tr>
+    <tr><td class="frozen">OD1174830</td><td>Raghunath Verma</td><td>Indore</td><td>Rs 899</td><td>In transit</td></tr>
     <tr><td class="frozen">OD1174831</td><td>Meera Nair</td><td>Kochi</td><td>Rs 15,999</td><td>Packed</td></tr>
   </tbody>
 </table>
@@ -30147,7 +30147,7 @@ body { font-family: Arial, sans-serif; background: #f6f6f6; }
 <table class="result-table">
   <tr><th>Roll No</th><th>Student</th><th>Marks</th></tr>
   <tr><td>21CS04</td><td>Anjali Deshmukh</td><td>88</td></tr>
-  <tr><td>21CS05</td><td>Rahul Verma</td><td>74</td></tr>
+  <tr><td>21CS05</td><td>Raghunath Verma</td><td>74</td></tr>
 </table>
 <button class="btn">Download Marksheet</button>
 </body>
@@ -30588,7 +30588,7 @@ body { font-family: Arial, sans-serif; padding: 16px; }
 <body>
 <table class="result-table">
   <tr><th>Roll No</th><th>Name</th><th>Fee Paid</th></tr>
-  <tr><td>21CS11</td><td>Sneha Patil</td><td>Rs. 45,000</td></tr>
+  <tr><td>21CS11</td><td>Suryaji Patil</td><td>Rs. 45,000</td></tr>
 </table>
 <input placeholder="Search by roll no">
 </body>

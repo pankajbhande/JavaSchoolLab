@@ -215,8 +215,8 @@ A single JSON document must be loaded completely. <b>JSON Lines</b> (<code>.json
                 `import json
 
 events = [
-    {"user": "asha", "action": "login"},
-    {"user": "ravi", "action": "buy", "amount": 499},
+    {"user": "abaji", "action": "login"},
+    {"user": "raoji", "action": "buy", "amount": 499},
 ]
 
 with open("events.jsonl", "w", encoding="utf-8") as f:
@@ -229,8 +229,8 @@ with open("events.jsonl", encoding="utf-8") as f:
         print(event["user"], event["action"], event.get("amount", "-"))
 
 # OUTPUT:
-# asha login -
-# ravi buy 499`
+# abaji login -
+# raoji buy 499`
             ]
         },
         {

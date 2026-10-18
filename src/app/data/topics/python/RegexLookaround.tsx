@@ -11,7 +11,7 @@ export const regexLookaround: Topic = {
 <div style="background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:12px;margin:12px 0;">
 <svg viewBox="0 0 420 133" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:420px;height:auto;font-family:monospace;display:block;margin:0 auto">
 <defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#6b7280"/></marker></defs>
-<rect x="10" y="10" width="184.6" height="26" rx="6" fill="#fff7ed" stroke="#ea580c"/><text text-anchor="middle" font-size="12" fill="#9a3412"><tspan x="102.3" y="27">Lookahead (?=...)</tspan></text><rect x="10" y="44" width="184.6" height="29" rx="6" fill="#f3f4f6" stroke="#9ca3af"/><text text-anchor="middle" font-size="12" fill="#374151"><tspan x="102.3" y="62.5">checks the text AFTER</tspan></text><rect x="10" y="79" width="184.6" height="44" rx="6" fill="#f3f4f6" stroke="#9ca3af"/><text text-anchor="middle" font-size="12" fill="#374151"><tspan x="102.3" y="97.5">\\w+(?=@) on asha@x.com</tspan><tspan x="102.3" y="112.5">-&gt; "asha"</tspan></text><rect x="224.6" y="10" width="184.6" height="26" rx="6" fill="#ecfdf5" stroke="#059669"/><text text-anchor="middle" font-size="12" fill="#065f46"><tspan x="316.9" y="27">Lookbehind (?&lt;=...)</tspan></text><rect x="224.6" y="44" width="184.6" height="29" rx="6" fill="#f3f4f6" stroke="#9ca3af"/><text text-anchor="middle" font-size="12" fill="#374151"><tspan x="316.9" y="62.5">checks the text BEFORE</tspan></text><rect x="224.6" y="79" width="184.6" height="44" rx="6" fill="#f3f4f6" stroke="#9ca3af"/><text text-anchor="middle" font-size="12" fill="#374151"><tspan x="316.9" y="97.5">(?&lt;=\\$)\\d+ on $120</tspan><tspan x="316.9" y="112.5">-&gt; "120"</tspan></text>
+<rect x="10" y="10" width="184.6" height="26" rx="6" fill="#fff7ed" stroke="#ea580c"/><text text-anchor="middle" font-size="12" fill="#9a3412"><tspan x="102.3" y="27">Lookahead (?=...)</tspan></text><rect x="10" y="44" width="184.6" height="29" rx="6" fill="#f3f4f6" stroke="#9ca3af"/><text text-anchor="middle" font-size="12" fill="#374151"><tspan x="102.3" y="62.5">checks the text AFTER</tspan></text><rect x="10" y="79" width="184.6" height="44" rx="6" fill="#f3f4f6" stroke="#9ca3af"/><text text-anchor="middle" font-size="12" fill="#374151"><tspan x="102.3" y="97.5">\\w+(?=@) on abaji@x.com</tspan><tspan x="102.3" y="112.5">-&gt; "abaji"</tspan></text><rect x="224.6" y="10" width="184.6" height="26" rx="6" fill="#ecfdf5" stroke="#059669"/><text text-anchor="middle" font-size="12" fill="#065f46"><tspan x="316.9" y="27">Lookbehind (?&lt;=...)</tspan></text><rect x="224.6" y="44" width="184.6" height="29" rx="6" fill="#f3f4f6" stroke="#9ca3af"/><text text-anchor="middle" font-size="12" fill="#374151"><tspan x="316.9" y="62.5">checks the text BEFORE</tspan></text><rect x="224.6" y="79" width="184.6" height="44" rx="6" fill="#f3f4f6" stroke="#9ca3af"/><text text-anchor="middle" font-size="12" fill="#374151"><tspan x="316.9" y="97.5">(?&lt;=\\$)\\d+ on $120</tspan><tspan x="316.9" y="112.5">-&gt; "120"</tspan></text>
 </svg>
 <div style="font-size:12px;color:#6b7280;text-align:center;margin-top:6px;">Figure: the checked text is not part of the match</div>
 </div>`
@@ -40,7 +40,7 @@ def main():
 
     print("after $      :", re.findall(r"(?<=\\$)\\d+", prices))
     print("not after $  :", re.findall(r"(?<!\\$)\\b\\d+\\b", prices))
-    print("name before @:", re.findall(r"\\w+(?=@)", "asha@x.com ravi@y.in"))
+    print("name before @:", re.findall(r"\\w+(?=@)", "abaji@x.com raoji@y.in"))
     print("commas       :", re.sub(r"\\B(?=(?:\\d{3})+(?!\\d))", ",", "1234567"))
 
 
@@ -50,7 +50,7 @@ if __name__ == "__main__":
 # OUTPUT:
 # after $      : ['5', '120']
 # not after $  : ['30']
-# name before @: ['asha', 'ravi']
+# name before @: ['abaji', 'raoji']
 # commas       : 1,234,567`
             ],
             codeExplanations: [
@@ -70,11 +70,11 @@ if __name__ == "__main__":
             codeExamples: [
                 `import re
 
-emails = "asha@x.com ravi@y.com"
+emails = "abaji@x.com raoji@y.com"
 print(re.findall(r"\\w+(?=@)", emails))      # names that are followed by @
 
 # OUTPUT:
-# ['asha', 'ravi']`
+# ['abaji', 'raoji']`
             ],
             codeExplanations: [
                 `\\w+ matches the word, and (?=@) only checks that an @ comes next - but the @ is not part of the result. Without the lookahead you would have to capture the name in a group and drop the @ yourself.`

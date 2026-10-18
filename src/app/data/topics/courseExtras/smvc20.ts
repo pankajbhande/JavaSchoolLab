@@ -347,7 +347,7 @@ class LoggingFilterTest {
         String h = req.getHeader("Authorization");
         if (h != null && h.equals("Bearer abc123")) {
             var auth = new UsernamePasswordAuthenticationToken(
-                "alice", null, List.of(new SimpleGrantedAuthority("ROLE_USER")));
+                "anaji", null, List.of(new SimpleGrantedAuthority("ROLE_USER")));
             SecurityContextHolder.getContext().setAuthentication(auth);
         }
         chain.doFilter(req, res);
@@ -355,7 +355,7 @@ class LoggingFilterTest {
 }
 
 // OUTPUT:
-// Bearer abc123 -> principal alice, ROLE_USER`],
+// Bearer abc123 -> principal anaji, ROLE_USER`],
             ['Add it to the security chain.',
                 r`@Bean
 SecurityFilterChain chain(HttpSecurity http) throws Exception {
@@ -368,7 +368,7 @@ SecurityFilterChain chain(HttpSecurity http) throws Exception {
 
 // OUTPUT:
 // GET /api/me (no token)        -> 401
-// GET /api/me (Bearer abc123)   -> 200 alice`]],
+// GET /api/me (Bearer abc123)   -> 200 anaji`]],
         [['Reject bad token directly.',
             r`if (h == null || !h.startsWith("Bearer ")) {
     res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -800,7 +800,7 @@ public void afterCompletion(HttpServletRequest req, HttpServletResponse res,
 }
 
 // OUTPUT: (varies)
-// AUDIT alice deleteUser 204`]
+// AUDIT anaji deleteUser 204`]
     ),
 
     'mvc-filter': dv(
@@ -862,7 +862,10 @@ class ApiKeyFilter extends OncePerRequestFilter {
     private final Set<String> keys = Set.of("k1", "k2");
     protected void doFilterInternal(HttpServletRequest q, HttpServletResponse s,
                                     FilterChain c) throws ServletException, IOException {
-        if (!keys.contains(q.getHeader("X-Api-Key"))) { s.sendError(401); return; }
+        if (!keys.contains(q.getHeader("X-Api-Key"))) {
+            s.sendError(401);
+            return;
+        }
         c.doFilter(q, s);
     }
 }
@@ -1081,7 +1084,7 @@ String me(Authentication auth) {
 }
 
 // OUTPUT:
-// GET /api/me (Bearer valid) -> alice [ROLE_USER]
+// GET /api/me (Bearer valid) -> anaji [ROLE_USER]
 // GET /api/me (expired)      -> 401`]
     ),
 
@@ -1361,7 +1364,8 @@ server.tomcat.accept-count=100
 server.compression.enabled=true
 
 # OUTPUT:
-# Tomcat started on port 8080; up to 200 concurrent request threads`],
+# Tomcat started on port 8080;
+up to 200 concurrent request threads`],
         [`<p>Scenario: a legacy servlet endpoint must live next to Spring MVC controllers. Register it with a <code>ServletRegistrationBean</code> on a path outside the dispatcher.</p>`,
             r`@Bean
 ServletRegistrationBean<LegacyServlet> legacy() {

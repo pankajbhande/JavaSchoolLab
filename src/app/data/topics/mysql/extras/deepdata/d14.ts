@@ -104,7 +104,7 @@ const pool = mysql.createPool({ host: 'db', user: 'shop_app', password: process.
 const [rows] = await pool.execute('SELECT id, name FROM users WHERE email = ?', [email]);
 
 -- OUTPUT:
--- rows: [ { id: 1, name: 'Asha' } ]`],
+-- rows: [ { id: 1, name: 'Abaji' } ]`],
         [`Per-language essentials: Go <code>db.SetMaxOpenConns</code>, <code>SetMaxIdleConns</code>, <code>SetConnMaxLifetime</code>; .NET <code>MaxPoolSize</code> in the connection string; PHP PDO with <code>ERRMODE_EXCEPTION</code> and prepared statements; Node transactions through <code>getConnection()</code> and explicit commit/rollback.`,
             r`db, _ := sql.Open("mysql", "shop_app:***@tcp(db:3306)/shop?parseTime=true&charset=utf8mb4&loc=UTC")
 db.SetMaxOpenConns(20); db.SetMaxIdleConns(10); db.SetConnMaxLifetime(30 * time.Minute)
@@ -114,7 +114,7 @@ $pdo = new PDO('mysql:host=db;dbname=shop;charset=utf8mb4', 'shop_app', $pass, [
 await using var conn = new MySqlConnection("Server=db;Database=shop;User=shop_app;Password=***;MaximumPoolSize=20;");
 
 -- OUTPUT:
--- name = "Asha"`],
+-- name = "Abaji"`],
         [`Mistakes: forgetting to release connections (pool exhaustion), string concatenation for queries, time zone and charset left at defaults, unhandled transient errors (deadlock 1213, lost connection 2006/2013), and creating a new connection per request in long-lived services.`,
             r`const conn = await pool.getConnection();
 try {

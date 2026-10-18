@@ -123,7 +123,7 @@ Before Java 8, an anonymous inner class was the standard way to pass "a piece of
 public class AnonymousVsLambda {
     public static void main(String[] args) {
         List<String> names =
-            new ArrayList<>(Arrays.asList("Charlie", "Alice", "Bob"));
+            new ArrayList<>(Arrays.asList("Chimnaji", "Anaji", "Baji"));
 
         // Old style — anonymous inner class implementing Comparator
         names.sort(new Comparator<String>() {
@@ -140,8 +140,8 @@ public class AnonymousVsLambda {
     }
 }
 // OUTPUT:
-// Anonymous class sort: [Alice, Bob, Charlie]
-// Lambda sort: [Charlie, Bob, Alice]`
+// Anonymous class sort: [Anaji, Baji, Chimnaji]
+// Lambda sort: [Chimnaji, Baji, Anaji]`
             ]
         },
         {

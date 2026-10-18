@@ -26,8 +26,10 @@ export const java05Extras: Record<string, Extra> = {
 Thread b = new Thread(() -> {
     for (int i = 0; i < 3; i++) System.out.println("B" + i);
 });
-a.start(); b.start();
-a.join(); b.join();
+a.start();
+b.start();
+a.join();
+b.join();
 
 // OUTPUT: (order varies)
 // A0
@@ -101,7 +103,8 @@ System.out.println(sum);
                 r`Thread t = new Thread(
         () -> System.out.println(Thread.currentThread().getName()), "worker");
 t.run();          // runs on main
-t.start(); t.join();
+t.start();
+t.join();
 
 // OUTPUT:
 // main
@@ -151,7 +154,8 @@ t.join();
         [['Observing states.',
             r`Thread t = new Thread(() -> { try { Thread.sleep(300); } catch (InterruptedException e) {} });
 System.out.println(t.getState());
-t.start(); Thread.sleep(50);
+t.start();
+Thread.sleep(50);
 System.out.println(t.getState());
 t.join();
 System.out.println(t.getState());
@@ -168,15 +172,18 @@ Thread holder = new Thread(() -> {
     }
 });
 Thread waiter = new Thread(() -> { synchronized (lock) { } });
-holder.start(); Thread.sleep(50);
-waiter.start(); Thread.sleep(50);
+holder.start();
+Thread.sleep(50);
+waiter.start();
+Thread.sleep(50);
 System.out.println(waiter.getState());
 
 // OUTPUT:
 // BLOCKED`]],
         [['Restart error.',
             r`Thread t = new Thread(() -> {});
-t.start(); t.join();
+t.start();
+t.join();
 try { t.start(); } catch (IllegalThreadStateException e) { System.out.println("cannot restart"); }
 
 // OUTPUT:
@@ -208,8 +215,14 @@ try { t.start(); } catch (IllegalThreadStateException e) { System.out.println("c
             ['S', 'What does happens-before mean?', 'A guarantee that writes by one action are visible to another, such as a monitor unlock before a later lock of the same monitor.'],
             ['S', 'Why use AtomicInteger instead of synchronized for a counter?', 'It uses CAS hardware instructions, avoiding blocking and giving better scalability.']],
         [['Race condition and fix.',
-            r`class Counter { int n; synchronized void inc() { n++; } }
-class Racy { int n; void inc() { n++; } }
+            r`class Counter {
+    int n;
+    synchronized void inc() { n++; }
+}
+class Racy {
+    int n;
+    void inc() { n++; }
+}
 Counter c = new Counter();
 Racy r = new Racy();
 Thread[] ts = new Thread[4];
@@ -301,8 +314,10 @@ Thread cons = new Thread(() -> {
         System.out.println();
     } catch (InterruptedException e) { }
 });
-prod.start(); cons.start();
-prod.join(); cons.join();
+prod.start();
+cons.start();
+prod.join();
+cons.join();
 
 // OUTPUT:
 // 1 2 3 4 5`],
@@ -514,9 +529,11 @@ pool.shutdown();
     'Life Cycle of Thread': dv(
         [`<code>Thread.State</code> is a JVM-level view. RUNNABLE covers both running on a CPU and ready or blocked in native I/O. Transitions: NEW to RUNNABLE on start; RUNNABLE to BLOCKED when entering a contended synchronized block; to WAITING on <code>Object.wait()</code>, <code>Thread.join()</code>, <code>LockSupport.park()</code>; to TIMED_WAITING with timeouts; to TERMINATED when run ends or throws.`,
             r`Thread t = new Thread(() -> LockSupport.park());
-t.start(); Thread.sleep(100);
+t.start();
+Thread.sleep(100);
 System.out.println(t.getState());
-LockSupport.unpark(t); t.join();
+LockSupport.unpark(t);
+t.join();
 System.out.println(t.getState());
 
 // OUTPUT:
@@ -527,7 +544,9 @@ System.out.println(t.getState());
 long[] dead = mx.findDeadlockedThreads();
 System.out.println(dead == null ? "no deadlock" : "deadlock among " + dead.length + " threads");
 Thread worker = new Thread(() -> { while (!Thread.currentThread().isInterrupted()) { /* work */ } System.out.println("stopped cleanly"); });
-worker.start(); worker.interrupt(); worker.join();
+worker.start();
+worker.interrupt();
+worker.join();
 
 // OUTPUT:
 // no deadlock
@@ -605,8 +624,10 @@ Runnable r = () -> {
 };
 Thread a = new Thread(r);
 Thread b = new Thread(r);
-a.start(); b.start();
-a.join(); b.join();
+a.start();
+b.start();
+a.join();
+b.join();
 System.out.println(count < 200_000 ? "lost updates" : "got lucky");
 
 Map<String, Integer> m = new ConcurrentHashMap<>();
@@ -682,8 +703,10 @@ Thread t2 = new Thread(() -> {
         odd.release();
     }
 });
-t1.start(); t2.start();
-t1.join(); t2.join();
+t1.start();
+t2.start();
+t1.join();
+t2.join();
 System.out.println();
 
 // OUTPUT:

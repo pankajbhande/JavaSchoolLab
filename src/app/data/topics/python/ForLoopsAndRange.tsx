@@ -101,7 +101,7 @@ for rank, name in enumerate(students, start=1):
 for item, qty in stock.items():
     print(f"{item}: {qty}")
 
-names = ["Asha", "Ravi"]
+names = ["Abaji", "Raoji"]
 marks = [91, 84]
 for name, mark in zip(names, marks):
     print(name, "scored", mark)
@@ -109,8 +109,8 @@ for name, mark in zip(names, marks):
 # OUTPUT:
 # pen: 10
 # book: 4
-# Asha scored 91
-# Ravi scored 84`
+# Abaji scored 91
+# Raoji scored 84`
             ]
         }
     ],

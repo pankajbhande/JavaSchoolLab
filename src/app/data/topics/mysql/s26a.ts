@@ -5,7 +5,7 @@ export const s26a: Record<string, DeepDive> = {
     'Declaring, Opening & Fetching Cursors': dd(
         [`A <b>cursor</b> lets a stored program walk through a query result <i>one row at a time</i>. The life cycle is fixed: <code>DECLARE</code> (with the SELECT) - <code>OPEN</code> (runs the query) - <code>FETCH ... INTO</code> variables (repeat) - <code>CLOSE</code>. Cursors exist only inside stored procedures, functions and triggers.`,
             r`CREATE TABLE emp (id INT PRIMARY KEY, name VARCHAR(20), salary INT);
-INSERT INTO emp VALUES (1,'Asha',50000),(2,'Ravi',60000),(3,'Meena',70000);
+INSERT INTO emp VALUES (1,'Abaji',50000),(2,'Raoji',60000),(3,'Moropant',70000);
 
 DELIMITER $$
 CREATE PROCEDURE first_two()
@@ -26,15 +26,15 @@ DELIMITER ;
 CALL first_two();
 
 -- OUTPUT:
--- +------+------+
--- | id   | name |
--- +------+------+
--- |    1 | Asha |
--- +------+------+
--- +------+------+
--- | id   | name |
--- +------+------+
--- |    2 | Ravi |
+-- +----+-------+
+-- | id | name  |
+-- +----+-------+
+-- |  1 | Abaji |
+-- +----+-------+
+-- +----+-------+
+-- | id | name  |
+-- +----+-------+
+-- |  2 | Raoji |
 -- +------+------+`],
         [`Plain SQL is set-based and cannot say "for each row, run these several statements with branching". A cursor gives a procedural loop when each row needs custom logic, such as calling another procedure per row.`,
             r`-- Per-row logic with branching: label each employee by salary band
@@ -54,10 +54,10 @@ DELIMITER ;
 CALL band_one();
 
 -- OUTPUT:
--- +-------+------+
--- | name  | band |
--- +-------+------+
--- | Meena | HIGH |
+-- +----------+------+
+-- | name     | band |
+-- +----------+------+
+-- | Moropant | HIGH |
 -- +-------+------+`],
         [`Real uses: legacy data migrations that must call a routine per row, sending each pending job row to a queue table, generating dynamic SQL per table name from <code>information_schema</code>, and row-by-row reconciliation.`,
             r`-- Generate one statement per table - a classic admin cursor use
@@ -159,7 +159,7 @@ DELIMITER ;
     'Cursor Loops & Handlers': dd(
         [`MySQL has no "has next" test. When FETCH runs past the last row it raises <b>SQLSTATE 02000 (NOT FOUND)</b>. You catch that with a <code>DECLARE ... HANDLER FOR NOT FOUND</code> that sets a flag, and the loop tests the flag right after the FETCH.`,
             r`CREATE TABLE emp (id INT PRIMARY KEY, name VARCHAR(20), salary INT);
-INSERT INTO emp VALUES (1,'Asha',50000),(2,'Ravi',60000),(3,'Meena',70000);
+INSERT INTO emp VALUES (1,'Abaji',50000),(2,'Raoji',60000),(3,'Moropant',70000);
 
 DELIMITER $$
 CREATE PROCEDURE names_csv()
@@ -183,10 +183,10 @@ DELIMITER ;
 CALL names_csv();
 
 -- OUTPUT:
--- +------------------+
--- | names            |
--- +------------------+
--- | Asha,Ravi,Meena  |
+-- +----------------------+
+-- | names                |
+-- +----------------------+
+-- | Abaji,Raoji,Moropant |
 -- +------------------+`],
         [`Without the handler the last FETCH aborts the procedure with error 1329 "No data - zero rows fetched". Handlers are also how you turn errors (duplicate key, deadlock) into controlled flow instead of a crash.`,
             r`-- What happens WITHOUT a NOT FOUND handler
@@ -325,7 +325,7 @@ CALL diag();
     'Cursors vs Set-Based SQL': dd(
         [`SQL is a <b>set-based</b> language: you describe the whole result and the optimiser chooses how to compute it with indexes, joins and parallel-friendly storage code. A cursor forces <b>row-by-row</b> ("RBAR") processing in the stored-program interpreter. Whenever one statement can express the work, it should win.`,
             r`CREATE TABLE emp (id INT PRIMARY KEY, name VARCHAR(20), salary INT);
-INSERT INTO emp VALUES (1,'Asha',50000),(2,'Ravi',60000),(3,'Meena',70000);
+INSERT INTO emp VALUES (1,'Abaji',50000),(2,'Raoji',60000),(3,'Moropant',70000);
 
 -- Task: give everyone below 65000 a 10% raise.
 -- SET-BASED (one statement, one pass):
@@ -377,10 +377,10 @@ SELECT GROUP_CONCAT(name ORDER BY id) AS names FROM emp;
 -- |  2 |  66000 |  121000 |
 -- |  3 |  70000 |  191000 |
 -- +----+--------+---------+
--- +-----------------+
--- | names           |
--- +-----------------+
--- | Asha,Ravi,Meena |
+-- +----------------------+
+-- | names                |
+-- +----------------------+
+-- | Abaji,Raoji,Moropant |
 -- +-----------------+`],
         [`<b>Advantages of set-based:</b> optimiser-chosen plans, index use, one statement and one lock acquisition pass, easy to read and test, and scales roughly linearly.`,
             r`-- EXPLAIN shows the optimiser's plan for set-based work; a cursor has no such plan per loop

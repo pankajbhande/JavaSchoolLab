@@ -160,7 +160,7 @@ def find(name: str, users: dict[str, int]) -> Optional[int]:    # int | None
 def show(v: int | str) -> str:           # 3.10+ union syntax
     return f"value={v}"
 
-print(find("ann", {"ann": 1}), find("bob", {"ann": 1}))
+print(find("ann", {"ann": 1}), find("baji", {"ann": 1}))
 print(show(5), show("x"))
 
 # OUTPUT:

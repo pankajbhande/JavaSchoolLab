@@ -20,25 +20,25 @@ export const e04: Record<string, Extra> = {
             ['S', 'How do you order index columns for WHERE a = ? AND b &gt; ?', 'Equality column first, range column second: <code>INDEX (a, b)</code>.']],
         [['Find employees earning above 50000 in department 10.',
             r`CREATE TABLE emp (id INT PRIMARY KEY, name VARCHAR(20), dept INT, salary INT);
-INSERT INTO emp VALUES (1,'Asha',10,60000),(2,'Ravi',10,45000),(3,'Meena',20,70000);
+INSERT INTO emp VALUES (1,'Abaji',10,60000),(2,'Raoji',10,45000),(3,'Moropant',20,70000);
 SELECT name FROM emp WHERE dept = 10 AND salary > 50000;
 
 -- OUTPUT:
 -- name
--- Asha`],
+-- Abaji`],
             ['Use OR with parentheses correctly.',
                 r`SELECT name FROM emp WHERE (dept = 10 OR dept = 20) AND salary >= 60000;
 
 -- OUTPUT:
 -- name
--- Asha
--- Meena`]],
+-- Abaji
+-- Moropant`]],
         [['Precedence trap: AND binds tighter than OR.',
             r`SELECT name FROM emp WHERE dept = 20 OR dept = 10 AND salary > 100000;
 
 -- OUTPUT:
 -- name
--- Meena          (read as dept=20 OR (dept=10 AND salary>100000))`],
+-- Moropant          (read as dept=20 OR (dept=10 AND salary>100000))`],
             ['Plan for a sargable filter.',
                 r`ALTER TABLE emp ADD INDEX idx_dept_sal (dept, salary);
 EXPLAIN SELECT id FROM emp WHERE dept = 10 AND salary > 50000;
@@ -68,16 +68,16 @@ EXPLAIN SELECT id FROM emp WHERE dept = 10 AND salary > 50000;
             r`SELECT name, dept, salary FROM emp ORDER BY dept ASC, salary DESC;
 
 -- OUTPUT:
--- name  | dept | salary
--- Asha  |   10 |  60000
--- Ravi  |   10 |  45000
--- Meena |   20 |  70000`],
+-- name     | dept | salary
+-- Abaji    |   10 | 60000
+-- Raoji    |   10 | 45000
+-- Moropant |   20 | 70000`],
             ['Sort by expression and alias.',
                 r`SELECT name, salary * 12 AS yearly FROM emp ORDER BY yearly DESC LIMIT 1;
 
 -- OUTPUT:
--- name  | yearly
--- Meena | 840000`]],
+-- name     | yearly
+-- Moropant | 840000`]],
         [['Detect filesort.',
             r`EXPLAIN SELECT name FROM emp ORDER BY name;
 
@@ -113,28 +113,28 @@ EXPLAIN SELECT name FROM emp ORDER BY name;
             r`SELECT name, salary FROM emp ORDER BY salary DESC LIMIT 2;
 
 -- OUTPUT:
--- name  | salary
--- Meena |  70000
--- Asha  |  60000`],
+-- name     | salary
+-- Moropant | 70000
+-- Abaji    | 60000`],
             ['Second page of size 1.',
                 r`SELECT name FROM emp ORDER BY id LIMIT 1 OFFSET 1;
 
 -- OUTPUT:
 -- name
--- Ravi`]],
+-- Raoji`]],
         [['Keyset next page after id 1.',
             r`SELECT id, name FROM emp WHERE id > 1 ORDER BY id LIMIT 2;
 
 -- OUTPUT:
 -- id | name
---  2 | Ravi
---  3 | Meena`],
+--  2 | Raoji
+--  3 | Moropant`],
             ['Deferred join.',
                 r`SELECT e.* FROM emp e JOIN (SELECT id FROM emp ORDER BY salary DESC LIMIT 1 OFFSET 1) t ON t.id = e.id;
 
 -- OUTPUT:
--- id | name | dept | salary
---  1 | Asha |   10 |  60000`]]
+-- id | name  | dept | salary
+--  1 | Abaji |   10 | 60000`]]
     ),
 
     'DISTINCT': x(
@@ -253,8 +253,8 @@ EXPLAIN SELECT name FROM emp ORDER BY name;
                 r`SELECT * FROM (SELECT name, salary * 12 AS yearly FROM emp) t WHERE yearly > 600000;
 
 -- OUTPUT:
--- name  | yearly
--- Meena | 840000`]],
+-- name     | yearly
+-- Moropant | 840000`]],
         [['Alias allowed in ORDER BY and HAVING.',
             r`SELECT dept, SUM(salary) AS total FROM emp GROUP BY dept HAVING total > 100000 ORDER BY total DESC;
 
@@ -265,8 +265,8 @@ EXPLAIN SELECT name FROM emp ORDER BY name;
                 r`SELECT * FROM (SELECT name, ROW_NUMBER() OVER (ORDER BY salary DESC) AS rn FROM emp) t WHERE rn = 1;
 
 -- OUTPUT:
--- name  | rn
--- Meena |  1`]]
+-- name     | rn
+-- Moropant | 1`]]
     ),
 
     'Comparison Operators': x(
@@ -296,7 +296,7 @@ EXPLAIN SELECT name FROM emp ORDER BY name;
 
 -- OUTPUT:
 -- name
--- Meena`]],
+-- Moropant`]],
         [['Row comparison.',
             r`SELECT id FROM emp WHERE (dept, id) > (10, 1) ORDER BY dept, id;
 
@@ -350,7 +350,7 @@ EXPLAIN SELECT name FROM emp ORDER BY name;
 
 -- OUTPUT:
 -- name
--- Meena`]]
+-- Moropant`]]
     ),
 
     'BETWEEN, IN & NOT IN': x(
@@ -374,14 +374,14 @@ EXPLAIN SELECT name FROM emp ORDER BY name;
 
 -- OUTPUT:
 -- name
--- Asha
--- Ravi`],
+-- Abaji
+-- Raoji`],
             ['NOT IN list.',
                 r`SELECT name FROM emp WHERE id NOT IN (1,2);
 
 -- OUTPUT:
 -- name
--- Meena`]],
+-- Moropant`]],
         [['Half-open datetime range.',
             r`SELECT COUNT(*) FROM orders WHERE created_at >= '2026-01-31' AND created_at < '2026-02-01';
 
@@ -395,8 +395,8 @@ SELECT e.name FROM emp e JOIN ids i ON i.id = e.id;
 
 -- OUTPUT:
 -- name
--- Asha
--- Meena`]]
+-- Abaji
+-- Moropant`]]
     ),
 
     'LIKE & Pattern Matching': x(
@@ -420,8 +420,8 @@ SELECT e.name FROM emp e JOIN ids i ON i.id = e.id;
 
 -- OUTPUT:
 -- name
--- Asha
--- Ravi`],
+-- Abaji
+-- Raoji`],
             ['Case-insensitive and exact length.',
                 r`SELECT 'MySQL' LIKE 'my___' AS five_chars, 'MySQL' LIKE 'my__' AS four_chars;
 
@@ -505,12 +505,12 @@ EXPLAIN SELECT id FROM contacts WHERE phone IS NULL;
             ['S', 'How can you index LOWER(email)?', 'Use a functional index <code>((LOWER(email)))</code> or a generated column with an index.'],
             ['S', 'Why avoid heavy string functions in WHERE?', 'They are computed per row and disable normal index lookups.']],
         [['Common functions together.',
-            r`SELECT CONCAT(UPPER(LEFT('asha',1)), LOWER(SUBSTRING('ASHA',2))) AS proper,
+            r`SELECT CONCAT(UPPER(LEFT('abaji',1)), LOWER(SUBSTRING('ABAJI',2))) AS proper,
        TRIM('  hi  ') AS trimmed, REPLACE('a-b-c','-','/') AS replaced, CHAR_LENGTH('MySQL') AS n;
 
 -- OUTPUT:
 -- proper | trimmed | replaced | n
--- Asha   | hi      | a/b/c    | 5`],
+-- Abaji  | hi      | a/b/c    | 5`],
             ['CONCAT with NULL.',
                 r`SELECT CONCAT('a', NULL, 'b') AS c1, CONCAT_WS('-', 'a', NULL, 'b') AS c2;
 
@@ -570,10 +570,10 @@ EXPLAIN SELECT id FROM users WHERE LOWER(email) = 'a@x.com';
                 r`SELECT name, ROUND(salary / (SELECT SUM(salary) FROM emp) * 100, 1) AS pct FROM emp;
 
 -- OUTPUT:
--- name  | pct
--- Asha  | 34.3
--- Ravi  | 25.7
--- Meena | 40.0`]]
+-- name     | pct
+-- Abaji    | 34.3
+-- Raoji    | 25.7
+-- Moropant | 40.0`]]
     ),
 
     'Date Functions': x(
@@ -731,8 +731,8 @@ SELECT phone IS NULL FROM contacts WHERE id = 3;
 
 -- OUTPUT:
 -- dept | n | total  | names
---   10 | 2 | 105000 | Asha, Ravi
---   20 | 1 |  70000 | Meena`],
+--   10 | 2 | 105000 | Abaji, Raoji
+--   20 | 1 |  70000 | Moropant`],
             ['Pivot with CASE.',
                 r`SELECT SUM(CASE WHEN dept=10 THEN 1 ELSE 0 END) AS d10, SUM(CASE WHEN dept=20 THEN 1 ELSE 0 END) AS d20 FROM emp;
 

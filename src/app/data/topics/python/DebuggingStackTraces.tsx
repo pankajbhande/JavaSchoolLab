@@ -29,11 +29,11 @@ def report(cart):
 print(report({}))`,
                 `# OUTPUT (paths vary; Python 3.11+ also adds ^ / ~ markers under some lines):
 # Traceback (most recent call last):
-#   File "/home/asha/shop.py", line 12, in <module>
+#   File "/home/abaji/shop.py", line 12, in <module>
 #     print(report({}))
-#   File "/home/asha/shop.py", line 9, in report
+#   File "/home/abaji/shop.py", line 9, in report
 #     avg = average_price(list(cart.values()))
-#   File "/home/asha/shop.py", line 6, in average_price
+#   File "/home/abaji/shop.py", line 6, in average_price
 #     return total(prices) / len(prices)
 # ZeroDivisionError: division by zero`
             ]
@@ -77,9 +77,9 @@ ratio(1, 0)
 
 # OUTPUT (Python 3.11+, path varies):
 # Traceback (most recent call last):
-#   File "/home/asha/calc.py", line 4, in <module>
+#   File "/home/abaji/calc.py", line 4, in <module>
 #     ratio(1, 0)
-#   File "/home/asha/calc.py", line 2, in ratio
+#   File "/home/abaji/calc.py", line 2, in ratio
 #     return a / b
 #            ~~^~~
 # ZeroDivisionError: division by zero`
@@ -91,9 +91,9 @@ Real tracebacks often run through frameworks and libraries (paths containing <co
             codeExamples: [
                 `# OUTPUT (shortened; paths and library line numbers vary by version):
 # Traceback (most recent call last):
-#   File "/home/asha/app/report.py", line 7, in <module>
+#   File "/home/abaji/app/report.py", line 7, in <module>
 #     data = load_settings("config.json")
-#   File "/home/asha/app/report.py", line 4, in load_settings
+#   File "/home/abaji/app/report.py", line 4, in load_settings
 #     return json.loads(text)                 <- last frame in YOUR code
 #   File "/usr/lib/python3.12/json/__init__.py", line 346, in loads
 #     return _default_decoder.decode(s)

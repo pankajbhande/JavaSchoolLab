@@ -167,13 +167,13 @@ print(hasattr(b, "size"))
         self.name = name
 
 p = Person("Ann")
-p.nmae = "Bob"                         # typo: creates a NEW attribute
+p.nmae = "Baji"                         # typo: creates a NEW attribute
 print(p.name)                          # unchanged!
 print(vars(p))
 
 # OUTPUT:
 # Ann
-# {'name': 'Ann', 'nmae': 'Bob'}`],
+# {'name': 'Ann', 'nmae': 'Baji'}`],
         [`<b>Limitations:</b> every instance carries a <code>__dict__</code> (memory cost). <code>__slots__</code> removes it and blocks unknown attributes, but gives up flexibility.`,
             r`class Point:
     __slots__ = ("x", "y")             # only these attributes are allowed
@@ -470,7 +470,7 @@ class Manager(Employee):
     def pay(self):
         return self.salary + self.bonus    # extend behaviour
 
-print(Employee("Bob", 1000).pay(), Manager("Ann", 2000, 500).pay())
+print(Employee("Baji", 1000).pay(), Manager("Ann", 2000, 500).pay())
 
 # OUTPUT:
 # 1000 2500`],

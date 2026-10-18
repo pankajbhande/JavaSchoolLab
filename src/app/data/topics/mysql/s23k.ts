@@ -299,7 +299,7 @@ BEGIN
   SELECT COUNT(*) AS n FROM emp WHERE name = name;   -- compares the parameter to itself!
 END //
 DELIMITER ;
-CALL shadow('Asha');
+CALL shadow('Abaji');
 
 -- OUTPUT:
 -- +---+

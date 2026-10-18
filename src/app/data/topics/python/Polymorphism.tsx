@@ -53,14 +53,14 @@ class Intern(Employee):
     def bonus(self):
         return 1000
 
-staff = [Employee("Asha", 50000), Manager("Ravi", 90000), Intern("Kiran", 15000)]
+staff = [Employee("Abaji", 50000), Manager("Raoji", 90000), Intern("Kanhoji", 15000)]
 for person in staff:
     print(f"{person.name}: {person.bonus()}")
 
 # OUTPUT:
-# Asha: 2500.0
-# Ravi: 13500.0
-# Kiran: 1000`
+# Abaji: 2500.0
+# Raoji: 13500.0
+# Kanhoji: 1000`
             ]
         },
         {

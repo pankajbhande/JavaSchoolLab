@@ -25,9 +25,9 @@ SELECT e.name AS employee, d.name AS department FROM emp e INNER JOIN department
 
 -- OUTPUT:
 -- employee | department
--- Asha     | HR
--- Ravi     | HR
--- Meena    | IT`],
+-- Abaji    | HR
+-- Raoji    | HR
+-- Moropant | IT`],
             ['Count employees per department with a join and group.',
                 r`SELECT d.name, COUNT(*) AS n FROM emp e JOIN departments d ON d.id = e.dept GROUP BY d.id, d.name;
 
@@ -39,9 +39,9 @@ SELECT e.name AS employee, d.name AS department FROM emp e INNER JOIN department
             r`SELECT e.name, d.name AS dept, l.city FROM emp e JOIN departments d ON d.id = e.dept JOIN locations l ON l.id = d.location_id;
 
 -- OUTPUT:
--- name  | dept | city
--- Asha  | HR   | Pune
--- Meena | IT   | Delhi`],
+-- name     | dept | city
+-- Abaji    | HR   | Pune
+-- Moropant | IT   | Delhi`],
             ['Check the join plan.',
                 r`EXPLAIN SELECT e.name, d.name FROM emp e JOIN departments d ON d.id = e.dept;
 
@@ -86,16 +86,16 @@ SELECT e.name AS employee, d.name AS department FROM emp e INNER JOIN department
 
 -- OUTPUT:
 -- name  | employee
--- HR    | Asha
--- IT    | Meena
+-- HR    | Abaji
+-- IT    | Moropant
 -- Sales | NULL`],
             ['Same filter in WHERE drops Sales.',
                 r`SELECT d.name, e.name FROM departments d LEFT JOIN emp e ON e.dept = d.id WHERE e.salary > 50000;
 
 -- OUTPUT:
 -- name | name
--- HR   | Asha
--- IT   | Meena`]]
+-- HR   | Abaji
+-- IT   | Moropant`]]
     ),
 
     'RIGHT JOIN': x(
@@ -212,22 +212,22 @@ SELECT * FROM big_a CROSS JOIN big_b;
             ['S', 'Trade-offs of closure tables vs adjacency list?', 'Closure tables make subtree queries fast but need more storage and write maintenance; adjacency lists are simple but need recursion.']],
         [['Employee and manager.',
             r`CREATE TABLE staff (id INT PRIMARY KEY, name VARCHAR(20), manager_id INT);
-INSERT INTO staff VALUES (1,'Anita',NULL),(2,'Ravi',1),(3,'Meena',1),(4,'Kiran',2);
+INSERT INTO staff VALUES (1,'Annaji',NULL),(2,'Raoji',1),(3,'Moropant',1),(4,'Kanhoji',2);
 SELECT e.name AS employee, m.name AS manager FROM staff e LEFT JOIN staff m ON m.id = e.manager_id ORDER BY e.id;
 
 -- OUTPUT:
 -- employee | manager
--- Anita    | NULL
--- Ravi     | Anita
--- Meena    | Anita
--- Kiran    | Ravi`],
+-- Annaji   | NULL
+-- Raoji    | Annaji
+-- Moropant | Annaji
+-- Kanhoji  | Raoji`],
             ['Find managers who have reports and their counts.',
                 r`SELECT m.name, COUNT(*) AS reports FROM staff e JOIN staff m ON m.id = e.manager_id GROUP BY m.id, m.name;
 
 -- OUTPUT:
--- name  | reports
--- Anita |       2
--- Ravi  |       1`]],
+-- name   | reports
+-- Annaji | 2
+-- Raoji  | 1`]],
         [['Duplicate emails as pairs.',
             r`SELECT a.id, b.id FROM users a JOIN users b ON a.email = b.email AND a.id < b.id;
 
@@ -243,10 +243,10 @@ SELECT CONCAT(REPEAT('  ', lvl), name) AS org FROM tree ORDER BY lvl, id;
 
 -- OUTPUT:
 -- org
--- Anita
---   Ravi
---   Meena
---     Kiran`]]
+-- Annaji
+--   Raoji
+--   Moropant
+--     Kanhoji`]]
     ),
 
     'Multiple Joins & Many-to-Many Joins': x(
@@ -271,18 +271,18 @@ FROM students s JOIN enrolments e ON e.student_id = s.id JOIN courses c ON c.id 
 ORDER BY s.name, c.title;
 
 -- OUTPUT:
--- name | title | enrolled_on
--- Asha | Java  | 2026-01-06
--- Asha | SQL   | 2026-01-05
--- Ravi | SQL   | 2026-01-07`],
+-- name  | title | enrolled_on
+-- Abaji | Java  | 2026-01-06
+-- Abaji | SQL   | 2026-01-05
+-- Raoji | SQL   | 2026-01-07`],
             ['Course popularity with students listed.',
                 r`SELECT c.title, COUNT(*) AS n, GROUP_CONCAT(s.name ORDER BY s.name) AS students
 FROM courses c JOIN enrolments e ON e.course_id = c.id JOIN students s ON s.id = e.student_id GROUP BY c.id, c.title;
 
 -- OUTPUT:
 -- title | n | students
--- SQL   | 2 | Asha,Ravi
--- Java  | 1 | Asha`]],
+-- SQL   | 2 | Abaji,Raoji
+-- Java  | 1 | Abaji`]],
         [['Fix fan-out with pre-aggregation.',
             r`SELECT o.id, i.item_total, p.paid_total
 FROM orders o
@@ -297,7 +297,7 @@ LEFT JOIN (SELECT order_id, SUM(amount) AS paid_total FROM payments GROUP BY ord
 
 -- OUTPUT:
 -- name
--- Meena`]]
+-- Moropant`]]
     ),
 
     'Join vs Subquery & Join Performance': x(
@@ -322,7 +322,7 @@ SELECT c.name FROM customers c WHERE EXISTS (SELECT 1 FROM orders o WHERE o.cust
 
 -- OUTPUT: (both)
 -- name
--- Asha`],
+-- Abaji`],
             ['Find the strategy used.',
                 r`EXPLAIN FORMAT=TREE SELECT c.name FROM customers c WHERE EXISTS (SELECT 1 FROM orders o WHERE o.customer_id = c.id);
 
@@ -367,17 +367,17 @@ LEFT JOIN (SELECT customer_id, COUNT(*) AS n FROM orders GROUP BY customer_id) x
             r`SELECT name, salary FROM emp WHERE salary > (SELECT AVG(salary) FROM emp);
 
 -- OUTPUT:
--- name  | salary
--- Meena |  70000
--- Asha  |  60000`],
+-- name     | salary
+-- Moropant | 70000
+-- Abaji    | 60000`],
             ['Compare to department maximum with a scalar subquery.',
                 r`SELECT name, salary, (SELECT MAX(salary) FROM emp) - salary AS gap_to_top FROM emp;
 
 -- OUTPUT:
--- name  | salary | gap_to_top
--- Asha  |  60000 |      10000
--- Ravi  |  45000 |      25000
--- Meena |  70000 |          0`]],
+-- name     | salary | gap_to_top
+-- Abaji    |  60000 | 10000
+-- Raoji    |  45000 | 25000
+-- Moropant |  70000 | 0`]],
         [['Too many rows error.',
             r`SELECT name FROM emp WHERE salary = (SELECT salary FROM emp WHERE dept = 10);
 
@@ -387,8 +387,8 @@ LEFT JOIN (SELECT customer_id, COUNT(*) AS n FROM orders GROUP BY customer_id) x
                 r`SELECT c.name, (SELECT MAX(o.created_at) FROM orders o WHERE o.customer_id = c.id) AS last_order FROM customers c;
 
 -- OUTPUT:
--- name | last_order
--- Asha | 2026-03-05 10:00:00`]]
+-- name  | last_order
+-- Abaji | 2026-03-05 10:00:00`]]
     ),
 
     'Multi-Row Subqueries with IN': x(
@@ -412,9 +412,9 @@ LEFT JOIN (SELECT customer_id, COUNT(*) AS n FROM orders GROUP BY customer_id) x
 
 -- OUTPUT:
 -- name
--- Asha
--- Ravi
--- Meena`],
+-- Abaji
+-- Raoji
+-- Moropant`],
             ['Departments with no employees (NOT IN).',
                 r`SELECT name FROM departments WHERE id NOT IN (SELECT dept FROM emp WHERE dept IS NOT NULL);
 
@@ -431,8 +431,8 @@ LEFT JOIN (SELECT customer_id, COUNT(*) AS n FROM orders GROUP BY customer_id) x
 
 -- OUTPUT:
 -- name
--- Asha
--- Meena`]]
+-- Abaji
+-- Moropant`]]
     ),
 
     'Correlated Subqueries': x(
@@ -455,8 +455,8 @@ LEFT JOIN (SELECT customer_id, COUNT(*) AS n FROM orders GROUP BY customer_id) x
             r`SELECT e.name, e.dept, e.salary FROM emp e WHERE e.salary > (SELECT AVG(x.salary) FROM emp x WHERE x.dept = e.dept);
 
 -- OUTPUT:
--- name | dept | salary
--- Asha |   10 |  60000`],
+-- name  | dept | salary
+-- Abaji |   10 | 60000`],
             ['Latest order per customer.',
                 r`SELECT o.* FROM orders o WHERE o.created_at = (SELECT MAX(created_at) FROM orders WHERE customer_id = o.customer_id);
 
@@ -468,13 +468,13 @@ LEFT JOIN (SELECT customer_id, COUNT(*) AS n FROM orders GROUP BY customer_id) x
 
 -- OUTPUT:
 -- name
--- Asha`],
+-- Abaji`],
             ['Rewrite with window function.',
                 r`SELECT name FROM (SELECT name, salary, AVG(salary) OVER (PARTITION BY dept) AS a FROM emp) t WHERE salary > a;
 
 -- OUTPUT:
 -- name
--- Asha`]]
+-- Abaji`]]
     ),
 
     'EXISTS Subqueries': x(
@@ -497,8 +497,8 @@ LEFT JOIN (SELECT customer_id, COUNT(*) AS n FROM orders GROUP BY customer_id) x
             r`SELECT name FROM customers c WHERE EXISTS (SELECT 1 FROM orders o WHERE o.customer_id = c.id);
 SELECT name FROM customers c WHERE NOT EXISTS (SELECT 1 FROM orders o WHERE o.customer_id = c.id);
 
--- OUTPUT: (first) Asha
--- OUTPUT: (second) Ravi`],
+-- OUTPUT: (first) Abaji
+-- OUTPUT: (second) Raoji`],
             ['Departments that have a high earner.',
                 r`SELECT d.name FROM departments d WHERE EXISTS (SELECT 1 FROM emp e WHERE e.dept = d.id AND e.salary > 65000);
 
@@ -512,7 +512,7 @@ WHERE NOT EXISTS (SELECT 1 FROM products p WHERE NOT EXISTS (
 
 -- OUTPUT:
 -- name
--- Asha`],
+-- Abaji`],
             ['Plan shows semijoin.',
                 r`EXPLAIN FORMAT=TREE SELECT 1 FROM customers c WHERE EXISTS (SELECT 1 FROM orders o WHERE o.customer_id = c.id);
 
@@ -546,13 +546,13 @@ WHERE NOT EXISTS (SELECT 1 FROM products p WHERE NOT EXISTS (
 
 -- OUTPUT:
 -- name
--- Asha
--- Meena`]],
+-- Abaji
+-- Moropant`]],
         [['Equivalent MAX/MIN rewrites.',
             r`SELECT name FROM emp WHERE salary > (SELECT MAX(salary) FROM emp WHERE dept = 20);
 SELECT name FROM emp WHERE salary > (SELECT MIN(salary) FROM emp WHERE dept = 10);
 
--- OUTPUT: (first) none   (second) Asha, Meena`],
+-- OUTPUT: (first) none   (second) Abaji, Moropant`],
             ['ALL on empty set is true.',
                 r`SELECT 1 > ALL (SELECT salary FROM emp WHERE 1 = 0) AS vacuous;
 
@@ -584,9 +584,9 @@ SELECT name FROM emp WHERE salary > 50000;
 
 -- OUTPUT:
 -- name
--- Asha
--- Ravi
--- Meena`],
+-- Abaji
+-- Raoji
+-- Moropant`],
             ['UNION ALL keeps duplicates.',
                 r`SELECT name FROM emp WHERE dept = 10
 UNION ALL
@@ -594,18 +594,18 @@ SELECT name FROM emp WHERE salary > 50000;
 
 -- OUTPUT:
 -- name
--- Asha
--- Ravi
--- Meena
--- Asha`]],
+-- Abaji
+-- Raoji
+-- Moropant
+-- Abaji`]],
         [['Sorting and limiting the union.',
             r`(SELECT name, salary FROM emp WHERE dept = 10) UNION ALL (SELECT name, salary FROM emp WHERE dept = 20)
 ORDER BY salary DESC LIMIT 2;
 
 -- OUTPUT:
--- name  | salary
--- Meena | 70000
--- Asha  | 60000`],
+-- name     | salary
+-- Moropant | 70000
+-- Abaji    | 60000`],
             ['Rewrite an OR into UNION ALL with a guard.',
                 r`SELECT id FROM emp WHERE dept = 10
 UNION ALL
@@ -689,8 +689,8 @@ SELECT id, name, 'cust', phone FROM customers;
 
 -- OUTPUT: (example)
 -- id | name  | src  | phone
---  1 | Asha  | emp  | NULL
---  1 | Asha  | cust | 9999`],
+--  1 | Abaji | emp  | NULL
+--  1 | Abaji | cust | 9999`],
             ['Mismatch error.',
                 r`SELECT id, name FROM emp UNION SELECT id FROM customers;
 
@@ -703,12 +703,12 @@ SELECT id, name, 'cust', phone FROM customers;
 
 -- OUTPUT:
 -- id | name
---  1 | Asha`],
+--  1 | Abaji`],
             ['Align collations.',
                 r`SELECT name COLLATE utf8mb4_0900_ai_ci FROM a UNION SELECT name COLLATE utf8mb4_0900_ai_ci FROM b;
 
 -- OUTPUT:
 -- name
--- Asha`]]
+-- Abaji`]]
     )
 };

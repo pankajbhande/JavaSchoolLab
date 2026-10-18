@@ -44,9 +44,9 @@ def db():
 
 
 def test_insert(db):
-    db["users"].append("asha")
+    db["users"].append("abaji")
     print("  test_insert       ->", db["users"])
-    assert db["users"] == ["asha"]
+    assert db["users"] == ["abaji"]
 
 
 def test_starts_empty(db):
@@ -57,7 +57,7 @@ def test_starts_empty(db):
 #
 # OUTPUT (pytest's progress dots and summary line are omitted):
 #   [setup]    open connection
-#   test_insert       -> ['asha']
+#   test_insert       -> ['abaji']
 #   [teardown] close connection
 #   [setup]    open connection
 #   test_starts_empty -> []
@@ -104,7 +104,7 @@ def db():
     print("close")
 
 def test_one(db):
-    db["users"].append("asha")
+    db["users"].append("abaji")
     print("test_one", db)
 
 def test_two(db):
@@ -114,7 +114,7 @@ def test_two(db):
 #
 # OUTPUT (pytest's progress dots omitted):
 # connect
-# test_one {'users': ['asha']}
+# test_one {'users': ['abaji']}
 # close
 # connect
 # test_two {'users': []}
@@ -130,14 +130,14 @@ import pytest
 
 @pytest.fixture
 def sample_user():
-    return {"id": 1, "name": "Asha", "active": True}
+    return {"id": 1, "name": "Abaji", "active": True}
 
 # tests/test_users.py  (no import of sample_user needed)
 def test_user_is_active(sample_user):
     assert sample_user["active"]
 
 def test_user_name(sample_user):
-    assert sample_user["name"] == "Asha"`
+    assert sample_user["name"] == "Abaji"`
             ]
         }
     ],
@@ -218,13 +218,13 @@ def test_backend_name(backend):
 
 @pytest.fixture
 def make_user():
-    def _make(name="Asha", active=True):
+    def _make(name="Abaji", active=True):
         return {"name": name, "active": active}
     return _make
 
 def test_two_users(make_user):
     a = make_user()
-    b = make_user("Ravi", active=False)
+    b = make_user("Raoji", active=False)
     assert a["active"] and not b["active"]
 
 # OUTPUT with -v:

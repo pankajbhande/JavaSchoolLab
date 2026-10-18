@@ -7,7 +7,7 @@ export const m01b: Record<string, DeepDive> = {
             r`# Names point at objects; the type lives on the object
 count = 42            # int
 price = 3.14          # float
-name = "Asha"         # str
+name = "Abaji"         # str
 active = True         # bool
 nothing = None        # NoneType
 
@@ -17,7 +17,7 @@ for v in (count, price, name, active, nothing):
 # OUTPUT:
 # 42       -> int
 # 3.14     -> float
-# 'Asha'   -> str
+# 'Abaji'  -> str
 # True     -> bool
 # None     -> NoneType`],
         [`Programs must remember values (a price, a user name, a flag) while they run. Variables give those values readable names and types decide which operations are legal.`,
@@ -72,7 +72,7 @@ print(MAX_USERS)
    ┌──────────┐                              ┌───────────────┐
    │  count   │ ───────────────────────────► │ int   42      │
    ├──────────┤                              ├───────────────┤
-   │  name    │ ───────────────────────────► │ str   "Asha"  │
+   │  name    │ ───────────────────────────► │ str   "Abaji" │
    ├──────────┤                              ├───────────────┤
    │  price   │ ───────────────────────────► │ float 3.14    │
    └──────────┘                              └───────────────┘
@@ -341,13 +341,13 @@ print("Love" in full)
 # ADA LOVELACE 12
 # True`],
         [`Cleaning user input is the most common job: strip whitespace, normalise case, then compare or store.`,
-            r`raw = "  Alice@Example.COM \n"
+            r`raw = "  Anaji@Example.COM \n"
 email = raw.strip().lower()
 print(repr(email))
 print(email.endswith("@example.com"))
 
 # OUTPUT:
-# 'alice@example.com'
+# 'anaji@example.com'
 # True`],
         [`<b>Advantages:</b> immutable so safe to share and usable as dict keys; full Unicode; rich methods; slicing.`,
             r`d = {"key": 1}                  # strings are hashable dict keys
@@ -418,14 +418,14 @@ print(int(age) + 1)
 # TypeError: can only concatenate str (not "int") to str
 # 26`],
         [`Parsing a CSV or log line: split, then convert each field to its real type.`,
-            r`row = "Alice,30,55000.5"
+            r`row = "Anaji,30,55000.5"
 name, age, salary = row.split(",")
 age = int(age)
 salary = float(salary)
 print(name, age + 1, salary + 500)
 
 # OUTPUT:
-# Alice 31 55500.5`],
+# Anaji 31 55500.5`],
         [`<b>Advantages:</b> explicit and predictable; collection constructors convert between lists, tuples, sets and dicts in one call.`,
             r`print(list("abc"))
 print(tuple([1, 2]))

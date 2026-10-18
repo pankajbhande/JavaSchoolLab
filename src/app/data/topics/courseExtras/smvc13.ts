@@ -310,7 +310,8 @@ public void init(WebDataBinder binder) {
 @Constraint(validatedBy = EvenValidator.class)
 public @interface Even { String message() default "must be even";
     Class<?>[] groups() default {};
-    Class<? extends Payload>[] payload() default {}; }
+    Class<? extends Payload>[] payload() default {};
+    }
 
 public class EvenValidator implements ConstraintValidator<Even, Integer> {
     public boolean isValid(Integer v, ConstraintValidatorContext c) {
@@ -552,7 +553,9 @@ public String signup(@Valid @ModelAttribute("user") UserForm user,
 // duplicate email -> view signup with error "Email already used"`],
             ['Show errors in Thymeleaf.',
                 r`<input type="text" th:field="*{email}">
-<span th:if="$` + r`{#fields.hasErrors('email')}" th:errors="*{email}">error</span>
+<span th:if="$` + r`{#fields.hasErrors('email')}
+" th:errors="*{email}
+">error</span>
 
 <!-- OUTPUT -->
 <!-- <span>Email already used</span> -->`]],

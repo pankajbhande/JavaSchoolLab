@@ -28,15 +28,17 @@ public class Main {
     public static void main(String[] args) {
         try (AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(AppConfig.class)) {
             GreetingService s = ctx.getBean(GreetingService.class);
-            System.out.println(s.greet("Asha"));
+            System.out.println(s.greet("Abaji"));
         }
     }
 }
 
 // OUTPUT:
-// Hello, Asha`],
+// Hello, Abaji`],
             ['Component scanning.',
-                r`@Component class Mailer { String send(String to) { return "mail to " + to; } }
+                r`@Component class Mailer {
+    String send(String to) { return "mail to " + to; }
+}
 @Configuration @ComponentScan("com.shop") class Config { }
 var ctx = new AnnotationConfigApplicationContext(Config.class);
 System.out.println(ctx.getBean(Mailer.class).send("a@x.com"));
@@ -91,7 +93,11 @@ public class App {
 // order placed: A1 x2`],
             ['Properties.',
                 r`@Configuration @PropertySource("classpath:app.properties") class Config { }
-@Component class Banner { private final Environment env; Banner(Environment env) { this.env = env; } void print() { System.out.println("Welcome to " + env.getProperty("app.name", "Shop")); } }
+@Component class Banner {
+    private final Environment env;
+    Banner(Environment env) { this.env = env; }
+    void print() { System.out.println("Welcome to " + env.getProperty("app.name", "Shop")); }
+}
 
 // OUTPUT:
 // Welcome to JavaSchoolLab`]],
@@ -108,7 +114,10 @@ class WiringTest {
                 r`@Service class OrderService {
     private final InventoryService inventory;
     OrderService(InventoryService inventory) { this.inventory = inventory; }
-    void place(String sku, int qty) { inventory.reserve(sku, qty); System.out.println("order placed: " + sku + " x" + qty); }
+    void place(String sku, int qty) {
+        inventory.reserve(sku, qty);
+        System.out.println("order placed: " + sku + " x" + qty);
+    }
 }
 
 // OUTPUT:
@@ -143,9 +152,18 @@ class WiringTest {
 // the context fails fast if PaymentGateway is missing; Notifier is optional`],
             ['Choosing among implementations.',
                 r`interface PaymentGateway { void pay(double amt); }
-@Component @Primary class StripeGateway implements PaymentGateway { public void pay(double a) { System.out.println("stripe " + a); } }
-@Component("paypal") class PaypalGateway implements PaymentGateway { public void pay(double a) { System.out.println("paypal " + a); } }
-@Service class Checkout { Checkout(@Qualifier("paypal") PaymentGateway g, List<PaymentGateway> all) { g.pay(10); System.out.println(all.size()); } }
+@Component @Primary class StripeGateway implements PaymentGateway {
+    public void pay(double a) { System.out.println("stripe " + a); }
+}
+@Component("paypal") class PaypalGateway implements PaymentGateway {
+    public void pay(double a) { System.out.println("paypal " + a); }
+}
+@Service class Checkout {
+    Checkout(@Qualifier("paypal") PaymentGateway g, List<PaymentGateway> all) {
+        g.pay(10);
+        System.out.println(all.size());
+    }
+}
 
 // OUTPUT:
 // paypal 10.0
@@ -161,7 +179,9 @@ class WiringTest {
 // OUTPUT:
 // test passes with plain Java and a mock`],
             ['Lazy optional lookup.',
-                r`@Service class Report { Report(ObjectProvider<Exporter> exporters) { exporters.ifAvailable(e -> e.export("startup")); } }
+                r`@Service class Report {
+    Report(ObjectProvider<Exporter> exporters) { exporters.ifAvailable(e -> e.export("startup")); }
+}
 
 // OUTPUT:
 // exporter is used only if such a bean exists`]]
@@ -185,12 +205,18 @@ class WiringTest {
             ['S', 'Why can autowiring fail with proxies?', 'If a bean is JDK-proxied you must inject its interface type, not the concrete class.']],
         [['Strategy via Map injection.',
             r`interface Discount { double apply(double price); }
-@Component("none") class NoDiscount implements Discount { public double apply(double p) { return p; } }
-@Component("student") class StudentDiscount implements Discount { public double apply(double p) { return p * 0.9; } }
+@Component("none") class NoDiscount implements Discount {
+    public double apply(double p) { return p; }
+}
+@Component("student") class StudentDiscount implements Discount {
+    public double apply(double p) { return p * 0.9; }
+}
 @Service class Pricing {
     private final Map<String, Discount> strategies;
     Pricing(Map<String, Discount> strategies) { this.strategies = strategies; }
-    double price(String type, double base) { return strategies.getOrDefault(type, strategies.get("none")).apply(base); }
+    double price(String type, double base) {
+        return strategies.getOrDefault(type, strategies.get("none")).apply(base);
+    }
 }
 System.out.println(pricing.price("student", 100));
 
@@ -199,7 +225,8 @@ System.out.println(pricing.price("student", 100));
             ['Optional dependency.',
                 r`@Service class Audit { private final Optional<MetricsClient> metrics;
     Audit(Optional<MetricsClient> metrics) { this.metrics = metrics; }
-    void log(String e) { metrics.ifPresent(m -> m.count(e)); } }
+    void log(String e) { metrics.ifPresent(m -> m.count(e)); }
+    }
 
 // OUTPUT:
 // works with or without a MetricsClient bean`]],
@@ -235,32 +262,53 @@ export const springCoreDeep: Record<string, Deep> = {
         [`Configuration styles: annotations and component scanning, Java config (explicit and testable), XML (legacy), and imports/profiles to combine them. Scopes: singleton, prototype, request, session, application, websocket. Conditional beans with <code>@Profile</code>, <code>@Conditional</code>, <code>@ConditionalOnProperty</code> (Boot).`,
             r`@Configuration
 @Profile("prod")
-class ProdConfig { @Bean DataSource dataSource() { return new HikariDataSource(); } }
+class ProdConfig {
+    @Bean DataSource dataSource() { return new HikariDataSource(); }
+}
 @Configuration @Profile("test")
-class TestConfig { @Bean DataSource dataSource() { return new EmbeddedDatabaseBuilder().setType(H2).build(); } }
+class TestConfig {
+    @Bean DataSource dataSource() { return new EmbeddedDatabaseBuilder().setType(H2).build(); }
+}
 // run with -Dspring.profiles.active=prod
 
 // OUTPUT:
 // only the beans of the active profile are created`],
         [`Mistakes: new-ing a bean yourself (not managed: no injection, no proxy), singleton beans holding mutable per-request state (thread-safety bugs), injecting a prototype into a singleton and expecting new instances, and expensive work in constructors that slows startup. Keep singletons stateless.`,
-            r`@Component class Counter { private int n; int next() { return ++n; } }       // shared singleton: not thread-safe and not per user
-@Component @Scope(value = "request", proxyMode = ScopedProxyMode.TARGET_CLASS) class RequestContext { String user; }
+            r`@Component class Counter {
+    private int n;
+    int next() { return ++n; }
+}  // shared singleton: not thread-safe and not per user
+@Component @Scope(value = "request", proxyMode = ScopedProxyMode.TARGET_CLASS) class RequestContext {
+    String user;
+}
 
 // OUTPUT:
 // the first is a bug under concurrency; the second gives each web request its own object behind a proxy`],
         [`Startup time grows with bean count and classpath scanning. Narrow component scans, use lazy initialization for rarely used beans, and measure startup. Singleton access after startup is just a map lookup, so runtime cost is negligible.`,
             r`@Lazy @Component class HeavyReport { HeavyReport() { /* expensive init */ } }
 spring.main.lazy-initialization=true
-long t = System.nanoTime(); var ctx = new AnnotationConfigApplicationContext(Config.class); System.out.println((System.nanoTime() - t) / 1_000_000 + " ms");
+long t = System.nanoTime();
+var ctx = new AnnotationConfigApplicationContext(Config.class);
+System.out.println((System.nanoTime() - t) / 1_000_000 + " ms");
 
 // OUTPUT:
 // 412 ms      (HeavyReport is created on first use)`],
         [`Real-world: a layered application. Controllers depend on services, services on repositories and gateways, all as interfaces, wired by the container. Replacing a gateway in tests or per environment needs no changes in the services.`,
             r`@Service class CheckoutService {
-    private final OrderRepository orders; private final PaymentGateway payments; private final Clock clock;
-    CheckoutService(OrderRepository orders, PaymentGateway payments, Clock clock) { this.orders = orders; this.payments = payments; this.clock = clock; }
+    private final OrderRepository orders;
+    private final PaymentGateway payments;
+    private final Clock clock;
+    CheckoutService(OrderRepository orders, PaymentGateway payments, Clock clock) {
+        this.orders = orders;
+        this.payments = payments;
+        this.clock = clock;
+    }
 }
-@TestConfiguration class TestClock { @Bean @Primary Clock fixed() { return Clock.fixed(Instant.parse("2026-05-01T10:00:00Z"), ZoneOffset.UTC); } }
+@TestConfiguration class TestClock {
+    @Bean @Primary Clock fixed() {
+        return Clock.fixed(Instant.parse("2026-05-01T10:00:00Z"), ZoneOffset.UTC);
+    }
+}
 
 // OUTPUT:
 // tests run with a fixed clock and a fake gateway`]
@@ -321,7 +369,10 @@ System.out.printf("started in %d ms with %d beans%n", (System.nanoTime() - start
             r`@Service class InvoiceService {
     private final TaxCalculator tax;
     private final Clock clock;
-    InvoiceService(TaxCalculator tax, Clock clock) { this.tax = tax; this.clock = clock; }   // both required, final
+    InvoiceService(TaxCalculator tax, Clock clock) {
+        this.tax = tax;
+        this.clock = clock;
+    }  // both required, final
     Invoice create(double net) { return new Invoice(net, tax.of(net), clock.instant()); }
 }
 
@@ -329,15 +380,27 @@ System.out.printf("started in %d ms with %d beans%n", (System.nanoTime() - start
 // the container creates TaxCalculator and Clock first, then InvoiceService`],
         [`Resolution rules: by type, then <code>@Primary</code>, then <code>@Qualifier</code> or <code>@Resource(name)</code>, then parameter name. Collections inject all matching beans (ordered by <code>@Order</code>). <code>@Lookup</code> methods and <code>ObjectProvider</code> create prototype instances on demand. <code>@DependsOn</code> controls initialization order.`,
             r`interface Validator { boolean ok(Order o); }
-@Component @Order(1) class StockValidator implements Validator { public boolean ok(Order o) { return true; } }
-@Component @Order(2) class FraudValidator implements Validator { public boolean ok(Order o) { return true; } }
-@Service class OrderValidation { private final List<Validator> validators; OrderValidation(List<Validator> v) { this.validators = v; } boolean all(Order o) { return validators.stream().allMatch(x -> x.ok(o)); } }
+@Component @Order(1) class StockValidator implements Validator {
+    public boolean ok(Order o) { return true; }
+}
+@Component @Order(2) class FraudValidator implements Validator {
+    public boolean ok(Order o) { return true; }
+}
+@Service class OrderValidation {
+    private final List<Validator> validators;
+    OrderValidation(List<Validator> v) { this.validators = v; }
+    boolean all(Order o) { return validators.stream().allMatch(x -> x.ok(o)); }
+}
 
 // OUTPUT:
 // both validators injected in @Order sequence`],
         [`Mistakes: field injection with private fields in classes you also construct manually (null fields), circular constructor dependencies (BeanCurrentlyInCreationException), huge constructors (a sign the class has too many responsibilities), and injecting concrete classes. Split the class, depend on interfaces and break cycles.`,
-            r`@Service class A { A(B b) { } }
-@Service class B { B(A a) { } }
+            r`@Service class A {
+    A(B b) { }
+}
+@Service class B {
+    B(A a) { }
+}
 
 // OUTPUT:
 // BeanCurrentlyInCreationException: Error creating bean with name 'a': Requested bean is currently in creation: Is there an unresolvable circular reference?`],
@@ -348,11 +411,18 @@ ReportBuilder b = builders.getObject();                  // new instance per cal
 // OUTPUT:
 // a fresh ReportBuilder with its dependencies injected`],
         [`Real-world: plugin architecture. New payment methods are added by creating a new bean; the checkout service receives all of them and selects one by key, with no changes to existing code.`,
-            r`interface PaymentMethod { String code(); void pay(double amount); }
+            r`interface PaymentMethod {
+    String code();
+    void pay(double amount);
+}
 @Service class Checkout {
     private final Map<String, PaymentMethod> byCode;
-    Checkout(List<PaymentMethod> methods) { this.byCode = methods.stream().collect(Collectors.toMap(PaymentMethod::code, m -> m)); }
-    void pay(String code, double amt) { Optional.ofNullable(byCode.get(code)).orElseThrow(() -> new IllegalArgumentException("unknown " + code)).pay(amt); }
+    Checkout(List<PaymentMethod> methods) {
+        this.byCode = methods.stream().collect(Collectors.toMap(PaymentMethod::code, m -> m));
+    }
+    void pay(String code, double amt) {
+        Optional.ofNullable(byCode.get(code)).orElseThrow(() -> new IllegalArgumentException("unknown " + code)).pay(amt);
+    }
 }
 
 // OUTPUT:
@@ -373,7 +443,9 @@ ReportBuilder b = builders.getObject();                  // new instance per cal
         [`Controls: <code>@Primary</code>, <code>@Qualifier</code> (also custom qualifier annotations), <code>@Resource(name=...)</code>, <code>@Value</code>, <code>@Lazy</code> on an injection point (injects a proxy resolved on first use), generics matching, and <code>@Order</code>/<code>Ordered</code> for lists.`,
             r`@Qualifier @Retention(RUNTIME) @interface Fast { }
 @Component @Fast class InMemoryCache implements Cache { }
-@Service class Catalog { Catalog(@Fast Cache cache, @Lazy ExpensiveClient client) { } }
+@Service class Catalog {
+    Catalog(@Fast Cache cache, @Lazy ExpensiveClient client) { }
+}
 
 // OUTPUT:
 // Catalog gets the in-memory cache and a lazy proxy for the expensive client`],
@@ -386,15 +458,25 @@ spring.aop.proxy-target-class=true
 // OUTPUT:
 // BeanNotOfRequiredTypeException: Bean named 'orderService' is expected to be of type 'TransactionalOrderService' but was actually of type 'jdk.proxy2.$Proxy45'`],
         [`Resolution cost is only at startup. Runtime cost appears with lazy proxies and scoped proxies, which add an indirection per call; use them only where needed (request-scoped beans in singletons).`,
-            r`@Component @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS) class CurrentUser { String name; }
-@Service class Greeter { private final CurrentUser user; Greeter(CurrentUser user) { this.user = user; } String hi() { return "Hi " + user.name; } }
+            r`@Component @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS) class CurrentUser {
+    String name;
+}
+@Service class Greeter {
+    private final CurrentUser user;
+    Greeter(CurrentUser user) { this.user = user; }
+    String hi() { return "Hi " + user.name; }
+}
 
 // OUTPUT:
 // each request sees its own CurrentUser through the proxy`],
         [`Real-world: feature toggles and environment-specific beans. A conditional bean chooses the implementation at startup, and services depend only on the interface.`,
             r`@Configuration class Beans {
-    @Bean @ConditionalOnProperty(name = "payments.provider", havingValue = "stripe") PaymentGateway stripe() { return new StripeGateway(); }
-    @Bean @ConditionalOnProperty(name = "payments.provider", havingValue = "paypal", matchIfMissing = true) PaymentGateway paypal() { return new PaypalGateway(); }
+    @Bean @ConditionalOnProperty(name = "payments.provider", havingValue = "stripe") PaymentGateway stripe() {
+        return new StripeGateway();
+    }
+    @Bean @ConditionalOnProperty(name = "payments.provider", havingValue = "paypal", matchIfMissing = true) PaymentGateway paypal() {
+        return new PaypalGateway();
+    }
 }
 
 // OUTPUT:

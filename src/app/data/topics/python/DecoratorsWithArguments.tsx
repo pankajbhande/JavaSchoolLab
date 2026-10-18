@@ -32,12 +32,12 @@ def repeat(times):                    # 1. factory
 def greet(name):
     print(f"Hello, {name}")
 
-greet("Asha")
+greet("Abaji")
 
 # OUTPUT:
-# Hello, Asha
-# Hello, Asha
-# Hello, Asha`
+# Hello, Abaji
+# Hello, Abaji
+# Hello, Abaji`
             ]
         },
         {
@@ -60,12 +60,12 @@ def require_role(role):
 def delete_post(user, post_id):
     return f"post {post_id} deleted"
 
-print(delete_post({"name": "Ravi", "role": "admin"}, 7))
-print(delete_post({"name": "Asha", "role": "editor"}, 7))
+print(delete_post({"name": "Raoji", "role": "admin"}, 7))
+print(delete_post({"name": "Abaji", "role": "editor"}, 7))
 
 # OUTPUT:
 # post 7 deleted
-# PermissionError: Asha is not admin`
+# PermissionError: Abaji is not admin`
             ]
         },
         {
@@ -120,7 +120,7 @@ def repeat(times):
 def greet(name):
     print(f"Hello, {name}")
 
-result = greet("Asha")         # nothing is printed
+result = greet("Abaji")         # nothing is printed
 print(type(result).__name__)
 
 # OUTPUT:

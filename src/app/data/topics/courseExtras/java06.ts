@@ -229,7 +229,10 @@ if (lock.tryLock(200, TimeUnit.MILLISECONDS)) {
 
     void put(int v) {
         l.lock();
-        try { q.add(v); notEmpty.signal(); } finally { l.unlock(); }
+        try {
+            q.add(v);
+            notEmpty.signal();
+        } finally { l.unlock(); }
     }
 
     int take() throws InterruptedException {
@@ -237,7 +240,8 @@ if (lock.tryLock(200, TimeUnit.MILLISECONDS)) {
         try {
             while (q.isEmpty()) notEmpty.await();   // loop guards spurious wakeups
             return q.poll();
-        } finally { l.unlock(); }
+        } finally { l.unlock();
+        }
     }
 }
 Buffer b = new Buffer();
@@ -271,7 +275,10 @@ long st = sl.tryOptimisticRead();     // no lock taken
 double x = pt[0], y = pt[1];
 if (!sl.validate(st)) {               // a write happened: fall back to a real read lock
     st = sl.readLock();
-    try { x = pt[0]; y = pt[1]; } finally { sl.unlockRead(st); }
+    try {
+        x = pt[0];
+        y = pt[1];
+    } finally { sl.unlockRead(st); }
 }
 System.out.println(x + "," + y);
 
@@ -298,7 +305,10 @@ System.out.println(x + "," + y);
         [['try, catch, finally.',
             r`static int parse(String s) {
     try { return Integer.parseInt(s); }
-    catch (NumberFormatException e) { System.out.println("bad number: " + s); return -1; }
+    catch (NumberFormatException e) {
+        System.out.println("bad number: " + s);
+        return -1;
+    }
     finally { System.out.println("parsed " + s); }
 }
 System.out.println(parse("12") + " " + parse("x"));
@@ -371,7 +381,10 @@ try {
 }
 try { read("missing.txt"); }
 catch (IOException e) { System.out.println("checked: " + e.getClass().getSimpleName()); }
-try { Object o = "s"; Integer i = (Integer) o; }
+try {
+    Object o = "s";
+    Integer i = (Integer) o;
+}
 catch (ClassCastException e) { System.out.println("unchecked: ClassCastException"); }
 
 // OUTPUT:
@@ -419,7 +432,10 @@ files.forEach(f -> {
             ['S', 'Why use ExitOnOutOfMemoryError in containers?', 'A JVM in an unknown state should terminate so it is restarted cleanly.']],
         [['StackOverflowError.',
             r`static int depth = 0;
-static void recurse() { depth++; recurse(); }
+static void recurse() {
+    depth++;
+    recurse();
+}
 try {
     recurse();
 } catch (StackOverflowError e) {
@@ -541,20 +557,30 @@ System.out.println(bad());
     if (amt <= 0) throw new IllegalArgumentException("amount must be positive: " + amt);
     if (amt > bal) throw new InsufficientFundsException("need " + (amt - bal) + " more");
 }
-class InsufficientFundsException extends Exception { InsufficientFundsException(String m) { super(m); } }
-try { withdraw(100, 150); } catch (InsufficientFundsException e) { System.out.println(e.getMessage()); }
+class InsufficientFundsException extends Exception {
+    InsufficientFundsException(String m) { super(m); }
+}
+try {
+    withdraw(100, 150);
+} catch (InsufficientFundsException e) { System.out.println(e.getMessage()); }
 
 // OUTPUT:
 // need 50.0 more`],
             ['Fail fast.',
-                r`record User(String name) { User { Objects.requireNonNull(name, "name must not be null"); } }
+                r`record User(String name) {
+    User { Objects.requireNonNull(name, "name must not be null"); }
+}
 try { new User(null); } catch (NullPointerException e) { System.out.println(e.getMessage()); }
 
 // OUTPUT:
 // name must not be null`]],
         [['Overriding rule.',
-            r`class P { void m() throws IOException {} }
-class C extends P { @Override void m() {} }       // fewer exceptions: fine
+            r`class P {
+    void m() throws IOException {}
+}
+class C extends P {
+    @Override void m() {}
+}  // fewer exceptions: fine
 // class D extends P { @Override void m() throws Exception {} }
 // error: overridden method does not throw Exception
 
@@ -825,8 +851,12 @@ System.out.println(m.reduceValues(1, Integer::sum));
 <code>ConcurrentHashMap</code> also has bulk operations: <code>forEach</code>, <code>search</code> and <code>reduce</code>, each taking a parallelism threshold.`,
             r`DelayQueue<Delayed> dq = new DelayQueue<>();
 class Job implements Delayed {
-    final long at; final String n;
-    Job(String n, long ms) { this.n = n; at = System.currentTimeMillis() + ms; }
+    final long at;
+    final String n;
+    Job(String n, long ms) {
+        this.n = n;
+        at = System.currentTimeMillis() + ms;
+    }
     public long getDelay(TimeUnit u) {
         return u.convert(at - System.currentTimeMillis(), TimeUnit.MILLISECONDS);
     }
@@ -885,10 +915,12 @@ BlockingQueue<AuditEvent> audit = new ArrayBlockingQueue<>(10_000);
     'locks-in-java': dv(
         [`Locks are built on <code>AbstractQueuedSynchronizer</code> (AQS): an int state plus a FIFO wait queue of parked threads (<code>LockSupport.park</code>). ReentrantLock stores the owner and hold count; fair mode grants in arrival order (slower), non-fair allows barging (faster). <code>ReentrantReadWriteLock</code> packs reader and writer counts in the state. StampedLock uses a version stamp for optimistic reads.`,
             r`ReentrantLock fair = new ReentrantLock(true);
-fair.lock(); fair.lock();
+fair.lock();
+fair.lock();
 System.out.println(fair.isFair() + " holds=" + fair.getHoldCount()
         + " locked=" + fair.isLocked());
-fair.unlock(); fair.unlock();
+fair.unlock();
+fair.unlock();
 System.out.println(fair.isLocked());
 
 // OUTPUT:
@@ -917,8 +949,10 @@ boolean transfer(Lock a, Lock b, Runnable work) throws InterruptedException {
         try {
             work.run();
             return true;
-        } finally { b.unlock(); }
-    } finally { a.unlock(); }
+        } finally { b.unlock();
+        }
+    } finally { a.unlock();
+    }
 }   // on false, the caller backs off and retries
 
 // OUTPUT:
@@ -927,7 +961,9 @@ boolean transfer(Lock a, Lock b, Runnable work) throws InterruptedException {
             r`ReentrantLock l = new ReentrantLock();
 try { l.unlock(); } catch (IllegalMonitorStateException e) { System.out.println("not the owner"); }
 Condition c = l.newCondition();
-try { c.await(); } catch (IllegalMonitorStateException e) { System.out.println("must hold the lock to await"); }
+try {
+    c.await();
+} catch (IllegalMonitorStateException e) { System.out.println("must hold the lock to await"); }
 
 // OUTPUT:
 // not the owner
@@ -957,7 +993,8 @@ try { c.await(); } catch (IllegalMonitorStateException e) { System.out.println("
             tail = (tail + 1) % items.length;
             count++;
             notEmpty.signal();
-        } finally { l.unlock(); }
+        } finally { l.unlock();
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -970,7 +1007,8 @@ try { c.await(); } catch (IllegalMonitorStateException e) { System.out.println("
             count--;
             notFull.signal();
             return t;
-        } finally { l.unlock(); }
+        } finally { l.unlock();
+        }
     }
 }
 
@@ -982,7 +1020,10 @@ try { c.await(); } catch (IllegalMonitorStateException e) { System.out.println("
         [`When an exception is thrown the JVM searches the current method exception table for a matching handler (by type and bytecode range); if none, it pops the frame and searches the caller. <code>finally</code> is compiled by duplicating its code on every exit path. The stack trace is captured in the constructor (<code>fillInStackTrace</code>), which is the costly part. <code>try-with-resources</code> closes in reverse order and adds suppressed exceptions.`,
             r`class R implements AutoCloseable {
     final String n;
-    R(String n) { this.n = n; System.out.println("open " + n); }
+    R(String n) {
+        this.n = n;
+        System.out.println("open " + n);
+    }
     public void close() { System.out.println("close " + n); }
 }
 
@@ -1200,7 +1241,10 @@ System.out.println(order());
 
 // precise rethrow: only the checked types the try block can throw
 static void rethrow() throws IOException, SQLException {
-    try { riskyIo(); riskySql(); }
+    try {
+        riskyIo();
+        riskySql();
+    }
     catch (Exception e) { throw e; }
 }
 
@@ -1301,7 +1345,10 @@ void good() throws IOException { }  // precise
 // throw null becomes NPE`],
         [`Throwing is cheap relative to I/O, but in hot loops pre-validate and avoid exceptions for control flow. Reuse static, stackless exceptions only in very specialized cases (parsers) with care for correctness.`,
             r`static boolean tryParse(String s) {
-    try { Integer.parseInt(s); return true; }
+    try {
+        Integer.parseInt(s);
+        return true;
+    }
     catch (NumberFormatException e) { return false; }
 }
 // cheaper when most inputs are invalid

@@ -127,7 +127,7 @@ if (type != null && type.startsWith("application/json")) {
 wrapped.copyBodyToResponse();
 
 // OUTPUT:
-// DEBUG ResponseLogFilter : response body={"id":7,"name":"Asha"}`]],
+// DEBUG ResponseLogFilter : response body={"id":7,"name":"Abaji"}`]],
         [['Missing copyBodyToResponse.',
             r`// WRONG
 chain.doFilter(req, wrapped);
@@ -141,13 +141,13 @@ wrapped.copyBodyToResponse();
 
 // OUTPUT:
 // WRONG: curl shows an empty body
-// RIGHT: curl shows {"id":7,"name":"Asha"}`],
+// RIGHT: curl shows {"id":7,"name":"Abaji"}`],
             ['MockMvc test.',
                 r`@Test
 void bodyStillReachesClient() throws Exception {
     mvc.perform(get("/api/users/7"))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.name").value("Asha"));
+        .andExpect(jsonPath("$.name").value("Abaji"));
 }
 
 // OUTPUT:
@@ -203,7 +203,7 @@ ProblemDetail unexpected(Exception ex, HttpServletRequest req) {
 }
 
 // OUTPUT:
-// ERROR ApiExceptionHandler : failed POST /api/orders user=asha`]],
+// ERROR ApiExceptionHandler : failed POST /api/orders user=abaji`]],
         [['Duplicate logging anti-pattern.',
             r`// WRONG: logged in service, controller and advice
 try { repo.save(o); }
@@ -281,7 +281,9 @@ public class CorrelationIdFilter extends OncePerRequestFilter {
 // X-Correlation-Id: 6b1c2f6e-...-9a (varies)`],
             ['Print it in logs.',
                 r`# application.properties
-logging.pattern.console=%d{HH:mm:ss} %-5level [%X{correlationId}] %logger{20} - %msg%n
+logging.pattern.console=%d{HH:mm:ss}
+%-5level [%X{correlationId}] %logger{20}
+- %msg%n
 
 # OUTPUT:
 # 10:15:02 INFO  [6b1c2f6e-77a1] c.e.OrderService - order created
@@ -326,7 +328,7 @@ class CorrelationIdTest {
 
     'mvc-mdc': x(
         ['<b>MDC</b> (Mapped Diagnostic Context) is a per-thread map of key-value pairs offered by SLF4J; the logging framework can print these values on every log line.',
-            '<b>API</b>: <code>MDC.put("user", "asha")</code> adds a value, <code>MDC.get</code> reads it, <code>MDC.remove</code> and <code>MDC.clear</code> delete it.',
+            '<b>API</b>: <code>MDC.put("user", "abaji")</code> adds a value, <code>MDC.get</code> reads it, <code>MDC.remove</code> and <code>MDC.clear</code> delete it.',
             '<b>Use</b>: set request-wide data (correlation id, user, tenant) once in a filter and print it with <code>%X{key}</code> in the log pattern.'],
         ['<b>ThreadLocal</b>: MDC is stored per thread, so a value set in the request thread is visible to every class that runs on that thread.',
             '<b>Always clean up</b>: servlet containers reuse threads, so remove keys in a <code>finally</code> block, or values leak into later requests.',
@@ -353,8 +355,8 @@ class CorrelationIdTest {
 // logging.pattern.console=%-5level [%X{user}] %msg%n
 
 // OUTPUT:
-// INFO  [asha] processing
-// INFO  [asha] order saved`],
+// INFO  [abaji] processing
+// INFO  [abaji] order saved`],
             ['Closeable form.',
                 r`try (MDC.MDCCloseable c = MDC.putCloseable("tenant", "acme")) {
     log.info("loading data");
@@ -669,7 +671,8 @@ management.metrics.distribution.percentiles-histogram.http.server.requests=true
 
 # OUTPUT:
 # GET /actuator/prometheus ->
-# http_server_requests_seconds_count{method="GET",status="200",uri="/api/users"} 42.0`]],
+# http_server_requests_seconds_count{method="GET",status="200",uri="/api/users"}
+42.0`]],
         [['Gauge for a live value.',
             r`@Component
 public class QueueMetrics {
@@ -859,7 +862,7 @@ public class BodyLogAdvice implements ResponseBodyAdvice<Object> {
 }
 
 // OUTPUT:
-// DEBUG BodyLogAdvice : returning User[id=7, name=Asha]`],
+// DEBUG BodyLogAdvice : returning User[id=7, name=Abaji]`],
         [`<p>Mistakes and fixes:</p><ul><li><b>Missing copyBodyToResponse:</b> empty body for the client; put it in <code>finally</code>.</li><li><b>Wrapping streaming endpoints:</b> SSE and downloads stall or use huge memory; skip them with <code>shouldNotFilter</code>.</li><li><b>Logging errors twice:</b> the advice and the filter both log; keep one.</li><li><b>Reading bytes as the wrong charset:</b> use the response character encoding.</li></ul>`,
             r`@Override
 protected boolean shouldNotFilter(HttpServletRequest req) {
@@ -990,11 +993,12 @@ System.out.println("copy has: " + copy);
 // copy has: {a=1}`],
         [`<p>API and options:</p><ul><li><b>put / get / remove / clear:</b> basic operations.</li><li><b>putCloseable:</b> scoped value.</li><li><b>getCopyOfContextMap / setContextMap:</b> transfer between threads.</li><li><b>Pattern:</b> <code>%X</code> prints the whole map, <code>%X{key:-default}</code> adds a default.</li><li><b>JSON:</b> Spring Boot 3.4 and later supports structured logging formats that include MDC, and Logstash encoders do the same.</li></ul>`,
             r`# application.properties
-logging.pattern.console=%d{HH:mm:ss} %-5level [%X{user:-anon}] %msg%n
+logging.pattern.console=%d{HH:mm:ss}
+%-5level [%X{user:-anon}] %msg%n
 
 # OUTPUT:
 # 10:15:02 INFO  [anon] application started
-# 10:15:03 INFO  [asha] order saved`],
+# 10:15:03 INFO  [abaji] order saved`],
         [`<p>Mistakes:</p><ul><li><b>Forgetting remove:</b> pooled threads reuse stale values.</li><li><b>Assuming async propagation:</b> new threads start empty.</li><li><b>Storing objects:</b> values are strings only.</li><li><b>Clearing too early:</b> <code>MDC.clear()</code> in a nested method removes the outer filter values.</li></ul>`,
             r`// WRONG: inner service wipes everything the filter put in
 void inner() { MDC.clear(); }
@@ -1010,14 +1014,17 @@ void inner() {
 // RIGHT: correlationId stays on every line`],
         [`<p>Performance:</p><ul><li><b>Cheap:</b> map operations per request; Logback copies the map per event only if the event is enabled.</li><li><b>Copy cost:</b> <code>getCopyOfContextMap</code> allocates a new map; avoid in tight loops.</li><li><b>Keep it small:</b> five to ten keys is typical.</li></ul>`,
             r`long t = System.nanoTime();
-for (int i = 0; i < 1_000_000; i++) { MDC.put("k", "v"); MDC.remove("k"); }
+for (int i = 0; i < 1_000_000; i++) {
+    MDC.put("k", "v");
+    MDC.remove("k");
+}
 System.out.println("ms=" + (System.nanoTime() - t) / 1_000_000);
 
 // OUTPUT: (varies)
 // ms=60`],
         [`<p>Scenario: a multi-tenant system sets <code>tenant</code> and <code>user</code> in a filter after authentication, so every line from services and repositories carries them; support filters logs by tenant to debug one customer.</p>`,
-            r`// 10:20:11 INFO  [acme/asha] c.e.InvoiceService - invoice 55 generated
-// 10:20:12 WARN  [acme/asha] c.e.TaxClient - slow response 2100ms
+            r`// 10:20:11 INFO  [acme/abaji] c.e.InvoiceService - invoice 55 generated
+// 10:20:12 WARN  [acme/abaji] c.e.TaxClient - slow response 2100ms
 
 // OUTPUT:
 // logs filtered by tenant acme show only that customer activity`]
@@ -1059,7 +1066,10 @@ public class TimingAspect {
         [`<p>Mistakes:</p><ul><li><b>Field for start time:</b> shared singleton, concurrent requests overwrite it.</li><li><b>postHandle only:</b> skipped when the handler throws.</li><li><b>Wall clock:</b> <code>currentTimeMillis</code> can jump.</li><li><b>Ignoring async:</b> for <code>Callable</code> or <code>DeferredResult</code> the first <code>preHandle</code> returns early and a second dispatch follows.</li></ul>`,
             r`// WRONG
 private long start;                       // shared by all requests
-public boolean preHandle(...) { start = System.nanoTime(); return true; }
+public boolean preHandle(...) {
+    start = System.nanoTime();
+    return true;
+}
 
 // RIGHT
 req.setAttribute("startNanos", System.nanoTime());
@@ -1160,11 +1170,17 @@ public class WarmupListener {
 // GET /actuator/health/readiness -> 503 {"status":"OUT_OF_SERVICE"}`],
         [`<p>Mistakes:</p><ul><li><b>Slow indicator:</b> a remote call without timeout blocks the probe.</li><li><b>Dependencies in liveness:</b> a database outage restarts all pods.</li><li><b>Details always shown:</b> leaks host names and versions.</li><li><b>Swallowing exceptions:</b> returning UP on error hides problems.</li></ul>`,
             r`// WRONG: no timeout, always UP
-public Health health() { try { client.ping(); } catch (Exception e) {} return Health.up().build(); }
+public Health health() {
+    try { client.ping(); } catch (Exception e) {}
+    return Health.up().build();
+}
 
 // RIGHT: bounded call, DOWN on failure with the cause
 public Health health() {
-    try { client.pingWithTimeout(Duration.ofSeconds(1)); return Health.up().build(); }
+    try {
+        client.pingWithTimeout(Duration.ofSeconds(1));
+        return Health.up().build();
+    }
     catch (Exception e) { return Health.down(e).build(); }
 }
 
@@ -1227,7 +1243,8 @@ management.metrics.distribution.slo.http.server.requests=100ms,500ms,1s
 management.metrics.tags.application=orders-service
 
 # OUTPUT:
-# http_server_requests_seconds_bucket{le="0.1",uri="/users/{id}"} 120.0`],
+# http_server_requests_seconds_bucket{le="0.1",uri="/users/{id}"}
+120.0`],
         [`<p>Scenario: an alert rule fires when the p95 of <code>http.server.requests</code> for <code>/api/checkout</code> stays above 800 ms for five minutes, and a dashboard shows the order counter by channel to spot a drop after a release.</p>`,
             r`# PromQL
 # histogram_quantile(0.95,

@@ -592,7 +592,10 @@ ResponseEntity<String> cv(ConstraintViolationException e) {
         [['Exceptions and service.',
             r`class BusinessException extends RuntimeException {
     private final String code;
-    BusinessException(String code, String msg) { super(msg); this.code = code; }
+    BusinessException(String code, String msg) {
+        super(msg);
+        this.code = code;
+    }
     String code() { return code; }
 }
 
@@ -1078,7 +1081,8 @@ http.authorizeHttpRequests(a -> a
             r`<!-- templates/error/5xx.html -->
 <html xmlns:th="http://www.thymeleaf.org"><body>
   <h1>Something went wrong</h1>
-  <p>Quote reference: <span th:text="$` + r`{timestamp}">time</span></p>
+  <p>Quote reference: <span th:text="$` + r`{timestamp}
+">time</span></p>
 </body></html>
 
 # application.properties
@@ -1239,7 +1243,9 @@ class ContractAdvice {
             r`@Target(FIELD) @Retention(RUNTIME)
 @Constraint(validatedBy = AdultValidator.class)
 @interface Adult { String message() default "must be an adult";
-    Class<?>[] groups() default {}; Class<? extends Payload>[] payload() default {}; }
+    Class<?>[] groups() default {};
+    Class<? extends Payload>[] payload() default {};
+    }
 
 class AdultValidator implements ConstraintValidator<Adult, LocalDate> {
     public boolean isValid(LocalDate dob, ConstraintValidatorContext c) {
@@ -1316,7 +1322,10 @@ class ValidationAdvice extends ResponseEntityExceptionHandler {
 
 class AppException extends RuntimeException {
     final ErrorCode code;
-    AppException(ErrorCode code, String msg) { super(msg); this.code = code; }
+    AppException(ErrorCode code, String msg) {
+        super(msg);
+        this.code = code;
+    }
 }
 
 @ExceptionHandler(AppException.class)

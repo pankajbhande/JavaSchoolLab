@@ -429,10 +429,10 @@ public class StoreOtp {
 }
 
 // The failure, concretely:
-//   t=0ms   Alice requests a code -> StoreOtp.setOtp(418203)
+//   t=0ms   Anaji requests a code -> StoreOtp.setOtp(418203)
 //   t=40ms  Mallory requests a code -> StoreOtp.setOtp(771049)   <- overwrites
-//   t=60ms  Alice submits 418203  -> "Incorrect OTP"   (her own, correct code)
-//   t=70ms  Mallory submits 771049 against ALICE's phone number -> "Correct OTP"
+//   t=60ms  Anaji submits 418203  -> "Incorrect OTP"   (her own, correct code)
+//   t=70ms  Mallory submits 771049 against ANAJI's phone number -> "Correct OTP"
 //
 // Static mutable state holding per-user data is never acceptable. The OTP
 // must be keyed by the phone number it was sent to.`

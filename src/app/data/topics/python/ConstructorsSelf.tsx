@@ -14,12 +14,12 @@ export const constructorsSelf: Topic = {
         self.name = name
         self.salary = salary
 
-e = Employee("Ravi", 45000)
+e = Employee("Raoji", 45000)
 print(e.name, e.salary)
 
 # OUTPUT:
-# __init__ running for Ravi
-# Ravi 45000`
+# __init__ running for Raoji
+# Raoji 45000`
             ]
         },
         {
@@ -33,13 +33,13 @@ print(e.name, e.salary)
         name = name.title()        # local variable only - lost after __init__
         self.name = name           # stored on the object
 
-e = Employee("ravi kumar")
+e = Employee("raoji kumar")
 print(e.name)
 
 # Java equivalent:
 #   public Employee(String name) { this.name = name; }
 # OUTPUT:
-# Ravi Kumar`
+# Raoji Kumar`
             ]
         },
         {
@@ -55,14 +55,14 @@ Java often provides several constructors. Python has only one <code>__init__</co
     def __str__(self):
         return f"{self.passenger} | {self.seat} | {self.meal}"
 
-print(Ticket("Asha"))
-print(Ticket("Ravi", "12A"))
-print(Ticket("Kiran", meal="jain"))
+print(Ticket("Abaji"))
+print(Ticket("Raoji", "12A"))
+print(Ticket("Kanhoji", meal="jain"))
 
 # OUTPUT:
-# Asha | any | veg
-# Ravi | 12A | veg
-# Kiran | any | jain`
+# Abaji   | any | veg
+# Raoji   | 12A | veg
+# Kanhoji | any | jain`
             ]
         },
         {
@@ -78,12 +78,12 @@ The initialiser is the right place to reject bad data, so an invalid object can 
         self.name = name.strip()
         self.marks = marks
 
-s = Student("Asha", 91)
+s = Student("Abaji", 91)
 print(s.name, s.marks)
-Student("Ravi", 120)
+Student("Raoji", 120)
 
 # OUTPUT:
-# Asha 91
+# Abaji 91
 # ValueError: marks must be 0-100, got 120`
             ]
         },
@@ -173,11 +173,11 @@ Instead of overloaded constructors, Python uses named factory methods decorated 
         name, salary = line.split(",")
         return cls(name, int(salary))
 
-e = Employee.from_csv("Asha,52000")
+e = Employee.from_csv("Abaji,52000")
 print(e.name, e.salary)
 
 # OUTPUT:
-# Asha 52000`
+# Abaji 52000`
             ]
         },
         {

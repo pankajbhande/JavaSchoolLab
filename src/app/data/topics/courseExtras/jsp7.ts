@@ -45,7 +45,8 @@ public class CountListener implements ServletRequestListener {
     <listener-class>com.example.CountListener</listener-class>
 </listener>
 
-<!-- Same effect as @WebListener; the class must have a public no-arg constructor -->
+<!-- Same effect as @WebListener;
+the class must have a public no-arg constructor -->
 
 // OUTPUT:
 // The container instantiates CountListener once at startup and calls it for every request.`]],
@@ -183,7 +184,8 @@ public class ErrorServlet extends HttpServlet {
             ['Page-level error handling.',
                 r`<%-- order.jsp --%>
 <%@ page errorPage="/errors/page-error.jsp" %>
-<% int qty = Integer.parseInt(request.getParameter("qty")); %>
+<% int qty = Integer.parseInt(request.getParameter("qty"));
+%>
 
 <%-- page-error.jsp --%>
 <%@ page isErrorPage="true" %>
@@ -247,7 +249,7 @@ if (uri != null && uri.startsWith("/api/")) {
 public class HelloServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
-        req.setAttribute("name", "Asha");
+        req.setAttribute("name", "Abaji");
         req.getRequestDispatcher("/WEB-INF/views/hello.jsp").forward(req, res);
     }
 }
@@ -291,8 +293,11 @@ public class HelloServlet extends HttpServlet {
             ['S', 'Why are scriptlets discouraged?', 'They break separation of concerns, cannot be unit tested and make XSS and null bugs likely.'],
             ['S', 'How do you ban scriptlets?', 'Set scripting-invalid to true in a jsp-property-group in web.xml.']],
         [['The elements together.',
-            r`<%! private int visits = 0; %>
-<% visits++; String user = request.getParameter("user"); %>
+            r`<%! private int visits = 0;
+%>
+<% visits++;
+String user = request.getParameter("user");
+%>
 <%-- this comment is not sent --%>
 <!-- this HTML comment is sent -->
 <p>Visits: <%= visits %></p>
@@ -318,8 +323,10 @@ public class HelloServlet extends HttpServlet {
         [['Same loop with JSTL.',
             r`<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <ul>
-<c:forEach var="s" items="` + r`$` + r`{items}">
-    <li><c:out value="` + r`$` + r`{s}"/></li>
+<c:forEach var="s" items="` + r`$` + r`{items}
+">
+    <li><c:out value="` + r`$` + r`{s}
+"/></li>
 </c:forEach>
 </ul>
 
@@ -327,8 +334,10 @@ public class HelloServlet extends HttpServlet {
 // OUTPUT:
 // one li element per item, without Java code in the page`],
             ['Danger of declarations.',
-                r`<%! int counter = 0; %>
-<% counter++; %>
+                r`<%! int counter = 0;
+%>
+<% counter++;
+%>
 <p>Count: <%= counter %></p>
 
 // OUTPUT: (varies)
@@ -407,8 +416,8 @@ public class HelloServlet extends HttpServlet {
 <jsp:setProperty name="user" property="*" />
 <p>Name: <jsp:getProperty name="user" property="name" /></p>
 
-// OUTPUT: (GET ?name=Asha&age=30)
-// Name: Asha`],
+// OUTPUT: (GET ?name=Abaji&age=30)
+// Name: Abaji`],
             ['include and forward.',
                 r`<jsp:include page="menu.jsp">
     <jsp:param name="active" value="home" />
@@ -428,7 +437,8 @@ public class HelloServlet extends HttpServlet {
 // b.jsp: its own servlet; changes show without recompiling the host page`],
             ['Forward after the response is committed.',
                 r`<p>Welcome</p>
-<% out.flush(); %>
+<% out.flush();
+%>
 <jsp:forward page="home.jsp" />
 
 // OUTPUT:
@@ -709,18 +719,19 @@ public final class c_jsp extends HttpJspBase {
 %>
 <p><%= greet(who) %></p>
 
-// OUTPUT: (?who=Asha)
-// <p>Hi Asha</p>`],
+// OUTPUT: (?who=Abaji)
+// <p>Hi Abaji</p>`],
         [`<p>Mistakes and fixes:</p><ul><li><b>Semicolon in expression:</b> causes a compile error; remove it.</li><li><b>Unbalanced braces:</b> a scriptlet block opened with <code>{</code> must close in a later scriptlet.</li><li><b>Declaration used for per-request data:</b> use a scriptlet or an attribute.</li><li><b>Raw output of input:</b> escape it.</li><li><b>Null printing:</b> an expression returning null prints the text null, so check or use <code>c:out</code> with a default.</li></ul>`,
             r`<%-- WRONG --%>
-<p><%= name; %></p>
+<p><%= name;
+%></p>
 
 <%-- RIGHT --%>
 <p><%= name %></p>
 
 // OUTPUT:
 // WRONG: JasperException: Unable to compile class for JSP (syntax error on token ";")
-// RIGHT: <p>Asha</p>`],
+// RIGHT: <p>Abaji</p>`],
         [`<p>Performance and quality:</p><ul><li><b>Scriptlet loops over large data</b> are not slower than JSTL, but logic in pages is hard to profile and test.</li><li><b>Static text:</b> converted to byte arrays by Jasper, so it is cheap.</li><li><b>Database access in a scriptlet:</b> avoid; it blocks rendering and leaks connections on errors.</li><li><b>Thread safety:</b> remove mutable declarations.</li></ul>`,
             r`<%-- WRONG: connection opened in the page --%>
 <% Connection c = DriverManager.getConnection(url); /* leaked if an exception occurs */ %>
@@ -763,10 +774,12 @@ public final class c_jsp extends HttpJspBase {
 // (Jakarta EE 10 URIs look like jakarta.tags.functions)`],
         [`<p>Mistakes and fixes:</p><ul><li><b>Missing taglib:</b> tags print as plain text; declare the prefix.</li><li><b>Wrong URI for the server version:</b> javax JSTL and Jakarta JSTL URIs differ.</li><li><b>Variable clash with include:</b> a static include shares scope, so duplicate declarations fail to compile.</li><li><b>Changed include not visible:</b> some containers do not track dependencies of static includes; touch the host page.</li><li><b>Wrong encoding:</b> set <code>pageEncoding</code> as well as <code>contentType</code>.</li></ul>`,
             r`<%-- header.jspf --%>
-<% int count = 1; %>
+<% int count = 1;
+%>
 <%-- main.jsp --%>
 <%@ include file="header.jspf" %>
-<% int count = 2; %>
+<% int count = 2;
+%>
 
 // OUTPUT:
 // JasperException: Duplicate local variable count (the pages were merged into one method)`],

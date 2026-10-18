@@ -505,7 +505,7 @@ import java.util.stream.Collectors;
 
 public class GroupingByDownstreamDemo {
     public static void main(String[] args) {
-        List<String> names = List.of("Sheru", "Sam", "Pankaj", "Priya", "Dheeraj");
+        List<String> names = List.of("Sheru", "Sam", "Pankaj", "Prataprao", "Dheeraj");
 
         // Group by first letter, then count how many names fall in each group
         Map<Character, Long> countByFirstLetter = names.stream()

@@ -115,7 +115,7 @@ An abstraction "leaks" when callers must know about the hidden details to use it
 
 class UserRepository:
     def __init__(self):
-        self._rows = {1: ("Asha", "asha@mail.com")}
+        self._rows = {1: ("Abaji", "abaji@mail.com")}
 
     def get_leaky(self, user_id):
         return self._rows[user_id]            # caller sees a tuple and a KeyError
@@ -132,8 +132,8 @@ print(repo.get_name(1))
 repo.get_name(2)
 
 # OUTPUT:
-# ('Asha', 'asha@mail.com')
-# Asha
+# ('Abaji', 'abaji@mail.com')
+# Abaji
 # UserNotFound: no user 2`
             ]
         },

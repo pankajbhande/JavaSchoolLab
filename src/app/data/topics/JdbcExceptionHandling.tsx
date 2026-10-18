@@ -64,7 +64,7 @@ public class TryWithResourcesDemo {
     }
 }
 // OUTPUT:
-// Employee: Aarav`]
+// Employee: Ajabrao`]
         },
         {
             content: `<h4>3. What Happens Without try-with-resources</h4>
@@ -96,7 +96,7 @@ public class ManualCloseDemo {
     }
 }
 // OUTPUT:
-// Aarav
+// Ajabrao
 // Bhavna
 // Chetan`]
         }

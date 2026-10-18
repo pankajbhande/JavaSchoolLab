@@ -152,13 +152,13 @@ other = t
 t += (3,)
 print(t, other, t is other)
 
-row = ("Asha", [80, 90])
+row = ("Abaji", [80, 90])
 row[1].append(70)
 print(row)
 
 # OUTPUT:
 # (1, 2, 3) (1, 2) False
-# ('Asha', [80, 90, 70])`
+# ('Abaji', [80, 90, 70])`
             ]
         },
         {

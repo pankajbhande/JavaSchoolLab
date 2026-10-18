@@ -114,7 +114,7 @@ class JdbcUserRepository implements UserRepository {
 }
 
 // OUTPUT: (SQL sent)
-// SELECT id, email, status FROM users WHERE email = 'asha@example.com'`],
+// SELECT id, email, status FROM users WHERE email = 'abaji@example.com'`],
         [`Spring Data JPA generates the implementation from the interface; Django managers and SQLAlchemy sessions play the same role. Derived method names become SQL.`,
             r`public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByEmail(String email);

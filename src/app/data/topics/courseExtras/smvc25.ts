@@ -323,14 +323,16 @@ lci.setIgnoreInvalidLocale(true);
             ['S', 'Why does {0} not get replaced in my message?', 'Often a single quote in the text turns off MessageFormat parsing; double the quote.']],
         [['Use getMessage with arguments.',
             r`# messages.properties
-welcome=Welcome, {0}! You have {1} new messages.
+welcome=Welcome, {0}
+! You have {1}
+new messages.
 
 String text = messageSource.getMessage(
-    "welcome", new Object[] {"Asha", 3}, Locale.ENGLISH);
+    "welcome", new Object[] {"Abaji", 3}, Locale.ENGLISH);
 System.out.println(text);
 
 // OUTPUT:
-// Welcome, Asha! You have 3 new messages.`],
+// Welcome, Abaji! You have 3 new messages.`],
             ['Default message and fallback.',
                 r`String t = messageSource.getMessage(
     "no.such.key", null, "Not translated", Locale.FRENCH);
@@ -454,9 +456,11 @@ login.welcome=Bon retour, {0}
 // Same three keys in both files, values translated.`],
             ['Apostrophe rule.',
                 r`# messages.properties
-bad=It''s {0} o''clock
+bad=It''s {0}
+o''clock
 # messages_fr.properties
-ok=Il est {0} heures
+ok=Il est {0}
+heures
 
 String s = ms.getMessage("bad", new Object[] {5}, Locale.ENGLISH);
 System.out.println(s);
@@ -471,7 +475,8 @@ void frHasAllKeys() throws IOException {
                                 StandardCharsets.UTF_8);
          var b = new FileReader("src/main/resources/messages_fr.properties",
                                 StandardCharsets.UTF_8)) {
-        base.load(a); fr.load(b);
+        base.load(a);
+        fr.load(b);
     }
     assertThat(fr.stringPropertyNames())
         .containsAll(base.stringPropertyNames());
@@ -484,8 +489,8 @@ void frHasAllKeys() throws IOException {
 <p th:text="#{login.welcome(` + r`$` + r`{user.name})}">Welcome back</p>
 
 <!-- OUTPUT -->
-<!-- en: Sign in / Welcome back, Asha -->
-<!-- fr: Connexion / Bon retour, Asha -->`]]
+<!-- en: Sign in / Welcome back, Abaji -->
+<!-- fr: Connexion / Bon retour, Abaji -->`]]
     ),
 
     'mvc-multi-language-applications': x(
@@ -585,8 +590,10 @@ public String switchLang(@RequestParam String lang,
 // GET /switch?lang=fr  ->  302 Location: (previous page), now in French`],
             ['Dropdown in Thymeleaf.',
                 r`<select onchange="location.href='?lang=' + this.value">
-  <option value="en" th:selected="$` + r`{#locale.language == 'en'}">English</option>
-  <option value="fr" th:selected="$` + r`{#locale.language == 'fr'}">Francais</option>
+  <option value="en" th:selected="$` + r`{#locale.language == 'en'}
+">English</option>
+  <option value="fr" th:selected="$` + r`{#locale.language == 'fr'}
+">Francais</option>
 </select>
 
 <!-- OUTPUT -->
@@ -634,7 +641,8 @@ spring.messages.cache-duration=10m
 spring.messages.fallback-to-system-locale=false
 
 # OUTPUT:
-# Boot logs nothing; a MessageSource bean named messageSource is created.`],
+# Boot logs nothing;
+a MessageSource bean named messageSource is created.`],
         [`<p>Typical mistakes:</p><ul><li><b>Wrong bean name:</b> naming it <code>messages</code> instead of <code>messageSource</code>.</li><li><b>Wrong encoding:</b> garbled letters; set UTF-8.</li><li><b>Hard-coded text</b> left in templates.</li><li><b>Sentence building</b> from fragments.</li><li><b>Missing base file:</b> unknown locale then fails.</li></ul>`,
             r`// WRONG: sentence glued from pieces, word order is fixed
 String bad = msg("you.have") + " " + count + " " + msg("messages");
@@ -853,7 +861,7 @@ public Locale resolveLocale(HttpServletRequest req) {
 }
 
 // OUTPUT:
-// anonymous: header language; logged in as Asha: hi`]
+// anonymous: header language; logged in as Abaji: hi`]
     ),
 
     'mvc-localechangeinterceptor': dv(
@@ -1043,7 +1051,11 @@ order.total=Total: {0}
 // terms.text -> By clicking you agree to the terms and conditions of the service.`],
         [`<p>Syntax variants:</p><ul><li><b>Placeholders:</b> <code>{0}</code>, with types such as <code>{0,number,#.##}</code> or <code>{1,date,short}</code>.</li><li><b>Choice:</b> <code>{0,choice,0#no items|1#one item|1&lt;{0} items}</code>.</li><li><b>Unicode escapes:</b> <code>\\u0928</code>.</li></ul>`,
             r`# messages.properties
-cart.items=You have {0,choice,0#no items|1#one item|1<{0} items}.
+cart.items=You have {
+    0,choice,0#no items|1#one item|1<{0}
+    items
+}
+.
 price=Price: {0,number,#.00}
 
 System.out.println(ms.getMessage("cart.items", new Object[] {0}, Locale.ENGLISH));
@@ -1062,7 +1074,7 @@ hello=Don''t forget {0}
 
 // OUTPUT:
 // WRONG: Dont forget {0}
-// RIGHT: Don't forget Asha`],
+// RIGHT: Don't forget Abaji`],
         [`<p>Performance and maintenance:</p><ul><li>Files are read once and cached; size has little effect.</li><li>Keep one file per feature for large apps.</li><li>Sort keys and review them in pull requests.</li><li>Use a translation tool or service that exports properties files.</li></ul>`,
             r`# application.properties - split by feature
 spring.messages.basename=i18n/common,i18n/orders,i18n/admin
@@ -1133,7 +1145,8 @@ record I18nProps(List<Locale> supported, Locale defaultLocale) {}
 // OUTPUT:
 // app.i18n.supported=en,fr,hi  (one place to add a language)`],
         [`<p>Tuning:</p><ul><li>Keep pages cacheable by including the language in the URL or the cache key.</li><li>Load only needed bundles per module.</li><li>Use the <code>Content-Language</code> header and <code>lang</code> attribute for correctness.</li></ul>`,
-            r`<html th:lang="$` + r`{#locale.language}">
+            r`<html th:lang="$` + r`{#locale.language}
+">
 <head><link rel="alternate" hreflang="fr" th:href="@{/fr/home}"></head>
 
 <!-- OUTPUT -->

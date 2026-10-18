@@ -122,7 +122,7 @@ print(random.choice(colours) in colours)
             codeExamples: [
                 `import random
 
-students = ["Asha", "Ravi", "Kiran", "Meena", "Sheru"]
+students = ["Abaji", "Raoji", "Kanhoji", "Moropant", "Sheru"]
 
 winners = random.sample(students, 3)          # 3 different people
 print(len(winners), len(set(winners)))

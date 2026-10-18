@@ -146,8 +146,8 @@ print(shop.__file__)
 
 # OUTPUT (paths are e.g.):
 # shop shop.payment.upi
-# ['/home/asha/project/shop']
-# /home/asha/project/shop/__init__.py`
+# ['/home/abaji/project/shop']
+# /home/abaji/project/shop/__init__.py`
             ]
         },
         {

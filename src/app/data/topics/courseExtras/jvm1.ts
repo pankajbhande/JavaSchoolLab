@@ -105,7 +105,10 @@ System.out.println("processors    = " + rt.availableProcessors());
 // G1 Old Gen Heap memory`]],
         [['Which area fails here?',
             r`static int depth = 0;
-static void recurse() { depth++; recurse(); }   // stack area
+static void recurse() {
+    depth++;
+    recurse();
+}  // stack area
 public static void main(String[] a) {
     try { recurse(); }
     catch (StackOverflowError e) { System.out.println("stack failed"); }
@@ -199,7 +202,10 @@ System.out.println(block.length);
             ['S', 'How do virtual threads change stack memory?', 'Their stacks are heap objects that grow and shrink, so millions can exist. Platform threads reserve a fixed stack up front.']],
         [['Trigger and measure recursion depth.',
             r`static int depth;
-static void dive() { depth++; dive(); }
+static void dive() {
+    depth++;
+    dive();
+}
 public static void main(String[] args) {
     try { dive(); }
     catch (StackOverflowError e) {
@@ -541,8 +547,11 @@ static int depth(int n) {
 // 2750000`],
         [`<p>Common stack mistakes:</p><ul><li><b>Missing base case:</b> add it and test with small and large inputs.</li><li><b>Mutual recursion:</b> A calls B calls A without progress.</li><li><b>Recursive toString or equals</b> on cyclic object graphs.</li><li><b>Huge Xss for all threads:</b> memory is reserved per thread.</li><li><b>Assuming tail-call optimization:</b> Java does not do it, so deep recursion needs a loop.</li></ul>`,
             r`class Node { Node other;
-    @Override public String toString() { return "Node->" + other; } }  // cycle overflows
-Node a = new Node(), b = new Node(); a.other = b; b.other = a;
+    @Override public String toString() { return "Node->" + other; }
+    }  // cycle overflows
+Node a = new Node(), b = new Node();
+a.other = b;
+b.other = a;
 try { a.toString(); }
 catch (StackOverflowError e) { System.out.println("cyclic toString overflowed"); }
 

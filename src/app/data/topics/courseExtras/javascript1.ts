@@ -20,14 +20,14 @@ export const javascript1Extras: Record<string, Extra> = {
             ['S', 'Why is JavaScript single threaded and how does it scale?', 'One call stack keeps the model simple; concurrency comes from async I/O, workers (Web Workers/worker_threads) and multiple processes.'],
             ['S', 'What is the difference between microtasks and macrotasks?', 'Microtasks (promise callbacks) run right after the current script, before the next macrotask (timers, I/O).']],
         [['First script.',
-            r`const name = "Asha";
+            r`const name = "Abaji";
 let count = 0;
 function greet(person) { return "Hello, " + person + "!"; }
 count += 1;
 console.log(greet(name), count);
 
 // OUTPUT:
-// Hello, Asha! 1`],
+// Hello, Abaji! 1`],
             ['Equality surprises.',
                 r`console.log(0 == "", 0 === "", null == undefined, null === undefined, NaN === NaN);
 
@@ -192,7 +192,7 @@ console.log(added, removed, changed, list);
     ),
 
     'js-objects-methods': x(
-        ['An object stores key-value pairs: <code>const user = { name: "Asha", age: 30 }</code>. Access with <code>user.name</code> or <code>user["name"]</code>.',
+        ['An object stores key-value pairs: <code>const user = { name: "Abaji", age: 30 }</code>. Access with <code>user.name</code> or <code>user["name"]</code>.',
             'Methods are functions stored as properties.',
             'Useful helpers: <code>Object.keys</code>, <code>Object.values</code>, <code>Object.entries</code>, <code>Object.assign</code>.'],
         ['Shorthand properties, computed keys <code>{ [key]: value }</code>, spread <code>{ ...a, ...b }</code> for merging.',
@@ -209,7 +209,7 @@ console.log(added, removed, changed, list);
             ['S', 'Map vs object?', 'Map allows any key type, keeps insertion order, has size and better performance for frequent additions and removals.']],
         [['Spread merge and safe access.',
             r`const defaults = { theme: "light", page: 1 };
-const user = { name: "Asha", settings: { page: 5 } };
+const user = { name: "Abaji", settings: { page: 5 } };
 const config = { ...defaults, ...user.settings };
 console.log(config, user.address?.city ?? "unknown");
 
@@ -411,7 +411,7 @@ console.log("B");
 <script defer src="/analytics.js"></script>
 // main.js
 import { greet } from "./greet.js";
-document.querySelector("h1").textContent = greet("Asha");
+document.querySelector("h1").textContent = greet("Abaji");
 
 // OUTPUT:
 // the heading shows the greeting after the document is parsed`],
@@ -452,7 +452,7 @@ console.log(obj.regular(), obj.arrow());
 // 1 undefined`],
         [`Forms: declarations, expressions, arrow functions, immediately invoked functions (IIFE), generators (<code>function*</code>), async functions, methods and constructors. Parameters: defaults, rest, destructuring. Call styles: <code>call</code>, <code>apply</code>, <code>bind</code>.`,
             r`function greet(greeting, punct) { return greeting + ", " + this.name + punct; }
-const user = { name: "Asha" };
+const user = { name: "Abaji" };
 console.log(greet.call(user, "Hello", "!"), greet.apply(user, ["Hi", "?"]));
 const bound = greet.bind(user, "Hey");
 console.log(bound("."));
@@ -460,8 +460,8 @@ const total = ({ price, qty = 1 }) => price * qty;
 console.log(total({ price: 10 }));
 
 // OUTPUT:
-// Hello, Asha! Hi, Asha?
-// Hey, Asha.
+// Hello, Abaji! Hi, Abaji?
+// Hey, Abaji.
 // 10`],
         [`Mistakes: relying on hoisting, forgetting to return, mutating parameters, arrow functions as object methods (wrong this), callbacks that lose this, and unbounded recursion (stack overflow). Use pure functions and explicit returns.`,
             r`const counter = { n: 0, inc() { setTimeout(function () { this.n++; }, 0); } };      // this is not counter inside the callback
@@ -579,13 +579,13 @@ console.log(page.length, view.length, total);
 
     'js-objects-methods': dv(
         [`Objects are dynamic collections of properties; each property has a key (string or symbol), a value and attributes (writable, enumerable, configurable). Property lookup walks the prototype chain until found. Spread and Object.assign copy own enumerable properties shallowly; getters and setters are accessor properties.`,
-            r`const user = { first: "Asha", last: "R", get full() { return this.first + " " + this.last; }, set full(v) { [this.first, this.last] = v.split(" "); } };
-user.full = "Ravi K";
+            r`const user = { first: "Abaji", last: "R", get full() { return this.first + " " + this.last; }, set full(v) { [this.first, this.last] = v.split(" "); } };
+user.full = "Raoji K";
 console.log(user.full, Object.getOwnPropertyDescriptor(user, "first"));
 console.log("toString" in user, user.hasOwnProperty("toString"), Object.hasOwn(user, "first"));
 
 // OUTPUT:
-// Ravi K { value: 'Ravi', writable: true, enumerable: true, configurable: true }
+// Raoji K { value: 'Raoji', writable: true, enumerable: true, configurable: true }
 // true false true`],
         [`Tools: <code>Object.keys/values/entries/fromEntries</code>, <code>Object.freeze/seal</code>, <code>defineProperty</code>, <code>structuredClone</code>, destructuring with renaming and defaults, computed keys, <code>Symbol</code> keys, <code>Proxy</code> and <code>Reflect</code>, <code>WeakMap</code> for private data.`,
             r`const { name: userName = "guest", address: { city } = {} } = { name: undefined, address: { city: "Pune" } };
@@ -620,7 +620,7 @@ const withNames = orders.map(o => ({ ...o, customer: customers.get(o.customerId)
 console.log(withNames[0]);
 
 // OUTPUT:
-// { id: 1, customerId: 7, total: 500, customer: 'Asha' }`]
+// { id: 1, customerId: 7, total: 500, customer: 'Abaji' }`]
     ),
 
     'js-loops-conditionals': dv(
@@ -744,13 +744,13 @@ console.log(w, getComputedStyle(box).display, box.getBoundingClientRect().width)
         [`APIs: selection (<code>querySelector(All)</code>, <code>closest</code>, <code>matches</code>), creation (<code>createElement</code>, <code>template</code>, <code>cloneNode</code>), insertion (<code>append</code>, <code>before</code>, <code>insertAdjacentHTML</code>), attributes and dataset, classList, events and delegation, <code>IntersectionObserver</code>, <code>MutationObserver</code>, <code>requestAnimationFrame</code>.`,
             r`const tpl = document.querySelector("#row-template");
 const row = tpl.content.cloneNode(true);
-row.querySelector(".name").textContent = "Asha";
+row.querySelector(".name").textContent = "Abaji";
 row.firstElementChild.dataset.id = "7";
 document.querySelector("tbody").append(row);
 new IntersectionObserver(([e]) => e.isIntersecting && loadMore(), { rootMargin: "200px" }).observe(document.querySelector("#sentinel"));
 
 // OUTPUT:
-// a table row for Asha with data-id="7"; more data loads when the sentinel nears the viewport`],
+// a table row for Abaji with data-id="7"; more data loads when the sentinel nears the viewport`],
         [`Mistakes: innerHTML with user input (XSS), adding listeners to every row (use delegation), reading and writing layout in alternating loops (layout thrashing), querying the DOM repeatedly inside loops, and forgetting to remove listeners from removed nodes. Cache references, batch changes and sanitize input.`,
             r`// layout thrashing: read, write, read, write
 items.forEach(el => { el.style.width = el.parentNode.offsetWidth / 2 + "px"; });

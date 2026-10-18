@@ -358,8 +358,8 @@ public class Order extends Auditable {
 // id | order_number | status | created_at              | created_by | updated_at              | updated_by
 //  1 | ORD-1001     | NEW    | 2026-03-11T09:14:02.11Z | ajay       | 2026-03-11T09:14:02.11Z | ajay
 //
-// Later, user "priya" cancels it:
-//  1 | ORD-1001     | CANCELLED | 2026-03-11T09:14:02.11Z | ajay    | 2026-03-12T15:40:55.03Z | priya
+// Later, user "prataprao" cancels it:
+//  1 | ORD-1001     | CANCELLED | 2026-03-11T09:14:02.11Z | ajay    | 2026-03-12T15:40:55.03Z | prataprao
 //
 // IF THE COLUMNS ARE ALL NULL: @EnableJpaAuditing is missing.
 // The annotations compile perfectly well without it and do nothing.`

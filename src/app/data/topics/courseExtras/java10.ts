@@ -21,7 +21,7 @@ export const java10Extras: Record<string, Extra> = {
             ['S', 'What does var in lambda parameters allow?', 'Adding annotations (like @NonNull) to inferred lambda parameters.']],
         [['Use var for obvious types, loops and resources.',
             r`var names = new ArrayList<String>();
-names.add("Asha");
+names.add("Abaji");
 var counts = new HashMap<String, List<Integer>>();
 counts.computeIfAbsent("a", k -> new ArrayList<>()).add(1);
 for (var e : counts.entrySet()) System.out.println(e.getKey() + "=" + e.getValue());
@@ -91,7 +91,7 @@ System.out.println("[" + "  x ".stripLeading() + "][" + "  x ".stripTrailing() +
                 r`static boolean valid(String name) {
     return name != null && !name.isBlank() && name.strip().length() <= 20;
 }
-System.out.println(valid(" Asha ") + " " + valid("   ") + " " + valid(null));
+System.out.println(valid(" Abaji ") + " " + valid("   ") + " " + valid(null));
 
 // OUTPUT:
 // true false false`]],
@@ -139,7 +139,7 @@ System.out.println(res.statusCode() + " "
     + res.headers().firstValue("content-type").orElse("?"));
 HttpRequest post = HttpRequest.newBuilder(URI.create("https://api.example.com/users"))
     .header("Content-Type", "application/json")
-    .POST(HttpRequest.BodyPublishers.ofString("{\"name\":\"Asha\"}"))
+    .POST(HttpRequest.BodyPublishers.ofString("{\"name\":\"Abaji\"}"))
     .build();
 
 // OUTPUT: (example)
@@ -262,7 +262,8 @@ try (Stream<String> lines = Files.lines(p)) {
 // line2`],
             ['Compare files and atomic write.',
                 r`Path a = Path.of("a.txt"), b = Path.of("b.txt");
-Files.writeString(a, "same"); Files.writeString(b, "same");
+Files.writeString(a, "same");
+Files.writeString(b, "same");
 System.out.println(Files.mismatch(a, b));   // needs Java 12 or later
 Path tmp = Files.createTempFile(a.toAbsolutePath().getParent(), "cfg", ".tmp");
 Files.writeString(tmp, "new content");
@@ -388,7 +389,10 @@ System.out.println(info("hello") + ", " + info(42) + ", " + info(List.of(1, 2)) 
             ['equals with patterns.',
                 r`final class Point {
     final int x, y;
-    Point(int x, int y) { this.x = x; this.y = y; }
+    Point(int x, int y) {
+        this.x = x;
+        this.y = y;
+    }
     @Override public boolean equals(Object o) {
         return o instanceof Point p && x == p.x && y == p.y;
     }
@@ -571,7 +575,7 @@ System.out.println(name);
       "name": "%s",
       "age": %d
     }
-    """.formatted("Asha", 30);
+    """.formatted("Abaji", 30);
 String sql = """
     SELECT id, name
       FROM users
@@ -583,7 +587,7 @@ System.out.println(sql.lines().count());
 
 // OUTPUT:
 // {
-//   "name": "Asha",
+//   "name": "Abaji",
 //   "age": 30
 // }
 // 4`],
@@ -625,9 +629,14 @@ export const java10Deep: Record<string, Deep> = {
 list.add("text");
 var map = new HashMap<String, List<Integer>>();
 var stream = Stream.of(1, "a");  // intersection type of Integer and String
-var anon = new Object() { String hello() { return "hi"; } };
+var anon = new Object() {
+    String hello() { return "hi"; }
+};
 System.out.println(list.getClass().getSimpleName() + " " + anon.hello());
-var x = 1;  var y = 1L;  var z = 1.0f;  var c = 'c';
+var x = 1;
+var y = 1L;
+var z = 1.0f;
+var c = 'c';
 Object[] boxed = {x, y, z, c};
 for (var o : boxed) System.out.print(o.getClass().getSimpleName() + " ");
 
@@ -725,10 +734,10 @@ System.out.println("a\\tb".translateEscapes().equals("a\tb")  // Java 15
 <li><b>split("\\n") on Windows text</b>: it leaves a trailing <code>\\r</code> on each line.</li>
 <li><b>Ignoring immutability</b>: <code>s.strip();</code> alone does nothing, so keep the result.</li>
 </ul>`,
-            r`String input = " Asha ";   // pasted from a web page
+            r`String input = " Abaji ";   // pasted from a web page
 String fixed = input.replace(' ', ' ').strip();
-System.out.println(input.trim().equals("Asha") + " "
-    + input.strip().equals("Asha") + " " + "Asha".equals(fixed));
+System.out.println(input.trim().equals("Abaji") + " "
+    + input.strip().equals("Abaji") + " " + "Abaji".equals(fixed));
 String win = "a\r\nb";
 System.out.println(win.split("\n")[0].length() + " " + win.lines().toList());
 
@@ -749,11 +758,11 @@ System.out.println(count + " ms=" + ms);
     if (raw == null || raw.isBlank()) return null;
     return raw.strip().replaceAll("\\s+", " ");   // squeeze inner spaces
 }
-System.out.println(clean("  Asha    Rao  ") + " " + clean("   "));
+System.out.println(clean("  Abaji    Rao  ") + " " + clean("   "));
 System.out.println("-".repeat(30));
 
 // OUTPUT:
-// Asha Rao null
+// Abaji Rao null
 // ------------------------------`]
     ),
 
@@ -822,8 +831,10 @@ List<CompletableFuture<Integer>> calls = ids.stream()
                 URI uri = URI.create("https://api.example.com/items/" + id);
                 return client.send(HttpRequest.newBuilder(uri).build(),
                     HttpResponse.BodyHandlers.ofString()).statusCode();
-            } finally { limit.release(); }
-        } catch (Exception e) { throw new CompletionException(e); }
+            } finally { limit.release();
+            }
+        } catch (Exception e) { throw new CompletionException(e);
+        }
     }, Executors.newVirtualThreadPerTaskExecutor()))
     .toList();
 
@@ -1272,7 +1283,7 @@ System.out.println(Arrays.stream(Temp.class.getRecordComponents())
 <p><b>Avoid records for</b> entities with identity and lifecycle (JPA), classes with many optional fields (use a builder), and classes that need inheritance.</p>`,
             r`record Customer(long id, String name, Address addr) {}
 record Address(String city, String zip) {}
-Object o = new Customer(1, "Asha", new Address("Pune", "411001"));
+Object o = new Customer(1, "Abaji", new Address("Pune", "411001"));
 // Record pattern in instanceof: Java 21
 if (o instanceof Customer(long id, String name, Address(String city, var zip)))
     System.out.println(id + " " + name + " " + city + " " + zip);
@@ -1289,7 +1300,7 @@ record Config(String url, int pool) {
 System.out.println(new Config("db", 5).withPool(20));
 
 // OUTPUT:
-// 1 Asha Pune 411001
+// 1 Abaji Pune 411001
 // Stat[key=a, count=2]
 // Config[url=db, pool=20]`],
         [`<p><b>Common mistakes</b></p>
@@ -1307,12 +1318,14 @@ System.out.println(new Bytes(new byte[]{1}).equals(new Bytes(new byte[]{1})));
 record User(String name, String password) {
     @Override public String toString() { return "User[name=" + name + "]"; }
 }
-System.out.println(new User("asha", "secret"));
-record Safe(List<String> items) { Safe { items = List.copyOf(items); } }   // fix
+System.out.println(new User("abaji", "secret"));
+record Safe(List<String> items) {
+    Safe { items = List.copyOf(items); }
+}  // fix
 
 // OUTPUT:
 // false
-// User[name=asha]`],
+// User[name=abaji]`],
         [`<ul>
 <li>Records are normal objects: allocation and field access cost the same as a handwritten class.</li>
 <li>The generated <code>equals</code> and <code>hashCode</code> are efficient (method handles).</li>
@@ -1450,7 +1463,7 @@ String html = """
     </ul>
     """.formatted(items);
 String expected = """
-    {"id":1,"name":"Asha"}""";
+    {"id":1,"name":"Abaji"}""";
 System.out.println(html.lines().count() + " " + query.contains("user(id")
     + " " + expected.length());
 

@@ -111,13 +111,13 @@ print(callable(42), callable("hi"))
         print("2. __init__ initialises it")
         self.owner = owner
 
-acc = Account("Asha")
+acc = Account("Abaji")
 print(type(Account), acc.owner)
 
 # OUTPUT:
 # 1. __new__ creates the object
 # 2. __init__ initialises it
-# <class 'type'> Asha`
+# <class 'type'> Abaji`
             ]
         },
         {
@@ -141,8 +141,8 @@ def greet(name):
     """Return a greeting."""
     return f"Hi {name}"
 
-greet("Asha")
-greet("Ravi")
+greet("Abaji")
+greet("Raoji")
 print(greet.calls, greet.__name__, greet.__doc__)
 
 # OUTPUT:

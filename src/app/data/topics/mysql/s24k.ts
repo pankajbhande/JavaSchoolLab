@@ -23,7 +23,7 @@ SELECT add_tax(200, 0.18) AS gross;
 -- +--------+`],
         [`Built-in functions cannot cover every business rule. A stored function encapsulates a calculation once (tax, age band, formatted name) and lets any query reuse it, keeping logic consistent across applications.`,
             r`CREATE TABLE person (id INT PRIMARY KEY, first VARCHAR(10), last VARCHAR(10), dob DATE);
-INSERT INTO person VALUES (1,'Asha','Rao','2000-05-10'),(2,'Ben','Kumar','1980-01-01');
+INSERT INTO person VALUES (1,'Abaji','Rao','2000-05-10'),(2,'Ben','Kumar','1980-01-01');
 
 DELIMITER //
 CREATE FUNCTION full_name(f VARCHAR(10), l VARCHAR(10)) RETURNS VARCHAR(25) DETERMINISTIC
@@ -35,11 +35,11 @@ DELIMITER ;
 SELECT id, full_name(first, last) AS who FROM person;
 
 -- OUTPUT:
--- +----+-------------+
--- | id | who         |
--- +----+-------------+
--- |  1 | Rao, Asha   |
--- |  2 | Kumar, Ben  |
+-- +----+------------+
+-- | id | who        |
+-- +----+------------+
+-- |  1 | Rao, Abaji |
+-- |  2 | Kumar, Ben |
 -- +----+-------------+`],
         [`Real use: currency conversion, slug generation, custom validators, age or fiscal-year helpers and lookups used in reports. Manage with <code>SHOW CREATE FUNCTION</code>, <code>DROP FUNCTION</code> and <code>GRANT EXECUTE</code>.`,
             r`DELIMITER //
@@ -55,7 +55,7 @@ SELECT first, age_on(dob, '2024-06-01') AS age FROM person;
 -- +-------+-----+
 -- | first | age |
 -- +-------+-----+
--- | Asha  |  24 |
+-- | Abaji |  24 |
 -- | Ben   |  44 |
 -- +-------+-----+`],
         [`<b>Advantages:</b> usable anywhere an expression is allowed; one definition for a rule; typed result; can read tables (with READS SQL DATA).`,

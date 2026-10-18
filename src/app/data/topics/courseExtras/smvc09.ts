@@ -36,12 +36,12 @@ public class HomeController {
                 r`@GetMapping("/profile")
 public ModelAndView profile() {
     ModelAndView mav = new ModelAndView("profile");
-    mav.addObject("user", "asha");
+    mav.addObject("user", "abaji");
     return mav;
 }
 
 // OUTPUT:
-// viewName=profile, model={user=asha}, resolved by the first matching ViewResolver`]],
+// viewName=profile, model={user=abaji}, resolved by the first matching ViewResolver`]],
         [['Test the logical view name with MockMvc.',
             r`@WebMvcTest(HomeController.class)
 class HomeControllerTest {
@@ -204,7 +204,7 @@ public String create(@Valid UserForm form, RedirectAttributes ra) {
 }
 
 // OUTPUT:
-// POST /users -> 302 Location: /users, then GET /users shows msg=Saved Asha`],
+// POST /users -> 302 Location: /users, then GET /users shows msg=Saved Abaji`],
             ['Redirect with RedirectView.',
                 r`@GetMapping("/old")
 public RedirectView old() {
@@ -216,10 +216,10 @@ public RedirectView old() {
 // OUTPUT:
 // GET /old -> 301 Location: /new`]],
         [['Test the redirect with MockMvc.',
-            r`mvc.perform(post("/users").param("name", "Asha"))
+            r`mvc.perform(post("/users").param("name", "Abaji"))
    .andExpect(status().is3xxRedirection())
    .andExpect(redirectedUrl("/users"))
-   .andExpect(flash().attribute("msg", "Saved Asha"));
+   .andExpect(flash().attribute("msg", "Saved Abaji"));
 
 // OUTPUT:
 // Tests run: 1, Failures: 0`],
@@ -402,15 +402,16 @@ public String loop() { return "forward:/loop"; }
 public class GreetController {
     @GetMapping("/greet")
     public String greet(Model model) {
-        model.addAttribute("name", "Asha");
+        model.addAttribute("name", "Abaji");
         return "greet";
     }
 }
 // /WEB-INF/views/greet.jsp contains:
-// <h1>Hello, <c:out value="$` + r`{name}"/></h1>
+// <h1>Hello, <c:out value="$` + r`{name}
+"/></h1>
 
 // OUTPUT:
-// <h1>Hello, Asha</h1>`],
+// <h1>Hello, Abaji</h1>`],
             ['Boot dependencies for JSP.',
                 r`<!-- pom.xml: packaging war -->
 <dependency>
@@ -430,9 +431,11 @@ public class GreetController {
 // Tests run: 1, Failures: 0 (MockMvc checks the forward, not the HTML)`],
             ['Pitfall: unescaped output.',
                 r`<%-- unsafe: the value is written as raw HTML --%>
-<p>Hi $` + r`{param.name}</p>
+<p>Hi $` + r`{param.name}
+</p>
 <%-- safe --%>
-<p>Hi <c:out value="$` + r`{param.name}"/></p>
+<p>Hi <c:out value="$` + r`{param.name}
+"/></p>
 
 // OUTPUT:
 // ?name=<script>... runs in the first line, appears as text in the second`]]
@@ -456,18 +459,22 @@ public class GreetController {
         [['Loop over a list.',
             r`<%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <ul>
-  <c:forEach var="u" items="$` + r`{users}">
-    <li><c:out value="$` + r`{u.name}"/></li>
+  <c:forEach var="u" items="$` + r`{users}
+">
+    <li><c:out value="$` + r`{u.name}
+"/></li>
   </c:forEach>
 </ul>
 
 // OUTPUT:
-// <ul><li>Asha</li><li>Ravi</li></ul>`],
+// <ul><li>Abaji</li><li>Raoji</li></ul>`],
             ['Condition and empty check.',
                 r`<%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <c:choose>
-  <c:when test="$` + r`{empty users}">No users found</c:when>
-  <c:otherwise>Total: <c:out value="$` + r`{users.size()}"/></c:otherwise>
+  <c:when test="$` + r`{empty users}
+">No users found</c:when>
+  <c:otherwise>Total: <c:out value="$` + r`{users.size()}
+"/></c:otherwise>
 </c:choose>
 
 // OUTPUT:
@@ -506,15 +513,17 @@ public class GreetController {
 public class UserController {
     @GetMapping("/users")
     public String list(Model model) {
-        model.addAttribute("users", List.of("Asha", "Ravi"));
+        model.addAttribute("users", List.of("Abaji", "Raoji"));
         return "users";               // templates/users.html
     }
 }
 // templates/users.html:
-// <li th:each="u : $` + r`{users}" th:text="$` + r`{u}">sample</li>
+// <li th:each="u : $` + r`{users}
+" th:text="$` + r`{u}
+">sample</li>
 
 // OUTPUT:
-// <li>Asha</li><li>Ravi</li>`],
+// <li>Abaji</li><li>Raoji</li>`],
             ['Starter and properties.',
                 r`# build.gradle: implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 # application.properties
@@ -529,13 +538,15 @@ spring.thymeleaf.suffix=.html
    .andExpect(status().isOk())
    .andExpect(view().name("users"))
    .andExpect(model().attribute("users", hasSize(2)))
-   .andExpect(content().string(containsString("Asha")));
+   .andExpect(content().string(containsString("Abaji")));
 
 // OUTPUT:
 // Tests run: 1, Failures: 0 (Thymeleaf renders for real in MockMvc)`],
             ['Pitfall: unescaped user text.',
-                r`<p th:utext="$` + r`{comment}">x</p>   <!-- unsafe -->
-<p th:text="$` + r`{comment}">x</p>    <!-- safe: HTML is escaped -->
+                r`<p th:utext="$` + r`{comment}
+">x</p>   <!-- unsafe -->
+<p th:text="$` + r`{comment}
+">x</p>    <!-- safe: HTML is escaped -->
 
 // OUTPUT:
 // comment=<b>hi</b>: first line shows bold text (XSS risk), second shows the tags as text`]]
@@ -590,7 +601,8 @@ spring.thymeleaf.cache=true
 spring.mvc.contentnegotiation.favor-parameter=false
 
 # OUTPUT:
-# production: views and templates cached; development: set cache=false`],
+# production: views and templates cached;
+development: set cache=false`],
         [`<p>Scenario: an admin portal serves HTML pages, a PDF report and JSON from the same controller methods. A <code>ContentNegotiatingViewResolver</code> chooses the PDF view for <code>.pdf</code> requests and the HTML template otherwise, while REST endpoints use <code>@ResponseBody</code> and bypass views entirely.</p><ul><li>Pages: Thymeleaf resolver.</li><li>Reports: bean-name resolver.</li><li>API: message converters.</li></ul>`,
             r`@GetMapping("/reports/{id}")
 public String report(@PathVariable long id, Model model) {
@@ -687,7 +699,8 @@ vr.setOrder(Integer.MAX_VALUE);          // last in the chain
 # RIGHT: war packaging and src/main/webapp/WEB-INF/views
 
 # OUTPUT:
-# jar: 404 for every JSP; war on external or embedded Tomcat: pages render`],
+# jar: 404 for every JSP;
+war on external or embedded Tomcat: pages render`],
         [`<p>Tuning notes:</p><ul><li>JSP compile cost occurs once per page; precompile (JspC) for production wars.</li><li>Disable <code>development</code> mode for Jasper so it does not poll for changes.</li><li>Keep pages small and move logic into the controller.</li></ul>`,
             r`# application.properties (embedded Tomcat with Jasper)
 server.servlet.jsp.init-parameters.development=false
@@ -910,7 +923,8 @@ public String home(@RequestHeader("User-Agent") String ua) {
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <html><body>
-  <h1>Hello, <c:out value="$` + r`{name}"/></h1>
+  <h1>Hello, <c:out value="$` + r`{name}
+"/></h1>
 </body></html>
 
 // OUTPUT:
@@ -928,7 +942,8 @@ public String home(@RequestHeader("User-Agent") String ua) {
 // <form method="post"> ... <input name="name" value="..."/> ... error message if invalid`],
         [`<p>Mistakes:</p><ul><li><b>Scriptlets:</b> use EL and JSTL instead.</li><li><b>Unescaped output:</b> XSS risk.</li><li><b>JSP in a Boot jar:</b> not served.</li><li><b>Missing taglib directive:</b> tags print as text.</li><li><b>Database access from a JSP:</b> belongs in the service layer.</li></ul>`,
             r`<%-- WRONG: logic in the page --%>
-<% List<User> us = new UserDao().findAll(); %>
+<% List<User> us = new UserDao().findAll();
+%>
 <%-- RIGHT: controller adds users to the model, page only displays --%>
 
 // OUTPUT:
@@ -956,7 +971,8 @@ public class EmployeeController {
         [`<p>How JSTL works:</p><ul><li>The taglib directive maps a prefix to a TLD (tag library descriptor) inside the JSTL jar.</li><li>Jasper turns each tag into calls on a tag handler class (for example <code>ForEachTag</code>).</li><li>Tag attributes use EL, evaluated against page, request, session and application scopes.</li><li><code>c:out</code> calls an escape routine, so characters such as <code>&lt;</code> become <code>&amp;lt;</code>.</li></ul>`,
             r`<%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <c:set var="title" value="a < b" scope="request"/>
-<p><c:out value="$` + r`{title}"/></p>
+<p><c:out value="$` + r`{title}
+"/></p>
 
 // OUTPUT:
 // <p>a &lt; b</p>`],
@@ -964,12 +980,14 @@ public class EmployeeController {
             r`<%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 <%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
-<fmt:formatNumber value="$` + r`{price}" type="currency" currencyCode="INR"/>
-<c:out value="$` + r`{fn:toUpperCase(name)}"/>
+<fmt:formatNumber value="$` + r`{price}
+" type="currency" currencyCode="INR"/>
+<c:out value="$` + r`{fn:toUpperCase(name)}
+"/>
 <c:url value="/orders" var="ordersUrl"/>
 
 // OUTPUT:
-// price=1999.5 name=asha -> "₹1,999.50 ASHA", ordersUrl=/shop/orders`],
+// price=1999.5 name=abaji -> "₹1,999.50 ABAJI", ordersUrl=/shop/orders`],
         [`<p>Mistakes:</p><ul><li><b>Old URI:</b> <code>http://java.sun.com/...</code> with Jakarta servlets.</li><li><b>Mixing javax and jakarta JSTL jars:</b> tags fail to load.</li><li><b>Raw EL output:</b> no escaping.</li><li><b>Missing JSTL jar:</b> <code>The absolute uri cannot be resolved</code>.</li><li><b>Using c:forEach on a null:</b> prints nothing; check with <code>empty</code>.</li></ul>`,
             r`<%-- error when the JSTL jar is missing --%>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
@@ -979,8 +997,11 @@ public class EmployeeController {
 // Fix: add org.glassfish.web:jakarta.servlet.jsp.jstl and jakarta.servlet.jsp.jstl-api`],
         [`<p>Tuning:</p><ul><li>Use <code>varStatus</code> instead of manual counters.</li><li>Use <code>begin</code>, <code>end</code> and <code>step</code> for paging instead of looping all items.</li><li>Do not call methods with side effects from EL.</li><li>Prepare data in the controller; keep loops short.</li></ul>`,
             r`<%@ taglib prefix="c" uri="jakarta.tags.core" %>
-<c:forEach var="u" items="$` + r`{users}" begin="0" end="9" varStatus="s">
-  <tr class="$` + r`{s.index % 2 == 0 ? 'even' : 'odd'}"><td><c:out value="$` + r`{u.name}"/></td></tr>
+<c:forEach var="u" items="$` + r`{users}
+" begin="0" end="9" varStatus="s">
+  <tr class="$` + r`{s.index % 2 == 0 ? 'even' : 'odd'}
+"><td><c:out value="$` + r`{u.name}
+"/></td></tr>
 </c:forEach>
 
 // OUTPUT:
@@ -988,9 +1009,13 @@ public class EmployeeController {
         [`<p>Scenario: an order list page shows rows with a currency format, an empty-state message and a link per row built with <code>c:url</code>, so the context path is always correct.</p>`,
             r`<%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
-<c:forEach var="o" items="$` + r`{orders}">
-  <a href="<c:url value='/orders/$` + r`{o.id}'/>">#<c:out value="$` + r`{o.id}"/></a>
-  <fmt:formatNumber value="$` + r`{o.total}" type="currency"/>
+<c:forEach var="o" items="$` + r`{orders}
+">
+  <a href="<c:url value='/orders/$` + r`{o.id}
+'/>">#<c:out value="$` + r`{o.id}
+"/></a>
+  <fmt:formatNumber value="$` + r`{o.total}
+" type="currency"/>
 </c:forEach>
 
 // OUTPUT:
@@ -1013,9 +1038,12 @@ vr.setTemplateEngine(engine);
         [`<p>Common syntax:</p><ul><li><code>th:text</code>, <code>th:utext</code>, <code>th:value</code>, <code>th:href</code>.</li><li><code>th:each</code>, <code>th:if</code>, <code>th:unless</code>, <code>th:switch</code>.</li><li><code>th:object</code> and <code>th:field</code> for forms.</li><li><code>th:fragment</code> and <code>th:replace</code> for layouts.</li><li>Message expressions read <code>messages.properties</code>.</li></ul>`,
             r`<h1 th:text="#{app.title}">Title</h1>
 <a th:href="@{/users}">All users</a>
-<form th:action="@{/users}" th:object="$` + r`{userForm}" method="post">
+<form th:action="@{/users}" th:object="$` + r`{userForm}
+" method="post">
   <input th:field="*{name}"/>
-  <span th:if="$` + r`{#fields.hasErrors('name')}" th:errors="*{name}">error</span>
+  <span th:if="$` + r`{#fields.hasErrors('name')}
+" th:errors="*{name}
+">error</span>
 </form>
 
 // OUTPUT:
@@ -1039,7 +1067,8 @@ spring.thymeleaf.cache=true
 spring.web.resources.cache.period=86400
 
 # OUTPUT:
-# dev: changes visible on browser refresh; prod: parsed templates are reused`],
+# dev: changes visible on browser refresh;
+prod: parsed templates are reused`],
         [`<p>Scenario: a company site renders product pages on the server for search engines. Controllers add a product to the model, the template shows it, and a shared layout fragment supplies header and footer. Security expressions and form binding work through the same engine.</p>`,
             r`@Controller
 public class ProductController {
@@ -1050,8 +1079,10 @@ public class ProductController {
     }
 }
 // templates/products/show.html:
-// <h2 th:text="$` + r`{product.name}">Name</h2>
-// <p th:text="$` + r`{#numbers.formatDecimal(product.price, 1, 2)}">0.00</p>
+// <h2 th:text="$` + r`{product.name}
+">Name</h2>
+// <p th:text="$` + r`{#numbers.formatDecimal(product.price, 1, 2)}
+">0.00</p>
 
 // OUTPUT:
 // <h2>Notebook</h2><p>49.50</p>`]

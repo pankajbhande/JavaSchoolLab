@@ -413,7 +413,8 @@ public class SessionCounter implements HttpSessionListener {
 // session created 3C9B... active=2
 // session destroyed active=1`],
             ['Showing it in a JSP.',
-                r`<p>Users online: $` + r`{applicationScope.activeSessions}</p>
+                r`<p>Users online: $` + r`{applicationScope.activeSessions}
+</p>
 
 // OUTPUT:
 // Users online: 2`]],
@@ -717,7 +718,7 @@ if (!"ADMIN".equals(session.getAttribute("role"))) {
 chain.doFilter(req, resp);
 
 // OUTPUT: (varies)
-// INFO DENIED asha -> /app/admin/users
+// INFO DENIED abaji -> /app/admin/users
 // 403 returned to the browser`]
     ),
 
@@ -750,7 +751,10 @@ public class CtxAttrLogger implements ServletContextAttributeListener {
             r`public void contextDestroyed(ServletContextEvent e) {
     pool.shutdown();
     try { if (!pool.awaitTermination(5, TimeUnit.SECONDS)) pool.shutdownNow(); }
-    catch (InterruptedException ex) { pool.shutdownNow(); Thread.currentThread().interrupt(); }
+    catch (InterruptedException ex) {
+        pool.shutdownNow();
+        Thread.currentThread().interrupt();
+    }
 }
 
 // OUTPUT: (varies)
@@ -790,7 +794,7 @@ public class CtxAttrLogger implements ServletContextAttributeListener {
 }
 
 // OUTPUT: (varies)
-// bye asha     (printed when the idle timeout is detected, not exactly at expiry)`],
+// bye abaji     (printed when the idle timeout is detected, not exactly at expiry)`],
         [`<p>Options and related APIs:</p><ul><li><b>sessionIdChanged:</b> from <code>HttpSessionIdListener</code>, fires after <code>changeSessionId</code>.</li><li><b>HttpSessionAttributeListener:</b> add, replace, remove events.</li><li><b>HttpSessionBindingListener:</b> <code>valueBound</code> and <code>valueUnbound</code> on the value object.</li><li><b>Timeout:</b> <code>setMaxInactiveInterval(seconds)</code>; a negative value means never.</li><li><b>HttpSessionActivationListener:</b> for sessions that are passivated or moved between nodes.</li></ul>`,
             r`public class UserHolder implements HttpSessionBindingListener {
     private final String name;
@@ -802,11 +806,11 @@ public class CtxAttrLogger implements ServletContextAttributeListener {
         System.out.println(name + " logged out");
     }
 }
-// session.setAttribute("holder", new UserHolder("asha"));
+// session.setAttribute("holder", new UserHolder("abaji"));
 
 // OUTPUT:
-// asha logged in
-// asha logged out   (on removeAttribute, invalidate or timeout)`],
+// abaji logged in
+// abaji logged out   (on removeAttribute, invalidate or timeout)`],
         [`<p>Common mistakes:</p><ul><li><b>Plain int counter:</b> races lose updates; use <code>AtomicInteger</code>.</li><li><b>Counting sessions as users.</b></li><li><b>Sessions created by bots</b> or by JSP pages that do not need them.</li><li><b>Forgetting the decrement</b> on destroy after a restart (sessions are persisted but the counter is not).</li><li><b>Heavy work in the callback</b> blocks the request or the expiry thread.</li></ul>`,
             r`<%@ page session="false" %>
 <%-- public marketing page: no session, no sessionCreated event --%>

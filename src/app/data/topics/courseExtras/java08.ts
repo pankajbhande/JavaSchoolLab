@@ -27,11 +27,14 @@ export const java08Extras: Record<string, Extra> = {
 }   // rs, ps and conn are closed in reverse order
 
 // OUTPUT: (depends on data)
-// Asha`],
+// Abaji`],
             ['Custom resource and order.',
                 r`class Res implements AutoCloseable {
     final String n;
-    Res(String n) { this.n = n; System.out.println("open " + n); }
+    Res(String n) {
+        this.n = n;
+        System.out.println("open " + n);
+    }
     public void close() { System.out.println("close " + n); }
 }
 try (Res a = new Res("A"); Res b = new Res("B")) {
@@ -81,7 +84,11 @@ try (sr) { System.out.println((char) sr.read()); }
             ['S', 'Why is @SafeVarargs needed for generic varargs?', 'A generic array can cause heap pollution; the annotation asserts the method does not misuse the array.'],
             ['S', 'Why do JDK collections factories have fixed-arity overloads?', 'To avoid allocating an array for common small arities.']],
         [['Varargs in use.',
-            r`static int sum(int... n) { int s = 0; for (int v : n) s += v; return s; }
+            r`static int sum(int... n) {
+    int s = 0;
+    for (int v : n) s += v;
+    return s;
+}
 static String describe(String label, Object... parts) {
     return label + ":" + parts.length;
 }
@@ -138,7 +145,8 @@ class C extends P {
     { System.out.println("C instance"); }
     C() { System.out.println("C ctor"); }
 }
-new C(); new C();
+new C();
+new C();
 
 // OUTPUT:
 // P static
@@ -154,7 +162,10 @@ new C(); new C();
             ['Static block loading a table.',
                 r`class Codes {
     static final Map<String, Integer> M = new HashMap<>();
-    static { M.put("IN", 91); M.put("US", 1); }
+    static {
+        M.put("IN", 91);
+        M.put("US", 1);
+    }
 }
 System.out.println(Codes.M.get("IN"));
 
@@ -174,7 +185,9 @@ catch (NoClassDefFoundError e) { System.out.println("NCDFE on second use"); }
 // NCDFE on second use`],
             ['Double-brace smell.',
                 r`// anonymous subclass with an instance block
-List<String> l = new ArrayList<>() {{ add("a"); }};
+List<String> l = new ArrayList<>() {
+    { add("a"); }
+};
 System.out.println(l);
 
 // OUTPUT:
@@ -270,7 +283,8 @@ class WithData extends RuntimeException {
             ['S', 'What replaces markers in modern Java?', 'Annotations for metadata and sealed interfaces for closed type families.']],
         [['Custom marker and check.',
             r`interface Auditable {}
-class Payment implements Auditable {} class Note {}
+class Payment implements Auditable {}
+class Note {}
 static void save(Object o) {
     String tag = (o instanceof Auditable) ? " audited" : " plain";
     System.out.println(o.getClass().getSimpleName() + tag);
@@ -330,13 +344,14 @@ System.out.println(Transfer.class.getAnnotation(Audited.class).by());
         return o != null && getClass() == o.getClass()
             && name.equals(((Student) o).name);
     }
-    @Override public int hashCode() { return name.hashCode(); } }
-Student s = new Student("Asha");
-System.out.println(s + " " + s.equals(new Student("Asha"))
+    @Override public int hashCode() { return name.hashCode(); }
+    }
+Student s = new Student("Abaji");
+System.out.println(s + " " + s.equals(new Student("Abaji"))
     + " " + s.getClass().getSimpleName());
 
 // OUTPUT:
-// Student{name=Asha} true Student`],
+// Student{name=Abaji} true Student`],
             ['Default toString.',
                 r`class Plain {}
 String s = new Plain().toString();
@@ -381,12 +396,12 @@ catch (IllegalMonitorStateException | InterruptedException e) {
             ['S', 'Why not use String.format to build SQL?', 'It risks SQL injection; use PreparedStatement parameters.']],
         [['Formatting numbers and text.',
             r`System.out.println(String.format("%-8s|%8.2f|%05d|%,d|%x|%b", "Item", 3.14159, 42, 1234567, 255, true));
-System.out.println("%s scored %d%%".formatted("Asha", 95));
+System.out.println("%s scored %d%%".formatted("Abaji", 95));
 System.out.println(String.format("%2$s %1$s", "World", "Hello"));
 
 // OUTPUT:
 // Item    |    3.14|00042|1,234,567|ff|true
-// Asha scored 95%
+// Abaji scored 95%
 // Hello World`],
             ['Locale-aware money and dates.',
                 r`Locale in = new Locale("en", "IN");
@@ -513,15 +528,25 @@ System.out.println(t.members());
             ['S', 'What does this return: try { return 1; } finally { x = 2; }?', 'The value 1 (already evaluated); finally cannot change a returned primitive.'],
             ['S', 'Why is throwing from finally dangerous?', 'It replaces the original exception, losing the root cause.']],
         [['The try-finally return trap.',
-            r`static int a() { try { return 1; } finally { return 2; } }
-static int b() { int x = 1; try { return x; } finally { x = 2; } }
-static int c() { try { throw new RuntimeException("lost"); } finally { return 3; } }
+            r`static int a() {
+    try { return 1; } finally { return 2; }
+}
+static int b() {
+    int x = 1;
+    try { return x; } finally { x = 2; }
+}
+static int c() {
+    try { throw new RuntimeException("lost"); } finally { return 3; }
+}
 System.out.println(a() + " " + b() + " " + c());
 
 // OUTPUT:
 // 2 1 3`],
             ['Multi-catch.',
-                r`try { Object o = List.of(); ((List<Object>) o).add(1); }
+                r`try {
+    Object o = List.of();
+    ((List<Object>) o).add(1);
+}
 catch (UnsupportedOperationException | ClassCastException e) {
     System.out.println(e.getClass().getSimpleName());
 }
@@ -534,7 +559,8 @@ catch (UnsupportedOperationException | ClassCastException e) {
             r`try {
     try { throw new IllegalStateException("original"); }
     finally { throw new RuntimeException("from finally"); }
-} catch (RuntimeException e) { System.out.println(e.getMessage()); }
+} catch (RuntimeException e) { System.out.println(e.getMessage());
+}
 
 // OUTPUT:
 // from finally`],
@@ -595,7 +621,10 @@ Common patterns: scoped transactions (commit on success, rollback on failure), l
             r`class Tx implements AutoCloseable {
     private boolean committed;
     private final String name;
-    Tx(String n) { name = n; System.out.println("begin " + n); }
+    Tx(String n) {
+        name = n;
+        System.out.println("begin " + n);
+    }
     void commit() { committed = true; }
     @Override public void close() {
         System.out.println(committed ? "commit " + name : "rollback " + name);
@@ -707,7 +736,11 @@ System.out.println(Arrays.toString(mine));
 // 1 3 1 3
 // [null, null]`],
         [`Every varargs call allocates an array and the JIT may not remove it if it escapes. In hot code add fixed-arity overloads for common counts (as the JDK does) or pass a pre-built array.`,
-            r`static int sum(int... a) { int s = 0; for (int v : a) s += v; return s; }
+            r`static int sum(int... a) {
+    int s = 0;
+    for (int v : a) s += v;
+    return s;
+}
 static int sum(int a, int b) { return a + b; }   // fixed-arity fast path
 long t = System.nanoTime();
 long s = 0;
@@ -722,10 +755,10 @@ System.out.println(s > 0 ? "ms=" + (System.nanoTime() - t) / 1_000_000 : "");
         log.info(String.format(template, args));
     }
 }
-audit("user=%s action=%s", "asha", "login");
+audit("user=%s action=%s", "abaji", "login");
 
 // OUTPUT:
-// user=asha action=login`]
+// user=abaji action=login`]
     ),
 
     'initializer-blocks': dv(
@@ -822,7 +855,10 @@ try {
 }
 class ApiException extends RuntimeException {
     final ErrorCode code;
-    ApiException(ErrorCode c, String m) { super(m); code = c; }
+    ApiException(ErrorCode c, String m) {
+        super(m);
+        code = c;
+    }
 }
 record Problem(String code, String detail, String traceId) {}
 
@@ -908,10 +944,10 @@ record SystemEvent(String name) implements Event {}
 static <E extends Event> void publish(E e) { System.out.println("publishing " + e); }
 interface Cacheable {}
 static <T extends Cacheable> T cached(Supplier<T> s) { return s.get(); }
-publish(new UserEvent("asha"));    // publish("text") would not compile
+publish(new UserEvent("abaji"));    // publish("text") would not compile
 
 // OUTPUT:
-// publishing UserEvent[user=asha]`],
+// publishing UserEvent[user=abaji]`],
         [`Mistakes: marker interfaces on classes where an annotation fits better, inherited markers that tag subclasses unintentionally (a subclass of a Serializable class is Serializable), expecting markers to enforce behavior, and creating empty interfaces instead of real abstractions. The marker gives a promise, not a check of the implementation.`,
             r`class Base implements Serializable {}
 class Child extends Base {
@@ -947,7 +983,7 @@ static String safeLog(Object o) {
     if (o instanceof PersonalData) return o.getClass().getSimpleName() + "[REDACTED]";
     return String.valueOf(o);
 }
-System.out.println(safeLog(new Customer("Asha", "999")) + " " + safeLog(42));
+System.out.println(safeLog(new Customer("Abaji", "999")) + " " + safeLog(42));
 
 // OUTPUT:
 // Customer[REDACTED] 42`]
@@ -994,8 +1030,10 @@ class Child {
     Parent p;
     public String toString() { return "Child of " + p; }
 }
-Parent p = new Parent(); Child c = new Child();
-c.p = p; p.kids.add(c);
+Parent p = new Parent();
+Child c = new Child();
+c.p = p;
+p.kids.add(c);
 try { p.toString(); }
 catch (StackOverflowError e) { System.out.println("toString recursion"); }
 
@@ -1057,14 +1095,14 @@ System.out.println(MessageFormat.format(m, "Cart", 3, 99.5));
 String report = """
     Name: %s
     Total: %,.2f
-    """.formatted("Asha", 12345.5);
+    """.formatted("Abaji", 12345.5);
 System.out.print(report);
 
 // OUTPUT:
 // 1,234,567.50
 // 1M
 // Cart has 3 items costing $99.50
-// Name: Asha
+// Name: Abaji
 // Total: 12,345.50`],
         [`Common mistakes:
 <ul>
@@ -1138,7 +1176,10 @@ System.out.println(r.shift(10).contains(12) + " " + r.contains(12));
 // true false`],
         [`Techniques: records, builders for many fields (<code>toBuilder</code>), withers, <code>List.copyOf</code>/<code>Map.copyOf</code>, persistent collections (Vavr, Eclipse), <code>Collections.unmodifiable*</code> views over private copies, immutable <code>java.time</code> types, <code>BigDecimal</code>, <code>Optional</code>, and enums. Lazily computed fields (the hash code in <code>String</code>) are allowed when every thread computes the same value. Records are shallowly immutable: copy collection components in the compact constructor.`,
             r`record Cart(List<String> items, Map<String, Integer> qty) {
-    Cart { items = List.copyOf(items); qty = Map.copyOf(qty); }
+    Cart {
+        items = List.copyOf(items);
+        qty = Map.copyOf(qty);
+    }
     Cart add(String item) {
         List<String> n = new ArrayList<>(items);
         n.add(item);
@@ -1210,8 +1251,14 @@ System.out.println(s1.url() + " -> " + current.get().url());
         [`The compiler inlines the finally block's code at every exit point of try and catch (normal end, return, break, continue) and adds a catch-all handler that runs finally then rethrows. For <code>return expr</code> it evaluates expr, stores it in a temporary, runs finally, then returns the temporary — unless finally itself returns or throws. A multi-catch parameter is final and its static type is the closest common supertype of the alternatives, so you can call only common members.`,
             r`static int calc() {
     int x = 10;
-    try { x += 5; return x; }                  // 15 stored in a temp
-    finally { x += 100; System.out.println("finally x=" + x); }
+    try {
+        x += 5;
+        return x;
+    }  // 15 stored in a temp
+    finally {
+        x += 100;
+        System.out.println("finally x=" + x);
+    }
 }
 static int[] arr() {
     int[] a = {1};
@@ -1265,7 +1312,10 @@ System.out.println(trap());
         [`Real-world: cleanup must not hide the real failure. Log or add suppressed exceptions in finally, and never let cleanup failures mask the business exception.`,
             r`Exception primary = null;
 try { process(); }
-catch (Exception e) { primary = e; throw e; }
+catch (Exception e) {
+    primary = e;
+    throw e;
+}
 finally {
     try { connection.close(); }
     catch (SQLException closeFailure) {

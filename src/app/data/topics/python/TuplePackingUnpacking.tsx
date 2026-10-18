@@ -61,7 +61,7 @@ print(a, b)
             content: `<h4>Unpacking in Loops</h4>
 Each item of the sequence is unpacked as the loop runs - this is what makes <code>enumerate</code> and <code>dict.items()</code> so convenient.`,
             codeExamples: [
-                `results = [("Asha", 91), ("Ravi", 78)]
+                `results = [("Abaji", 91), ("Raoji", 78)]
 for name, marks in results:
     print(f"{name}: {marks}")
 
@@ -69,10 +69,10 @@ for i, (name, marks) in enumerate(results, start=1):
     print(i, name, marks)
 
 # OUTPUT:
-# Asha: 91
-# Ravi: 78
-# 1 Asha 91
-# 2 Ravi 78`
+# Abaji: 91
+# Raoji: 78
+# 1 Abaji 91
+# 2 Raoji 78`
             ]
         },
         {

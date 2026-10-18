@@ -315,7 +315,9 @@ System.out.println(errors.getGlobalErrors().get(0).getDefaultMessage());
         [['Messages in a properties file.',
             r`# messages.properties
 NotBlank.user.name=Please enter a name
-Size.user.name=Name must be {min} to {max} characters
+Size.user.name=Name must be {min}
+to {max}
+characters
 Min.user.age=You must be at least {value}
 
 # OUTPUT:
@@ -426,7 +428,10 @@ System.out.println(v.validate(p, OnUpdate.class).size());
             r`@Controller
 public class SignUpController {
     @GetMapping("/signup")
-    String form(Model m) { m.addAttribute("form", new SignUpForm()); return "signup"; }
+    String form(Model m) {
+        m.addAttribute("form", new SignUpForm());
+        return "signup";
+    }
 
     @PostMapping("/signup")
     String submit(@Valid @ModelAttribute("form") SignUpForm f, BindingResult br) {
@@ -451,7 +456,8 @@ public class SignUpController {
 // OUTPUT:
 // name blank -> Name is required`]],
         [['Thymeleaf form.',
-            r`<form th:action="@{/signup}" th:object="$` + r`{form}" method="post">
+            r`<form th:action="@{/signup}" th:object="$` + r`{form}
+" method="post">
     <input th:field="*{name}">
     <span th:errors="*{name}">err</span>
     <button>Save</button>
@@ -660,7 +666,10 @@ void init(WebDataBinder b) { b.addValidators(V); }
         [`<p>How a custom constraint is resolved.</p><ul><li><b>Scan:</b> Hibernate Validator reads <code>@Constraint(validatedBy)</code> on your annotation.</li><li><b>Create:</b> <code>SpringConstraintValidatorFactory</code> builds the validator as a bean-like object, so injection works.</li><li><b>Init:</b> <code>initialize(annotation)</code> receives attribute values once.</li><li><b>Call:</b> <code>isValid</code> runs for each validation and returns true or false.</li></ul>`,
             r`public class RangeValidator implements ConstraintValidator<InRange, Integer> {
     private int min, max;
-    public void initialize(InRange a) { min = a.min(); max = a.max(); }
+    public void initialize(InRange a) {
+        min = a.min();
+        max = a.max();
+    }
     public boolean isValid(Integer v, ConstraintValidatorContext c) {
         return v == null || (v >= min && v <= max);
     }
@@ -814,8 +823,11 @@ System.out.println(Arrays.toString(oe.getCodes()));
 // OUTPUT:
 // global error: Only 3 left`],
         [`<p>Mistakes and fixes.</p><ul><li><b>Not displayed:</b> forgetting to render global errors in the view.</li><li><b>Wrong type:</b> using reject when the field is known.</li></ul>`,
-            r`<div th:if="$` + r`{#fields.hasGlobalErrors()}">
-    <p th:each="e : $` + r`{#fields.globalErrors()}" th:text="$` + r`{e}"></p>
+            r`<div th:if="$` + r`{#fields.hasGlobalErrors()}
+">
+    <p th:each="e : $` + r`{#fields.globalErrors()}
+" th:text="$` + r`{e}
+"></p>
 </div>
 
 <!-- OUTPUT -->
@@ -839,9 +851,14 @@ System.out.println(Arrays.toString(oe.getCodes()));
     'mvc-validation-messages': dv(
         [`<p>Message resolution flow.</p><ul><li><b>Violation:</b> Hibernate Validator interpolates the template, replacing <code>{min}</code> and resolving keys from <code>ValidationMessages</code>.</li><li><b>Adapter:</b> Spring wraps the result in a FieldError with codes and the interpolated default message.</li><li><b>Render:</b> the view calls the Spring MessageSource with the codes and locale.</li><li><b>Fallback:</b> if no code matches, the default message is used.</li></ul>`,
             r`# messages.properties
-Size.user.name=Name must be between {2} and {1} characters
+Size.user.name=Name must be between {2}
+and {1}
+characters
 
-# Spring arguments are positional: {0}=field, {1}=max, {2}=min
+# Spring arguments are positional: {0}
+=field, {1}
+=max, {2}
+=min
 
 # OUTPUT:
 # "A" -> Name must be between 2 and 20 characters`],
@@ -864,7 +881,8 @@ v.setValidationMessageSource(messageSource);
 // OUTPUT:
 // message shows the real text instead of the raw key`],
         [`<p>Performance notes.</p><ul><li><b>Caching:</b> ResourceBundleMessageSource caches bundles; set a cache duration in development only.</li><li><b>Interpolation:</b> Bean Validation caches parsed templates.</li></ul>`,
-            r`# production: cache forever (default); development: short cache
+            r`# production: cache forever (default);
+development: short cache
 spring.messages.cache-duration=-1
 
 # OUTPUT:
@@ -945,9 +963,15 @@ void init(WebDataBinder b) {
 // "  " -> null, extra field "admin" ignored`],
         [`<p>Mistakes and fixes.</p><ul><li><b>Return view after success:</b> double submit.</li><li><b>No empty object on GET:</b> template error.</li><li><b>@NotNull on strings:</b> empty text passes; use <code>@NotBlank</code>.</li></ul>`,
             r`// WRONG
-if (!br.hasErrors()) { service.save(f); return "done"; }
+if (!br.hasErrors()) {
+    service.save(f);
+    return "done";
+}
 // RIGHT
-if (!br.hasErrors()) { service.save(f); return "redirect:/done"; }
+if (!br.hasErrors()) {
+    service.save(f);
+    return "redirect:/done";
+}
 
 // OUTPUT:
 // refresh no longer repeats the save`],

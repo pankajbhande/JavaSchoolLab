@@ -27,7 +27,7 @@ export const smvc33Extras: Record<string, Extra> = {
 class HomeController {
     @GetMapping("/hello")
     String hello(Model model) {
-        model.addAttribute("name", "Asha");
+        model.addAttribute("name", "Abaji");
         return "hello";          // templates/hello.html
     }
 }
@@ -35,7 +35,7 @@ class HomeController {
 // <h1 th:text="` + V('name') + r`">Placeholder</h1>
 
 // OUTPUT:
-// <h1>Asha</h1>`],
+// <h1>Abaji</h1>`],
             ['Escaping versus unescaped output.',
                 r`model.addAttribute("bio", "<b>Hi</b>");
 // <p th:text="` + V('bio') + r`"></p>
@@ -52,7 +52,7 @@ class HomeController {
 // <p th:text="|Total: ` + V('cart.size') + r` items|">x</p>
 
 // OUTPUT:
-// <p>Welcome back, Asha</p>
+// <p>Welcome back, Abaji</p>
 // <p>Total: 3 items</p>`],
             ['Test the rendered text with MockMvc.',
                 r`@WebMvcTest(HomeController.class)
@@ -64,7 +64,7 @@ class HomeControllerTest {
         mvc.perform(get("/hello"))
            .andExpect(status().isOk())
            .andExpect(view().name("hello"))
-           .andExpect(content().string(containsString("Asha")));
+           .andExpect(content().string(containsString("Abaji")));
     }
 }
 
@@ -152,11 +152,11 @@ model.addAttribute("products",
                 r`// <li th:each="n, st : ` + V('names') + r`"
 //     th:text="` + V('st.count') + r` + '. ' + ` + V('n') + r`"
 //     th:classappend="` + V('st.last') + r` ? 'last'">x</li>
-model.addAttribute("names", List.of("Asha", "Ravi"));
+model.addAttribute("names", List.of("Abaji", "Raoji"));
 
 // OUTPUT:
-// <li>1. Asha</li>
-// <li class="last">2. Ravi</li>`]],
+// <li>1. Abaji</li>
+// <li class="last">2. Raoji</li>`]],
         [['Iterate a map.',
             r`// <p th:each="e : ` + V('stock') + r`" th:text="` + V('e.key') + r` + '=' + ` + V('e.value') + r`">x</p>
 model.addAttribute("stock", new LinkedHashMap<>(Map.of("pen", 5)));
@@ -190,7 +190,7 @@ assertThat(StringUtils.countOccurrencesOf(html, "<tr>")).isEqualTo(2);
             ['S', 'How can a link to a controller method be type safe?', 'Thymeleaf has the controller mapping expression @{MyController#method()} (needs the mapping name) but plain path expressions are far more common.']],
         [['Link with a path variable.',
             r`// <a th:href="@{/users/{id}(id=` + V('u.id') + r`)}">View</a>
-model.addAttribute("u", new User(7L, "Asha"));
+model.addAttribute("u", new User(7L, "Abaji"));
 
 // OUTPUT:
 // <a href="/users/7">View</a>`],
@@ -349,7 +349,7 @@ String form(Model model) {
 // </div>
 
 // OUTPUT:
-// <div><p>Asha</p><p>Pune</p></div>`]],
+// <div><p>Abaji</p><p>Pune</p></div>`]],
         [['Edit form loads an existing bean.',
             r`@GetMapping("/users/{id}/edit")
 String edit(@PathVariable long id, Model model) {
@@ -358,7 +358,7 @@ String edit(@PathVariable long id, Model model) {
 }
 
 // OUTPUT:
-// <input type="text" id="name" name="name" value="Asha">`],
+// <input type="text" id="name" name="name" value="Abaji">`],
             ['Test the model attribute.',
                 r`mvc.perform(get("/users/new"))
    .andExpect(model().attributeExists("user"))
@@ -392,7 +392,7 @@ String edit(@PathVariable long id, Model model) {
 // </select>
 
 // OUTPUT:
-// <input type="text" id="name" name="name" value="Asha">
+// <input type="text" id="name" name="name" value="Abaji">
 // <input type="checkbox" id="active1" name="active" value="true" checked="checked">
 // <input type="hidden" name="_active" value="on">`],
             ['Radio buttons from an enum.',
@@ -414,7 +414,7 @@ String edit(@PathVariable long id, Model model) {
 // OUTPUT:
 // <input type="date" id="date" name="date" value="2025-01-15">`],
             ['Post the form in a test.',
-                r`mvc.perform(post("/users").param("name", "Asha").param("active", "true"))
+                r`mvc.perform(post("/users").param("name", "Abaji").param("active", "true"))
    .andExpect(status().is3xxRedirection());
 
 // OUTPUT:
@@ -453,7 +453,7 @@ class UserController {
 }
 
 // OUTPUT:
-// POST /users name=Asha -> 302 Location: /users`],
+// POST /users name=Abaji -> 302 Location: /users`],
             ['Form class with fields.',
                 r`public class UserForm {
     private String name;
@@ -566,10 +566,10 @@ SpringResourceTemplateResolver resolver() {
 // <p th:text="` + V("#strings.toUpperCase(name)") + r`">x</p>
 
 // OUTPUT:
-// <p>Hello, Asha!</p>
-// <p>Asha</p>
+// <p>Hello, Abaji!</p>
+// <p>Abaji</p>
 // <p>default body kept</p>
-// <p>ASHA</p>`],
+// <p>ABAJI</p>`],
         [`<p>Typical mistakes:</p><ul><li><b>th:utext with user input:</b> an XSS hole; sanitize or use th:text.</li><li><b>Wrong attribute name:</b> <code>th:txt</code> is ignored silently and the prototype text is shown.</li><li><b>Missing namespace:</b> not needed for rendering, but the IDE loses completion.</li><li><b>Nested quotes:</b> use single quotes for literals inside double-quoted attributes.</li><li><b>Template not found:</b> a view name that does not match the file name.</li></ul>`,
             r`// WRONG: raw user input is output as HTML
 // <div th:utext="` + V('comment') + r`"></div>
@@ -584,7 +584,8 @@ spring.thymeleaf.cache=true       # parsed templates are cached in production
 # spring.thymeleaf.cache=false    # dev only: reload templates on change
 
 # OUTPUT:
-# first request parses hello.html; later requests reuse the cached template`],
+# first request parses hello.html;
+later requests reuse the cached template`],
         [`<p>Scenario: a profile page shows the user name, a localized welcome and a safe bio. The controller exposes a small view model, and the template only prints it. Unit tests assert the rendered text.</p>`,
             r`record ProfileView(String name, String bio) {}
 
@@ -597,7 +598,7 @@ String profile(Model model, Principal p) {
 // <p th:text="` + V('p.bio') + r`">x</p>
 
 // OUTPUT:
-// <h1>Welcome, asha</h1>
+// <h1>Welcome, abaji</h1>
 // <p>Loves &lt;Java&gt;</p>`]
     ),
 
@@ -668,7 +669,7 @@ String approve(@PathVariable long id) { /* ... */ return "redirect:/inbox"; }
 
 // OUTPUT:
 // <span>1</span><span>2</span><span>3</span>
-// <h3>Team A</h3><p>Asha</p><p>Ravi</p>`],
+// <h3>Team A</h3><p>Abaji</p><p>Raoji</p>`],
         [`<p>Typical mistakes:</p><ul><li><b>th:each on the table tag:</b> it repeats the whole table; place it on the row.</li><li><b>Null collection:</b> a null iterable renders nothing, but a typo in the name also renders nothing; check the model.</li><li><b>Lazy loading outside a session:</b> LazyInitializationException; use DTOs or fetch joins.</li><li><b>Modifying the list in the loop:</b> not possible from the template, do it in the controller.</li></ul>`,
             r`// WRONG: repeats the whole table
 // <table th:each="p : ` + V('products') + r`">...</table>
@@ -813,7 +814,7 @@ model.addAttribute("q", null);
 // <input name="email" th:value="` + V('user.email') + r`">
 
 // OUTPUT:
-// POST body now contains email=asha@example.com`],
+// POST body now contains email=abaji@example.com`],
         [`<p>Performance: no cost concern; the point is correctness. For large forms prefer th:field so the binding and the error redisplay are consistent.</p>`,
             r`// Keep the entered value after failed validation
 // th:field -> uses the rejected value automatically
@@ -838,7 +839,7 @@ model.addAttribute("q", null);
 // </form>
 
 // OUTPUT:
-// <input type="text" id="name" name="name" value="Asha">
+// <input type="text" id="name" name="name" value="Abaji">
 // <input type="text" id="address.city" name="address.city" value="Pune">`],
         [`<p>Options:</p><ul><li><b>Model name:</b> <code>@ModelAttribute(&quot;userForm&quot;)</code> names the attribute.</li><li><b>Nested:</b> dotted property paths.</li><li><b>Mixed expressions:</b> &#36;{#object} refers to the selected object.</li><li><b>Fragments:</b> pass the object as a fragment parameter.</li></ul>`,
             r`// <div th:object="` + V('order') + r`">
@@ -889,7 +890,7 @@ String register(Model m) {
 // and writes id, name, value.
 
 // OUTPUT:
-// <input type="text" id="email" name="email" value="asha@example.com">`],
+// <input type="text" id="email" name="email" value="abaji@example.com">`],
         [`<p>Variants by control:</p><ul><li><b>Checkbox boolean:</b> single box plus hidden marker.</li><li><b>Checkbox list:</b> bound to a collection, one box per value.</li><li><b>Radio:</b> shared name, th:value per button.</li><li><b>Select:</b> th:field on the select tag, options with th:value.</li><li><b>Textarea and password:</b> same attribute.</li></ul>`,
             r`// <input type="checkbox" th:field="*{skills}" value="java">
 // <input type="checkbox" th:field="*{skills}" value="spring">
@@ -922,20 +923,20 @@ server.tomcat.max-http-form-post-size=2MB
 }
 
 // OUTPUT:
-// POST name=Asha&dob=1998-04-12&country=IN&_newsletter=on
+// POST name=Abaji&dob=1998-04-12&country=IN&_newsletter=on
 // -> newsletter=false, others bound`]
     ),
 
     'mvc-form-binding-thymeleaf': dv(
         [`<p>Binding is done before the handler method runs.</p><ul><li><b>Resolve:</b> <code>ModelAttributeMethodProcessor</code> creates or gets the bean.</li><li><b>Bind:</b> <code>WebDataBinder.bind</code> copies request parameters to properties using the ConversionService.</li><li><b>Validate:</b> if @Valid is present, the Validator runs.</li><li><b>Result:</b> errors go to the BindingResult; the bean is also stored in the Model.</li></ul>`,
-            r`// Request: POST /users  name=Asha&age=30
+            r`// Request: POST /users  name=Abaji&age=30
 // 1. ModelAttributeMethodProcessor instantiates UserForm
-// 2. WebDataBinder sets name="Asha", age=30 (String -> int conversion)
+// 2. WebDataBinder sets name="Abaji", age=30 (String -> int conversion)
 // 3. Validator runs for @Valid
 // 4. controller method is invoked
 
 // OUTPUT:
-// UserForm[name=Asha, age=30], BindingResult.hasErrors() = false`],
+// UserForm[name=Abaji, age=30], BindingResult.hasErrors() = false`],
         [`<p>Variants:</p><ul><li><b>@ModelAttribute:</b> explicit name or default from the type name.</li><li><b>@RequestParam:</b> single fields.</li><li><b>Records:</b> bound through the constructor.</li><li><b>@InitBinder:</b> custom editors, trim strings, allowed fields.</li><li><b>Collections:</b> indexed names.</li></ul>`,
             r`@InitBinder
 void init(WebDataBinder b) {
@@ -947,7 +948,7 @@ public record LoginForm(String user, String pass) {}
 String login(LoginForm form) { /* ... */ return "redirect:/"; }
 
 // OUTPUT:
-// "  asha  " is trimmed to "asha" (empty becomes null)`],
+// "  abaji  " is trimmed to "abaji" (empty becomes null)`],
         [`<p>Mistakes:</p><ul><li><b>BindingResult in the wrong place:</b> must be right after the bean.</li><li><b>Returning a view after a successful POST:</b> refresh posts again; redirect instead.</li><li><b>Binding entities:</b> mass assignment risk.</li><li><b>Missing getters/setters:</b> fields stay empty.</li><li><b>Field name mismatch:</b> silently not bound.</li></ul>`,
             r`// WRONG: BindingResult not directly after the form
 // String save(@Valid UserForm f, Model m, BindingResult r)
@@ -1034,7 +1035,7 @@ class SignupTest {
     }
     @Test
     void validRedirects() throws Exception {
-        mvc.perform(post("/signup").param("name", "Asha")
+        mvc.perform(post("/signup").param("name", "Abaji")
                 .param("email", "a@b.com").param("password", "secret123"))
            .andExpect(redirectedUrl("/welcome"));
     }

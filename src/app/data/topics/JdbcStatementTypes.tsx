@@ -30,7 +30,7 @@ public class StatementDemo {
     }
 }
 // OUTPUT:
-// Aarav - 65000.0
+// Ajabrao - 65000.0
 // Bhavna - 72000.0`]
         },
         {
@@ -59,7 +59,7 @@ public class UnsafeSearch {
 }
 // OUTPUT:
 // Executed SQL: SELECT name FROM employees WHERE department = 'Sales' OR '1'='1'
-// Aarav
+// Ajabrao
 // Bhavna
 // Chetan        <-- every employee leaked, not just Sales department`]
         },

@@ -37,10 +37,10 @@ routes: dict[str, Handler] = {
 def dispatch(path: str, arg: str) -> str:
     return routes[path](arg)
 
-print(dispatch("/hi", "Ann"), "|", dispatch("/bye", "Bob"))
+print(dispatch("/hi", "Ann"), "|", dispatch("/bye", "Baji"))
 
 # OUTPUT:
-# Hello Ann | Bye Bob`],
+# Hello Ann | Bye Baji`],
         [`<b>Advantages:</b> documents callback contracts, enables checking of arguments and return values, and works with generics to type higher-order functions and decorators.`,
             r`from collections.abc import Callable
 from typing import TypeVar

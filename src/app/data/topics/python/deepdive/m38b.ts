@@ -263,7 +263,7 @@ def redact(text):
     text = re.sub(r"[\w.]+@[\w.]+", "[EMAIL]", text)
     return re.sub(r"\b\d{10}\b", "[PHONE]", text)
 
-print(redact("Mail asha@example.com or call 9876543210"))
+print(redact("Mail abaji@example.com or call 9876543210"))
 
 # OUTPUT:
 # Mail [EMAIL] or call [PHONE]`],

@@ -120,7 +120,7 @@ class Person implements Cloneable {
 public class ShallowCloneDemo {
     public static void main(String[] args) throws CloneNotSupportedException {
         Address addr = new Address("Pune");
-        Person p1 = new Person("Amit", addr);
+        Person p1 = new Person("Anandrao", addr);
         Person p2 = (Person) p1.clone();
 
         p2.address.city = "Mumbai"; // modifies shared Address!
@@ -174,7 +174,7 @@ class Person implements Cloneable {
 
 public class DeepCloneDemo {
     public static void main(String[] args) throws CloneNotSupportedException {
-        Person p1 = new Person("Amit", new Address("Pune"));
+        Person p1 = new Person("Anandrao", new Address("Pune"));
         Person p2 = (Person) p1.clone();
 
         p2.address.city = "Mumbai";

@@ -31,12 +31,12 @@ public class Greeter {
 public class App {
     public static void main(String[] args) {
         var ctx = SpringApplication.run(App.class, args);
-        System.out.println(ctx.getBean(Greeter.class).greet("Asha"));
+        System.out.println(ctx.getBean(Greeter.class).greet("Abaji"));
     }
 }
 
 // OUTPUT:
-// Hello, Asha`],
+// Hello, Abaji`],
             ['Custom bean name and scope.',
                 r`@Component("clock")
 @Scope("prototype")
@@ -52,7 +52,9 @@ System.out.println(ctx.getBean("clock") == ctx.getBean("clock"));
 // false`]],
         [['Constructor injection between components.',
             r`@Component
-class TaxRule { double rate() { return 0.18; } }
+class TaxRule {
+    double rate() { return 0.18; }
+}
 
 @Component
 class Billing {
@@ -174,11 +176,11 @@ public class ReportService {
 }
 
 // usage
-repo.save(new User("asha@x.com", "Asha"));
-System.out.println(repo.findByEmail("asha@x.com").get().getName());
+repo.save(new User("abaji@x.com", "Abaji"));
+System.out.println(repo.findByEmail("abaji@x.com").get().getName());
 
 // OUTPUT:
-// Asha`],
+// Abaji`],
             ['A hand written @Repository.',
                 r`@Repository
 public class JdbcUserDao {
@@ -463,8 +465,8 @@ class UserControllerTest {
 
     @Test
     void ok() throws Exception {
-        when(service.name(1L)).thenReturn("Asha");
-        mvc.perform(get("/users/1")).andExpect(content().string("Asha"));
+        when(service.name(1L)).thenReturn("Abaji");
+        mvc.perform(get("/users/1")).andExpect(content().string("Abaji"));
     }
 }
 
@@ -736,7 +738,8 @@ r.printer.print();            // NullPointerException
 spring.main.lazy-initialization=true
 
 # OUTPUT:
-# context starts faster; beans are created on first use (varies by app)`],
+# context starts faster;
+beans are created on first use (varies by app)`],
         [`<p>Scenario: a notification feature with several channel components that a service collects and calls.</p><ul><li>Each channel is a <code>@Component</code> implementing one interface.</li><li>The service receives a <code>List</code> of channels.</li><li>Adding a channel needs no change to the service.</li></ul>`,
             r`public interface Channel { void send(String msg); }
 
@@ -809,7 +812,8 @@ public class CheckoutService {
     private final StockRepository stock;
     private final OrderRepository orders;
     public CheckoutService(StockRepository s, OrderRepository o) {
-        this.stock = s; this.orders = o;
+        this.stock = s;
+        this.orders = o;
     }
 
     @Transactional
@@ -872,7 +876,7 @@ Page<Customer> search(@RequestParam String q, Pageable pageable) {
 }
 
 // OUTPUT: GET /customers?q=ash&page=0&size=2
-// {"content":[{"id":1,"name":"Asha"}],"totalElements":1,"size":2}`]
+// {"content":[{"id":1,"name":"Abaji"}],"totalElements":1,"size":2}`]
     ),
     'sb-controller': dv(
         [`<p>Request flow:</p><ul><li><code>DispatcherServlet</code> receives the request.</li><li><code>RequestMappingHandlerMapping</code> finds the method.</li><li><code>RequestMappingHandlerAdapter</code> resolves arguments and invokes it.</li><li>Return values go to a <code>ViewResolver</code> or to <code>HttpMessageConverter</code> instances for @ResponseBody.</li></ul>`,
@@ -1006,7 +1010,8 @@ class ProdMail {
 # run: java -jar app.jar --spring.profiles.active=prod
 
 # OUTPUT:
-# SmtpMailSender is registered; LoggingMailSender is not`]
+# SmtpMailSender is registered;
+LoggingMailSender is not`]
     ),
     'sb-bean': dv(
         [`<p>Internals:</p><ul><li>Each @Bean method becomes a <code>BeanDefinition</code> with a factory method.</li><li>Container calls the factory method (on the configuration bean) to create the instance.</li><li>Parameters are resolved like constructor arguments.</li><li>Post processors and lifecycle callbacks then apply.</li></ul>`,
@@ -1041,7 +1046,9 @@ class Users {
 Object cache() { return new CaffeineCache(); }     // too general
 
 @Service
-class S { S(CaffeineCache c) { } }                   // type match may fail early
+class S {
+    S(CaffeineCache c) { }
+}  // type match may fail early
 
 // FIX: declare the real return type: CaffeineCache cache()
 
@@ -1102,8 +1109,12 @@ class Mixed {
 // OUTPUT:
 // works with or without a Cache bean`],
         [`<p>Mistakes:</p><ul><li><b>Circular dependency:</b> A needs B and B needs A; extract a third bean or use events.</li><li><b>Autowiring a static field:</b> ignored.</li><li><b>Autowiring in a class not managed by Spring:</b> stays null.</li><li><b>Field injection with final:</b> impossible.</li></ul>`,
-            r`@Service class A { A(B b) { } }
-@Service class B { B(A a) { } }
+            r`@Service class A {
+    A(B b) { }
+}
+@Service class B {
+    B(A a) { }
+}
 
 // OUTPUT:
 // BeanCurrentlyInCreationException: Error creating bean with name 'a':

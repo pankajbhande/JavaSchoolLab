@@ -11,12 +11,12 @@ By default, arguments are matched to parameters by <b>position</b>: the first ar
                 `def book_ticket(name, seat, meal):
     print(f"{name} | seat {seat} | {meal}")
 
-book_ticket("Asha", "12A", "veg")
-book_ticket("12A", "Asha", "veg")       # wrong order, wrong result
+book_ticket("Abaji", "12A", "veg")
+book_ticket("12A", "Abaji", "veg")       # wrong order, wrong result
 
 # OUTPUT:
-# Asha | seat 12A | veg
-# 12A | seat Asha | veg`
+# Abaji | seat 12A   | veg
+# 12A   | seat Abaji | veg`
             ]
         },
         {
@@ -26,12 +26,12 @@ You can also name the parameter in the call: <code>parameter=value</code>. Keywo
                 `def book_ticket(name, seat, meal):
     print(f"{name} | seat {seat} | {meal}")
 
-book_ticket(meal="non-veg", name="Ravi", seat="7C")
-book_ticket("Kiran", meal="veg", seat="3B")     # positional first, then keywords
+book_ticket(meal="non-veg", name="Raoji", seat="7C")
+book_ticket("Kanhoji", meal="veg", seat="3B")     # positional first, then keywords
 
 # OUTPUT:
-# Ravi | seat 7C | non-veg
-# Kiran | seat 3B | veg`
+# Raoji   | seat 7C | non-veg
+# Kanhoji | seat 3B | veg`
             ]
         },
         {
@@ -41,14 +41,14 @@ A parameter can have a <b>default value</b>, used when the caller doesn't supply
                 `def book_ticket(name, seat="any", meal="veg"):
     print(f"{name} | seat {seat} | {meal}")
 
-book_ticket("Asha")
-book_ticket("Ravi", "9F")
-book_ticket("Kiran", meal="jain")           # skip seat, set meal
+book_ticket("Abaji")
+book_ticket("Raoji", "9F")
+book_ticket("Kanhoji", meal="jain")           # skip seat, set meal
 
 # OUTPUT:
-# Asha | seat any | veg
-# Ravi | seat 9F | veg
-# Kiran | seat any | jain`
+# Abaji   | seat any | veg
+# Raoji   | seat 9F  | veg
+# Kanhoji | seat any | jain`
             ]
         },
         {
@@ -57,7 +57,7 @@ book_ticket("Kiran", meal="jain")           # skip seat, set meal
 • In a <b>definition</b>, parameters without defaults must come before parameters with defaults.<br>
 Breaking either rule is a <code>SyntaxError</code> - the program won't even start.`,
             codeExamples: [
-                `book_ticket(name="Asha", "12A")
+                `book_ticket(name="Abaji", "12A")
 
 # OUTPUT:
 # SyntaxError: positional argument follows keyword argument`,
@@ -74,28 +74,28 @@ Breaking either rule is a <code>SyntaxError</code> - the program won't even star
                 `def book_ticket(name, seat, meal="veg"):
     pass
 
-book_ticket("Asha")
+book_ticket("Abaji")
 
 # OUTPUT:
 # TypeError: book_ticket() missing 1 required positional argument: 'seat'`,
                 `def book_ticket(name, seat, meal="veg"):
     pass
 
-book_ticket("Asha", "12A", colour="red")
+book_ticket("Abaji", "12A", colour="red")
 
 # OUTPUT:
 # TypeError: book_ticket() got an unexpected keyword argument 'colour'`,
                 `def book_ticket(name, seat, meal="veg"):
     pass
 
-book_ticket("Asha", "12A", name="Ravi")
+book_ticket("Abaji", "12A", name="Raoji")
 
 # OUTPUT:
 # TypeError: book_ticket() got multiple values for argument 'name'`,
                 `def book_ticket(name, seat, meal="veg"):
     pass
 
-book_ticket("Asha", "12A", "veg", "window")
+book_ticket("Abaji", "12A", "veg", "window")
 
 # OUTPUT:
 # TypeError: book_ticket() takes from 2 to 3 positional arguments but 4 were given`
@@ -231,12 +231,12 @@ distance(x1=0, y1=0, x2=3, y2=4)
                 `def create_user(user_id, /, name, *, admin=False):
     return (user_id, name, admin)
 
-print(create_user(7, "Asha"))
-print(create_user(8, name="Ravi", admin=True))
+print(create_user(7, "Abaji"))
+print(create_user(8, name="Raoji", admin=True))
 
 # OUTPUT:
-# (7, 'Asha', False)
-# (8, 'Ravi', True)`
+# (7, 'Abaji', False)
+# (8, 'Raoji', True)`
             ]
         },
         {

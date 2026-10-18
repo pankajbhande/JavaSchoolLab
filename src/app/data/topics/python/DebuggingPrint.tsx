@@ -58,18 +58,18 @@ print(f"{price / 7=:.2f}")        # format specs still work
             content: `<h4>Use repr() to See Hidden Characters</h4>
 Strings with trailing spaces, tabs or newlines look identical when printed normally. <code>repr()</code> (or <code>!r</code> in an f-string) shows the quotes and escape codes, revealing the problem instantly - a classic cause of "these two strings look equal but aren't".`,
             codeExamples: [
-                `name = "Asha \\n"            # e.g. read from a file or input
+                `name = "Abaji \\n"            # e.g. read from a file or input
 
 print(f"[{name}]")
 print(repr(name))
 print(f"{name!r}")
-print(name == "Asha", name.strip() == "Asha")
+print(name == "Abaji", name.strip() == "Abaji")
 
 # OUTPUT:
-# [Asha
+# [Abaji
 # ]
-# 'Asha \\n'
-# 'Asha \\n'
+# 'Abaji \\n'
+# 'Abaji \\n'
 # False True`
             ]
         },
@@ -94,14 +94,14 @@ A large nested dict printed on one line is unreadable. <code>pprint</code> sprea
             codeExamples: [
                 `from pprint import pprint
 
-order = {"id": 42, "customer": {"name": "Asha", "city": "Pune"},
+order = {"id": 42, "customer": {"name": "Abaji", "city": "Pune"},
          "items": [{"sku": "PEN", "qty": 3}, {"sku": "BOOK", "qty": 1}]}
 
 pprint(order, width=50, sort_dicts=False)
 
 # OUTPUT:
 # {'id': 42,
-#  'customer': {'name': 'Asha', 'city': 'Pune'},
+#  'customer': {'name': 'Abaji', 'city': 'Pune'},
 #  'items': [{'sku': 'PEN', 'qty': 3},
 #            {'sku': 'BOOK', 'qty': 1}]}`
             ]
@@ -115,15 +115,15 @@ Normal program output goes to <b>stdout</b>; diagnostics should go to <b>stderr<
             codeExamples: [
                 `import sys
 
-rows = [("Asha", 91), ("Ravi", 78)]
+rows = [("Abaji", 91), ("Raoji", 78)]
 print("rows loaded:", len(rows), file=sys.stderr)     # diagnostic
 for name, marks in rows:
     print(f"{name},{marks}")                           # real output
 
 # OUTPUT (both streams shown in the terminal):
 # rows loaded: 2
-# Asha,91
-# Ravi,78`
+# Abaji,91
+# Raoji,78`
             ]
         },
         {

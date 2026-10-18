@@ -305,7 +305,7 @@ SELECT * FROM seat;          -- single statement: plain consistent read, no shar
     'Dirty, Non-Repeatable & Phantom Reads': dd(
         [`Three classic anomalies. <b>Dirty read</b>: reading another transaction's uncommitted change. <b>Non-repeatable read</b>: re-reading the same row gives a different value because someone committed an UPDATE. <b>Phantom read</b>: re-running a range query returns extra (or fewer) rows because someone committed an INSERT/DELETE.`,
             r`CREATE TABLE acct (id INT PRIMARY KEY, bal INT, owner VARCHAR(5)) ENGINE=InnoDB;
-INSERT INTO acct VALUES (1,100,'amy'),(2,200,'bob');
+INSERT INTO acct VALUES (1,100,'amy'),(2,200,'baji');
 
 -- Summary of what each level prevents in MySQL/InnoDB:
 SELECT 'READ UNCOMMITTED' AS lvl, 'dirty yes' AS dirty, 'non-rep yes' AS nonrep, 'phantom yes' AS phantom

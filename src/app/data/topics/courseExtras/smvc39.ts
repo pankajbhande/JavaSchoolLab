@@ -31,11 +31,11 @@ Greeter proxy = (Greeter) Proxy.newProxyInstance(
         System.out.println("before " + m.getName());
         return m.invoke(real, args);
     });
-System.out.println(proxy.greet("Asha"));
+System.out.println(proxy.greet("Abaji"));
 
 // OUTPUT:
 // before greet
-// Hello Asha`],
+// Hello Abaji`],
             ['Spring proxy is visible at runtime.',
                 r`@Service
 public class OrderService {
@@ -124,7 +124,7 @@ new Exporter() {
 System.out.println(names);
 
 // OUTPUT:
-// [Asha, Ravi]`]],
+// [Abaji, Raoji]`]],
         [['Overriding a filter hook.',
             r`@Component
 public class AuditFilter extends OncePerRequestFilter {
@@ -172,7 +172,7 @@ System.out.println(id);
     boolean existsByEmail(String email);
 }
 
-repo.save(new Student("Asha", "Pune"));
+repo.save(new Student("Abaji", "Pune"));
 System.out.println(repo.findByCityOrderByNameAsc("Pune").size());
 
 // OUTPUT:
@@ -193,7 +193,7 @@ class StudentRepositoryTest {
 
     @Test
     void findsByCity() {
-        repo.save(new Student("Ravi", "Delhi"));
+        repo.save(new Student("Raoji", "Delhi"));
         assertEquals(1, repo.findByCityOrderByNameAsc("Delhi").size());
     }
 }
@@ -204,11 +204,11 @@ class StudentRepositoryTest {
                 r`@Mock StudentRepository repo;
 @InjectMocks StudentService service;
 
-when(repo.findById(1L)).thenReturn(Optional.of(new Student("Asha", "Pune")));
+when(repo.findById(1L)).thenReturn(Optional.of(new Student("Abaji", "Pune")));
 System.out.println(service.get(1L).getName());
 
 // OUTPUT:
-// Asha`]]
+// Abaji`]]
     ),
 
     'mvc-service-layer-pattern': x(
@@ -317,7 +317,7 @@ public StudentResponse add(@Valid @RequestBody StudentRequest req) {
 }
 
 // OUTPUT:
-// {"id":1,"name":"Asha"}`],
+// {"id":1,"name":"Abaji"}`],
             ['Mapper method.',
                 r`public final class StudentMapper {
     private StudentMapper() { }
@@ -325,10 +325,10 @@ public StudentResponse add(@Valid @RequestBody StudentRequest req) {
         return new StudentResponse(s.getId(), s.getName());
     }
 }
-System.out.println(StudentMapper.toResponse(new Student(5L, "Ravi")));
+System.out.println(StudentMapper.toResponse(new Student(5L, "Raoji")));
 
 // OUTPUT:
-// StudentResponse[id=5, name=Ravi]`]],
+// StudentResponse[id=5, name=Raoji]`]],
         [['Validation failure.',
             r`// POST /students  {"name":"","email":"bad"}
 // MethodArgumentNotValidException is thrown before the method runs
@@ -339,7 +339,7 @@ System.out.println(StudentMapper.toResponse(new Student(5L, "Ravi")));
             ['MockMvc test of the response shape.',
                 r`mockMvc.perform(get("/students/1"))
     .andExpect(status().isOk())
-    .andExpect(jsonPath("$.name").value("Asha"))
+    .andExpect(jsonPath("$.name").value("Abaji"))
     .andExpect(jsonPath("$.password").doesNotExist());
 
 // OUTPUT:
@@ -384,7 +384,7 @@ public class JdbcStudentDao implements StudentDao {
 }
 
 // OUTPUT:
-// save returns 1; findById(1) returns Optional[Student{id=1, name=Asha}]`],
+// save returns 1; findById(1) returns Optional[Student{id=1, name=Abaji}]`],
             ['Using the DAO from a service.',
                 r`@Service
 public class StudentService {
@@ -415,7 +415,7 @@ class JdbcStudentDaoTest {
     @Autowired JdbcStudentDao dao;
 
     @Test
-    void saves() { assertEquals(1, dao.save(new Student(null, "Asha"))); }
+    void saves() { assertEquals(1, dao.save(new Student(null, "Abaji"))); }
 }
 
 // OUTPUT:
@@ -509,7 +509,9 @@ server.tomcat.threads.max=200
 
 # OUTPUT:
 # GET /actuator/metrics/http.server.requests ->
-# {"name":"http.server.requests","measurements":[{"statistic":"COUNT","value":42.0}]}`],
+# {
+    "name":"http.server.requests","measurements":[{"statistic":"COUNT","value":42.0}]
+}`],
             ['Caching a method.',
                 r`@Service
 public class CountryService {
@@ -703,10 +705,10 @@ public class CurrentUser {
 ProxyFactory pf = new ProxyFactory(new RealGreeter());
 pf.addAdvice((MethodInterceptor) inv -> "[" + inv.proceed() + "]");
 Greeter g = (Greeter) pf.getProxy();
-System.out.println(g.greet("Asha"));
+System.out.println(g.greet("Abaji"));
 
 // OUTPUT:
-// [Hello Asha]`],
+// [Hello Abaji]`],
         [`<p>Common mistakes:</p><ul><li><b>Self-invocation:</b> <code>this.method()</code> bypasses advice; move the method to another bean.</li><li><b>final classes or methods:</b> CGLIB cannot proxy them.</li><li><b>Private methods:</b> advice is not applied.</li><li><b>new instead of injection:</b> <code>new OrderService()</code> has no proxy at all.</li><li><b>Injecting the concrete class with JDK proxies:</b> causes a cast failure; inject the interface or use CGLIB.</li></ul>`,
             r`@Service
 public class A {
@@ -980,7 +982,7 @@ public UserResponse get(@PathVariable long id) {
 }
 
 // OUTPUT:
-// {"id":3,"name":"Asha"}   (no password, no orders)`],
+// {"id":3,"name":"Abaji"}   (no password, no orders)`],
         [`<p>Performance notes:</p><ul><li>Fetch DTOs directly with a projection to avoid loading full entities.</li><li>Small response DTOs mean smaller JSON and faster serialization.</li><li>MapStruct has near-zero runtime cost, reflection mappers are slower.</li><li>Do not map large collections eagerly if you can page them.</li></ul>`,
             r`public record StudentSummary(Long id, String name) { }
 
@@ -1022,7 +1024,7 @@ public class JpaStudentDao {
 }
 
 // OUTPUT:
-// byCity("Pune") returns [Student{id=1, name=Asha}]`],
+// byCity("Pune") returns [Student{id=1, name=Abaji}]`],
         [`<p>DAO implementation styles:</p><ul><li><b>JdbcTemplate:</b> full SQL control.</li><li><b>NamedParameterJdbcTemplate:</b> readable named parameters.</li><li><b>SimpleJdbcInsert:</b> inserts and returns generated keys.</li><li><b>JPA EntityManager:</b> object mapping.</li><li><b>Spring Data:</b> generated implementation.</li></ul>`,
             r`NamedParameterJdbcTemplate named = new NamedParameterJdbcTemplate(ds);
 List<String> names = named.queryForList(
@@ -1031,11 +1033,11 @@ List<String> names = named.queryForList(
 
 SimpleJdbcInsert insert = new SimpleJdbcInsert(ds)
     .withTableName("student").usingGeneratedKeyColumns("id");
-Number key = insert.executeAndReturnKey(Map.of("name", "Ravi"));
+Number key = insert.executeAndReturnKey(Map.of("name", "Raoji"));
 System.out.println(names + " " + key);
 
 // OUTPUT: (varies)
-// [Asha] 2`],
+// [Abaji] 2`],
         [`<p>Common mistakes:</p><ul><li><b>SQL concatenation:</b> opens SQL injection; use placeholders.</li><li><b>Leaking connections</b> when using raw JDBC without try-with-resources.</li><li><b>Business logic in the DAO:</b> keep it in the service.</li><li><b>queryForObject on missing row:</b> throws <code>EmptyResultDataAccessException</code>; use <code>query</code> with a list.</li><li><b>One DAO method per screen:</b> design around the entity.</li></ul>`,
             r`try {
     Student s = jdbc.queryForObject(
@@ -1092,7 +1094,7 @@ public String register(@Valid UserForm form, BindingResult br,
 
 // OUTPUT:
 // POST /register -> 302 Location: /users/12
-// GET /users/12 -> page shows "Welcome Asha" once`],
+// GET /users/12 -> page shows "Welcome Abaji" once`],
         [`<p>Redirect options:</p><ul><li><b>redirect: prefix:</b> the common way.</li><li><b>RedirectView:</b> explicit object, can set <code>setStatusCode</code> (for example 303).</li><li><b>ResponseEntity with Location:</b> for APIs.</li><li><b>addAttribute:</b> values go to the URL.</li><li><b>addFlashAttribute:</b> values go to the session for one request.</li><li><b>forward: prefix:</b> a server-side forward, not a PRG redirect.</li></ul>`,
             r`@PostMapping("/pay")
 public RedirectView pay(PaymentForm f) {

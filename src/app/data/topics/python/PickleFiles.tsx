@@ -15,7 +15,7 @@ Unlike JSON, pickle keeps Python types exactly: a set stays a set, a tuple stays
                 `import pickle
 
 data = {
-    "name": "Asha",
+    "name": "Abaji",
     "marks": [91, 85],
     "skills": {"python", "sql"},
     "point": (3, 4),
@@ -49,7 +49,7 @@ class Student:
     def average(self):
         return sum(self.marks) / len(self.marks)
 
-s = Student("Ravi", [78, 66, 90])
+s = Student("Raoji", [78, 66, 90])
 
 with open("student.pkl", "wb") as f:
     pickle.dump(s, f)
@@ -61,7 +61,7 @@ print(restored.name, restored.average())
 print(restored is s)                     # an equal copy, not the same object
 
 # OUTPUT:
-# Ravi 78.0
+# Raoji 78.0
 # False`
             ]
         },
@@ -209,10 +209,10 @@ print(copy.data, type(copy.lock).__name__)
                 `import shelve
 
 with shelve.open("store") as db:
-    db["asha"] = {"marks": [91, 85], "skills": {"python"}}
+    db["abaji"] = {"marks": [91, 85], "skills": {"python"}}
 
 with shelve.open("store") as db:          # later, even in another run
-    print(db["asha"]["marks"], "asha" in db)
+    print(db["abaji"]["marks"], "abaji" in db)
 
 # OUTPUT:
 # [91, 85] True`

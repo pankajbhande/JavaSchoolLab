@@ -81,7 +81,7 @@ System.out.println(wrap((String s) -> s.trim()).apply("  ok "));
             ['S', 'How are lambdas implemented?', 'With invokedynamic and LambdaMetafactory at run time, not as inner classes.'],
             ['S', 'Name the four kinds of method references.', 'Static method, instance method of a particular object, instance method of an arbitrary object of a type, and constructor.']],
         [['Lambdas and method references.',
-            r`List<String> names = new ArrayList<>(List.of("Ravi", "asha", "Meena"));
+            r`List<String> names = new ArrayList<>(List.of("Raoji", "abaji", "Moropant"));
 names.sort((a, b) -> a.compareToIgnoreCase(b));
 names.forEach(n -> System.out.print(n.toUpperCase() + " "));
 System.out.println();
@@ -91,7 +91,7 @@ BiFunction<String, String, Boolean> eq = String::equalsIgnoreCase;   // arbitrar
 System.out.println(parse.apply("42") + " " + ctor.get() + " " + eq.apply("A", "a"));
 
 // OUTPUT:
-// ASHA MEENA RAVI
+// ABAJI MOROPANT RAOJI
 // 42 [] true`],
             ['Capturing and this.',
                 r`class Greeter {
@@ -180,7 +180,9 @@ System.out.println(new C().hi());
 // AB`]],
         [['Class wins.',
             r`interface I { default String who() { return "interface"; } }
-class Base { public String who() { return "class"; } }
+class Base {
+    public String who() { return "class"; }
+}
 class D extends Base implements I {}
 System.out.println(new D().who());
 
@@ -188,7 +190,8 @@ System.out.println(new D().who());
 // class`],
             ['JDK defaults.',
                 r`List<Integer> l = new ArrayList<>(List.of(3, 1, 2));
-l.sort(null); l.removeIf(x -> x == 2);
+l.sort(null);
+l.removeIf(x -> x == 2);
 Map<String, Integer> m = new HashMap<>();
 m.computeIfAbsent("a", k -> 1);
 System.out.println(l + " " + m);
@@ -240,7 +243,9 @@ System.out.println(Stream.of("a", "", "b")
 // k=1
 // [a, b]`]],
         [['Not inherited.',
-            r`interface Util { static String hi() { return "hi"; } }
+            r`interface Util {
+    static String hi() { return "hi"; }
+}
 class Impl implements Util {}
 // new Impl().hi();      // error: cannot find symbol
 // Impl.hi();            // error
@@ -277,14 +282,14 @@ System.out.println(new Fmt() {}.a() + new Fmt() {}.b());
             ['S', 'Why avoid parallel forEach with shared state?', 'Threads race on the shared structure; use collect or thread-safe accumulators.'],
             ['S', 'What does forEachOrdered do?', 'It processes elements in the encounter order even in parallel streams.']],
         [['forEach on collections and maps.',
-            r`List<String> names = List.of("Asha", "Ravi");
+            r`List<String> names = List.of("Abaji", "Raoji");
 names.forEach(System.out::println);
 Map<String, Integer> marks = new TreeMap<>(Map.of("math", 90, "sci", 85));
 marks.forEach((subject, m) -> System.out.println(subject + "=" + m));
 
 // OUTPUT:
-// Asha
-// Ravi
+// Abaji
+// Raoji
 // math=90
 // sci=85`],
             ['Prefer collect to side effects.',
@@ -330,9 +335,10 @@ System.out.println();
             ['S', 'Where should Optional not be used?', 'On fields, method parameters and in collections; it is intended for return types.'],
             ['S', 'Why is Optional.get() discouraged?', 'It throws NoSuchElementException if empty; use orElseThrow with a meaningful exception or functional style.']],
         [['Chaining instead of null checks.',
-            r`record Address(String city) {} record User(String name, Address addr) {}
+            r`record Address(String city) {}
+record User(String name, Address addr) {}
 static Optional<User> find(int id) {
-    return id == 1 ? Optional.of(new User("Asha", new Address("Pune")))
+    return id == 1 ? Optional.of(new User("Abaji", new Address("Pune")))
                    : Optional.empty();
 }
 String city = find(1).map(User::addr).map(Address::city)
@@ -343,7 +349,10 @@ System.out.println(city + " " + none);
 // OUTPUT:
 // PUNE UNKNOWN`],
             ['orElse vs orElseGet and orElseThrow.',
-                r`static String expensive() { System.out.println("computing default"); return "dflt"; }
+                r`static String expensive() {
+    System.out.println("computing default");
+    return "dflt";
+}
 Optional<String> present = Optional.of("value");
 System.out.println(present.orElse(expensive()));
 System.out.println(present.orElseGet(() -> expensive()));
@@ -394,12 +403,12 @@ System.out.println(l.stream().flatMap(Optional::stream).toList());
             r`StringJoiner sj = new StringJoiner(", ", "[", "]");
 sj.setEmptyValue("[none]");
 System.out.println(sj);
-sj.add("Asha").add("Ravi").add("Meena");
+sj.add("Abaji").add("Raoji").add("Moropant");
 System.out.println(sj + " length=" + sj.length());
 
 // OUTPUT:
 // [none]
-// [Asha, Ravi, Meena] length=19`],
+// [Abaji, Raoji, Moropant] length=24`],
             ['Joining in other ways.',
                 r`List<String> l = List.of("a", "b", "c");
 String upper = l.stream().map(String::toUpperCase)
@@ -415,7 +424,8 @@ System.out.println(String.join("-", l) + " " + upper);
 // a-null-b`],
             ['Merge.',
                 r`StringJoiner a = new StringJoiner("/"), b = new StringJoiner(":");
-a.add("x").add("y"); b.add("1").add("2");
+a.add("x").add("y");
+b.add("1").add("2");
 System.out.println(a.merge(b));
 
 // OUTPUT:
@@ -441,8 +451,8 @@ System.out.println(a.merge(b));
         [['A typical pipeline.',
             r`record Emp(String name, String dept, double sal) {}
 List<Emp> emps = List.of(
-    new Emp("Asha", "IT", 90), new Emp("Ravi", "IT", 70),
-    new Emp("Meena", "HR", 60), new Emp("Anil", "HR", 80));
+    new Emp("Abaji", "IT", 90), new Emp("Raoji", "IT", 70),
+    new Emp("Moropant", "HR", 60), new Emp("Anantrao", "HR", 80));
 // average salary per department (TreeMap keeps keys sorted)
 Map<String, Double> avg = emps.stream().collect(Collectors.groupingBy(
     Emp::dept, TreeMap::new, Collectors.averagingDouble(Emp::sal)));
@@ -454,7 +464,7 @@ List<String> top = emps.stream()
 System.out.println(avg + " " + top);
 
 // OUTPUT:
-// {HR=70.0, IT=80.0} [Asha, Anil]`],
+// {HR=70.0, IT=80.0} [Abaji, Anantrao]`],
             ['flatMap, distinct and reduce.',
                 r`List<List<Integer>> nested = List.of(List.of(1, 2), List.of(2, 3), List.of(4));
 System.out.println(nested.stream().flatMap(List::stream).distinct().toList());
@@ -559,10 +569,14 @@ export const java09Deep: Record<string, Deep> = {
             r`@FunctionalInterface interface Both {
     boolean equals(Object o);          // equals does not count
     void run();
-    default void twice() { run(); run(); }
+    default void twice() {
+        run();
+        run();
+    }
 }
 Both b = () -> System.out.print("go ");
-b.twice(); System.out.println();
+b.twice();
+System.out.println();
 IntBinaryOperator gcd = new IntBinaryOperator() {
     public int applyAsInt(int a, int c) { return c == 0 ? a : applyAsInt(c, a % c); }
 };
@@ -753,11 +767,11 @@ interface Named {
     default String label() { return name().toUpperCase(); }
 }
 record Customer(String id, String name) implements Auditable, Named {}
-Customer c = new Customer("c1", "asha");
+Customer c = new Customer("c1", "abaji");
 System.out.println(c.auditLine() + " " + c.label());
 
 // OUTPUT:
-// [1970-01-01T00:00:00Z] Customer#c1 ASHA`],
+// [1970-01-01T00:00:00Z] Customer#c1 ABAJI`],
         [`Common mistakes:
 <ul>
 <li>Defaults that rely on hidden state or call order.</li>
@@ -822,14 +836,20 @@ interface Sub extends Money { }
     }
     static Shape rect(double w, double h) { return new Rect(w, h); }
 }
-record Circle(double r) implements Shape { public double area() { return Math.PI * r * r; } }
-record Rect(double w, double h) implements Shape { public double area() { return w * h; } }
+record Circle(double r) implements Shape {
+    public double area() { return Math.PI * r * r; }
+}
+record Rect(double w, double h) implements Shape {
+    public double area() { return w * h; }
+}
 System.out.printf("%.1f %.1f%n", Shape.circle(1).area(), Shape.rect(2, 3).area());
 
 // OUTPUT:
 // 3.1 6.0`],
         [`Common mistakes:<ul><li>Calling the method through an instance or an implementing class.</li><li>Expecting a class static method to override it.</li><li>Stuffing unrelated utilities into an interface.</li><li>Making the interface depend on concrete implementations, which hurts decoupling.</li></ul>Keep statics related to the purpose of the interface.`,
-            r`interface A { static String id() { return "A"; } }
+            r`interface A {
+    static String id() { return "A"; }
+}
 class B implements A {
     static String id() { return "B"; }   // unrelated static: not an override
 }
@@ -980,7 +1000,8 @@ System.out.println(bad.equals(good));
 // OUTPUT:
 // true`],
         [`Optional allocates a wrapper (escape analysis often removes it when the chain inlines). In very hot paths prefer null checks or primitive Optionals. Use <code>orElseGet</code> for expensive defaults.`,
-            r`long t = System.nanoTime(); long s = 0;
+            r`long t = System.nanoTime();
+long s = 0;
 for (int i = 0; i < 20_000_000; i++) s += Optional.of(i).map(x -> x + 1).orElse(0);
 System.out.println(s > 0 ? "ms=" + (System.nanoTime() - t) / 1_000_000 : "");
 
@@ -1020,8 +1041,8 @@ static String csvEscape(String s) {
     boolean quote = s.contains(",") || s.contains("\"");
     return quote ? "\"" + s.replace("\"", "\"\"") + "\"" : s;
 }
-List<Row> rows = List.of(new Row("Asha", "likes, commas"),
-                         new Row("Ravi", "say \"hi\""));
+List<Row> rows = List.of(new Row("Abaji", "likes, commas"),
+                         new Row("Raoji", "say \"hi\""));
 String csv = rows.stream()
     .map(r -> csvEscape(r.name()) + "," + csvEscape(r.note()))
     .collect(Collectors.joining("\n", "name,note\n", "\n"));
@@ -1029,8 +1050,8 @@ System.out.print(csv);
 
 // OUTPUT:
 // name,note
-// Asha,"likes, commas"
-// Ravi,"say ""hi"""`],
+// Abaji,"likes, commas"
+// Raoji,"say ""hi"""`],
         [`Mistakes: joining values that contain the delimiter without escaping, building SQL by concatenating user data (injection), assuming null is skipped (it prints "null"), using one joiner from several threads, and calling <code>toString</code> repeatedly in a loop. Filter nulls explicitly with <code>Objects::nonNull</code>.`,
             r`List<String> parts = Arrays.asList("a", null, "c");
 String plain = String.join("|", parts);

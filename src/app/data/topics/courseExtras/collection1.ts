@@ -30,8 +30,10 @@ System.out.println(list + " " + set + " " + counts);
 // [b, a, b] [a, b] {a=1, b=2}`],
             ['Collections utilities.',
                 r`List<Integer> nums = new ArrayList<>(List.of(5, 2, 9));
-Collections.sort(nums); System.out.println(nums);
-Collections.reverse(nums); System.out.println(nums);
+Collections.sort(nums);
+System.out.println(nums);
+Collections.reverse(nums);
+System.out.println(nums);
 System.out.println(Collections.max(nums) + " " + Collections.min(nums));
 
 // OUTPUT:
@@ -40,8 +42,11 @@ System.out.println(Collections.max(nums) + " " + Collections.min(nums));
 // 9 2`]],
         [['Fail-fast demo.',
             r`List<Integer> l = new ArrayList<>(List.of(1, 2, 3));
-try { for (Integer i : l) if (i == 2) l.remove(i); } catch (ConcurrentModificationException e) { System.out.println("CME"); }
-l.removeIf(i -> i == 2); System.out.println(l);
+try {
+    for (Integer i : l) if (i == 2) l.remove(i);
+} catch (ConcurrentModificationException e) { System.out.println("CME"); }
+l.removeIf(i -> i == 2);
+System.out.println(l);
 
 // OUTPUT:
 // (removing the second to last element ends the loop without error; removing others throws)
@@ -75,12 +80,15 @@ System.out.println(view + " " + copy);
             ['S', 'Is ArrayList thread-safe?', 'No; concurrent modification can corrupt it. Use synchronization or CopyOnWriteArrayList.']],
         [['Basic operations.',
             r`List<String> names = new ArrayList<>();
-names.add("Asha"); names.add("Ravi"); names.add(1, "Meena");
-names.set(0, "Anita"); names.remove("Ravi");
-System.out.println(names + " size=" + names.size() + " idx=" + names.indexOf("Meena"));
+names.add("Abaji");
+names.add("Raoji");
+names.add(1, "Moropant");
+names.set(0, "Annaji");
+names.remove("Raoji");
+System.out.println(names + " size=" + names.size() + " idx=" + names.indexOf("Moropant"));
 
 // OUTPUT:
-// [Anita, Meena] size=2 idx=1`],
+// [Annaji, Moropant] size=2 idx=1`],
             ['Safe removal while iterating.',
                 r`List<Integer> nums = new ArrayList<>(List.of(1, 2, 3, 4, 5, 6));
 nums.removeIf(n -> n % 2 == 0);
@@ -125,7 +133,9 @@ System.out.println(l + " " + Collections.binarySearch(l, 30));
             ['S', 'Is middle insertion O(1)?', 'Only given an iterator at the position; finding the position is O(n), so overall it is O(n).']],
         [['Queue and deque use.',
             r`LinkedList<String> q = new LinkedList<>();
-q.offer("A"); q.offer("B"); q.addFirst("Z");
+q.offer("A");
+q.offer("B");
+q.addFirst("Z");
 System.out.println(q + " " + q.poll() + " " + q.peekLast());
 
 // OUTPUT:
@@ -133,14 +143,18 @@ System.out.println(q + " " + q.poll() + " " + q.peekLast());
             ['Insert while iterating.',
                 r`LinkedList<Integer> l = new LinkedList<>(List.of(1, 3, 5));
 ListIterator<Integer> it = l.listIterator();
-while (it.hasNext()) { int v = it.next(); if (v == 3) it.add(4); }
+while (it.hasNext()) {
+    int v = it.next();
+    if (v == 3) it.add(4);
+}
 System.out.println(l);
 
 // OUTPUT:
 // [1, 3, 4, 5]`]],
         [['Preferred modern alternative.',
             r`Deque<Integer> stack = new ArrayDeque<>();
-stack.push(1); stack.push(2);
+stack.push(1);
+stack.push(2);
 System.out.println(stack.pop() + " " + stack.peek());
 
 // OUTPUT:
@@ -172,7 +186,9 @@ System.out.println(l.get(3));    // walks 3 nodes
             ['S', 'Why is check-then-add unsafe?', 'Another thread can change the list between the check and the add, since the two calls are separate lock acquisitions.']],
         [['Vector basics.',
             r`Vector<Integer> v = new Vector<>(2);
-v.add(1); v.add(2); v.add(3);
+v.add(1);
+v.add(2);
+v.add(3);
 System.out.println(v + " cap=" + v.capacity());
 
 // OUTPUT:
@@ -257,7 +273,8 @@ System.out.println(st.pop());
 // 14`],
             ['Legacy Stack.',
                 r`Stack<Integer> s = new Stack<>();
-s.push(1); s.push(2);
+s.push(1);
+s.push(2);
 System.out.println(s.peek() + " " + s.pop() + " " + s.empty());
 
 // OUTPUT:
@@ -283,8 +300,10 @@ System.out.println(s.peek() + " " + s.pop() + " " + s.empty());
         [['Remove duplicates and set math.',
             r`Set<Integer> a = new HashSet<>(List.of(1, 2, 3, 3));
 Set<Integer> b = new HashSet<>(List.of(3, 4));
-Set<Integer> union = new HashSet<>(a); union.addAll(b);
-Set<Integer> inter = new HashSet<>(a); inter.retainAll(b);
+Set<Integer> union = new HashSet<>(a);
+union.addAll(b);
+Set<Integer> inter = new HashSet<>(a);
+inter.retainAll(b);
 System.out.println(a.size() + " " + union + " " + inter);
 
 // OUTPUT:
@@ -292,14 +311,22 @@ System.out.println(a.size() + " " + union + " " + inter);
             ['equals and hashCode.',
                 r`record Point(int x, int y) {}
 Set<Point> s = new HashSet<>();
-s.add(new Point(1, 2)); s.add(new Point(1, 2));
+s.add(new Point(1, 2));
+s.add(new Point(1, 2));
 System.out.println(s.size());
 
 // OUTPUT:
 // 1`]],
         [['Mutable key problem.',
-            r`class P { int v; P(int v){this.v=v;} public int hashCode(){return v;} public boolean equals(Object o){return o instanceof P p && p.v==v;} }
-Set<P> set = new HashSet<>(); P p = new P(1); set.add(p);
+            r`class P {
+    int v;
+    P(int v){this.v=v;}
+    public int hashCode(){return v;}
+    public boolean equals(Object o){return o instanceof P p && p.v==v;}
+}
+Set<P> set = new HashSet<>();
+P p = new P(1);
+set.add(p);
 p.v = 2;
 System.out.println(set.contains(p));
 
@@ -308,7 +335,10 @@ System.out.println(set.contains(p));
             ['Find first duplicate.',
                 r`int[] a = {3, 1, 4, 1, 5};
 Set<Integer> seen = new HashSet<>();
-for (int n : a) if (!seen.add(n)) { System.out.println("dup " + n); break; }
+for (int n : a) if (!seen.add(n)) {
+    System.out.println("dup " + n);
+    break;
+}
 
 // OUTPUT:
 // dup 1`]]
@@ -390,7 +420,8 @@ System.out.println(t);
 // [fig, kiwi, pear, apple]`]],
         [['Comparator treats equal as duplicate.',
             r`TreeSet<String> t = new TreeSet<>(Comparator.comparing(String::length));
-t.add("abc"); t.add("xyz");
+t.add("abc");
+t.add("xyz");
 System.out.println(t.size());
 
 // OUTPUT:
@@ -420,7 +451,9 @@ System.out.println((c instanceof List) + " " + (c instanceof Set));
         [`Choose by access pattern. Streams give a declarative pipeline over collections: filter, map, collect, groupingBy. Factory methods <code>List.of</code>, <code>Set.of</code> and <code>Map.of</code> return immutable collections that reject nulls. <code>Arrays.asList</code> is a fixed-size view over an array.`,
             r`Map<Integer, List<String>> byLen = Stream.of("hi", "java", "go", "code").collect(Collectors.groupingBy(String::length));
 System.out.println(byLen);
-try { List.of(1).add(2); } catch (UnsupportedOperationException e) { System.out.println("immutable"); }
+try {
+    List.of(1).add(2);
+} catch (UnsupportedOperationException e) { System.out.println("immutable"); }
 List<Integer> view = Arrays.asList(1, 2, 3);
 view.set(0, 9);
 try { view.add(4); } catch (UnsupportedOperationException e) { System.out.println("fixed size"); }
@@ -444,9 +477,11 @@ System.out.println(t.getMembersSafe());
         [`Performance depends on choice: ArrayList iteration is cache friendly, HashMap with a good hash is O(1), and boxing costs memory (an Integer list uses much more than int[]). For primitives consider arrays, IntStream or libraries like fastutil or Eclipse Collections. Measure with JMH before optimizing.`,
             r`int n = 5_000_000;
 long t0 = System.nanoTime();
-List<Integer> boxed = new ArrayList<>(n); for (int i = 0; i < n; i++) boxed.add(i);
+List<Integer> boxed = new ArrayList<>(n);
+for (int i = 0; i < n; i++) boxed.add(i);
 long t1 = System.nanoTime();
-int[] prim = new int[n]; for (int i = 0; i < n; i++) prim[i] = i;
+int[] prim = new int[n];
+for (int i = 0; i < n; i++) prim[i] = i;
 long t2 = System.nanoTime();
 System.out.println("boxed ms=" + (t1 - t0) / 1_000_000 + " primitive ms=" + (t2 - t1) / 1_000_000);
 
@@ -455,11 +490,17 @@ System.out.println("boxed ms=" + (t1 - t0) / 1_000_000 + " primitive ms=" + (t2 
         [`Real-world: an LRU cache built on LinkedHashMap, a word counter with HashMap.merge, and a unique sorted tag list with TreeSet.`,
             r`class Lru<K, V> extends LinkedHashMap<K, V> {
     private final int cap;
-    Lru(int cap) { super(16, 0.75f, true); this.cap = cap; }
+    Lru(int cap) {
+        super(16, 0.75f, true);
+        this.cap = cap;
+    }
     @Override protected boolean removeEldestEntry(Map.Entry<K, V> e) { return size() > cap; }
 }
 Lru<String, Integer> c = new Lru<>(2);
-c.put("a", 1); c.put("b", 2); c.get("a"); c.put("c", 3);
+c.put("a", 1);
+c.put("b", 2);
+c.get("a");
+c.put("c", 3);
 System.out.println(c.keySet());
 
 // OUTPUT:
@@ -472,7 +513,8 @@ System.out.println(c.keySet());
 for (int i = 0; i < 12; i++) l.add(i);          // capacity grows 10 -> 15
 try {
     for (Integer i : l) if (i == 3) l.add(99);   // modCount changed
-} catch (ConcurrentModificationException e) { System.out.println("fail-fast"); }
+} catch (ConcurrentModificationException e) { System.out.println("fail-fast");
+}
 
 // OUTPUT:
 // fail-fast`],
@@ -490,7 +532,9 @@ System.out.println(nums + " " + top + " " + arr.length);
             r`List<Integer> parent = new ArrayList<>(List.of(1, 2, 3, 4));
 List<Integer> sub = parent.subList(1, 3);
 parent.add(5);
-try { System.out.println(sub.size()); } catch (ConcurrentModificationException e) { System.out.println("subList invalid"); }
+try {
+    System.out.println(sub.size());
+} catch (ConcurrentModificationException e) { System.out.println("subList invalid"); }
 
 // OUTPUT:
 // subList invalid`],
@@ -518,14 +562,18 @@ System.out.println(page(List.of(1,2,3,4,5,6,7), 1, 3));
     'linkedlist': dv(
         [`LinkedList holds <code>first</code> and <code>last</code> references to <code>Node</code> objects (item, next, prev). Adding at the ends is O(1) pointer updates; get(i) walks from the nearer end (so up to n/2 steps). Each node costs object header plus three references (about 24-32 bytes) on top of the element.`,
             r`LinkedList<Integer> l = new LinkedList<>();
-l.add(1); l.addFirst(0); l.addLast(2);
+l.add(1);
+l.addFirst(0);
+l.addLast(2);
 System.out.println(l.getFirst() + " " + l.getLast() + " " + l.indexOf(1));
 
 // OUTPUT:
 // 0 2 1`],
         [`As a Deque it provides <code>offerFirst</code>, <code>pollLast</code>, <code>peekFirst</code>, <code>descendingIterator</code>. As a List it provides index methods. It allows nulls (ArrayDeque does not). It implements Queue so it can be a FIFO or work queue in single-threaded code.`,
             r`Deque<String> d = new LinkedList<>();
-d.offerFirst("b"); d.offerFirst("a"); d.offerLast("c");
+d.offerFirst("b");
+d.offerFirst("a");
+d.offerLast("c");
 Iterator<String> it = ((LinkedList<String>) d).descendingIterator();
 while (it.hasNext()) System.out.print(it.next());
 System.out.println();
@@ -533,11 +581,14 @@ System.out.println();
 // OUTPUT:
 // cba`],
         [`Mistakes: using get(i) in a loop (O(n^2)), choosing LinkedList for general lists because insertion sounds cheap, and expecting thread safety. Iterate with for-each or an iterator.`,
-            r`LinkedList<Integer> l = new LinkedList<>(); for (int i = 0; i < 50_000; i++) l.add(i);
-long t = System.nanoTime(); long sum = 0;
+            r`LinkedList<Integer> l = new LinkedList<>();
+for (int i = 0; i < 50_000; i++) l.add(i);
+long t = System.nanoTime();
+long sum = 0;
 for (int i = 0; i < l.size(); i++) sum += l.get(i);          // quadratic
 System.out.println("indexed ms=" + (System.nanoTime() - t) / 1_000_000);
-t = System.nanoTime(); sum = 0;
+t = System.nanoTime();
+sum = 0;
 for (int v : l) sum += v;                                     // linear
 System.out.println("iterator ms=" + (System.nanoTime() - t) / 1_000_000);
 
@@ -547,7 +598,8 @@ System.out.println("iterator ms=" + (System.nanoTime() - t) / 1_000_000);
         [`Benchmarks usually show ArrayList and ArrayDeque beating LinkedList even for inserts in the middle at moderate sizes because of cache locality and fewer allocations. Choose LinkedList only with clear evidence (very large lists with many positional inserts through iterators).`,
             r`Deque<Integer> q = new ArrayDeque<>();
 for (int i = 0; i < 1_000_000; i++) q.addLast(i);
-long s = 0; while (!q.isEmpty()) s += q.pollFirst();
+long s = 0;
+while (!q.isEmpty()) s += q.pollFirst();
 System.out.println(s);
 
 // OUTPUT:
@@ -555,9 +607,12 @@ System.out.println(s);
         [`Real-world: a browser history with back and forward navigation using two deques, or a task queue for single-threaded processing.`,
             r`Deque<String> back = new ArrayDeque<>(), forward = new ArrayDeque<>();
 String current = "home";
-back.push(current); current = "docs";
-back.push(current); current = "blog";
-current = back.pop(); forward.push("blog");
+back.push(current);
+current = "docs";
+back.push(current);
+current = "blog";
+current = back.pop();
+forward.push("blog");
 System.out.println(current + " " + forward);
 
 // OUTPUT:
@@ -567,7 +622,9 @@ System.out.println(current + " " + forward);
     'vector': dv(
         [`Vector stores elements in an array like ArrayList but declares methods <code>synchronized</code>, so each call acquires the object monitor. Capacity grows by capacityIncrement or doubles. It implements the same List interface and also offers legacy methods and Enumeration.`,
             r`Vector<Integer> v = new Vector<>(2, 3);     // initial 2, increment 3
-v.add(1); v.add(2); v.add(3);
+v.add(1);
+v.add(2);
+v.add(3);
 System.out.println(v.capacity());
 
 // OUTPUT:
@@ -583,15 +640,22 @@ System.out.println();
 // ab`],
         [`Mistakes: assuming Vector makes compound operations atomic, iterating without holding the lock while other threads modify, and using it out of habit in new code. Synchronize on the vector for iteration or use a snapshot.`,
             r`Vector<Integer> v = new Vector<>(List.of(1, 2, 3));
-synchronized (v) { Iterator<Integer> it = v.iterator(); while (it.hasNext()) System.out.print(it.next()); }
+synchronized (v) {
+    Iterator<Integer> it = v.iterator();
+    while (it.hasNext()) System.out.print(it.next());
+}
 System.out.println();
 
 // OUTPUT:
 // 123`],
         [`Uncontended synchronization is cheap on modern JVMs, but contended locks hurt scalability. Benchmarks usually show ArrayList several times faster in single-threaded code. Use fine-grained or lock-free structures for concurrency.`,
             r`List<Integer> a = new ArrayList<>(), v = new Vector<>();
-long t = System.nanoTime(); for (int i = 0; i < 5_000_000; i++) a.add(i); long ta = System.nanoTime() - t;
-t = System.nanoTime(); for (int i = 0; i < 5_000_000; i++) v.add(i); long tv = System.nanoTime() - t;
+long t = System.nanoTime();
+for (int i = 0; i < 5_000_000; i++) a.add(i);
+long ta = System.nanoTime() - t;
+t = System.nanoTime();
+for (int i = 0; i < 5_000_000; i++) v.add(i);
+long tv = System.nanoTime() - t;
 System.out.println("ArrayList ms=" + ta / 1_000_000 + " Vector ms=" + tv / 1_000_000);
 
 // OUTPUT: (varies)
@@ -608,14 +672,17 @@ System.out.println(modern);
     'stack': dv(
         [`java.util.Stack extends Vector and adds push (addElement), pop (remove last) and peek, all synchronized. ArrayDeque implements a stack through a circular array with head and tail indexes: push is addFirst, pop is removeFirst, giving O(1) with no node allocation.`,
             r`Deque<Integer> s = new ArrayDeque<>();
-s.push(1); s.push(2); s.push(3);
+s.push(1);
+s.push(2);
+s.push(3);
 System.out.println(s + " top=" + s.peek());
 
 // OUTPUT:
 // [3, 2, 1] top=3`],
         [`Typical algorithms: expression parsing (shunting yard), DFS without recursion, undo and redo, monotonic stack (next greater element), and matching delimiters. The call stack stores frames; recursion depth is limited by thread stack size.`,
             r`int[] a = {2, 1, 5, 3, 6};
-int[] next = new int[a.length]; Arrays.fill(next, -1);
+int[] next = new int[a.length];
+Arrays.fill(next, -1);
 Deque<Integer> st = new ArrayDeque<>();
 for (int i = 0; i < a.length; i++) {
     while (!st.isEmpty() && a[st.peek()] < a[i]) next[st.pop()] = a[i];
@@ -626,8 +693,12 @@ System.out.println(Arrays.toString(next));
 // OUTPUT:
 // [5, 5, 6, 6, -1]`],
         [`Mistakes: using legacy Stack, calling pop on empty (exception), confusing the iteration order (Stack iterates bottom to top, ArrayDeque top to bottom), and unbounded recursion. Check isEmpty before pop or use poll style methods.`,
-            r`Stack<Integer> s = new Stack<>(); s.push(1); s.push(2);
-Deque<Integer> d = new ArrayDeque<>(); d.push(1); d.push(2);
+            r`Stack<Integer> s = new Stack<>();
+s.push(1);
+s.push(2);
+Deque<Integer> d = new ArrayDeque<>();
+d.push(1);
+d.push(2);
 System.out.println(s + " " + d);
 System.out.println(d.pollFirst() + " " + new ArrayDeque<Integer>().pollFirst());
 
@@ -636,12 +707,23 @@ System.out.println(d.pollFirst() + " " + new ArrayDeque<Integer>().pollFirst());
 // 2 null`],
         [`Deep recursion overflows the thread stack (around 10-20 thousand frames by default). Convert to an explicit ArrayDeque stack for DFS on large graphs.`,
             r`static int depth(Node root) {
-    Deque<Node> st = new ArrayDeque<>(); Deque<Integer> d = new ArrayDeque<>();
-    st.push(root); d.push(1); int max = 0;
+    Deque<Node> st = new ArrayDeque<>();
+    Deque<Integer> d = new ArrayDeque<>();
+    st.push(root);
+    d.push(1);
+    int max = 0;
     while (!st.isEmpty()) {
-        Node n = st.pop(); int cur = d.pop(); max = Math.max(max, cur);
-        if (n.left != null) { st.push(n.left); d.push(cur + 1); }
-        if (n.right != null) { st.push(n.right); d.push(cur + 1); }
+        Node n = st.pop();
+        int cur = d.pop();
+        max = Math.max(max, cur);
+        if (n.left != null) {
+            st.push(n.left);
+            d.push(cur + 1);
+        }
+        if (n.right != null) {
+            st.push(n.right);
+            d.push(cur + 1);
+        }
     }
     return max;
 }
@@ -650,8 +732,10 @@ System.out.println(d.pollFirst() + " " + new ArrayDeque<Integer>().pollFirst());
 // the tree depth is computed without recursion, safe for deep trees`],
         [`Real-world: undo and redo in an editor with two stacks of commands.`,
             r`Deque<String> undo = new ArrayDeque<>(), redo = new ArrayDeque<>();
-undo.push("type A"); undo.push("type B");
-String last = undo.pop(); redo.push(last);
+undo.push("type A");
+undo.push("type B");
+String last = undo.pop();
+redo.push(last);
 System.out.println(undo + " " + redo);
 
 // OUTPUT:
@@ -673,16 +757,19 @@ System.out.println(s.add("a") + " " + s.add("a") + " " + s.size());
     @Override public int hashCode() { return Objects.hash(v); }
 }
 Set<Id> ids = ConcurrentHashMap.newKeySet();
-ids.add(new Id("x")); ids.add(new Id("x"));
+ids.add(new Id("x"));
+ids.add(new Id("x"));
 System.out.println(ids.size());
 
 // OUTPUT:
 // 1`],
         [`Mistakes: overriding equals without hashCode (duplicates appear), mutable keys, expecting order, using HashSet<int[]> (arrays use identity), and heavy hashCode implementations. Wrap arrays in a List or record.`,
             r`Set<int[]> bad = new HashSet<>();
-bad.add(new int[]{1, 2}); bad.add(new int[]{1, 2});
+bad.add(new int[]{1, 2});
+bad.add(new int[]{1, 2});
 Set<List<Integer>> good = new HashSet<>();
-good.add(List.of(1, 2)); good.add(List.of(1, 2));
+good.add(List.of(1, 2));
+good.add(List.of(1, 2));
 System.out.println(bad.size() + " " + good.size());
 
 // OUTPUT:
@@ -708,7 +795,10 @@ System.out.println(first + " " + again);
     'linkedhashset': dv(
         [`LinkedHashSet extends HashSet and is backed by a LinkedHashMap whose entries also form a doubly linked list in insertion order. Iteration follows the list, so it is proportional to the number of elements. Lookup is still by hash.`,
             r`Set<Integer> s = new LinkedHashSet<>();
-s.add(3); s.add(1); s.add(2); s.add(1);
+s.add(3);
+s.add(1);
+s.add(2);
+s.add(1);
 System.out.println(s);
 
 // OUTPUT:
@@ -729,9 +819,18 @@ System.out.println(s + " vs sorted " + new TreeSet<>(s));
 // [b, a, c] vs sorted [a, b, c]`],
         [`Overhead is roughly two more references per entry compared to HashSet. For large, order-free sets prefer HashSet; for small ordered sets the cost is negligible.`,
             r`Set<Integer> h = new HashSet<>(), l = new LinkedHashSet<>();
-for (int i = 0; i < 1_000_000; i++) { h.add(i); l.add(i); }
-long t = System.nanoTime(); long sh = 0; for (int v : h) sh += v; long th = System.nanoTime() - t;
-t = System.nanoTime(); long sl = 0; for (int v : l) sl += v; long tl = System.nanoTime() - t;
+for (int i = 0; i < 1_000_000; i++) {
+    h.add(i);
+    l.add(i);
+}
+long t = System.nanoTime();
+long sh = 0;
+for (int v : h) sh += v;
+long th = System.nanoTime() - t;
+t = System.nanoTime();
+long sl = 0;
+for (int v : l) sl += v;
+long tl = System.nanoTime() - t;
 System.out.println(sh == sl);
 
 // OUTPUT:
@@ -756,13 +855,15 @@ System.out.println(t.lower(20) + " " + t.higher(20) + " " + t.subSet(15, true, 3
         [`NavigableSet methods: <code>floor</code>, <code>ceiling</code>, <code>lower</code>, <code>higher</code>, <code>pollFirst</code>, <code>pollLast</code>, <code>headSet</code>, <code>tailSet</code>, <code>subSet</code> (live views). Comparator design: <code>comparing(...).thenComparing(...)</code>, <code>nullsFirst</code>, <code>reversed</code>.`,
             r`record Player(String name, int score) {}
 TreeSet<Player> board = new TreeSet<>(Comparator.comparingInt(Player::score).reversed().thenComparing(Player::name));
-board.add(new Player("Asha", 90)); board.add(new Player("Ravi", 95)); board.add(new Player("Meena", 90));
+board.add(new Player("Abaji", 90));
+board.add(new Player("Raoji", 95));
+board.add(new Player("Moropant", 90));
 board.forEach(p -> System.out.println(p.name() + " " + p.score()));
 
 // OUTPUT:
-// Ravi 95
-// Asha 90
-// Meena 90`],
+// Raoji 95
+// Abaji 90
+// Moropant 90`],
         [`Mistakes: a Comparator that ignores fields (silently drops elements), mutating sort fields after insertion (breaks the tree), adding non-comparable objects (ClassCastException), and null elements. Include a unique tiebreaker such as id.`,
             r`TreeSet<String> t = new TreeSet<>();
 try { t.add(null); } catch (NullPointerException e) { System.out.println("no nulls"); }
@@ -785,7 +886,8 @@ System.out.println(cs.first());
         [`Real-world: a scheduler that keeps events sorted by time and polls the next due event, or a leaderboard returning the top N.`,
             r`record Event(long at, String name) {}
 TreeSet<Event> schedule = new TreeSet<>(Comparator.comparingLong(Event::at).thenComparing(Event::name));
-schedule.add(new Event(200, "B")); schedule.add(new Event(100, "A"));
+schedule.add(new Event(200, "B"));
+schedule.add(new Event(100, "A"));
 System.out.println(schedule.pollFirst());
 
 // OUTPUT:

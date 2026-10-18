@@ -29,8 +29,9 @@ public class Employee {
 }
 Session s = sessionFactory.openSession();
 Transaction tx = s.beginTransaction();
-s.persist(new Employee("Asha", 60000));
-tx.commit(); s.close();
+s.persist(new Employee("Abaji", 60000));
+tx.commit();
+s.close();
 
 // OUTPUT: (SQL)
 // insert into employees (name, salary) values (?, ?)`],
@@ -39,7 +40,8 @@ tx.commit(); s.close();
 Transaction tx = s.beginTransaction();
 Employee e = s.get(Employee.class, 1L);
 e.setSalary(65000);          // no explicit update call
-tx.commit(); s.close();
+tx.commit();
+s.close();
 
 // OUTPUT: (SQL)
 // select ... from employees where id=?
@@ -47,7 +49,8 @@ tx.commit(); s.close();
         [['Compare JDBC and Hibernate for the same task.',
             r`// JDBC
 PreparedStatement ps = c.prepareStatement("SELECT id, name, salary FROM employees WHERE id = ?");
-ps.setLong(1, 1); ResultSet rs = ps.executeQuery();
+ps.setLong(1, 1);
+ResultSet rs = ps.executeQuery();
 Employee e = rs.next() ? new Employee(rs.getLong(1), rs.getString(2), rs.getDouble(3)) : null;
 // Hibernate
 Employee e2 = session.get(Employee.class, 1L);
@@ -99,7 +102,9 @@ hibernate.format_sql=true
 // SessionFactory created; schema validated`]],
         [['Build a SessionFactory in code.',
             r`SessionFactory sf = new Configuration().configure().buildSessionFactory();
-try (Session s = sf.openSession()) { System.out.println(s.createNativeQuery("select 1").getSingleResult()); }
+try (Session s = sf.openSession()) {
+    System.out.println(s.createNativeQuery("select 1").getSingleResult());
+}
 
 // OUTPUT:
 // 1`],
@@ -152,13 +157,21 @@ session.remove(m);                      // removed: DELETE at flush
 // OUTPUT: (SQL)
 // insert into products ...   delete from products where id=?`]],
         [['Embeddable value object.',
-            r`@Embeddable public class Address { String city; String zip; }
-@Entity public class Customer { @Id Long id; @Embedded Address address; }
+            r`@Embeddable public class Address {
+    String city;
+    String zip;
+}
+@Entity public class Customer {
+    @Id Long id;
+    @Embedded Address address;
+}
 
 // OUTPUT: (columns)
 // customer(id, city, zip)`],
             ['equals/hashCode on a business key.',
-                r`@Override public boolean equals(Object o) { return o instanceof Product p && Objects.equals(sku, p.sku); }
+                r`@Override public boolean equals(Object o) {
+    return o instanceof Product p && Objects.equals(sku, p.sku);
+}
 @Override public int hashCode() { return Objects.hash(sku); }
 
 // OUTPUT:
@@ -182,7 +195,7 @@ session.remove(m);                      // removed: DELETE at flush
             ['S', 'How do you insert a million rows efficiently?', 'Enable JDBC batching with a SEQUENCE id, ordered inserts, and flush/clear every few hundred entities (or use StatelessSession).'],
             ['S', 'How do you prevent lost updates?', 'Add a @Version column (optimistic locking) or use pessimistic locks for hot rows.']],
         [['Full CRUD cycle.',
-            r`Employee e = new Employee("Asha", 60000);
+            r`Employee e = new Employee("Abaji", 60000);
 session.persist(e);                          // create
 Employee found = session.get(Employee.class, e.getId());   // read
 found.setSalary(65000);                      // update (dirty checking)
@@ -192,7 +205,11 @@ tx.commit();
 // OUTPUT: (SQL at commit)
 // insert into employees ...   update employees set ...   delete from employees where id=?`],
             ['Optimistic locking.',
-                r`@Entity class Doc { @Id Long id; String body; @Version int version; }
+                r`@Entity class Doc {
+    @Id Long id;
+    String body;
+    @Version int version;
+}
 Doc d = session.get(Doc.class, 1L);
 d.setBody("new text");
 tx.commit();
@@ -202,7 +219,10 @@ tx.commit();
         [['Batch insert with flush and clear.',
             r`for (int i = 0; i < 100_000; i++) {
     session.persist(new Event("click", i));
-    if (i % 500 == 0) { session.flush(); session.clear(); }
+    if (i % 500 == 0) {
+        session.flush();
+        session.clear();
+    }
 }
 
 // OUTPUT:
@@ -284,10 +304,20 @@ List<Object[]> stats = session.createNativeQuery("select dept_id, count(*) from 
             r`@Entity class Order {
     @Id @GeneratedValue Long id;
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true) List<Item> items = new ArrayList<>();
-    void addItem(Item i) { items.add(i); i.setOrder(this); }
-    void removeItem(Item i) { items.remove(i); i.setOrder(null); }
+    void addItem(Item i) {
+        items.add(i);
+        i.setOrder(this);
+    }
+    void removeItem(Item i) {
+        items.remove(i);
+        i.setOrder(null);
+    }
 }
-@Entity class Item { @Id @GeneratedValue Long id; @ManyToOne(fetch = FetchType.LAZY) @JoinColumn(name = "order_id") Order order; int qty; }
+@Entity class Item {
+    @Id @GeneratedValue Long id;
+    @ManyToOne(fetch = FetchType.LAZY) @JoinColumn(name = "order_id") Order order;
+    int qty;
+}
 
 // OUTPUT: (DDL)
 // item(id, qty, order_id) with a foreign key to orders(id)`],
@@ -296,7 +326,8 @@ List<Object[]> stats = session.createNativeQuery("select dept_id, count(*) from 
     @EmbeddedId EnrolmentId id;
     @ManyToOne @MapsId("studentId") Student student;
     @ManyToOne @MapsId("courseId") Course course;
-    LocalDate enrolledOn; int grade;
+    LocalDate enrolledOn;
+    int grade;
 }
 
 // OUTPUT: (table)
@@ -358,7 +389,10 @@ System.out.println(st.getPrepareStatementCount() + " statements, " + st.getSecon
 // 101 statements, 0 L2 hits      (a sign of N+1)`],
             ['Single-table inheritance.',
                 r`@Entity @Inheritance(strategy = InheritanceType.SINGLE_TABLE) @DiscriminatorColumn(name = "type")
-abstract class Payment { @Id @GeneratedValue Long id; BigDecimal amount; }
+abstract class Payment {
+    @Id @GeneratedValue Long id;
+    BigDecimal amount;
+}
 @Entity @DiscriminatorValue("CARD") class CardPayment extends Payment { String last4; }
 
 // OUTPUT: (table)
@@ -394,8 +428,9 @@ Page<Employee> page = repo.rich(50000, PageRequest.of(0, 20));
                 r`EntityManagerFactory emf = Persistence.createEntityManagerFactory("shop");
 EntityManager em = emf.createEntityManager();
 em.getTransaction().begin();
-em.persist(new Employee("Asha", 60000));
-em.getTransaction().commit(); em.close();
+em.persist(new Employee("Abaji", 60000));
+em.getTransaction().commit();
+em.close();
 
 // OUTPUT: (SQL)
 // insert into employees (name, salary) values (?, ?)`]],
@@ -410,7 +445,10 @@ em.getTransaction().commit(); em.close();
 // OUTPUT: (SQL)
 // select ... where id=?    update employees set salary=? where id=?`],
             ['Projection interface.',
-                r`interface EmployeeSummary { Long getId(); String getName(); }
+                r`interface EmployeeSummary {
+    Long getId();
+    String getName();
+}
 List<EmployeeSummary> findByDeptName(String name);
 
 // OUTPUT: (SQL)
@@ -435,7 +473,8 @@ List<EmployeeSummary> findByDeptName(String name);
             ['S', 'How do you tune a slow Hibernate endpoint?', 'Log SQL and statistics, fix fetch plans, add indexes, use projections or native SQL, and measure again.']],
         [['Query-count assertion with statistics.',
             r`@Test void listOrdersUsesTwoQueries() {
-    Statistics st = sessionFactory.getStatistics(); st.clear();
+    Statistics st = sessionFactory.getStatistics();
+    st.clear();
     service.listOrders();
     assertEquals(2, st.getPrepareStatementCount());
 }
@@ -453,7 +492,9 @@ spring.datasource.hikari.maximum-pool-size=10
 // schema validated at startup, batched writes, bounded pool`]],
         [['Read-only service method with a projection.',
             r`@Transactional(readOnly = true)
-public List<OrderRow> recent(Long customerId) { return repo.recentRows(customerId, PageRequest.of(0, 20)); }
+public List<OrderRow> recent(Long customerId) {
+    return repo.recentRows(customerId, PageRequest.of(0, 20));
+}
 
 // OUTPUT: (SQL)
 // select o.id, o.total from orders o where o.customer_id=? order by o.id desc limit ?`],
@@ -484,8 +525,14 @@ ALTER TABLE orders ADD INDEX idx_cust_status_created (customer_id, status, creat
         [['Session per unit of work.',
             r`try (Session session = sessionFactory.openSession()) {
     Transaction tx = session.beginTransaction();
-    try { service.work(session); tx.commit(); }
-    catch (RuntimeException e) { tx.rollback(); throw e; }
+    try {
+        service.work(session);
+        tx.commit();
+    }
+    catch (RuntimeException e) {
+        tx.rollback();
+        throw e;
+    }
 }
 
 // OUTPUT:
@@ -500,14 +547,20 @@ List<Employee> rich = session.createQuery("select e from Employee e where e.sala
 // select ... from employees where salary>?`]],
         [['Entity listener for auditing.',
             r`@EntityListeners(AuditingEntityListener.class)
-@MappedSuperclass abstract class Auditable { @CreatedDate Instant createdAt; @LastModifiedDate Instant updatedAt; }
+@MappedSuperclass abstract class Auditable {
+    @CreatedDate Instant createdAt;
+    @LastModifiedDate Instant updatedAt;
+}
 
 // OUTPUT:
 // createdAt and updatedAt are filled automatically on insert and update`],
             ['Second-level cache config.',
                 r`hibernate.cache.use_second_level_cache=true
 hibernate.cache.region.factory_class=jcache
-@Entity @Cacheable @Cache(usage = CacheConcurrencyStrategy.READ_WRITE) class Country { @Id String code; String name; }
+@Entity @Cacheable @Cache(usage = CacheConcurrencyStrategy.READ_WRITE) class Country {
+    @Id String code;
+    String name;
+}
 
 // OUTPUT:
 // Country reads served from the shared cache after the first load`]]
@@ -519,7 +572,7 @@ export const hibernateDeep: Record<string, Deep> = {
         [`When you persist an entity, Hibernate does not run SQL immediately. It places the object in the persistence context and records an action (insert, update, delete) in an action queue. At flush time (commit, or before a query that could be affected) it orders and executes the queued actions through JDBC. Dirty checking compares each managed entity with the snapshot taken when it was loaded.`,
             r`Session session = sessionFactory.openSession();
 Transaction tx = session.beginTransaction();
-Employee e = new Employee("Asha", 60000);
+Employee e = new Employee("Abaji", 60000);
 session.persist(e);                       // queued, SQL not yet sent (SEQUENCE ids)
 System.out.println("persisted, id = " + e.getId());
 tx.commit();                              // flush: insert is executed now
@@ -563,7 +616,10 @@ public class EmployeeService {
     @Transactional(readOnly = true)
     public EmployeeDto get(Long id) { return repo.findById(id).map(EmployeeDto::from).orElseThrow(); }
     @Transactional
-    public void raise(Long id, double pct) { Employee e = repo.findById(id).orElseThrow(); e.raise(pct); }
+    public void raise(Long id, double pct) {
+        Employee e = repo.findById(id).orElseThrow();
+        e.raise(pct);
+    }
 }
 
 // OUTPUT: (SQL)
@@ -575,7 +631,9 @@ public class EmployeeService {
             r`StandardServiceRegistry registry = new StandardServiceRegistryBuilder().configure().build();
 Metadata metadata = new MetadataSources(registry).addAnnotatedClass(Employee.class).buildMetadata();
 SessionFactory sf = metadata.buildSessionFactory();
-try (Session s = sf.openSession()) { s.createNativeQuery("select version()", String.class).getSingleResult(); }
+try (Session s = sf.openSession()) {
+    s.createNativeQuery("select version()", String.class).getSingleResult();
+}
 
 // OUTPUT:
 // HHH000412: Hibernate ORM core version 6.4.4.Final
@@ -592,10 +650,17 @@ hibernate.physical_naming_strategy=org.hibernate.boot.model.naming.CamelCaseToUn
 // HikariPool-1 - Start completed.`],
         [`Setup mistakes: missing driver on the classpath (No suitable driver), wrong dialect for the database version, ddl-auto=update in production, credentials in the repository, and creating a SessionFactory per request (very slow). Create it once.`,
             r`// bad: a new SessionFactory per request
-public Employee find(Long id) { try (SessionFactory sf = new Configuration().configure().buildSessionFactory(); Session s = sf.openSession()) { return s.get(Employee.class, id); } }
+public Employee find(Long id) {
+    try (SessionFactory sf = new Configuration().configure().buildSessionFactory(); Session s = sf.openSession()) {
+        return s.get(Employee.class, id);
+    }
+}
 
 // good: shared singleton
-public class HibernateUtil { private static final SessionFactory SF = new Configuration().configure().buildSessionFactory(); public static SessionFactory get() { return SF; } }
+public class HibernateUtil {
+    private static final SessionFactory SF = new Configuration().configure().buildSessionFactory();
+    public static SessionFactory get() { return SF; }
+}
 
 // OUTPUT:
 // bad: 800 ms per call (bootstrap each time)   good: 3 ms per call`],
@@ -675,7 +740,7 @@ public abstract class BaseEntity {
     'hibernate-crud-operations': dv(
         [`Hibernate defers writes. persist() and remove() enqueue actions; changes to managed entities are detected at flush by dirty checking; the flush order is inserts, updates, collection changes, deletes. A transaction commit triggers a flush and then the JDBC commit. Because of this, SQL appears at commit time, not at the call.`,
             r`tx.begin();
-Employee e = new Employee("Asha", 60000);
+Employee e = new Employee("Abaji", 60000);
 session.persist(e);
 e.setSalary(65000);                         // changed before flush: still a single INSERT
 System.out.println("before commit");
@@ -786,10 +851,22 @@ System.out.println(Hibernate.isInitialized(o.getItems()));
 // false
 // true`],
         [`Choices: one-to-one (shared primary key with <code>@MapsId</code> is best), one-to-many/many-to-one (bidirectional, owner on the many side), many-to-many (Set, ideally replaced by an association entity), element collections, and fetch/cascade/orphan settings. <code>@ManyToOne(fetch = LAZY, optional = false)</code> is the usual form.`,
-            r`@Entity class UserProfile { @Id Long id; @OneToOne(fetch = FetchType.LAZY) @MapsId @JoinColumn(name = "id") User user; String bio; }
-@Entity class Post { @Id @GeneratedValue Long id; @ManyToOne(fetch = FetchType.LAZY, optional = false) @JoinColumn(name = "author_id") User author; }
-@Entity class Tag { @Id Long id; @ManyToMany(mappedBy = "tags") Set<Post> posts = new HashSet<>(); }
-@Entity class Post2 { @ManyToMany @JoinTable(name = "post_tags", joinColumns = @JoinColumn(name = "post_id"), inverseJoinColumns = @JoinColumn(name = "tag_id")) Set<Tag> tags = new HashSet<>(); }
+            r`@Entity class UserProfile {
+    @Id Long id;
+    @OneToOne(fetch = FetchType.LAZY) @MapsId @JoinColumn(name = "id") User user;
+    String bio;
+}
+@Entity class Post {
+    @Id @GeneratedValue Long id;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false) @JoinColumn(name = "author_id") User author;
+}
+@Entity class Tag {
+    @Id Long id;
+    @ManyToMany(mappedBy = "tags") Set<Post> posts = new HashSet<>();
+}
+@Entity class Post2 {
+    @ManyToMany @JoinTable(name = "post_tags", joinColumns = @JoinColumn(name = "post_id"), inverseJoinColumns = @JoinColumn(name = "tag_id")) Set<Tag> tags = new HashSet<>();
+}
 
 // OUTPUT: (DDL)
 // user_profile(id pk/fk, bio)   post(id, author_id fk)   post_tags(post_id, tag_id)`],
@@ -831,7 +908,10 @@ Employee c = session.get(Employee.class, 1L);          // SELECT again (or secon
 // OUTPUT: (SQL count)
 // 2 SELECT statements for 3 loads`],
         [`Tools: <code>@BatchSize</code>, <code>@Fetch(FetchMode.SUBSELECT)</code>, entity graphs, <code>@NaturalId</code>, <code>@Filter</code>, <code>@Where</code>/<code>@SQLRestriction</code>, Envers for auditing, multi-tenancy, <code>@Formula</code>, inheritance strategies and query hints (<code>jakarta.persistence.cache.retrieveMode</code>).`,
-            r`@Entity @Audited class Contract { @Id Long id; String terms; }                 // Envers: history table contract_aud
+            r`@Entity @Audited class Contract {
+    @Id Long id;
+    String terms;
+}  // Envers: history table contract_aud
 @FilterDef(name = "tenant", parameters = @ParamDef(name = "id", type = Long.class)) @Filter(name = "tenant", condition = "tenant_id = :id")
 session.enableFilter("tenant").setParameter("id", 7L);
 AuditReader reader = AuditReaderFactory.get(session);
@@ -844,7 +924,10 @@ List<Number> revs = reader.getRevisions(Contract.class, 1L);
 for (Event e : session.createQuery("from Event", Event.class).getResultList()) { process(e); }
 // fix: scroll and clear
 try (ScrollableResults<Event> sr = session.createQuery("from Event", Event.class).setFetchSize(500).scroll(ScrollMode.FORWARD_ONLY)) {
-    int i = 0; while (sr.next()) { process(sr.get()); if (++i % 500 == 0) session.clear(); }
+    int i = 0; while (sr.next()) {
+        process(sr.get());
+        if (++i % 500 == 0) session.clear();
+    }
 }
 
 // OUTPUT:
@@ -856,8 +939,15 @@ System.out.println("L2 hits " + st.getSecondLevelCacheHitCount() + ", misses " +
 // OUTPUT:
 // L2 hits 91200, misses 410, put 410      (a good candidate for caching)`],
         [`Real-world: a country and currency reference table cached in the second-level cache with a read-only strategy, while orders are never cached and use optimistic locking.`,
-            r`@Entity @Cacheable @Cache(usage = CacheConcurrencyStrategy.READ_ONLY) class Currency { @Id String code; String name; }
-@Entity class Order { @Id Long id; @Version int version; @ManyToOne(fetch = FetchType.LAZY) Currency currency; }
+            r`@Entity @Cacheable @Cache(usage = CacheConcurrencyStrategy.READ_ONLY) class Currency {
+    @Id String code;
+    String name;
+}
+@Entity class Order {
+    @Id Long id;
+    @Version int version;
+    @ManyToOne(fetch = FetchType.LAZY) Currency currency;
+}
 
 // OUTPUT:
 // currency lookups served from memory; orders always read from the database`]
@@ -893,7 +983,10 @@ Slice<Employee> findByDeptId(Long deptId, Pageable page);        // no count que
 // TransactionRequiredException: no transaction is in progress (for modifying operations)
 
 // fix
-@Service class B { private final A a; public void outer() { a.inner(); } }`],
+@Service class B {
+    private final A a;
+    public void outer() { a.inner(); }
+}`],
         [`Performance: add indexes matching derived queries, avoid <code>findAll()</code> on big tables, use <code>Slice</code> instead of <code>Page</code> when counts are expensive, and use projections. Inspect SQL and counts per endpoint.`,
             r`spring.jpa.show-sql=true
 logging.level.org.hibernate.orm.jdbc.bind=TRACE
@@ -905,7 +998,10 @@ Slice<EmployeeRow> next = repo.findByDeptId(10L, PageRequest.of(0, 20, Sort.by("
             r`@DataJpaTest @AutoConfigureTestDatabase(replace = NONE) @Testcontainers
 class EmployeeRepositoryTest {
     @Autowired EmployeeRepository repo;
-    @Test void findsByDepartment() { repo.save(new Employee("Asha", 60000, hr)); assertThat(repo.findByDeptNameOrderBySalaryDesc("HR")).hasSize(1); }
+    @Test void findsByDepartment() {
+        repo.save(new Employee("Abaji", 60000, hr));
+        assertThat(repo.findByDeptNameOrderBySalaryDesc("HR")).hasSize(1);
+    }
 }
 
 // OUTPUT:
@@ -922,16 +1018,27 @@ spring.transaction.default-timeout=10
 // OUTPUT:
 // each request logs its SQL and statistics; lazy loading in the view layer fails fast; stuck transactions time out`],
         [`A checklist: LAZY everywhere, fetch plans per use case (entity graph, join fetch, projection), SEQUENCE ids with batching, Set-based many-to-many, @Version on aggregates, EnumType.STRING, DTOs at the API, Flyway/Liquibase for schema, HikariCP sizing, and slow-query logging.`,
-            r`@Entity class Order { @Version int version; @ManyToOne(fetch = FetchType.LAZY) Customer customer; @OneToMany(mappedBy = "order") Set<Item> items = new HashSet<>(); @Enumerated(EnumType.STRING) Status status; }
+            r`@Entity class Order {
+    @Version int version;
+    @ManyToOne(fetch = FetchType.LAZY) Customer customer;
+    @OneToMany(mappedBy = "order") Set<Item> items = new HashSet<>();
+    @Enumerated(EnumType.STRING) Status status;
+}
 @EntityGraph(attributePaths = {"customer"}) Page<Order> findByStatus(Status s, Pageable p);
 
 // OUTPUT: (SQL)
 // select o.*, c.* from orders o left join customers c on c.id=o.customer_id where o.status=? limit ?`],
         [`Mistakes: update ddl-auto in production, exposing entities from controllers (lazy errors, over-posting), saving inside loops without batching, ignoring the SQL, and giant @Transactional methods that call remote services. Fix each with its counterpart.`,
             r`// bad: remote call inside the transaction holds a DB connection and locks
-@Transactional public void checkout(Order o) { repo.save(o); paymentGateway.charge(o); }
+@Transactional public void checkout(Order o) {
+    repo.save(o);
+    paymentGateway.charge(o);
+}
 // good: keep the transaction short, use an outbox for the external call
-@Transactional public void checkout(Order o) { repo.save(o); outbox.add(new PaymentRequested(o.getId())); }
+@Transactional public void checkout(Order o) {
+    repo.save(o);
+    outbox.add(new PaymentRequested(o.getId()));
+}
 
 // OUTPUT:
 // pool wait time dropped from 800 ms to 5 ms under load`],
@@ -944,7 +1051,8 @@ spring.datasource.hikari.leak-detection-threshold=20000
 // WARN  ProxyLeakTask: Connection leak detection triggered for ... (stack trace shows the code that held it)`],
         [`Real-world review checklist for a pull request touching persistence: new queries have indexes, statement count assertions exist, migrations are included, DTOs are used, transactions are on services, and no entity crosses the API boundary.`,
             r`@Test void orderListIsEfficient() {
-    Statistics st = sessionFactory.getStatistics(); st.clear();
+    Statistics st = sessionFactory.getStatistics();
+    st.clear();
     var page = service.list(7L, PageRequest.of(0, 20));
     assertThat(page.getContent()).hasSize(20);
     assertThat(st.getPrepareStatementCount()).isLessThanOrEqualTo(2);

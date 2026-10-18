@@ -138,9 +138,9 @@ public class SequencedCollectionIntermediate {
 
         // SequencedMap operations
         SequencedMap<String, Integer> scores = new LinkedHashMap<>();
-        scores.put("Alice", 95);
-        scores.put("Bob", 87);
-        scores.put("Charlie", 92);
+        scores.put("Anaji", 95);
+        scores.put("Baji", 87);
+        scores.put("Chimnaji", 92);
 
         System.out.println("\\nFirst entry: " + scores.firstEntry());
         System.out.println("Last entry: " + scores.lastEntry());
@@ -183,17 +183,17 @@ public class SequencedCollectionIntermediate {
 //   Last: Z
 //   Reversed first 3: [Z, Y, X]
 //
-// First entry: Alice=95
-// Last entry: Charlie=92
-// After putFirst: {Zara=99, Alice=95, Bob=87, Charlie=92}
-// Removed: Charlie=92
-// After pollLast: {Zara=99, Alice=95, Bob=87}
+// First entry: Anaji=95
+// Last entry: Chimnaji=92
+// After putFirst: {Zara=99, Anaji=95, Baji=87, Chimnaji=92}
+// Removed: Chimnaji=92
+// After pollLast: {Zara=99, Anaji=95, Baji=87}
 //
 // Reversed map iteration:
-//   Bob -> 87
-//   Alice -> 95
+//   Baji -> 87
+//   Anaji -> 95
 //   Zara -> 99
-// Keys reversed: [Bob, Alice, Zara]`
+// Keys reversed: [Baji, Anaji, Zara]`
                                 ]
                             }
                         ],
@@ -242,7 +242,7 @@ public class SequencedCollectionExpert {
         System.out.println("Reversed: " + reversed);
 
         // Before Java 21: names.get(names.size() - 1)
-        List<String> names = List.of("Alice", "Bob", "Charlie");
+        List<String> names = List.of("Anaji", "Baji", "Chimnaji");
         System.out.println("\\nLast: " + names.getLast());
 
         // Before Java 21: sorted.last() (SortedSet only)
@@ -276,7 +276,7 @@ public class SequencedCollectionExpert {
 // Original: [A, B, C, D, E]
 // Reversed: [E, D, C, B, A]
 //
-// Last: Charlie
+// Last: Chimnaji
 // Sorted last: 9
 //
 // Unmodifiable first: 1

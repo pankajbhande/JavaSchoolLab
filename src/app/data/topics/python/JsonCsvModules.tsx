@@ -27,15 +27,15 @@ JSON types map onto Python types: object → <code>dict</code>, array → <code>
             codeExamples: [
                 `import json
 
-response = '{"id": 7, "name": "Asha", "active": true, "tags": ["admin"], "manager": null}'
+response = '{"id": 7, "name": "Abaji", "active": true, "tags": ["admin"], "manager": null}'
 
 user = json.loads(response)
 print(user)
 print(type(user), user["name"], user["active"], user["manager"])
 
 # OUTPUT:
-# {'id': 7, 'name': 'Asha', 'active': True, 'tags': ['admin'], 'manager': None}
-# <class 'dict'> Asha True None`
+# {'id': 7, 'name': 'Abaji', 'active': True, 'tags': ['admin'], 'manager': None}
+# <class 'dict'> Abaji True None`
             ]
         },
         {
@@ -89,7 +89,7 @@ print(json.dumps({"price": "₹500"}, ensure_ascii=False))
                 `import csv
 import io
 
-text = "name,city,marks\\nAsha,Pune,91\\nRavi,Latur,78\\n"
+text = "name,city,marks\\nAbaji,Pune,91\\nRaoji,Latur,78\\n"
 
 for row in csv.reader(io.StringIO(text)):
     print(row)
@@ -99,8 +99,8 @@ print(list(csv.reader(lines)))
 
 # OUTPUT:
 # ['name', 'city', 'marks']
-# ['Asha', 'Pune', '91']
-# ['Ravi', 'Latur', '78']
+# ['Abaji', 'Pune', '91']
+# ['Raoji', 'Latur', '78']
 # [['a', 'b'], ['c', 'd']]`
             ]
         },
@@ -110,14 +110,14 @@ Real CSV values can contain commas, quotes and even newlines, protected by doubl
             codeExamples: [
                 `import csv
 
-line = 'Asha,"Pune, MH",91'
+line = 'Abaji,"Pune, MH",91'
 
 print(line.split(","))
 print(next(csv.reader([line])))
 
 # OUTPUT:
-# ['Asha', '"Pune', ' MH"', '91']
-# ['Asha', 'Pune, MH', '91']`
+# ['Abaji', '"Pune', ' MH"', '91']
+# ['Abaji', 'Pune, MH', '91']`
             ]
         },
         {
@@ -127,20 +127,20 @@ print(next(csv.reader([line])))
                 `import csv
 import io
 
-text = "name,marks\\nAsha,91\\nRavi,78\\n"
+text = "name,marks\\nAbaji,91\\nRaoji,78\\n"
 for row in csv.DictReader(io.StringIO(text)):
     print(row["name"], int(row["marks"]) + 5)
 
 out = io.StringIO()
 writer = csv.writer(out)
 writer.writerow(["name", "city"])
-writer.writerow(["Asha", "Pune, MH"])
+writer.writerow(["Abaji", "Pune, MH"])
 print(repr(out.getvalue()))
 
 # OUTPUT:
-# Asha 96
-# Ravi 83
-# 'name,city\\r\\nAsha,"Pune, MH"\\r\\n'`
+# Abaji 96
+# Raoji 83
+# 'name,city\\r\\nAbaji,"Pune, MH"\\r\\n'`
             ]
         }
     ],
@@ -187,7 +187,7 @@ print(json.dumps(order, cls=ShopEncoder))
 from decimal import Decimal
 from types import SimpleNamespace
 
-text = '{"name": "Asha", "address": {"city": "Pune"}, "balance": 1999.99}'
+text = '{"name": "Abaji", "address": {"city": "Pune"}, "balance": 1999.99}'
 
 user = json.loads(text, object_hook=lambda d: SimpleNamespace(**d))
 print(user.name, user.address.city)
@@ -196,7 +196,7 @@ exact = json.loads(text, parse_float=Decimal)
 print(exact["balance"], type(exact["balance"]))
 
 # OUTPUT:
-# Asha Pune
+# Abaji Pune
 # 1999.99 <class 'decimal.Decimal'>`
             ]
         },
@@ -206,7 +206,7 @@ Bad input raises <code>json.JSONDecodeError</code> (a subclass of <code>ValueErr
             codeExamples: [
                 `import json
 
-bad = "{'name': 'Asha'}"            # single quotes are not valid JSON
+bad = "{'name': 'Abaji'}"            # single quotes are not valid JSON
 
 try:
     json.loads(bad)
@@ -225,7 +225,7 @@ except json.JSONDecodeError as error:
                 `import io
 import json
 
-log = io.StringIO('{"user": "asha", "ms": 120}\\n{"user": "ravi", "ms": 340}\\n')
+log = io.StringIO('{"user": "abaji", "ms": 120}\\n{"user": "raoji", "ms": 340}\\n')
 
 total = 0
 for line in log:                    # one small object at a time
@@ -253,7 +253,7 @@ A <b>dialect</b> bundles formatting rules: <code>"excel"</code> (the default, co
                 `import csv
 import io
 
-row = ["Asha", 91]
+row = ["Abaji", 91]
 
 for quoting in (csv.QUOTE_MINIMAL, csv.QUOTE_ALL, csv.QUOTE_NONNUMERIC):
     out = io.StringIO()
@@ -264,15 +264,15 @@ out = io.StringIO()
 csv.writer(out, dialect="excel-tab").writerow(row)
 print(repr(out.getvalue()))
 
-print(list(csv.reader(["Asha;91"], delimiter=";")))
+print(list(csv.reader(["Abaji;91"], delimiter=";")))
 print(repr(csv.Sniffer().sniff("a;b;c\\n1;2;3\\n").delimiter))
 
 # OUTPUT:
-# 'Asha,91\\r\\n'
-# '"Asha","91"\\r\\n'
-# '"Asha",91\\r\\n'
-# 'Asha\\t91\\r\\n'
-# [['Asha', '91']]
+# 'Abaji,91\\r\\n'
+# '"Abaji","91"\\r\\n'
+# '"Abaji",91\\r\\n'
+# 'Abaji\\t91\\r\\n'
+# [['Abaji', '91']]
 # ';'`
             ]
         },

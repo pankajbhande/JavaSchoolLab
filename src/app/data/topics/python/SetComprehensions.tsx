@@ -23,12 +23,12 @@ print(sorted(lengths))           # 5 words, only 3 distinct lengths
         {
             content: `<h4>Collecting Unique Values</h4>`,
             codeExamples: [
-                `emails = ["asha@gmail.com", "ravi@yahoo.com", "meena@gmail.com", "kiran@outlook.com"]
+                `emails = ["abaji@gmail.com", "raoji@yahoo.com", "moropant@gmail.com", "kanhoji@outlook.com"]
 
 domains = {e.split("@")[1] for e in emails}
 print(len(domains), sorted(domains))
 
-names = ["Asha", "Ajay", "Ravi", "Rohit", "Meena"]
+names = ["Abaji", "Ambaji", "Raoji", "Rohit", "Moropant"]
 initials = {name[0] for name in names}
 print(sorted(initials))
 
@@ -150,7 +150,7 @@ def count_vowels(text):
 
 print(count_vowels("JavaSchoolLab"))
 
-groups = [["asha", "ravi"], ["ravi", "asha"], ["meena"]]
+groups = [["abaji", "raoji"], ["raoji", "abaji"], ["moropant"]]
 unique_groups = {frozenset(g) for g in groups}
 print(len(unique_groups))
 

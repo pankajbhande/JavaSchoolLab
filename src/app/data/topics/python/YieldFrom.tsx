@@ -35,13 +35,13 @@ def all_students(classes):
     for students in classes:
         yield from students
 
-classes = [["Asha", "Ravi"], ["Kiran"], ["Meena", "Sheru"]]
+classes = [["Abaji", "Raoji"], ["Kanhoji"], ["Moropant", "Sheru"]]
 print(list(all_students_loop(classes)))
 print(list(all_students(classes)))
 
 # OUTPUT:
-# ['Asha', 'Ravi', 'Kiran', 'Meena', 'Sheru']
-# ['Asha', 'Ravi', 'Kiran', 'Meena', 'Sheru']`
+# ['Abaji', 'Raoji', 'Kanhoji', 'Moropant', 'Sheru']
+# ['Abaji', 'Raoji', 'Kanhoji', 'Moropant', 'Sheru']`
             ]
         },
         {

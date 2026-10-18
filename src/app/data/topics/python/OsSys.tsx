@@ -121,8 +121,8 @@ if len(sys.argv) < 2:
 
 print(f"Hello, {sys.argv[1]}!")
 
-# $ python greet.py Asha
-# Hello, Asha!
+# $ python greet.py Abaji
+# Hello, Abaji!
 #
 # $ python greet.py
 # Usage: python greet.py NAME

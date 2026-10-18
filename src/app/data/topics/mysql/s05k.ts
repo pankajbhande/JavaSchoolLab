@@ -10,17 +10,17 @@ export const s05k: Record<string, DeepDive> = {
     name  VARCHAR(40),
     PRIMARY KEY (id)                              -- table-level declaration
 );
-INSERT INTO student (email, name) VALUES ('a@x.com', 'Asha'), ('r@x.com', 'Ravi');
+INSERT INTO student (email, name) VALUES ('a@x.com', 'Abaji'), ('r@x.com', 'Raoji');
 SELECT id, name FROM student;
 
 -- OUTPUT:
--- +----+------+
--- | id | name |
--- +----+------+
--- |  1 | Asha |
--- |  2 | Ravi |
+-- +----+-------+
+-- | id | name  |
+-- +----+-------+
+-- |  1 | Abaji |
+-- |  2 | Raoji |
 -- +----+------+`],
-        [`Without a key you cannot address one row safely: <code>UPDATE ... WHERE name='Asha'</code> may hit several people. A primary key gives every row a stable identity that foreign keys, caches, URLs and replication row events can refer to.`,
+        [`Without a key you cannot address one row safely: <code>UPDATE ... WHERE name='Abaji'</code> may hit several people. A primary key gives every row a stable identity that foreign keys, caches, URLs and replication row events can refer to.`,
             r`-- Duplicate identity and missing identity are both refused
 INSERT INTO student (id, email) VALUES (1, 'dup@x.com');     -- id 1 already exists
 INSERT INTO student (id, email) VALUES (NULL, 'n@x.com');    -- NULL means "generate" here
@@ -139,7 +139,7 @@ CREATE TABLE order_line (
         ON DELETE CASCADE          -- lines belong to the order
         ON UPDATE CASCADE
 );
-INSERT INTO orders VALUES (1, 'Asha');
+INSERT INTO orders VALUES (1, 'Abaji');
 INSERT INTO order_line VALUES (1, 1, 'PEN'), (2, 1, 'INK');
 DELETE FROM orders WHERE id = 1;
 SELECT COUNT(*) AS lines_left FROM order_line;

@@ -43,8 +43,8 @@ public class ComparableDemo {
     public static void main(String[] args) {
         List<Employee> employees = new ArrayList<>(List.of(
             new Employee("Pankaj", 30),
-            new Employee("Amit", 25),
-            new Employee("Rahul", 35)
+            new Employee("Anandrao", 25),
+            new Employee("Raghunath", 35)
         ));
 
         Collections.sort(employees); // uses compareTo() automatically
@@ -52,7 +52,7 @@ public class ComparableDemo {
     }
 }
 // OUTPUT:
-// [Amit(25), Pankaj(30), Rahul(35)]`
+// [Anandrao(25), Pankaj(30), Raghunath(35)]`
             ]
         },
         {
@@ -80,8 +80,8 @@ public class ComparatorDemo {
     public static void main(String[] args) {
         List<Employee> employees = new ArrayList<>(List.of(
             new Employee("Pankaj", 30),
-            new Employee("Amit", 25),
-            new Employee("Rahul", 35)
+            new Employee("Anandrao", 25),
+            new Employee("Raghunath", 35)
         ));
 
         employees.sort(new NameComparator()); // pass the Comparator explicitly
@@ -89,7 +89,7 @@ public class ComparatorDemo {
     }
 }
 // OUTPUT:
-// [Amit(25), Pankaj(30), Rahul(35)]`
+// [Anandrao(25), Pankaj(30), Raghunath(35)]`
             ]
         }
     ],
@@ -120,8 +120,8 @@ public class ComparatorChainingDemo {
     public static void main(String[] args) {
         List<Employee> employees = new ArrayList<>(List.of(
             new Employee("Pankaj", 30, 50000),
-            new Employee("Amit", 30, 60000),
-            new Employee("Rahul", 25, 45000)
+            new Employee("Anandrao", 30, 60000),
+            new Employee("Raghunath", 25, 45000)
         ));
 
         // Sort by age ascending, then by salary descending for ties
@@ -134,7 +134,7 @@ public class ComparatorChainingDemo {
     }
 }
 // OUTPUT:
-// [Rahul(age=25, salary=45000.0), Amit(age=30, salary=60000.0),
+// [Raghunath(age=25, salary=45000.0), Anandrao(age=30, salary=60000.0),
 //  Pankaj(age=30, salary=50000.0)]`
             ]
         },
@@ -156,8 +156,8 @@ public class MultipleOrderingsDemo {
     public static void main(String[] args) {
         List<Employee> employees = new ArrayList<>(List.of(
             new Employee("Pankaj", 30),
-            new Employee("Amit", 25),
-            new Employee("Rahul", 35)
+            new Employee("Anandrao", 25),
+            new Employee("Raghunath", 35)
         ));
 
         employees.sort(Comparator.comparing(e -> e.name));
@@ -168,8 +168,8 @@ public class MultipleOrderingsDemo {
     }
 }
 // OUTPUT:
-// By name: [Amit(25), Pankaj(30), Rahul(35)]
-// By age, descending: [Rahul(35), Pankaj(30), Amit(25)]`
+// By name: [Anandrao(25), Pankaj(30), Raghunath(35)]
+// By age, descending: [Raghunath(35), Pankaj(30), Anandrao(25)]`
             ]
         },
         {

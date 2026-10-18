@@ -64,7 +64,7 @@ with open("data.txt", encoding="utf-8") as f:
 Separate the files with commas. A common pattern is reading one file and writing a transformed copy to another.`,
             codeExamples: [
                 `with open("names.txt", "w", encoding="utf-8") as f:
-    f.write("asha\\nravi\\nkiran\\n")
+    f.write("abaji\\nraoji\\nkanhoji\\n")
 
 with open("names.txt", encoding="utf-8") as src, open("upper.txt", "w", encoding="utf-8") as dst:
     for line in src:
@@ -74,9 +74,9 @@ with open("upper.txt", encoding="utf-8") as f:
     print(f.read(), end="")
 
 # OUTPUT:
-# ASHA
-# RAVI
-# KIRAN`
+# ABAJI
+# RAOJI
+# KANHOJI`
             ]
         },
         {
@@ -84,7 +84,7 @@ with open("upper.txt", encoding="utf-8") as f:
 Since Python 3.10 you can wrap the context managers in parentheses and put each on its own line.`,
             codeExamples: [
                 `with open("names.txt", "w", encoding="utf-8") as f:
-    f.write("asha\\nravi\\nkiran\\n")
+    f.write("abaji\\nraoji\\nkanhoji\\n")
 
 with (
     open("names.txt", encoding="utf-8") as src,

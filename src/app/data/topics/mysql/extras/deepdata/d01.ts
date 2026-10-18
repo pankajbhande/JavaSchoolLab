@@ -28,13 +28,13 @@ SELECT table_name, engine, table_rows FROM information_schema.tables WHERE table
         [`The classic beginner mistake is treating a database like a spreadsheet: storing lists in one cell, repeating the same fact in many rows, or relying on row order. The database cannot protect you from data it has no rules for. Fix it by giving every fact one home, a primary key and constraints.`,
             r`-- BAD: a list in one cell, no key, no rules
 CREATE TABLE students_bad (name VARCHAR(50), courses VARCHAR(200));
-INSERT INTO students_bad VALUES ('Asha', 'SQL,Java,Python'), ('Asha', 'SQL');   -- duplicate person, inconsistent
+INSERT INTO students_bad VALUES ('Abaji', 'SQL,Java,Python'), ('Abaji', 'SQL');   -- duplicate person, inconsistent
 
 -- GOOD: one fact per row, keys and constraints
 CREATE TABLE students (id INT PRIMARY KEY AUTO_INCREMENT, name VARCHAR(50) NOT NULL);
 CREATE TABLE enrolments (student_id INT, course VARCHAR(30), PRIMARY KEY (student_id, course),
   FOREIGN KEY (student_id) REFERENCES students(id));
-INSERT INTO students (name) VALUES ('Asha');
+INSERT INTO students (name) VALUES ('Abaji');
 INSERT INTO enrolments VALUES (1,'SQL'),(1,'Java'),(1,'SQL');
 
 -- OUTPUT:
@@ -54,15 +54,15 @@ EXPLAIN SELECT id FROM people WHERE email = 'a@x.com';
 CREATE TABLE loans (id INT PRIMARY KEY AUTO_INCREMENT, member_id INT NOT NULL, book_id INT NOT NULL,
   borrowed_on DATE NOT NULL DEFAULT (CURRENT_DATE), returned_on DATE NULL,
   FOREIGN KEY (member_id) REFERENCES members(id), FOREIGN KEY (book_id) REFERENCES books(id));
-INSERT INTO members (name, email) VALUES ('Asha','asha@example.com');
+INSERT INTO members (name, email) VALUES ('Abaji','abaji@example.com');
 INSERT INTO books (title) VALUES ('Learning SQL');
 INSERT INTO loans (member_id, book_id) VALUES (1, 1);
 SELECT m.name, b.title, l.borrowed_on, l.returned_on IS NULL AS still_out
 FROM loans l JOIN members m ON m.id = l.member_id JOIN books b ON b.id = l.book_id;
 
 -- OUTPUT:
--- name | title        | borrowed_on | still_out
--- Asha | Learning SQL | 2026-05-01  |         1`]
+-- name  | title        | borrowed_on | still_out
+-- Abaji | Learning SQL | 2026-05-01  | 1`]
     ),
 
     'DBMS vs RDBMS': dv(
@@ -361,7 +361,7 @@ INSERT INTO members (tenant_id, email) VALUES (1, 'a@x.com');
     'Constraints Overview': dv(
         [`Constraints are checked by the SQL layer (NOT NULL, CHECK, DEFAULT) and by InnoDB indexes (PRIMARY KEY, UNIQUE, FOREIGN KEY) at statement time. If any row violates a rule the whole statement is rolled back, not just that row, which is what keeps tables consistent under concurrency.`,
             r`CREATE TABLE accounts (id INT PRIMARY KEY, owner VARCHAR(30) NOT NULL, balance DECIMAL(10,2) NOT NULL DEFAULT 0, CONSTRAINT chk_bal CHECK (balance >= 0));
-INSERT INTO accounts VALUES (1,'Asha',100),(2,'Ravi',-5),(3,'Meena',50);
+INSERT INTO accounts VALUES (1,'Abaji',100),(2,'Raoji',-5),(3,'Moropant',50);
 SELECT COUNT(*) FROM accounts;
 
 -- OUTPUT:
@@ -463,18 +463,18 @@ EXPLAIN SELECT c.name, o.total FROM customers c JOIN orders o ON o.customer_id =
 -- c     | const | PRIMARY      |    1
 -- o     | ref   | idx_customer |   12`],
         [`Query the relationship from either side: parent with child counts, children with parent details, parents with no children, and parents with more than N children.`,
-            r`INSERT INTO customers VALUES (1,'Asha'),(2,'Ravi'); INSERT INTO orders VALUES (10,1,500),(11,1,250);
+            r`INSERT INTO customers VALUES (1,'Abaji'),(2,'Raoji'); INSERT INTO orders VALUES (10,1,500),(11,1,250);
 SELECT c.name, COUNT(o.id) AS orders, COALESCE(SUM(o.total),0) AS spent FROM customers c LEFT JOIN orders o ON o.customer_id = c.id GROUP BY c.id, c.name;
 SELECT c.name FROM customers c WHERE NOT EXISTS (SELECT 1 FROM orders o WHERE o.customer_id = c.id);
 SELECT customer_id FROM orders GROUP BY customer_id HAVING COUNT(*) > 1;
 
 -- OUTPUT:
--- Asha | 2 | 750.00      Ravi | 0 | 0.00
--- Ravi
+-- Abaji | 2 | 750.00      Raoji | 0 | 0.00
+-- Raoji
 -- 1`],
         [`Mistakes: joining and then summing parent columns (fan-out inflates totals), forgetting to index the foreign key when the constraint is not declared, and deleting a parent with a cascade that wipes millions of children in one transaction.`,
             r`-- parent amount repeated for each child row: wrong total
-SELECT SUM(c.credit_limit) FROM customers c JOIN orders o ON o.customer_id = c.id;      -- counts Asha twice
+SELECT SUM(c.credit_limit) FROM customers c JOIN orders o ON o.customer_id = c.id;      -- counts Abaji twice
 
 -- correct: aggregate the child first or use EXISTS
 SELECT SUM(c.credit_limit) FROM customers c WHERE EXISTS (SELECT 1 FROM orders o WHERE o.customer_id = c.id);
@@ -518,8 +518,8 @@ SELECT s.name FROM students s WHERE NOT EXISTS (SELECT 1 FROM enrolments e WHERE
 
 -- OUTPUT:
 -- name
--- Asha
--- Meena`],
+-- Abaji
+-- Moropant`],
         [`Mistakes: storing comma-separated ids, omitting the reverse index, and putting relationship data (grade, role) in one of the two main tables. Comma-separated lists defeat joins, constraints and indexes.`,
             r`-- BAD
 CREATE TABLE courses_bad (id INT PRIMARY KEY, title VARCHAR(30), student_ids VARCHAR(200));
@@ -568,8 +568,8 @@ SELECT e.name FROM emp e JOIN departments d ON d.id = e.dept WHERE d.name = 'HR'
 
 -- OUTPUT: (all three)
 -- name
--- Asha
--- Ravi`],
+-- Abaji
+-- Raoji`],
         [`Mistakes with NULL: it is not a value but "unknown", so comparisons give unknown. NOT IN with a NULL returns nothing, = NULL never matches, and aggregates skip NULLs. Use IS NULL, NOT EXISTS and COALESCE.`,
             r`SELECT NULL = NULL AS eq, NULL IS NULL AS is_null, 5 NOT IN (1, NULL) AS not_in, COALESCE(NULL, 0) AS fixed;
 

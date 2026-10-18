@@ -34,7 +34,7 @@ SELECT LOWER(TRIM('  Ann@Example.COM  '))                    AS email,   -- stri
   last_name  VARCHAR(30),
   phone      VARCHAR(15)
 );
-INSERT INTO customers VALUES (1,'Asha','Rao','9876543210'), (2,'Ravi',NULL,'9123456789');
+INSERT INTO customers VALUES (1,'Abaji','Rao','9876543210'), (2,'Raoji',NULL,'9123456789');
 
 SELECT CONCAT_WS(' ', first_name, last_name)                   AS full_name,  -- skips NULL parts
        CONCAT(LEFT(phone, 2), '******', RIGHT(phone, 2))      AS masked,     -- keep first and last 2 digits
@@ -45,12 +45,12 @@ FROM customers;
 -- +-----------+------------+-----------+
 -- | full_name | masked     | cust_code |
 -- +-----------+------------+-----------+
--- | Asha Rao  | 98******10 | 00001     |
--- | Ravi      | 91******89 | 00002     |
+-- | Abaji Rao | 98******10 | 00001     |
+-- | Raoji     | 91******89 | 00002     |
 -- +-----------+------------+-----------+`],
         [`<b>Advantages:</b> set-based (one statement transforms every row), no extra network trips, work in <code>SELECT</code>, <code>WHERE</code>, <code>ORDER BY</code> and <code>UPDATE</code>, and are deterministic so they can be used in generated columns.`,
             r`CREATE TABLE people (id INT PRIMARY KEY, name VARCHAR(40));
-INSERT INTO people VALUES (1,'  alice  '), (2,'BOB');
+INSERT INTO people VALUES (1,'  anaji  '), (2,'BAJI');
 
 -- One UPDATE cleans every row; no application loop needed
 UPDATE people
@@ -62,8 +62,8 @@ SELECT * FROM people;
 -- +----+-------+
 -- | id | name  |
 -- +----+-------+
--- |  1 | Alice |
--- |  2 | Bob   |
+-- |  1 | Anaji |
+-- |  2 | Baji  |
 -- +----+-------+`],
         [`<b>Disadvantages:</b> wrapping an indexed column in a function usually prevents the index from being used (not sargable), and heavy text processing burns database CPU that is harder to scale than app servers.`,
             r`CREATE TABLE users (id INT PRIMARY KEY, email VARCHAR(100), KEY idx_email (email));
@@ -93,7 +93,7 @@ EXPLAIN SELECT id FROM users WHERE email        = 'a@x.com';  -- plain compariso
 -- |     6 |     5 | NULL        | a-b     |          |
 -- +-------+-------+-------------+---------+----------+`],
         `
-   'Asha ' + 'Rao'         row-by-row inside the server
+   'Abaji ' + 'Rao'         row-by-row inside the server
        |
        v
    +-----------------+    +---------+    +----------+

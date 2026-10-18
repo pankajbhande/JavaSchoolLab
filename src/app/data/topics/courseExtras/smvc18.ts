@@ -110,8 +110,8 @@ String signup(@ModelAttribute Signup s) {
 }
 
 // OUTPUT:
-// POST /signup  body: name=Ravi&age=30
-// -> Ravi is 30`]],
+// POST /signup  body: name=Raoji&age=30
+// -> Raoji is 30`]],
         [['MockMvc form post.',
             r`@Test
 void loginForm() throws Exception {
@@ -689,7 +689,9 @@ public class ByteArrayHttpMessageConverter
 // Returning byte[] -> bytes are written unchanged to the response body`],
         [`<p>Ways to send binary content:</p><ul><li><b>byte[]:</b> simplest, whole body in memory.</li><li><b>Resource:</b> handled by <code>ResourceHttpMessageConverter</code>, supports range requests.</li><li><b>InputStreamResource:</b> for streams of unknown length.</li><li><b>StreamingResponseBody:</b> writes directly to the output from another thread.</li><li><b>HttpServletResponse:</b> manual control.</li></ul>`,
             r`@GetMapping("/a")
-byte[] asBytes() { return new byte[] {1, 2, 3}; }
+byte[] asBytes() {
+    return new byte[] {1, 2, 3};
+}
 
 @GetMapping("/b")
 Resource asResource() { return new FileSystemResource("data/report.pdf"); }
@@ -753,14 +755,14 @@ ResponseEntity<byte[]> invoice(@PathVariable long id) {
             r`FormHttpMessageConverter conv = new FormHttpMessageConverter();
 MockHttpOutputMessage out = new MockHttpOutputMessage();
 MultiValueMap<String, String> m = new LinkedMultiValueMap<>();
-m.add("name", "Ravi Kumar");
+m.add("name", "Raoji Kumar");
 m.add("tag", "a");
 m.add("tag", "b");
 conv.write(m, MediaType.APPLICATION_FORM_URLENCODED, out);
 System.out.println(out.getBodyAsString(StandardCharsets.UTF_8));
 
 // OUTPUT:
-// name=Ravi+Kumar&tag=a&tag=b`],
+// name=Raoji+Kumar&tag=a&tag=b`],
         [`<p>Three ways to read the same form:</p><ul><li><b>@RequestParam:</b> one field, with defaults and conversion.</li><li><b>@ModelAttribute:</b> binds to an object and supports validation.</li><li><b>@RequestBody MultiValueMap:</b> raw access to all fields.</li><li><b>@RequestParam Map:</b> only the first value per key.</li></ul>`,
             r`@PostMapping("/f1")
 String f1(@RequestParam String name, @RequestParam(defaultValue = "0") int age) {
@@ -962,7 +964,8 @@ public void configureContentNegotiation(ContentNegotiationConfigurer c) {
 }
 
 # OUTPUT:
-# ?format=csv wins when parameter strategy is on; otherwise Accept is used`],
+# ?format=csv wins when parameter strategy is on;
+otherwise Accept is used`],
         [`<p>Common mistakes:</p><ul><li>Expecting <code>.json</code> URL suffix to work in Spring 6.</li><li>Missing the XML library, so XML is never offered (add Jackson XML).</li><li>Returning a <code>String</code> and expecting JSON: the String converter writes it as plain text.</li><li>Browsers send XML-friendly Accept headers, so JSON may become XML unexpectedly.</li></ul>`,
             r`// WRONG: returns text/plain, not JSON
 @GetMapping("/v1")
@@ -1248,7 +1251,10 @@ public boolean preHandle(HttpServletRequest q, HttpServletResponse s, Object h)
     public boolean preHandle(HttpServletRequest q, HttpServletResponse s, Object h)
             throws IOException {
         String t = q.getHeader("X-Tenant");
-        if (t == null) { s.sendError(400, "tenant required"); return false; }
+        if (t == null) {
+            s.sendError(400, "tenant required");
+            return false;
+        }
         TenantContext.set(t);
         return true;
     }

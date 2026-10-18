@@ -21,13 +21,13 @@ import java.util.Map;
 public class HashMapBasicsDemo {
     public static void main(String[] args) {
         Map<String, Integer> ages = new HashMap<>();
-        ages.put("Asha", 28);
-        ages.put("Rahul", 32);
-        ages.put("Asha", 29);   // overwrites the previous value for "Asha"
+        ages.put("Abaji", 28);
+        ages.put("Raghunath", 32);
+        ages.put("Abaji", 29);   // overwrites the previous value for "Abaji"
 
-        System.out.println("Asha's age : " + ages.get("Asha"));
-        System.out.println("Has Priya? : " + ages.containsKey("Priya"));
-        System.out.println("Missing    : " + ages.getOrDefault("Priya", -1));
+        System.out.println("Abaji's age : " + ages.get("Abaji"));
+        System.out.println("Has Prataprao? : " + ages.containsKey("Prataprao"));
+        System.out.println("Missing    : " + ages.getOrDefault("Prataprao", -1));
 
         for (Map.Entry<String, Integer> entry : ages.entrySet()) {
             System.out.println(entry.getKey() + " -> " + entry.getValue());
@@ -35,11 +35,11 @@ public class HashMapBasicsDemo {
     }
 }
 // OUTPUT:
-// Asha's age : 29
-// Has Priya? : false
+// Abaji's age : 29
+// Has Prataprao? : false
 // Missing    : -1
-// Asha -> 29
-// Rahul -> 32`
+// Raghunath -> 32
+// Abaji -> 29`
             ]
         }
     ],

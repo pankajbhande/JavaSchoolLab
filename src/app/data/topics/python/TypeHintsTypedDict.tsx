@@ -16,13 +16,13 @@ class Student(TypedDict):
     age: int
     marks: list[int]
 
-s: Student = {"name": "Asha", "age": 21, "marks": [80, 90]}
+s: Student = {"name": "Abaji", "age": 21, "marks": [80, 90]}
 
 print(s["name"], sum(s["marks"]))
 print(type(s))
 
 # OUTPUT:
-# Asha 170
+# Abaji 170
 # <class 'dict'>`
             ]
         },
@@ -37,8 +37,8 @@ class Student(TypedDict):
     age: int
     marks: list[int]
 
-a: Student = {"name": "Ravi", "age": 22}                    # missing "marks"
-b: Student = {"name": "Kiran", "age": "22", "marks": []}    # age is a str
+a: Student = {"name": "Raoji", "age": 22}                    # missing "marks"
+b: Student = {"name": "Kanhoji", "age": "22", "marks": []}    # age is a str
 print(a["nmae"])                                            # typo in the key
 
 # mypy reports (wording may vary by version):
@@ -79,8 +79,8 @@ class User(TypedDict):
     email: str
     phone: NotRequired[str]          # may be missing
 
-u1: User = {"id": 1, "email": "asha@example.com"}
-u2: User = {"id": 2, "email": "ravi@example.com", "phone": "98765 43210"}
+u1: User = {"id": 1, "email": "abaji@example.com"}
+u2: User = {"id": 2, "email": "raoji@example.com", "phone": "98765 43210"}
 
 print(sorted(User.__required_keys__), sorted(User.__optional_keys__))
 print(u1.get("phone", "not given"), u2.get("phone"))
@@ -103,7 +103,7 @@ class Student(TypedDict):
     name: str
     age: int
 
-s = Student(name="Ravi", age="not a number")    # accepted at runtime
+s = Student(name="Raoji", age="not a number")    # accepted at runtime
 print(s, type(s))
 
 try:
@@ -112,7 +112,7 @@ except TypeError as error:
     print("TypeError:", error)
 
 # OUTPUT:
-# {'name': 'Ravi', 'age': 'not a number'} <class 'dict'>
+# {'name': 'Raoji', 'age': 'not a number'} <class 'dict'>
 # TypeError: TypedDict does not support instance and class checks`
             ]
         },

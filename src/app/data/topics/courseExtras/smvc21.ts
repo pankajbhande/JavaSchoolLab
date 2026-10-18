@@ -59,7 +59,7 @@ public class LifeServlet extends HttpServlet {
 }
 
 // OUTPUT: (under load, varies)
-// Hi bob   (request from alice)`],
+// Hi baji   (request from anaji)`],
             ['Test the servlet with Spring mocks.',
                 r`@Test
 void servletWritesHello() throws Exception {
@@ -382,7 +382,10 @@ mockMvc.perform(get("/visits").session(session)).andExpect(content().string("vis
 String total(HttpServletRequest req) {
     ServletContext ctx = req.getServletContext();
     AtomicInteger c = (AtomicInteger) ctx.getAttribute("total");
-    if (c == null) { c = new AtomicInteger(); ctx.setAttribute("total", c); }
+    if (c == null) {
+        c = new AtomicInteger();
+        ctx.setAttribute("total", c);
+    }
     return "total=" + c.incrementAndGet();
 }
 
@@ -901,7 +904,11 @@ server.servlet.session.cookie.same-site=lax
 server.servlet.session.tracking-modes=cookie
 
 # OUTPUT:
-# Set-Cookie: JSESSIONID=...; Path=/; Secure; HttpOnly; SameSite=Lax`],
+# Set-Cookie: JSESSIONID=...;
+Path=/;
+Secure;
+HttpOnly;
+SameSite=Lax`],
         [`<p>Mistakes:</p><ul><li><b>Storing large objects</b> or JPA entities.</li><li><b>No invalidate</b> on logout.</li><li><b>Creating sessions for every request</b> (for example bots), which wastes memory.</li><li><b>Non-serializable values</b> in a replicated session.</li><li><b>Concurrent modification</b> of the same session from parallel calls.</li></ul>`,
             r`// WRONG: entity with lazy collections in the session
 session.setAttribute("user", userEntity);

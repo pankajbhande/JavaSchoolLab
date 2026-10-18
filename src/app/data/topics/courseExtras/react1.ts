@@ -24,12 +24,12 @@ export const react1Extras: Record<string, Extra> = {
   return <h1>Hello, {name}!</h1>;
 }
 function App() {
-  return <Welcome name="Asha" />;
+  return <Welcome name="Abaji" />;
 }
 // index.jsx: createRoot(document.getElementById("root")).render(<App />);
 
 // OUTPUT:
-// <h1>Hello, Asha!</h1>`],
+// <h1>Hello, Abaji!</h1>`],
             ['State makes it interactive.',
                 r`import { useState } from "react";
 function Counter() {
@@ -222,7 +222,7 @@ class GreetingClass extends React.Component {
 }
 
 // OUTPUT:
-// both render <h1>Hello, Asha</h1>`],
+// both render <h1>Hello, Abaji</h1>`],
             ['Composition with children.',
                 r`function Card({ title, children }) { return <section className="card"><h3>{title}</h3>{children}</section>; }
 <Card title="Orders"><OrderTable /></Card>
@@ -307,7 +307,7 @@ function Product({ name, price, onAdd }: Props) { return <button onClick={() => 
         [['F', 'What does useState return?', 'A pair: the current state value and a function to update it.'],
             ['F', 'Can you change state directly (count++)?', 'No; call the setter so React knows to re-render.'],
             ['M', 'Why use the functional update form?', 'When the next state depends on the previous one, so multiple updates in one event are not lost.'],
-            ['M', 'How do you update an object in state?', 'Create a new object with spread: setUser({ ...user, name: "Ravi" }).'],
+            ['M', 'How do you update an object in state?', 'Create a new object with spread: setUser({ ...user, name: "Raoji" }).'],
             ['S', 'What does lifting state up mean?', 'Moving state to the closest common ancestor so several components can share it via props.'],
             ['S', 'When useReducer over useState?', 'For state with several related fields or many transitions, where a reducer centralizes the logic.']],
         [['Counters and functional updates.',

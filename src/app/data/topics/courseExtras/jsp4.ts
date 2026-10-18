@@ -40,7 +40,7 @@ public class GreetServlet extends HttpServlet {
 
 // OUTPUT:
 // GET  /greet            -> 200, HTML form
-// POST /greet  n=Asha    -> 200, body: Hello Asha`],
+// POST /greet  n=Abaji    -> 200, body: Hello Abaji`],
             ['Reading the query string on GET.',
                 r`// URL: /search?q=java&page=2
 String q = request.getParameter("q");          // "java"
@@ -92,12 +92,12 @@ protected void doDelete(HttpServletRequest req, HttpServletResponse res)
         [['Carrying a record id in an edit form.',
             r`<form action="update" method="post">
   <input type="hidden" name="id" value="42">
-  <input name="name" value="Asha">
+  <input name="name" value="Abaji">
   <button>Save</button>
 </form>
 
 // OUTPUT:
-// POST /update  body: id=42&name=Asha`],
+// POST /update  body: id=42&name=Abaji`],
             ['Reading it in the servlet.',
                 r`int id = Integer.parseInt(request.getParameter("id"));
 String name = request.getParameter("name");
@@ -108,7 +108,7 @@ if (!accessPolicy.canEdit(currentUser, id)) {          // never trust the id
 System.out.println("update " + id + " -> " + name);
 
 // OUTPUT:
-// update 42 -> Asha`]],
+// update 42 -> Abaji`]],
         [['CSRF token in a hidden field.',
             r`// doGet: create and remember the token
 String token = UUID.randomUUID().toString();
@@ -190,7 +190,7 @@ response.sendRedirect(target);
         ['<b>HttpOnly</b> hides the cookie from JavaScript and limits XSS damage; <b>Secure</b> sends it only over HTTPS.',
             '<b>SameSite</b> (Lax or Strict) limits cross-site sending and helps against CSRF; set it with a header or container config.',
             '<b>No sensitive data</b>: store an opaque id in the cookie and the data on the server; the client can edit any cookie.'],
-        [['F', 'How do you create a cookie in a servlet?', 'new Cookie("user", "asha") and response.addCookie(cookie).'],
+        [['F', 'How do you create a cookie in a servlet?', 'new Cookie("user", "abaji") and response.addCookie(cookie).'],
             ['F', 'What is the default lifetime?', 'A session cookie that is removed when the browser is closed.'],
             ['M', 'How do you delete a cookie?', 'Add a cookie with the same name, path and domain and maxAge 0.'],
             ['M', 'Why can getCookies() return null?', 'The servlet API returns null when the request carries no Cookie header.'],
@@ -257,7 +257,7 @@ System.out.println(cookie(request, "theme").orElse("light"));
             r`// LoginServlet.doPost
 request.changeSessionId();                       // only if a session already exists
 HttpSession s = request.getSession();
-s.setAttribute("user", "asha");
+s.setAttribute("user", "abaji");
 s.setMaxInactiveInterval(15 * 60);
 // ProfileServlet.doGet
 HttpSession cur = request.getSession(false);
@@ -266,7 +266,7 @@ System.out.println("user=" + u);
 
 // OUTPUT: (varies)
 // Set-Cookie: JSESSIONID=8A1F...; Path=/shop; HttpOnly
-// user=asha`],
+// user=abaji`],
             ['Logout.',
                 r`HttpSession s = request.getSession(false);
 if (s != null) s.invalidate();
@@ -432,7 +432,7 @@ m.forEach((k, v) -> System.out.println(k + " = " + Arrays.toString(v)));
 
 // OUTPUT:
 // id = [42]
-// name = [Asha]
+// name = [Abaji]
 // csrf = [9f1c7e2a-...]`],
         [`<p>Variants:</p><ul><li><b>Plain value:</b> ids, steps, return URLs.</li><li><b>Token:</b> CSRF or one-time form key.</li><li><b>Signed value:</b> add an HMAC so tampering is detectable.</li><li><b>JSP output:</b> use <code>&lt;c:out&gt;</code> or <code>fn:escapeXml</code> to encode the value.</li><li><b>Alternative:</b> keep the state in <code>HttpSession</code> and send only a step id.</li></ul>`,
             r`static String sign(String value, byte[] key) throws Exception {
@@ -539,7 +539,8 @@ s.setMaxInactiveInterval(10 * 60);
         [`<p>Cookies are plain HTTP headers.</p><ul><li><b>Set:</b> the response carries <code>Set-Cookie: name=value; attributes</code>.</li><li><b>Send:</b> the browser stores it and adds <code>Cookie: name=value</code> to every request matching domain, path and Secure rules.</li><li><b>Container:</b> <code>addCookie</code> only formats the header; <code>getCookies</code> parses the Cookie header.</li><li><b>Expiry:</b> Max-Age is a countdown, Expires a date; browsers prefer Max-Age.</li><li><b>Order:</b> a cookie is chosen by the most specific path first.</li></ul>`,
             r`GET /shop/home HTTP/1.1
 Host: example.com
-Cookie: theme=dark; JSESSIONID=8A1F3C
+Cookie: theme=dark;
+JSESSIONID=8A1F3C
 
 // OUTPUT:
 // HTTP/1.1 200
@@ -636,7 +637,10 @@ synchronized (s) {                     // coarse lock per user
             r`protected void doPost(HttpServletRequest req, HttpServletResponse res)
         throws IOException {
     User u = auth.check(req.getParameter("u"), req.getParameter("p"));
-    if (u == null) { res.sendError(401); return; }
+    if (u == null) {
+        res.sendError(401);
+        return;
+    }
     HttpSession before = req.getSession();
     Object anonCart = before.getAttribute("cart");
     req.changeSessionId();                      // defeats session fixation

@@ -125,7 +125,7 @@ SELECT LENGTH(c), LENGTH(v) FROM s;
 -- OUTPUT:
 -- ERROR 1406 (22001): Data too long for column 'v' at row 1`],
             ['Case-insensitive comparison.',
-                r`SELECT 'Asha' = 'asha' AS ci_equal, 'Asha' COLLATE utf8mb4_bin = 'asha' AS bin_equal;
+                r`SELECT 'Abaji' = 'abaji' AS ci_equal, 'Abaji' COLLATE utf8mb4_bin = 'abaji' AS bin_equal;
 
 -- OUTPUT:
 -- ci_equal | bin_equal

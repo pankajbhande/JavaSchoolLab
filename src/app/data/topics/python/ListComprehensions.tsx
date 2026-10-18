@@ -40,15 +40,15 @@ print(with_gst)
             content: `<h4>Transforming Items</h4>
 The expression can be anything that produces a value: arithmetic, a method call, a function call, an f-string.`,
             codeExamples: [
-                `names = ["asha", "ravi", "kiran"]
+                `names = ["abaji", "raoji", "kanhoji"]
 print([name.upper() for name in names])
 print([len(name) for name in names])
 print([f"Hello, {name.title()}!" for name in names])
 
 # OUTPUT:
-# ['ASHA', 'RAVI', 'KIRAN']
-# [4, 4, 5]
-# ['Hello, Asha!', 'Hello, Ravi!', 'Hello, Kiran!']`
+# ['ABAJI', 'RAOJI', 'KANHOJI']
+# [5, 5, 7]
+# ['Hello, Abaji!', 'Hello, Raoji!', 'Hello, Kanhoji!']`
             ]
         },
         {
@@ -59,7 +59,7 @@ Comprehensions are perfect for turning raw text into usable values - for example
 numbers = [int(x) for x in line.split()]
 print(numbers, sum(numbers))
 
-records = ["Asha,91", "Ravi,78", "Kiran,85"]
+records = ["Abaji,91", "Raoji,78", "Kanhoji,85"]
 pairs = [r.split(",") for r in records]
 print(pairs)
 marks = [int(r.split(",")[1]) for r in records]
@@ -67,7 +67,7 @@ print(marks)
 
 # OUTPUT:
 # [10, 20, 30, 40] 100
-# [['Asha', '91'], ['Ravi', '78'], ['Kiran', '85']]
+# [['Abaji', '91'], ['Raoji', '78'], ['Kanhoji', '85']]
 # [91, 78, 85]`
             ]
         },

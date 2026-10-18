@@ -53,19 +53,19 @@ In a function <b>call</b>, <code>**d</code> turns each key into a keyword argume
                 `def register(name, age, city="Pune"):
     print(f"{name}, {age}, {city}")
 
-data = {"name": "Asha", "age": 21}
-register(**data)                         # same as register(name="Asha", age=21)
+data = {"name": "Abaji", "age": 21}
+register(**data)                         # same as register(name="Abaji", age=21)
 register(**data, city="Mumbai")
-register(**{"name": "Ravi", "age": 25, "city": "Latur"})
+register(**{"name": "Raoji", "age": 25, "city": "Latur"})
 
 # OUTPUT:
-# Asha, 21, Pune
-# Asha, 21, Mumbai
-# Ravi, 25, Latur`,
+# Abaji, 21, Pune
+# Abaji, 21, Mumbai
+# Raoji, 25, Latur`,
                 `def register(name, age, city="Pune"):
     print(f"{name}, {age}, {city}")
 
-register(**{"name": "Asha", "age": 21, "email": "a@x.com"})
+register(**{"name": "Abaji", "age": 21, "email": "a@x.com"})
 
 # OUTPUT:
 # TypeError: register() got an unexpected keyword argument 'email'`
@@ -223,11 +223,11 @@ In a mapping pattern, <code>**rest</code> captures every key that wasn't named i
         case {"type": kind}:
             print("Unhandled:", kind)
 
-handle({"type": "login", "user": "asha", "ip": "10.0.0.5", "device": "mobile"})
+handle({"type": "login", "user": "abaji", "ip": "10.0.0.5", "device": "mobile"})
 handle({"type": "logout"})
 
 # OUTPUT:
-# asha logged in; extra fields: ['device', 'ip']
+# abaji logged in; extra fields: ['device', 'ip']
 # Unhandled: logout`
             ]
         },
@@ -240,10 +240,10 @@ handle({"type": "logout"})
         return "?"
 
 template = "{name} from {city}"
-print(template.format_map(WithDefault(name="Asha")))
+print(template.format_map(WithDefault(name="Abaji")))
 
 # OUTPUT:
-# Asha from ?`
+# Abaji from ?`
             ]
         },
         {

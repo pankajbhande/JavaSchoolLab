@@ -19,7 +19,7 @@ engine = create_engine("sqlite://")          # in-memory SQLite
 Base.metadata.create_all(engine)             # CREATE TABLE
 
 with Session(engine) as s:
-    s.add_all([User(name="Ada", age=36), User(name="Bob", age=25)])
+    s.add_all([User(name="Ada", age=36), User(name="Baji", age=25)])
     s.commit()
     adults = s.scalars(select(User).where(User.age > 30)).all()
     print([u.name for u in adults])
@@ -630,7 +630,7 @@ def allowed(user):
 print([allowed("ada") for _ in range(5)])
 
 # Leaderboard with a sorted set
-r.zadd("scores", {"ada": 90, "bob": 70, "cy": 85})
+r.zadd("scores", {"ada": 90, "baji": 70, "cy": 85})
 print(r.zrevrange("scores", 0, 1, withscores=True))
 
 # OUTPUT (example, on a fresh key):
@@ -742,7 +742,7 @@ print(db.counters.find_one({"_id": "page"}))
             r`from pymongo import MongoClient
 db = MongoClient()["shop"]
 db.people.delete_many({})
-db.people.insert_many([{"name": "Ada", "age": 36}, {"name": "Bob", "age": "25"}])   # age is str!
+db.people.insert_many([{"name": "Ada", "age": 36}, {"name": "Baji", "age": "25"}])   # age is str!
 
 # Nothing stops mixed types, so queries silently miss rows:
 print(db.people.count_documents({"age": {"$gt": 30}}))   # only Ada matches numerically
@@ -769,7 +769,7 @@ except DuplicateKeyError:
    ┌──────────────────────────────────────────┐
    │ { _id, name:"Ada", skills:[...],         │  one document = one aggregate
    │   address:{ city:"London" } }            │  (nested, no joins needed)
-   │ { _id, name:"Bob", plan:"pro" }          │  different shape allowed
+   │ { _id, name:"Baji", plan:"pro" }         │  different shape allowed
    └──────────────────────────────────────────┘
    shards ◄── shard key ──► replica set (primary + secondaries)
 `,

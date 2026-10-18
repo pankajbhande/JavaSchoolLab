@@ -257,7 +257,7 @@ print(n * n * 8 / 1e9, "GB")      # far beyond typical RAM - use scipy.sparse
             r`import pandas as pd
 
 df = pd.DataFrame({
-    "name":  ["Asha", "Ben", "Chen"],
+    "name":  ["Abaji", "Ben", "Chen"],
     "score": [88, 92, 75],
 })
 print(df)
@@ -265,7 +265,7 @@ print(df["score"].mean())    # a column is a Series
 
 # OUTPUT:
 #    name  score
-# 0  Asha     88
+# 0  Abaji     88
 # 1   Ben     92
 # 2  Chen     75
 # 85.0`],
@@ -337,7 +337,7 @@ print(s.astype("category").memory_usage(deep=True) < s.memory_usage(deep=True))
    DataFrame
           columns -->   name     score    <- each column is a Series
    index  +-----------+--------+--------+
-     0    |  Asha     |   88   |   (dtypes may differ per column)
+     0    |  Abaji     |   88   |   (dtypes may differ per column)
      1    |  Ben      |   92   |
      2    |  Chen     |   75   |
           +-----------+--------+
@@ -443,14 +443,14 @@ print(top)
         [`<code>merge</code> joins two DataFrames on key columns like a SQL join. <code>pivot</code>/<code>pivot_table</code> reshapes long data into a wide grid (and <code>melt</code> reverses it).`,
             r`import pandas as pd
 
-users  = pd.DataFrame({"id": [1, 2, 3], "name": ["Asha", "Ben", "Chen"]})
+users  = pd.DataFrame({"id": [1, 2, 3], "name": ["Abaji", "Ben", "Chen"]})
 orders = pd.DataFrame({"id": [1, 1, 3], "amt": [10, 20, 5]})
 print(users.merge(orders, on="id", how="left"))    # keep every user
 
 # OUTPUT:
 #    id  name   amt
-# 0   1  Asha  10.0
-# 1   1  Asha  20.0
+# 0   1  Abaji  10.0
+# 1   1  Abaji  20.0
 # 2   2   Ben   NaN
 # 3   3  Chen   5.0`],
         [`Data lives in many tables (normalization) and reports need a different shape than storage. You must combine and reshape without manual lookups.`,
@@ -520,8 +520,8 @@ except ValueError as e:
         `
    users            orders                 merge(on="id", how="left")
    id name          id amt                 id name  amt
-   1  Asha   <--+-- 1  10           -->    1  Asha  10
-   2  Ben       +-- 1  20                  1  Asha  20
+   1  Abaji   <--+-- 1  10           -->    1  Abaji  10
+   2  Ben       +-- 1  20                  1  Abaji  20
    3  Chen      '-- 3   5                  2  Ben   NaN
                                            3  Chen   5
 

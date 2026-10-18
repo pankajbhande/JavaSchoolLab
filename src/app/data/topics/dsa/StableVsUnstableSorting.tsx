@@ -27,10 +27,10 @@ public class StabilityDemo {
 
     public static void main(String[] args) {
         List<Student> students = new ArrayList<>(List.of(
-            new Student("Alice", 90),
-            new Student("Bob", 85),
-            new Student("Carol", 90),   // same grade as Alice
-            new Student("Dave", 85)     // same grade as Bob
+            new Student("Anaji", 90),
+            new Student("Baji", 85),
+            new Student("Carol", 90),   // same grade as Anaji
+            new Student("Dave", 85)     // same grade as Baji
         ));
 
         // Collections.sort (TimSort) IS stable - equal grades keep input order
@@ -39,8 +39,8 @@ public class StabilityDemo {
     }
 }
 // OUTPUT:
-// [Bob(85), Dave(85), Alice(90), Carol(90)]
-// (Bob stayed before Dave, Alice stayed before Carol - both had matching input order preserved)`
+// [Baji(85), Dave(85), Anaji(90), Carol(90)]
+// (Baji stayed before Dave, Anaji stayed before Carol - both had matching input order preserved)`
             ]
         }
     ],
@@ -65,8 +65,8 @@ public class MultiKeySortDemo {
     public static void main(String[] args) {
         List<Employee> employees = new ArrayList<>(List.of(
             new Employee("Sales", "Zara"),
-            new Employee("Eng", "Amit"),
-            new Employee("Sales", "Amit"),
+            new Employee("Eng", "Anandrao"),
+            new Employee("Sales", "Anandrao"),
             new Employee("Eng", "Zara")
         ));
 
@@ -79,7 +79,7 @@ public class MultiKeySortDemo {
     }
 }
 // OUTPUT:
-// [Eng/Amit, Eng/Zara, Sales/Amit, Sales/Zara]
+// [Eng/Anandrao, Eng/Zara, Sales/Anandrao, Sales/Zara]
 // (within each department, names stayed alphabetically ordered from the first sort)`
             ]
         },

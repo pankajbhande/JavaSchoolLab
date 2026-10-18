@@ -27,7 +27,7 @@ export const jsp5Extras: Record<string, Extra> = {
 </form>
 
 // OUTPUT:
-// POST /step2  body: name=Asha&step=1  (the step value is never shown on the page)`],
+// POST /step2  body: name=Abaji&step=1  (the step value is never shown on the page)`],
             ['Servlet echoing the hidden value into the next form.',
                 r`protected void doPost(HttpServletRequest req, HttpServletResponse res)
         throws IOException {
@@ -149,7 +149,8 @@ GET /app/nothing -> 404.html -->`],
 <listener><listener-class>com.example.AppStartListener</listener-class></listener>
 
 <!-- OUTPUT:
-Sessions expire after 20 idle minutes; AppStartListener runs at startup. -->`]],
+Sessions expire after 20 idle minutes;
+AppStartListener runs at startup. -->`]],
         [['Same servlet with an annotation.',
             r`@WebServlet(name = "Hello", urlPatterns = {"/hello"}, loadOnStartup = 1)
 public class HelloServlet extends HttpServlet { }
@@ -369,7 +370,10 @@ String sig = Base64.getUrlEncoder().withoutPadding()
         [`<p>Scenario: a three-page registration wizard.</p><ul><li><b>Design:</b> store partial answers in the session, and use hidden fields only for the step number and a CSRF token.</li><li><b>Back button:</b> the step field lets the server detect out-of-order posts.</li></ul>`,
             r`int step = Integer.parseInt(req.getParameter("step"));
 int expected = (Integer) session.getAttribute("step");
-if (step != expected) { res.sendRedirect("step" + expected); return; }
+if (step != expected) {
+    res.sendRedirect("step" + expected);
+    return;
+}
 
 // OUTPUT:
 // A tampered or replayed step number is redirected to the correct page.`]
@@ -457,7 +461,8 @@ WRONG: Invalid <url-pattern> hello in servlet mapping (container message varies)
 </web-app>
 
 <!-- OUTPUT: (varies)
-Startup is faster; annotations like @WebServlet are no longer scanned. -->`],
+Startup is faster;
+annotations like @WebServlet are no longer scanned. -->`],
         [`<p>Scenario: moving from XML to annotations.</p><ul><li><b>Keep in XML:</b> security, error pages, session config, filter order.</li><li><b>Move to annotations:</b> simple servlets and listeners.</li><li><b>Rule:</b> one place per setting, to avoid surprises when XML overrides annotation.</li></ul>`,
             r`@WebServlet("/report")
 public class ReportServlet extends HttpServlet { }

@@ -111,18 +111,18 @@ SELECT (NULL AND 0) AS null_and_false,   -- FALSE: one false decides it
 -- +----------------+---------------+--------------+---------------+`],
         [`Real filters have several rules ("IT staff earning over 50k, or any manager"). Without parentheses the precedence (NOT, then AND, then OR) can silently change meaning.`,
             r`CREATE TABLE emp (id INT PRIMARY KEY, name VARCHAR(20), dept VARCHAR(10), salary INT, is_mgr TINYINT);
-INSERT INTO emp VALUES (1,'Asha','IT',60,0),(2,'Ravi','HR',70,1),(3,'Mina','IT',40,0),(4,'Kiran','HR',30,0);
+INSERT INTO emp VALUES (1,'Abaji','IT',60,0),(2,'Raoji','HR',70,1),(3,'Mina','IT',40,0),(4,'Kanhoji','HR',30,0);
 
 SELECT name FROM emp WHERE dept = 'IT' AND salary > 50 OR is_mgr = 1;      -- (IT AND >50) OR mgr
 SELECT name FROM emp WHERE dept = 'IT' AND (salary > 50 OR is_mgr = 1);    -- IT AND (>50 OR mgr)
 
 -- OUTPUT:
--- +------+        +------+
--- | name |        | name |
--- +------+        +------+
--- | Asha |        | Asha |
--- | Ravi |        +------+
--- +------+`],
+-- +-------+        +-------+
+-- | name  |        | name  |
+-- +-------+        +-------+
+-- | Abaji |        | Abaji |
+-- | Raoji |        +-------+
+-- +-------+`],
         [`Search screens build WHERE clauses dynamically from optional filters. The robust pattern wraps each group in parentheses; NOT is used for exclusions, often as NOT EXISTS or NOT IN.`,
             r`-- Optional filters: a NULL parameter means "ignore this filter"
 SET @dept = NULL, @min_sal = 50;
@@ -131,11 +131,11 @@ WHERE (@dept IS NULL OR dept = @dept)
   AND (@min_sal IS NULL OR salary >= @min_sal);
 
 -- OUTPUT:
--- +------+
--- | name |
--- +------+
--- | Asha |
--- | Ravi |
+-- +-------+
+-- | name  |
+-- +-------+
+-- | Abaji |
+-- | Raoji |
 -- +------+`],
         [`<b>Advantages:</b> readable, standard, and the optimizer can convert them: AND conditions on different indexes can be merged (index_merge intersection); OR on the same column becomes IN or a range union.`,
             r`ALTER TABLE emp ADD KEY idx_dept (dept), ADD KEY idx_salary (salary);
@@ -179,8 +179,8 @@ SELECT CONCAT('a', 'b') AS concat_result;       -- the portable way
     'BETWEEN, IN & NOT IN': dd(
         [`<code>x BETWEEN a AND b</code> is shorthand for <code>x &gt;= a AND x &lt;= b</code> (both ends inclusive). <code>x IN (v1, v2, ...)</code> tests membership in a list or subquery; <code>NOT IN</code> is its negation. Both work on numbers, strings and dates.`,
             r`CREATE TABLE emp (id INT PRIMARY KEY, name VARCHAR(20), dept VARCHAR(10), salary INT, joined DATE);
-INSERT INTO emp VALUES (1,'Asha','IT',60,'2025-01-15'),(2,'Ravi','HR',45,'2025-06-01'),
-                       (3,'Mina','IT',52,'2025-12-31'),(4,'Kiran','Ops',40,'2026-01-01');
+INSERT INTO emp VALUES (1,'Abaji','IT',60,'2025-01-15'),(2,'Raoji','HR',45,'2025-06-01'),
+                       (3,'Mina','IT',52,'2025-12-31'),(4,'Kanhoji','Ops',40,'2026-01-01');
 
 SELECT name FROM emp WHERE salary BETWEEN 45 AND 60;           -- 45 and 60 included
 SELECT name FROM emp WHERE dept IN ('IT', 'HR');
@@ -189,8 +189,8 @@ SELECT name FROM emp WHERE dept IN ('IT', 'HR');
 -- +------+        +------+
 -- | name |        | name |
 -- +------+        +------+
--- | Asha |        | Asha |
--- | Ravi |        | Ravi |
+-- | Abaji |        | Abaji |
+-- | Raoji |        | Raoji |
 -- | Mina |        | Mina |
 -- +------+        +------+`],
         [`Ranges and sets appear everywhere: price bands, date windows, allowed statuses, a list of selected ids. These operators say it in one readable predicate instead of chains of OR.`,
@@ -199,12 +199,12 @@ SELECT name FROM emp WHERE joined BETWEEN '2025-01-01' AND '2025-12-31';
 SELECT name FROM emp WHERE joined >= '2025-01-01' AND joined < '2026-01-01';   -- same, and safe for DATETIME
 
 -- OUTPUT (both):
--- +------+
--- | name |
--- +------+
--- | Asha |
--- | Ravi |
--- | Mina |
+-- +-------+
+-- | name  |
+-- +-------+
+-- | Abaji |
+-- | Raoji |
+-- | Mina  |
 -- +------+`],
         [`IN with a subquery filters by another table. The big trap is <code>NOT IN</code> when the list contains NULL: the whole predicate becomes unknown and returns no rows.`,
             r`CREATE TABLE blocked (dept VARCHAR(10));
@@ -216,13 +216,13 @@ SELECT name FROM emp e WHERE NOT EXISTS (SELECT 1 FROM blocked b WHERE b.dept = 
 
 -- OUTPUT:
 -- (first query: empty set)
--- +-------+       +-------+
--- | name  |       | name  |
--- +-------+       +-------+
--- | Asha  |       | Asha  |
--- | Mina  |       | Mina  |
--- | Kiran |       | Kiran |
--- +-------+       +-------+          (second and third queries agree)`],
+-- +---------+       +---------+
+-- | name    |       | name    |
+-- +---------+       +---------+
+-- | Abaji   |       | Abaji   |
+-- | Mina    |       | Mina    |
+-- | Kanhoji |       | Kanhoji |
+-- +---------+       +---------+          (second and third queries agree)`],
         [`<b>Advantages:</b> concise, index-friendly (ranges and IN lists become range or multi-point lookups), and IN (subquery) is optimised as a semi-join in 8.0.`,
             r`ALTER TABLE emp ADD KEY idx_dept (dept);
 EXPLAIN SELECT id FROM emp WHERE dept IN ('IT', 'HR');
@@ -261,7 +261,7 @@ EXPLAIN SELECT id FROM emp WHERE dept IN ('IT', 'HR');
     'LIKE & Pattern Matching': dd(
         [`<b>LIKE</b> matches text against a pattern with two wildcards: <code>%</code> (any number of characters, including none) and <code>_</code> (exactly one character). <code>NOT LIKE</code> negates it, and <code>ESCAPE</code> lets you match a literal % or _. For full regular expressions use <code>REGEXP</code> or <code>REGEXP_LIKE()</code>.`,
             r`CREATE TABLE person (id INT PRIMARY KEY, name VARCHAR(30), email VARCHAR(40));
-INSERT INTO person VALUES (1,'Asha Rao','asha@x.com'),(2,'Ravi Kumar','ravi@y.org'),
+INSERT INTO person VALUES (1,'Abaji Rao','abaji@x.com'),(2,'Raoji Kumar','raoji@y.org'),
                           (3,'Mina Rao','mina@x.com'),(4,'Raj','raj@x.com');
 
 SELECT name FROM person WHERE name LIKE 'Ra%';        -- starts with Ra
@@ -272,7 +272,7 @@ SELECT name FROM person WHERE name LIKE 'R_j';        -- R, any one char, j
 -- +------------+  +----------+  +------+
 -- | name       |  | name     |  | name |
 -- +------------+  +----------+  +------+
--- | Ravi Kumar |  | Asha Rao |  | Raj  |
+-- | Raoji Kumar |  | Abaji Rao | | Raj |
 -- | Raj        |  | Mina Rao |  +------+
 -- +------------+  +----------+`],
         [`Users do not type exact values. Autocomplete, name search and domain filters need partial matching, and LIKE is the simplest tool for it.`,
@@ -304,15 +304,15 @@ EXPLAIN SELECT id FROM person WHERE name LIKE '%Rao';      -- leading wildcard: 
 -- | range | idx_name | Using where; Using index |
 -- | index | idx_name | Using where; Using index |      <- scans the whole index`],
         [`<b>Advantages:</b> simple and standard, readable for beginners, case-insensitive by default with the common collations, and prefix patterns are fast with an index.`,
-            r`SELECT name FROM person WHERE name LIKE 'ASHA%';                        -- matches 'Asha Rao'
-SELECT name FROM person WHERE name LIKE BINARY 'ASHA%';                 -- case-sensitive version
+            r`SELECT name FROM person WHERE name LIKE 'ABAJI%';                        -- matches 'Abaji Rao'
+SELECT name FROM person WHERE name LIKE BINARY 'ABAJI%';                 -- case-sensitive version
 
 -- OUTPUT:
--- +----------+
--- | name     |
--- +----------+
--- | Asha Rao |
--- +----------+
+-- +-----------+
+-- | name      |
+-- +-----------+
+-- | Abaji Rao |
+-- +-----------+
 -- (second query returns an empty set)`],
         [`<b>Disadvantages:</b> leading-wildcard searches scan every row; there is no relevance ranking, stemming or typo tolerance; wildcards inside user input let users change the pattern (escape % and _ from input); and collation affects what counts as a match.`,
             r`-- User input must be escaped, or searching for "_" matches everything
@@ -326,14 +326,14 @@ SELECT COUNT(*) AS escaped FROM person WHERE name LIKE '%!_%' ESCAPE '!';   -- l
 -- |      4 |       0 |
 -- +--------+---------+`],
         [`<b>Limitations:</b> only two wildcards (no character classes, no alternation) so complex patterns need REGEXP_LIKE (ICU engine in 8.0, not indexable); there is no built-in fuzzy or phonetic match beyond SOUNDS LIKE; and a LIKE on a TEXT column without a prefix index scans the table.`,
-            r`SELECT name FROM person WHERE REGEXP_LIKE(name, '^(Asha|Mina) ');   -- alternation LIKE cannot do
+            r`SELECT name FROM person WHERE REGEXP_LIKE(name, '^(Abaji|Mina) ');   -- alternation LIKE cannot do
 SELECT 'Smith' SOUNDS LIKE 'Smyth' AS phonetic;
 
 -- OUTPUT:
 -- +----------+      +----------+
 -- | name     |      | phonetic |
 -- +----------+      +----------+
--- | Asha Rao |      |        1 |
+-- | Abaji Rao |     |        1 |
 -- | Mina Rao |      +----------+
 -- +----------+`],
         `
@@ -350,7 +350,7 @@ SELECT 'Smith' SOUNDS LIKE 'Smyth' AS phonetic;
     'IS NULL & IS NOT NULL': dd(
         [`<b>NULL</b> means "unknown or missing", not zero and not an empty string. Because any comparison with NULL is unknown, you test for it with <code>IS NULL</code> and <code>IS NOT NULL</code>. MySQL also offers <code>ISNULL(x)</code> and the NULL-safe operator <code>&lt;=&gt;</code>.`,
             r`CREATE TABLE emp (id INT PRIMARY KEY, name VARCHAR(20), manager_id INT NULL, bonus DECIMAL(8,2) NULL);
-INSERT INTO emp VALUES (1,'Asha',NULL,500),(2,'Ravi',1,NULL),(3,'Mina',1,0),(4,'Kiran',2,NULL);
+INSERT INTO emp VALUES (1,'Abaji',NULL,500),(2,'Raoji',1,NULL),(3,'Mina',1,0),(4,'Kanhoji',2,NULL);
 
 SELECT name FROM emp WHERE manager_id IS NULL;        -- the top of the tree
 SELECT name FROM emp WHERE bonus IS NOT NULL;
@@ -359,12 +359,12 @@ SELECT name FROM emp WHERE bonus IS NOT NULL;
 -- +------+      +------+
 -- | name |      | name |
 -- +------+      +------+
--- | Asha |      | Asha |
+-- | Abaji |      | Abaji |
 -- +------+      | Mina |
 --               +------+`],
         [`Optional data is real: no manager, no end date, no bonus yet. Writing <code>= NULL</code> is the most common beginner bug: it compiles and returns nothing, so the mistake stays hidden.`,
             r`SELECT name FROM emp WHERE bonus = NULL;           -- always empty
-SELECT name FROM emp WHERE bonus <> 0;               -- Ravi and Kiran (NULL) are excluded too!
+SELECT name FROM emp WHERE bonus <> 0;               -- Raoji and Kanhoji (NULL) are excluded too!
 SELECT name FROM emp WHERE bonus <> 0 OR bonus IS NULL;
 
 -- OUTPUT:
@@ -372,9 +372,9 @@ SELECT name FROM emp WHERE bonus <> 0 OR bonus IS NULL;
 -- +------+     +-------+
 -- | name |     | name  |
 -- +------+     +-------+
--- | Asha |     | Asha  |
--- +------+     | Ravi  |
---              | Kiran |
+-- | Abaji |     | Abaji |
+-- +------+     | Raoji |
+--              | Kanhoji |
 --              +-------+`],
         [`Typical uses: finding top-level nodes in hierarchies, open-ended date ranges (end_date IS NULL means current), unmatched rows after a LEFT JOIN, and data-quality audits. Aggregates ignore NULL, and COALESCE substitutes defaults.`,
             r`SELECT COUNT(*) AS all_rows, COUNT(bonus) AS with_bonus,         -- COUNT(col) skips NULL
@@ -408,14 +408,14 @@ EXPLAIN SELECT id FROM emp WHERE manager_id IS NULL;
             r`SELECT name, bonus FROM emp ORDER BY bonus IS NULL, bonus DESC;     -- push NULLs last, highest first
 
 -- OUTPUT:
--- +-------+--------+
--- | name  | bonus  |
--- +-------+--------+
--- | Asha  | 500.00 |
--- | Mina  |   0.00 |
--- | Ravi  |   NULL |
--- | Kiran |   NULL |
--- +-------+--------+
+-- +---------+--------+
+-- | name    | bonus  |
+-- +---------+--------+
+-- | Abaji   | 500.00 |
+-- | Mina    |   0.00 |
+-- | Raoji   |   NULL |
+-- | Kanhoji | NULL   |
+-- +---------+--------+
 -- (relative order of the two NULL rows is not guaranteed)`],
         `
    value    IS NULL   = NULL   <=> NULL   IS NOT NULL

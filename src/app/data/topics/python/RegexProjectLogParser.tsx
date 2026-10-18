@@ -39,10 +39,10 @@ LOG = re.compile(
 )
 
 LINES = [
-    "14:32:10 INFO [auth] User asha logged in",
+    "14:32:10 INFO [auth] User abaji logged in",
     "14:32:15 ERROR [db] Connection timeout",
     "garbage line",
-    "14:33:01 WARNING [auth] Login failed for ravi",
+    "14:33:01 WARNING [auth] Login failed for raoji",
     "14:35:42 ERROR [auth] Invalid token",
 ]
 
@@ -118,10 +118,10 @@ LOG = re.compile(
     r"(?P<level>[A-Z]+) \\[(?P<module>\\w+)\\] (?P<message>.*)"
 )
 
-lines = """2026-10-05 14:32:10 INFO [auth] User asha logged in
+lines = """2026-10-05 14:32:10 INFO [auth] User abaji logged in
 2026-10-05 14:32:15 ERROR [db] Connection timeout after 30s
 this line is malformed
-2026-10-05 14:33:01 WARNING [auth] Login failed for user=ravi ip=10.0.0.5
+2026-10-05 14:33:01 WARNING [auth] Login failed for user=raoji ip=10.0.0.5
 2026-10-05 14:35:42 ERROR [auth] Invalid token""".splitlines()
 
 counts = Counter()
@@ -150,13 +150,13 @@ Many log messages carry structured data as <code>key=value</code> pairs. A secon
             codeExamples: [
                 `import re
 
-message = "Login failed for user=ravi ip=10.0.0.5 attempts=3"
+message = "Login failed for user=raoji ip=10.0.0.5 attempts=3"
 
 fields = dict(re.findall(r"(\\w+)=(\\S+)", message))
 print(fields)
 
 # OUTPUT:
-# {'user': 'ravi', 'ip': '10.0.0.5', 'attempts': '3'}`
+# {'user': 'raoji', 'ip': '10.0.0.5', 'attempts': '3'}`
             ]
         },
         {

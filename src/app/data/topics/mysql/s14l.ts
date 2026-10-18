@@ -13,13 +13,13 @@ CREATE TABLE user_profiles (
   bio     VARCHAR(255),
   CONSTRAINT fk_profile_user FOREIGN KEY (user_id) REFERENCES users(id)
 );
-INSERT INTO users (email) VALUES ('asha@example.com');
+INSERT INTO users (email) VALUES ('abaji@example.com');
 INSERT INTO user_profiles VALUES (1, 'Backend developer');
 SELECT u.email, p.bio FROM users u JOIN user_profiles p ON p.user_id = u.id;
 
 -- OUTPUT:
 -- email            | bio
--- asha@example.com | Backend developer`],
+-- abaji@example.com | Backend developer`],
         [`Why split one entity into two tables? To keep rarely used or large columns out of the hot table, to separate sensitive data for tighter permissions, or to model an optional extension that only some rows have.`,
             r`-- Hot table stays narrow and cache friendly; the heavy BLOB lives elsewhere
 CREATE TABLE employee_photos (
@@ -31,7 +31,7 @@ SELECT e.name FROM employees e WHERE e.id = 7;    -- never reads the photo pages
 
 -- OUTPUT:
 -- name
--- Ravi        (photo bytes were not touched)`],
+-- Raoji        (photo bytes were not touched)`],
         [`Typical uses: user and profile, order and invoice, account and credentials, and subtype tables (a <code>vehicles</code> table plus <code>trucks</code> holding only truck columns). Optional sides are read with a LEFT JOIN.`,
             r`SELECT u.id, u.email, p.bio
 FROM   users u
@@ -40,8 +40,8 @@ ORDER  BY u.id;
 
 -- OUTPUT:
 -- id | email            | bio
---  1 | asha@example.com | Backend developer
---  2 | ravi@example.com | NULL`],
+--  1 | abaji@example.com | Backend developer
+--  2 | raoji@example.com | NULL`],
         [`<b>Advantages:</b> the database itself guarantees the "only one" rule, wide or sensitive columns are isolated, and each table can have its own indexes, privileges and lifecycle.`,
             r`-- Least privilege: reporting can read users but never the credentials table
 GRANT SELECT ON shop.users TO 'report_user'@'%';
@@ -54,7 +54,7 @@ SHOW GRANTS FOR 'report_user'@'%';
 -- GRANT SELECT ON shop.users TO report_user@%`],
         [`<b>Disadvantages:</b> every read of both halves needs a JOIN, inserts must create two rows (ideally in one transaction), and over-splitting a table that is always read whole only adds cost.`,
             r`START TRANSACTION;
-INSERT INTO users (email) VALUES ('meena@example.com');
+INSERT INTO users (email) VALUES ('moropant@example.com');
 INSERT INTO user_profiles (user_id, bio) VALUES (LAST_INSERT_ID(), 'Data engineer');
 COMMIT;                                            -- both rows or neither
 

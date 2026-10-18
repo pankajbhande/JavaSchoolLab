@@ -11,9 +11,9 @@ In this mini-project you build <code>is_valid_email(text)</code>, which answers 
 <div style="background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:12px;margin:12px 0;">
 <svg viewBox="0 0 478 68" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:478px;height:auto;font-family:monospace;display:block;margin:0 auto">
 <defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#6b7280"/></marker></defs>
-<rect x="10" y="10" width="97" height="48" rx="6" fill="#eff6ff" stroke="#2563eb"/><text text-anchor="middle" font-size="12" fill="#1e40af"><tspan x="58.5" y="30.5">local part</tspan><tspan x="58.5" y="45.5">asha.k+tag</tspan></text><line x1="107" y1="34" x2="137" y2="34" stroke="#6b7280" marker-end="url(#ar)"/><rect x="141" y="10" width="70" height="48" rx="6" fill="#fff7ed" stroke="#ea580c"/><text text-anchor="middle" font-size="12" fill="#9a3412"><tspan x="176" y="38">@</tspan></text><line x1="211" y1="34" x2="241" y2="34" stroke="#6b7280" marker-end="url(#ar)"/><rect x="245" y="10" width="118.9" height="48" rx="6" fill="#ecfdf5" stroke="#059669"/><text text-anchor="middle" font-size="12" fill="#065f46"><tspan x="304.5" y="30.5">domain labels</tspan><tspan x="304.5" y="45.5">mail.co.</tspan></text><line x1="363.9" y1="34" x2="393.9" y2="34" stroke="#6b7280" marker-end="url(#ar)"/><rect x="397.9" y="10" width="70" height="48" rx="6" fill="#f5f3ff" stroke="#7c3aed"/><text text-anchor="middle" font-size="12" fill="#5b21b6"><tspan x="432.9" y="30.5">TLD</tspan><tspan x="432.9" y="45.5">in</tspan></text>
+<rect x="10" y="10" width="97" height="48" rx="6" fill="#eff6ff" stroke="#2563eb"/><text text-anchor="middle" font-size="12" fill="#1e40af"><tspan x="58.5" y="30.5">local part</tspan><tspan x="58.5" y="45.5">abaji.k+tag</tspan></text><line x1="107" y1="34" x2="137" y2="34" stroke="#6b7280" marker-end="url(#ar)"/><rect x="141" y="10" width="70" height="48" rx="6" fill="#fff7ed" stroke="#ea580c"/><text text-anchor="middle" font-size="12" fill="#9a3412"><tspan x="176" y="38">@</tspan></text><line x1="211" y1="34" x2="241" y2="34" stroke="#6b7280" marker-end="url(#ar)"/><rect x="245" y="10" width="118.9" height="48" rx="6" fill="#ecfdf5" stroke="#059669"/><text text-anchor="middle" font-size="12" fill="#065f46"><tspan x="304.5" y="30.5">domain labels</tspan><tspan x="304.5" y="45.5">mail.co.</tspan></text><line x1="363.9" y1="34" x2="393.9" y2="34" stroke="#6b7280" marker-end="url(#ar)"/><rect x="397.9" y="10" width="70" height="48" rx="6" fill="#f5f3ff" stroke="#7c3aed"/><text text-anchor="middle" font-size="12" fill="#5b21b6"><tspan x="432.9" y="30.5">TLD</tspan><tspan x="432.9" y="45.5">in</tspan></text>
 </svg>
-<div style="font-size:12px;color:#6b7280;text-align:center;margin-top:6px;">Figure: anatomy of ravi.k+tag@mail.co.in</div>
+<div style="font-size:12px;color:#6b7280;text-align:center;margin-top:6px;">Figure: anatomy of raoji.k+tag@mail.co.in</div>
 </div>`
         },
         {
@@ -47,8 +47,8 @@ def is_valid_email(text):
 
 def main():
     samples = [
-        "asha@example.com",
-        "ravi.k+tag@mail.co.in",
+        "abaji@example.com",
+        "raoji.k+tag@mail.co.in",
         "a..b@example.com",
         "bad@",
         "no-at.com",
@@ -62,8 +62,8 @@ if __name__ == "__main__":
     main()
 
 # OUTPUT:
-# asha@example.com -> valid
-# ravi.k+tag@mail.co.in -> valid
+# abaji@example.com -> valid
+# raoji.k+tag@mail.co.in -> valid
 # a..b@example.com -> INVALID
 # bad@ -> INVALID
 # no-at.com -> INVALID
@@ -95,15 +95,15 @@ EMAIL = re.compile(r"[\\w.+-]+@[A-Za-z0-9-]+(?:\\.[A-Za-z0-9-]+)*\\.[A-Za-z]{2,}
 def is_valid_email(text):
     return EMAIL.fullmatch(text) is not None
 
-samples = ["asha@example.com", "ravi.k+tag@mail.co.in",
+samples = ["abaji@example.com", "raoji.k+tag@mail.co.in",
            "bad@", "no-at.com", "a@b", "x@@y.com", "a b@c.com"]
 
 for s in samples:
     print(s, "->", is_valid_email(s))
 
 # OUTPUT:
-# asha@example.com -> True
-# ravi.k+tag@mail.co.in -> True
+# abaji@example.com -> True
+# raoji.k+tag@mail.co.in -> True
 # bad@ -> False
 # no-at.com -> False
 # a@b -> False
@@ -122,13 +122,13 @@ Named groups let you validate <b>and</b> extract in one go - handy for grouping 
 
 EMAIL = re.compile(r"(?P<user>[\\w.+-]+)@(?P<domain>[A-Za-z0-9-]+(?:\\.[A-Za-z0-9-]+)*\\.[A-Za-z]{2,})")
 
-m = EMAIL.fullmatch("ravi.k+tag@mail.co.in")
+m = EMAIL.fullmatch("raoji.k+tag@mail.co.in")
 if m:
     print("user:  ", m["user"])
     print("domain:", m["domain"].lower())
 
 # OUTPUT:
-# user:   ravi.k+tag
+# user:   raoji.k+tag
 # domain: mail.co.in`
             ]
         }
@@ -148,12 +148,12 @@ STRICT = re.compile(r"""
     [A-Za-z]{2,}                                  # top-level domain
 """, re.VERBOSE)
 
-for s in ["asha@example.com", "a..b@example.com", ".a@example.com",
+for s in ["abaji@example.com", "a..b@example.com", ".a@example.com",
           "a@-bad.com", "a@exa-mple.co.in"]:
     print(s, "->", bool(STRICT.fullmatch(s)))
 
 # OUTPUT:
-# asha@example.com -> True
+# abaji@example.com -> True
 # a..b@example.com -> False
 # .a@example.com -> False
 # a@-bad.com -> False

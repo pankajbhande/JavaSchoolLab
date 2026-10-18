@@ -246,14 +246,14 @@ unittest.main(argv=["prog"], exit=False, verbosity=0)
             r`from unittest.mock import Mock
 
 m = Mock()
-m.get_user.return_value = {"id": 1, "name": "Asha"}   # canned answer
+m.get_user.return_value = {"id": 1, "name": "Abaji"}   # canned answer
 
 print(m.get_user(1))                  # returns the canned value
 m.get_user.assert_called_once_with(1) # verify how it was used
 print(m.get_user.call_count)
 
 # OUTPUT:
-# {'id': 1, 'name': 'Asha'}
+# {'id': 1, 'name': 'Abaji'}
 # 1`],
         [`Tests must be fast, deterministic and isolated. A real HTTP call is slow, flaky and has side effects; a mock removes it so you test only your own logic.`,
             r`# Freeze the clock so a time-dependent function is deterministic
@@ -412,10 +412,10 @@ import pytest
 
 @pytest.fixture
 def user():
-    return {"name": "Ravi"}
+    return {"name": "Raoji"}
 
 def test_name(user):            # 'user' is supplied by pytest, never imported or called
-    assert user["name"] == "Ravi"
+    assert user["name"] == "Raoji"
 
 # Typo in the parameter name -> "fixture 'usr' not found" error.
 

@@ -157,7 +157,7 @@ Jackson2ObjectMapperBuilderCustomizer jackson() {
 }
 
 // OUTPUT:
-// {"name":"Asha","joined":"2026-01-15"}`]],
+// {"name":"Abaji","joined":"2026-01-15"}`]],
         [['A minimal CSV converter.',
             r`public class CsvConverter extends AbstractHttpMessageConverter<User> {
     public CsvConverter() { super(new MediaType("text", "csv")); }
@@ -171,7 +171,7 @@ Jackson2ObjectMapperBuilderCustomizer jackson() {
 }
 
 // OUTPUT:
-// 1,Asha`],
+// 1,Abaji`],
             ['Test content negotiation.',
                 r`mvc.perform(get("/users/1").accept(MediaType.APPLICATION_JSON))
    .andExpect(content().contentType("application/json"));
@@ -404,7 +404,10 @@ public class UserController {
     public UserController(UserService service) { this.service = service; }
 
     @GetMapping("/users")
-    String list(Model m) { m.addAttribute("users", service.all()); return "users"; }
+    String list(Model m) {
+        m.addAttribute("users", service.all());
+        return "users";
+    }
 }
 
 // OUTPUT:
@@ -431,7 +434,7 @@ public class UserController {
 @RequestMapping("/api/users")
 public class UserApi {
     @GetMapping("/{id}")
-    public User get(@PathVariable long id) { return new User(id, "Asha"); }
+    public User get(@PathVariable long id) { return new User(id, "Abaji"); }
 
     @PostMapping
     public ResponseEntity<User> create(@Valid @RequestBody User u) {
@@ -441,7 +444,7 @@ public class UserApi {
 }
 
 // OUTPUT:
-// GET /api/users/1 -> 200 {"id":1,"name":"Asha"}
+// GET /api/users/1 -> 200 {"id":1,"name":"Abaji"}
 // POST /api/users  -> 201 Location: /api/users/1`],
             ['Restrict media types.',
                 r`@PostMapping(value = "/import", consumes = "text/csv",
@@ -460,7 +463,7 @@ class UserApiTest {
     void getUser() throws Exception {
         mvc.perform(get("/api/users/1"))
            .andExpect(status().isOk())
-           .andExpect(jsonPath("$.name").value("Asha"));
+           .andExpect(jsonPath("$.name").value("Abaji"));
     }
 }
 
@@ -588,10 +591,10 @@ String register(@Valid @ModelAttribute UserForm form, BindingResult result) {
 // valid form   -> 302 redirect to /welcome`]],
         [['Narrow by media type.',
             r`@GetMapping(value = "/export", produces = "text/csv")
-String csv() { return "id,name\n1,Asha"; }
+String csv() { return "id,name\n1,Abaji"; }
 
 @GetMapping(value = "/export", produces = "application/json")
-List<User> json() { return List.of(new User(1, "Asha")); }
+List<User> json() { return List.of(new User(1, "Abaji")); }
 
 // OUTPUT:
 // Accept: text/csv -> csv body
@@ -651,7 +654,8 @@ spring.mvc.async.request-timeout=30s
 server.compression.enabled=true
 
 # OUTPUT:
-# Static files cached 7 days; responses gzip compressed`],
+# Static files cached 7 days;
+responses gzip compressed`],
         [`<p>Scenario: a company API needs a tenant interceptor, CORS for the front end, and a custom date format. The team splits one configurer per concern so each can be tested alone with <code>@WebMvcTest</code>.</p>`,
             r`@Configuration
 class TenantConfig implements WebMvcConfigurer {
@@ -749,7 +753,8 @@ public void extendMessageConverters(List<HttpMessageConverter<?>> l) {
 spring.jackson.deserialization.fail-on-unknown-properties=false
 
 # OUTPUT:
-# Null fields omitted from JSON; unknown fields ignored on input`],
+# Null fields omitted from JSON;
+unknown fields ignored on input`],
         [`<p>Scenario: a reporting API returns JSON for the web app and CSV for finance users based on the Accept header.</p>`,
             r`@GetMapping(value = "/report", produces = {"application/json", "text/csv"})
 List<Row> report() { return service.rows(); }
@@ -829,7 +834,10 @@ String save(@RequestParam @DateTimeFormat(pattern = "dd/MM/yyyy") LocalDate from
         [`<p>Mistakes:</p><ul><li>Returning <code>false</code> without writing a response gives an empty 200.</li><li>Storing request state in interceptor fields (singleton).</li><li>Expecting it to run for static resources or errors that bypass MVC.</li></ul>`,
             r`// WRONG: field shared by all threads
 private long start;
-public boolean preHandle(...) { start = System.nanoTime(); return true; }
+public boolean preHandle(...) {
+    start = System.nanoTime();
+    return true;
+}
 
 // RIGHT: keep per-request state in a request attribute
 public boolean preHandle(HttpServletRequest req, ...) {
@@ -879,11 +887,15 @@ public ViewResolver beanNameResolver() {
         [`<p>Mistakes:</p><ul><li>JSPs outside WEB-INF are reachable directly.</li><li>JSP in an executable jar does not work; use war or a template engine.</li><li>Returning a name from <code>@RestController</code> prints the text, not a page.</li></ul>`,
             r`// WRONG in @RestController: returns the plain text "home"
 @RestController
-class A { @GetMapping("/") String home() { return "home"; } }
+class A {
+    @GetMapping("/") String home() { return "home"; }
+}
 
 // RIGHT: use @Controller to render a view
 @Controller
-class B { @GetMapping("/") String home() { return "home"; } }
+class B {
+    @GetMapping("/") String home() { return "home"; }
+}
 
 // OUTPUT:
 // WRONG: body is the text "home"
@@ -932,11 +944,15 @@ class ShopController {
         [`<p>Mistakes:</p><ul><li>Mutable fields in the singleton.</li><li>Business logic in the controller.</li><li>Missing <code>@ResponseBody</code> so the returned text is treated as a view name.</li></ul>`,
             r`// WRONG: "ok" is looked up as a view, giving a template error
 @Controller
-class A { @GetMapping("/a") String a() { return "ok"; } }
+class A {
+    @GetMapping("/a") String a() { return "ok"; }
+}
 
 // RIGHT for plain text
 @Controller
-class B { @GetMapping("/b") @ResponseBody String b() { return "ok"; } }
+class B {
+    @GetMapping("/b") @ResponseBody String b() { return "ok"; }
+}
 
 // OUTPUT:
 // WRONG: 500 Template might not exist
@@ -956,7 +972,10 @@ class AdminUserController {
     private final UserService service;
     AdminUserController(UserService s) { this.service = s; }
 
-    @GetMapping String page(Model m) { m.addAttribute("users", service.all()); return "admin/users"; }
+    @GetMapping String page(Model m) {
+        m.addAttribute("users", service.all());
+        return "admin/users";
+    }
     @PostMapping("/{id}/lock") @ResponseBody Map<String, String> lock(@PathVariable long id) {
         service.lock(id);
         return Map.of("status", "locked");
@@ -1002,7 +1021,7 @@ ResponseEntity<User> find(@PathVariable long id) {
 
 // OUTPUT:
 // WRONG: LazyInitializationException / infinite recursion
-// RIGHT: {"id":1,"name":"Asha"}`],
+// RIGHT: {"id":1,"name":"Abaji"}`],
         [`<p>Tuning:</p><ul><li>Use pagination (<code>Pageable</code>) for lists.</li><li>Add ETag or cache headers for read-heavy resources.</li><li>Enable compression and keep DTOs small.</li></ul>`,
             r`@GetMapping("/{id}")
 ResponseEntity<UserDto> get(@PathVariable long id) {
@@ -1088,7 +1107,7 @@ User get(@PathVariable long id, @RequestParam(required = false) String lang) {
 // id: PathVariableMethodArgumentResolver; lang: RequestParamMethodArgumentResolver
 
 // OUTPUT:
-// GET /users/3?lang=en -> {"id":3,"name":"Ravi"}`],
+// GET /users/3?lang=en -> {"id":3,"name":"Raoji"}`],
         [`<p>Mapping options:</p><ul><li><code>method</code>, <code>params</code> (<code>"debug=true"</code>), <code>headers</code>.</li><li><code>consumes</code> and <code>produces</code>.</li><li>Patterns: <code>{id}</code>, <code>{id:[0-9]+}</code>, <code>*</code>, <code>**</code>.</li></ul>`,
             r`@GetMapping(value = "/files/{name:.+}", params = "download=true",
             produces = "application/octet-stream")

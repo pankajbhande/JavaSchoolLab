@@ -39,20 +39,20 @@ enumerate is handy whenever you need to know <b>where</b> something is.`,
 failed_positions = [i for i, m in enumerate(marks) if m < 40]
 print(failed_positions)
 
-names = ["Asha", "Ravi", "Kiran"]
+names = ["Abaji", "Raoji", "Kanhoji"]
 position = {name: i for i, name in enumerate(names)}
 print(position)
 
 # OUTPUT:
 # [1, 3]
-# {'Asha': 0, 'Ravi': 1, 'Kiran': 2}`
+# {'Abaji': 0, 'Raoji': 1, 'Kanhoji': 2}`
             ]
         },
         {
             content: `<h4>zip() - Pairing Items from Several Iterables</h4>
 <code>zip(a, b, ...)</code> takes the first item of each, then the second of each, and so on, producing tuples. It <b>stops at the shortest</b> iterable.`,
             codeExamples: [
-                `names = ["Asha", "Ravi", "Kiran"]
+                `names = ["Abaji", "Raoji", "Kanhoji"]
 marks = [91, 78, 85]
 cities = ["Pune", "Latur", "Udgir"]
 
@@ -61,8 +61,8 @@ print(list(zip(names, marks, cities))[0])
 print(list(zip([1, 2, 3], ["a", "b"])))     # the extra 3 is dropped
 
 # OUTPUT:
-# [('Asha', 91), ('Ravi', 78), ('Kiran', 85)]
-# ('Asha', 91, 'Pune')
+# [('Abaji', 91), ('Raoji', 78), ('Kanhoji', 85)]
+# ('Abaji', 91, 'Pune')
 # [(1, 'a'), (2, 'b')]`
             ]
         },
@@ -91,13 +91,13 @@ print("Total:", total)
             content: `<h4>Building a Dictionary with zip()</h4>`,
             codeExamples: [
                 `keys = ["name", "age", "city"]
-values = ["Asha", 21, "Pune"]
+values = ["Abaji", 21, "Pune"]
 
 student = dict(zip(keys, values))
 print(student)
 
 # OUTPUT:
-# {'name': 'Asha', 'age': 21, 'city': 'Pune'}`
+# {'name': 'Abaji', 'age': 21, 'city': 'Pune'}`
             ]
         }
     ],
@@ -136,7 +136,7 @@ print(list(zip([1, 2, 3], ["a", "b"], strict=True)))
             content: `<h3>Unzipping and Transposing with zip(*...)</h3>
 <code>*</code> spreads a list of tuples into separate arguments, so <code>zip</code> regroups them: pairs become columns. The same trick transposes a matrix.`,
             codeExamples: [
-                `pairs = [("Asha", 91), ("Ravi", 78), ("Kiran", 85)]
+                `pairs = [("Abaji", 91), ("Raoji", 78), ("Kanhoji", 85)]
 names, marks = zip(*pairs)
 print(names)
 print(marks)
@@ -147,7 +147,7 @@ print(list(zip(*matrix)))
 print([list(col) for col in zip(*matrix)])
 
 # OUTPUT:
-# ('Asha', 'Ravi', 'Kiran')
+# ('Abaji', 'Raoji', 'Kanhoji')
 # (91, 78, 85)
 # [(1, 4), (2, 5), (3, 6)]
 # [[1, 4], [2, 5], [3, 6]]`
@@ -178,7 +178,7 @@ enumerate works on anything iterable: sorted dictionary items (for rankings) or 
             codeExamples: [
                 `import io
 
-scores = {"Asha": 91, "Ravi": 78, "Kiran": 85}
+scores = {"Abaji": 91, "Raoji": 78, "Kanhoji": 85}
 ranking = sorted(scores.items(), key=lambda kv: kv[1], reverse=True)
 for rank, (name, score) in enumerate(ranking, start=1):
     print(rank, name, score)
@@ -189,9 +189,9 @@ for line_no, line in enumerate(log, start=1):
         print(f"line {line_no}: {line.rstrip()}")
 
 # OUTPUT:
-# 1 Asha 91
-# 2 Kiran 85
-# 3 Ravi 78
+# 1 Abaji 91
+# 2 Kanhoji 85
+# 3 Raoji 78
 # line 2: ERROR disk full
 # line 4: ERROR timeout`
             ]

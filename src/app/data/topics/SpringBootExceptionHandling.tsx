@@ -27,7 +27,7 @@ public class UserController {
         if (id != 1) {
             throw new RuntimeException("User not found with id: " + id);
         }
-        return "John Doe";
+        return "Jiva Doe";
     }
 }
 
@@ -61,7 +61,7 @@ public class UserController {
         if (id != 1) {
             throw new RuntimeException("User not found with id: " + id);
         }
-        return "John Doe";
+        return "Jiva Doe";
     }
 
     // Handles RuntimeException thrown anywhere inside THIS controller
@@ -94,7 +94,7 @@ public class UserController {
         if (id != 1) {
             throw new RuntimeException("User not found with id: " + id);
         }
-        return "John Doe";
+        return "Jiva Doe";
     }
 
     @ExceptionHandler(RuntimeException.class)
@@ -166,7 +166,7 @@ public class UserController {
         if (id != 1) {
             throw new ResourceNotFoundException("User not found with id: " + id);
         }
-        return "John Doe";
+        return "Jiva Doe";
     }
 }`,
                 `// 3. Global handler - applies to ALL controllers in the application

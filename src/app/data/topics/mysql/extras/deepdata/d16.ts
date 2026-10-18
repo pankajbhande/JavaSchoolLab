@@ -93,12 +93,12 @@ DELETE b FROM users a JOIN users b ON a.email = b.email AND a.id < b.id;
     'Employees Earning More Than Their Manager': dv(
         [`Each employee row stores the manager's id, so the manager's salary lives in another row of the same table. A self join matches each employee to their manager row, and a WHERE compares the two salaries. Employees without a manager (the top of the tree) have no match in an inner join and are excluded.`,
             r`CREATE TABLE staff (id INT PRIMARY KEY, name VARCHAR(20), salary INT, manager_id INT, KEY idx_mgr (manager_id));
-INSERT INTO staff VALUES (1,'Anita',150,NULL),(2,'Ravi',80,1),(3,'Meena',70,1),(4,'Kiran',90,2);
+INSERT INTO staff VALUES (1,'Annaji',150,NULL),(2,'Raoji',80,1),(3,'Moropant',70,1),(4,'Kanhoji',90,2);
 SELECT e.name AS employee, e.salary, m.name AS manager, m.salary AS manager_salary FROM staff e JOIN staff m ON m.id = e.manager_id WHERE e.salary > m.salary;
 
 -- OUTPUT:
 -- employee | salary | manager | manager_salary
--- Kiran    |     90 | Ravi    |             80`],
+-- Kanhoji  |     90 | Raoji   | 80`],
         [`Alternatives: a correlated subquery, a window function with a join to the manager, and a recursive CTE when the question is "more than anyone above them". Pick the self join for clarity.`,
             r`SELECT name FROM staff e WHERE salary > (SELECT salary FROM staff m WHERE m.id = e.manager_id);
 WITH RECURSIVE anc AS (SELECT id, manager_id AS anc_id FROM staff WHERE manager_id IS NOT NULL UNION ALL SELECT a.id, s.manager_id FROM anc a JOIN staff s ON s.id = a.anc_id WHERE s.manager_id IS NOT NULL)
@@ -106,14 +106,14 @@ SELECT DISTINCT e.name FROM staff e JOIN anc a ON a.id = e.id JOIN staff x ON x.
 
 -- OUTPUT:
 -- name
--- Kiran`],
+-- Kanhoji`],
         [`Mistakes: no table aliases (ambiguous columns), LEFT JOIN and then forgetting the NULL manager case, comparing with NULL salaries (unknown), and joining on the wrong key. State assumptions: are salaries nullable, can there be several top managers?`,
             r`SELECT e.name FROM staff e LEFT JOIN staff m ON m.id = e.manager_id WHERE e.salary > m.salary;        -- NULL manager gives unknown: row excluded anyway
 SELECT e.name FROM staff e JOIN staff m ON m.id = e.manager_id WHERE e.salary > COALESCE(m.salary, 0) AND m.salary IS NOT NULL;
 
 -- OUTPUT:
 -- name
--- Kiran`],
+-- Kanhoji`],
         [`The join uses the manager's primary key, so each lookup is a single-row index probe, and an index on <code>manager_id</code> helps hierarchy queries in the other direction. The plan should show eq_ref for the manager lookup.`,
             r`EXPLAIN SELECT e.name FROM staff e JOIN staff m ON m.id = e.manager_id WHERE e.salary > m.salary;
 
@@ -126,7 +126,7 @@ SELECT e.name FROM staff e JOIN staff m ON m.id = e.manager_id WHERE e.salary > 
 
 -- OUTPUT:
 -- employee | manager | gap
--- Kiran    | Ravi    |  10`]
+-- Kanhoji  | Raoji   | 10`]
     ),
 
     'Department-wise Highest Salary & Top 3 per Department': dv(
@@ -165,7 +165,7 @@ EXPLAIN ANALYZE SELECT d.name, t.name FROM departments d JOIN LATERAL (SELECT na
 
 -- OUTPUT:
 -- region | seller | revenue
--- West   | Asha   | 48200.00`]
+-- West   | Abaji  | 48200.00`]
     ),
 
     'Running Total & Moving Average Problems': dv(
@@ -264,10 +264,10 @@ SELECT CONCAT(REPEAT('  ', lvl), name) AS chart FROM org ORDER BY path;
 
 -- OUTPUT:
 -- chart
--- Anita
---   Meena
---   Ravi
---     Kiran`],
+-- Annaji
+--   Moropant
+--   Raoji
+--     Kanhoji`],
         [`Common questions: all reports under a manager (anchor at that manager), the chain of managers above an employee (walk upward), team size per manager, depth of the tree, and leaf employees. Closure tables and materialized paths trade write cost for fast subtree reads.`,
             r`WITH RECURSIVE up AS (SELECT id, name, manager_id, 0 AS steps FROM staff WHERE id = 4 UNION ALL SELECT s.id, s.name, s.manager_id, u.steps + 1 FROM staff s JOIN up u ON s.id = u.manager_id)
 SELECT name, steps FROM up ORDER BY steps;
@@ -275,10 +275,10 @@ WITH RECURSIVE t AS (SELECT id AS mgr, id AS member FROM staff UNION ALL SELECT 
 SELECT s.name, COUNT(*) - 1 AS team_size FROM t JOIN staff s ON s.id = t.mgr GROUP BY t.mgr, s.name HAVING team_size > 0;
 
 -- OUTPUT:
--- name  | steps
--- Kiran |     0
--- Ravi  |     1
--- Anita |     2`],
+-- name    | steps
+-- Kanhoji | 0
+-- Raoji   | 1
+-- Annaji  | 2`],
         [`Mistakes: cycles in the data (infinite recursion), several roots with NULL parent handled wrongly, path columns too short (truncation) and no index on the parent column. Guard with a path check and a recursion limit.`,
             r`SET SESSION cte_max_recursion_depth = 100;
 ALTER TABLE staff ADD INDEX idx_manager (manager_id);
@@ -297,29 +297,29 @@ SELECT s.name FROM staff_closure c JOIN staff s ON s.id = c.descendant WHERE c.a
 
 -- OUTPUT:
 -- name
--- Ravi
--- Meena
--- Kiran`],
+-- Raoji
+-- Moropant
+-- Kanhoji`],
         [`Real-world: roll up total salary cost per manager, including all indirect reports, for a budgeting report.`,
             r`WITH RECURSIVE t AS (SELECT id AS mgr, id AS member FROM staff UNION ALL SELECT t.mgr, s.id FROM t JOIN staff s ON s.manager_id = t.member)
 SELECT m.name, SUM(e.salary) AS total_cost, COUNT(*) AS headcount FROM t JOIN staff m ON m.id = t.mgr JOIN staff e ON e.id = t.member GROUP BY t.mgr, m.name ORDER BY total_cost DESC;
 
 -- OUTPUT:
--- name  | total_cost | headcount
--- Anita |        390 |         4`]
+-- name   | total_cost | headcount
+-- Annaji |        390 | 4`]
     ),
 
     'Customers Who Never Ordered': dv(
         [`This is an anti-join: customers with no matching order. MySQL 8 recognises NOT EXISTS and LEFT JOIN ... IS NULL as an antijoin and executes them with an index probe into the orders table for each customer, stopping at the first match. NOT IN is risky because a NULL in the subquery makes the whole predicate unknown.`,
             r`CREATE TABLE customers (id INT PRIMARY KEY, name VARCHAR(20)); CREATE TABLE orders (id INT PRIMARY KEY, customer_id INT, KEY idx_customer (customer_id));
-INSERT INTO customers VALUES (1,'Asha'),(2,'Ravi'),(3,'Meena'); INSERT INTO orders VALUES (10,1),(11,1);
+INSERT INTO customers VALUES (1,'Abaji'),(2,'Raoji'),(3,'Moropant'); INSERT INTO orders VALUES (10,1),(11,1);
 SELECT c.id, c.name FROM customers c LEFT JOIN orders o ON o.customer_id = c.id WHERE o.id IS NULL;
 SELECT c.id, c.name FROM customers c WHERE NOT EXISTS (SELECT 1 FROM orders o WHERE o.customer_id = c.id);
 
 -- OUTPUT: (both)
 -- id | name
---  2 | Ravi
---  3 | Meena`],
+--  2 | Raoji
+--  3 | Moropant`],
         [`Variants: no orders ever, no orders in the last 90 days, no PAID orders, orders but never a refund. Put the extra conditions inside the NOT EXISTS subquery (or the ON clause of the LEFT JOIN), not in the outer WHERE.`,
             r`SELECT c.id FROM customers c WHERE NOT EXISTS (SELECT 1 FROM orders o WHERE o.customer_id = c.id AND o.created_at >= NOW() - INTERVAL 90 DAY);
 SELECT c.id FROM customers c LEFT JOIN orders o ON o.customer_id = c.id AND o.status = 'PAID' WHERE o.id IS NULL;

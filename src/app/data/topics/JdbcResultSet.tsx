@@ -30,7 +30,7 @@ public class ResultSetNextDemo {
     }
 }
 // OUTPUT:
-// 1 Aarav 65000.0
+// 1 Ajabrao 65000.0
 // 2 Bhavna 72000.0
 // 3 Chetan 58000.0`]
         },
@@ -46,7 +46,7 @@ if (rs.next()) {
     System.out.println(idByIndex + " " + nameByName);
 }
 // OUTPUT:
-// 1 Aarav`]
+// 1 Ajabrao`]
         },
         {
             content: `<h3>2. ResultSet Types: Forward-Only vs Scrollable</h3>
@@ -73,7 +73,7 @@ public class ScrollableResultSetDemo {
 }
 // OUTPUT:
 // Last employee: Chetan
-// First employee: Aarav`]
+// First employee: Ajabrao`]
         },
         {
             content: `<h3>3. ResultSetMetaData - Discovering Column Info at Runtime</h3>

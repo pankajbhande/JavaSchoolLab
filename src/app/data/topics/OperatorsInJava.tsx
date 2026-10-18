@@ -31,13 +31,26 @@ export const operatorsInJava: Topic = {
 </ul>
 `,
                                 codeExamples: [
-                                    `int a = 10, b = 3;
+                                    `public class ArithmeticDemo {
+    public static void main(String[] args) {
+        int a = 10, b = 3;
 
-System.out.println(a + b); // 13
-System.out.println(a - b); // 7
-System.out.println(a * b); // 30
-System.out.println(a / b); // 3
-System.out.println(a % b); // 1`
+        System.out.println("a + b = " + (a + b));   // addition
+        System.out.println("a - b = " + (a - b));   // subtraction
+        System.out.println("a * b = " + (a * b));   // multiplication
+        System.out.println("a / b = " + (a / b));   // integer division drops the decimals
+        System.out.println("a % b = " + (a % b));   // remainder
+
+        System.out.println("10 / 3.0 = " + (10 / 3.0)); // one double operand gives a decimal result
+    }
+}
+// OUTPUT:
+// a + b = 13
+// a - b = 7
+// a * b = 30
+// a / b = 3
+// a % b = 1
+// 10 / 3.0 = 3.3333333333333335`
                                 ]
                             },
 
@@ -51,10 +64,23 @@ System.out.println(a % b); // 1`
 <img src="${operator1}" alt="Truth table for Logical AND operator" class="d-block mx-auto" />
 `,
                                 codeExamples: [
-                                    `int x = 10, y = 20;
+                                    `public class LogicalAndDemo {
+    public static void main(String[] args) {
+        int x = 10, y = 20;
 
-System.out.println(x < y && x > 5);   // true
-System.out.println(x > y && x > 5);   // false`
+        System.out.println(x < y && x > 5);   // true  (both conditions are true)
+        System.out.println(x > y && x > 5);   // false (first is false, second is skipped)
+
+        // && is short-circuit: the right side is NOT evaluated when the left is false
+        int count = 0;
+        boolean result = (x > y) && (++count > 0);
+        System.out.println(result + ", count = " + count);
+    }
+}
+// OUTPUT:
+// true
+// false
+// false, count = 0`
                                 ]
                             },
 
@@ -68,10 +94,27 @@ System.out.println(x > y && x > 5);   // false`
 <img src="${operator2}" alt="Truth table for Logical OR operator" class="d-block mx-auto" />
 `,
                                 codeExamples: [
-                                    `int x = 10, y = 20;
+                                    `public class LogicalOrDemo {
+    public static void main(String[] args) {
+        int x = 10, y = 20;
 
-System.out.println(x > y || x < y);   // true
-System.out.println(x > y || x > 30);  // false`
+        System.out.println(x > y || x < y);   // true  (second condition is true)
+        System.out.println(x > y || x > 30);  // false (both conditions are false)
+
+        // || is short-circuit: the right side is NOT evaluated when the left is true
+        int count = 0;
+        boolean result = (x < y) || (++count > 0);
+        System.out.println(result + ", count = " + count);
+
+        // Logical NOT (!) flips a boolean
+        System.out.println(!(x < y));         // false
+    }
+}
+// OUTPUT:
+// true
+// false
+// true, count = 0
+// false`
                                 ]
                             },
 
@@ -90,12 +133,25 @@ System.out.println(x > y || x > 30);  // false`
 </ul>
 `,
                                 codeExamples: [
-                                    `int a = 10, b = 20;
+                                    `public class RelationalDemo {
+    public static void main(String[] args) {
+        int a = 10, b = 20;
 
-System.out.println(a > b);   // false
-System.out.println(a < b);   // true
-System.out.println(a == b);  // false
-System.out.println(a != b);  // true`
+        System.out.println("a > b  : " + (a > b));
+        System.out.println("a < b  : " + (a < b));
+        System.out.println("a >= b : " + (a >= b));
+        System.out.println("a <= b : " + (a <= b));
+        System.out.println("a == b : " + (a == b));
+        System.out.println("a != b : " + (a != b));
+    }
+}
+// OUTPUT:
+// a > b  : false
+// a < b  : true
+// a >= b : false
+// a <= b : true
+// a == b : false
+// a != b : true`
                                 ]
                             },
 
@@ -107,8 +163,31 @@ System.out.println(a != b);  // true`
 <p><code>variable = value;</code></p>
 `,
                                 codeExamples: [
-                                    `int x = 50;
-System.out.println(x); // 50`
+                                    `public class AssignmentDemo {
+    public static void main(String[] args) {
+        int x = 50;                 // simple assignment
+        System.out.println(x);
+
+        // Compound assignment operators: operate and assign in one step
+        x += 10;  System.out.println("x += 10 -> " + x);
+        x -= 5;   System.out.println("x -= 5  -> " + x);
+        x *= 2;   System.out.println("x *= 2  -> " + x);
+        x /= 11;  System.out.println("x /= 11 -> " + x);
+        x %= 4;   System.out.println("x %= 4  -> " + x);
+
+        int a, b, c;
+        a = b = c = 7;              // assignment is right-to-left
+        System.out.println(a + " " + b + " " + c);
+    }
+}
+// OUTPUT:
+// 50
+// x += 10 -> 60
+// x -= 5  -> 55
+// x *= 2  -> 110
+// x /= 11 -> 10
+// x %= 4  -> 2
+// 7 7 7`
                                 ]
                             },
 
@@ -122,10 +201,29 @@ System.out.println(x); // 50`
 <img src="${operator3}" alt="Truth table for Bitwise AND operator" class="d-block mx-auto" />
 `,
                                 codeExamples: [
-                                    `int x = 10, y = 20;
+                                    `public class BitwiseAndDemo {
+    public static void main(String[] args) {
+        int x = 10, y = 20;
 
-System.out.println(x < y & x > 5);  // true
-System.out.println(x > y & x > 5);  // false`
+        // On booleans, & always evaluates BOTH sides (no short-circuit)
+        System.out.println(x < y & x > 5);  // true
+        System.out.println(x > y & x > 5);  // false
+
+        int count = 0;
+        boolean result = (x > y) & (++count > 0);
+        System.out.println(result + ", count = " + count);  // count changed: right side ran
+
+        // On integers, & works bit by bit
+        int p = 12;   // 1100
+        int q = 10;   // 1010
+        System.out.println(p & q);           // 1000 = 8
+    }
+}
+// OUTPUT:
+// true
+// false
+// false, count = 1
+// 8`
                                 ]
                             },
 
@@ -139,10 +237,33 @@ System.out.println(x > y & x > 5);  // false`
 <img src="${operator4}" alt="Truth table for Bitwise OR operator" class="d-block mx-auto" />
 `,
                                 codeExamples: [
-                                    `int x = 10, y = 20;
+                                    `public class BitwiseOrDemo {
+    public static void main(String[] args) {
+        int x = 10, y = 20;
 
-System.out.println(x < y | x > 50); // true
-System.out.println(x > y | x > 50); // false`
+        // On booleans, | always evaluates BOTH sides (no short-circuit)
+        System.out.println(x < y | x > 50); // true
+        System.out.println(x > y | x > 50); // false
+
+        int count = 0;
+        boolean result = (x < y) | (++count > 0);
+        System.out.println(result + ", count = " + count);  // count changed: right side ran
+
+        // On integers, | and ^ work bit by bit
+        int p = 12;   // 1100
+        int q = 10;   // 1010
+        System.out.println(p | q);           // 1110 = 14
+        System.out.println(p ^ q);           // 0110 = 6  (XOR)
+        System.out.println(~p);              // NOT: flips every bit = -13
+    }
+}
+// OUTPUT:
+// true
+// false
+// true, count = 1
+// 14
+// 6
+// -13`
                                 ]
                             },
 
@@ -157,13 +278,36 @@ System.out.println(x > y | x > 50); // false`
 </ul>
 `,
                                 codeExamples: [
-                                    `int a = 10;
+                                    `public class UnaryDemo {
+    public static void main(String[] args) {
+        int a = 10;
 
-a++;
-System.out.println(a); // 11
+        a++;
+        System.out.println(a); // 11
 
-a--;
-System.out.println(a); // 10`
+        a--;
+        System.out.println(a); // 10
+
+        // Prefix vs postfix
+        int i = 5;
+        int post = i++;        // use the old value (5), then increase i to 6
+        System.out.println("post = " + post + ", i = " + i);
+
+        int j = 5;
+        int pre = ++j;         // increase j to 6 first, then use it
+        System.out.println("pre  = " + pre + ", j = " + j);
+
+        System.out.println(-a);    // unary minus: -10
+        System.out.println(!true); // logical NOT: false
+    }
+}
+// OUTPUT:
+// 11
+// 10
+// post = 5, i = 6
+// pre  = 6, j = 6
+// -10
+// false`
                                 ]
                             },
 
@@ -175,10 +319,26 @@ System.out.println(a); // 10`
 <p><code>condition ? value_if_true : value_if_false</code></p>
 `,
                                 codeExamples: [
-                                    `int a = 10, b = 20;
+                                    `public class TernaryDemo {
+    public static void main(String[] args) {
+        int a = 10, b = 20;
 
-int max = (a > b) ? a : b;
-System.out.println(max); // 20`
+        int max = (a > b) ? a : b;
+        System.out.println("Max: " + max);
+
+        int marks = 72;
+        String result = (marks >= 40) ? "Pass" : "Fail";
+        System.out.println("Result: " + result);
+
+        // Nested ternary (use sparingly: it gets hard to read)
+        String grade = (marks >= 75) ? "A" : (marks >= 50) ? "B" : "C";
+        System.out.println("Grade: " + grade);
+    }
+}
+// OUTPUT:
+// Max: 20
+// Result: Pass
+// Grade: B`
                                 ]
                             },
 
@@ -191,10 +351,23 @@ System.out.println(max); // 20`
 </ul>
 `,
                                 codeExamples: [
-                                    `int x = 10;
+                                    `public class ShiftDemo {
+    public static void main(String[] args) {
+        int x = 10;                       // 00001010
 
-System.out.println(x << 2); // 40
-System.out.println(x >> 1); // 5`
+        System.out.println(x << 2);       // 00101000 = 40  (same as x * 4)
+        System.out.println(x >> 1);       // 00000101 = 5   (same as x / 2)
+
+        int n = -16;
+        System.out.println(n >> 2);       // signed shift keeps the sign: -4
+        System.out.println(n >>> 28);     // unsigned shift fills with 0s: 15
+    }
+}
+// OUTPUT:
+// 40
+// 5
+// -4
+// 15`
                                 ]
                             },
 
@@ -204,16 +377,26 @@ System.out.println(x >> 1); // 5`
 <p>Used to access the variables and methods of a class or object.</p>
 `,
                                 codeExamples: [
-                                    `class Demo {
+                                    `class Student {
+    String name = "Dhipan";
+
     void show() {
         System.out.println("Dot operator example");
     }
+}
 
+public class DotOperatorDemo {
     public static void main(String[] args) {
-        Demo obj = new Demo();
-        obj.show(); // using dot operator
+        Student obj = new Student();
+        obj.show();                        // dot operator calls a method
+        System.out.println(obj.name);      // dot operator reads a field
+        System.out.println(Math.max(4, 9)); // dot operator on a class (static method)
     }
-}`
+}
+// OUTPUT:
+// Dot operator example
+// Dhipan
+// 9`
                                 ]
                             },
 
@@ -227,11 +410,18 @@ System.out.println(x >> 1); // 5`
     Test() {
         System.out.println("Object created");
     }
+}
 
+public class NewOperatorDemo {
     public static void main(String[] args) {
-        Test t = new Test(); // new operator
+        Test t = new Test();            // new allocates the object and runs the constructor
+        int[] marks = new int[3];       // new also creates arrays
+        System.out.println("Array length: " + marks.length);
     }
-}`
+}
+// OUTPUT:
+// Object created
+// Array length: 3`
                                 ]
                             },
 
@@ -256,6 +446,61 @@ public class InstanceofDemo {
 // OUTPUT:
 // true
 // true`
+                                ]
+                            },
+
+                            {
+                                content: `
+<h4>Complete Program: All Operators Together</h4>
+<p>One runnable program that uses every operator group from this topic. Copy it, run it and change the values to see how the results move.</p>
+`,
+                                codeExamples: [
+                                    `public class AllOperators {
+    public static void main(String[] args) {
+        int a = 12, b = 5;
+
+        // 1) Arithmetic
+        System.out.println("Arithmetic : " + (a + b) + " " + (a - b) + " " + (a * b) + " " + (a / b) + " " + (a % b));
+
+        // 2) Relational
+        System.out.println("Relational : " + (a > b) + " " + (a == b) + " " + (a != b));
+
+        // 3) Logical (short-circuit) and bitwise on booleans (no short-circuit)
+        System.out.println("Logical    : " + (a > b && b > 0) + " " + (a < b || b > 0) + " " + !(a > b));
+
+        // 4) Assignment and compound assignment
+        int total = 0;
+        total += a;
+        total *= 2;
+        System.out.println("Assignment : " + total);
+
+        // 5) Unary
+        int i = 5;
+        System.out.println("Unary      : " + (i++) + " " + (++i) + " " + (-i));
+
+        // 6) Ternary
+        System.out.println("Ternary    : " + (a > b ? "a is bigger" : "b is bigger"));
+
+        // 7) Bitwise and shift
+        System.out.println("Bitwise    : " + (a & b) + " " + (a | b) + " " + (a ^ b) + " " + (~a));
+        System.out.println("Shift      : " + (a << 2) + " " + (a >> 1));
+
+        // 8) instanceof, new and dot
+        String text = new String("Java");
+        Object obj = text;
+        System.out.println("instanceof : " + (obj instanceof String) + " length=" + text.length());
+    }
+}
+// OUTPUT:
+// Arithmetic : 17 7 60 2 2
+// Relational : true false true
+// Logical    : true true false
+// Assignment : 24
+// Unary      : 5 7 -7
+// Ternary    : a is bigger
+// Bitwise    : 4 13 9 -13
+// Shift      : 48 6
+// instanceof : true length=4`
                                 ]
                             },
 

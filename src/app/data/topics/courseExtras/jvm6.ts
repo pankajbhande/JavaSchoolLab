@@ -86,7 +86,10 @@ for (int i = 0; ; i++) {
         [['Classic infinite recursion.',
             r`public class Boom {
     static int depth = 0;
-    static void down() { depth++; down(); }
+    static void down() {
+        depth++;
+        down();
+    }
     public static void main(String[] a) {
         try { down(); }
         catch (StackOverflowError e) { System.out.println("depth=" + depth); }
@@ -96,8 +99,14 @@ for (int i = 0; ; i++) {
 // OUTPUT: (varies with -Xss and frame size)
 // depth=11400`],
             ['Hidden recursion through toString.',
-                r`class A { B b; public String toString() { return "A" + b; } }
-class B { A a; public String toString() { return "B" + a; } }
+                r`class A {
+    B b;
+    public String toString() { return "A" + b; }
+}
+class B {
+    A a;
+    public String toString() { return "B" + a; }
+}
 // A x = new A(); B y = new B(); x.b = y; y.a = x;
 // System.out.println(x);
 
@@ -285,7 +294,10 @@ void handle() {
             ['Bounded cache with LinkedHashMap.',
                 r`class Lru<K, V> extends LinkedHashMap<K, V> {
     private final int max;
-    Lru(int max) { super(16, 0.75f, true); this.max = max; }
+    Lru(int max) {
+        super(16, 0.75f, true);
+        this.max = max;
+    }
     @Override protected boolean removeEldestEntry(Map.Entry<K, V> e) {
         return size() > max;           // evicts the least recently used
     }
@@ -411,7 +423,10 @@ jcmd 1 VM.native_memory summary | head -20
     'stack-overflow-error-java': dv(
         [`<p>Every thread has its own stack, created with a fixed size.</p><ul><li><b>Frame:</b> each call pushes a frame with locals, operand stack and a return address.</li><li><b>Limit:</b> when the next frame does not fit, the JVM throws StackOverflowError at that call.</li><li><b>Frame size:</b> methods with many locals use bigger frames, so the maximum depth varies.</li><li><b>JIT:</b> compiled code can use smaller frames or inline calls, so depth differs between runs.</li><li><b>Heap:</b> objects are not on the stack, only references.</li></ul>`,
             r`static int d;
-static void f(long a, long b, long c) { d++; f(a, b, c); }
+static void f(long a, long b, long c) {
+    d++;
+    f(a, b, c);
+}
 public static void main(String[] args) {
     try { f(1, 2, 3); } catch (StackOverflowError e) {
         System.out.println("depth " + d);
@@ -448,7 +463,11 @@ static int sumSafe(int n) {
         [`<p>Tuning notes:</p><ul><li><b>Memory cost:</b> stack memory is reserved per thread, so 500 threads at 2 MB reserve about 1 GB virtual.</li><li><b>Shrink for many threads:</b> lower <code>-Xss</code> only if you have measured the depth you need.</li><li><b>Memoize:</b> dynamic programming turns deep recursion into loops.</li><li><b>Avoid deep recursion in request threads</b> because the web container stack is small.</li></ul>`,
             r`static long fibIter(int n) {
     long a = 0, b = 1;
-    for (int i = 0; i < n; i++) { long t = a + b; a = b; b = t; }
+    for (int i = 0; i < n; i++) {
+        long t = a + b;
+        a = b;
+        b = t;
+    }
     return a;
 }
 System.out.println(fibIter(50));
@@ -535,7 +554,10 @@ jstack 4242 | grep -A 10 "nid=0x10cd"
 // Metaspace   used 31200K, committed 31744K, reserved 1081344K`],
         [`<p>Mistakes and fixes:</p><ul><li><b>System.gc() calls:</b> forces a Full GC; remove or add <code>-XX:+DisableExplicitGC</code>.</li><li><b>Heap too small:</b> frequent collections; raise <code>-Xmx</code> after measuring the live set.</li><li><b>Heap too large with default pauses:</b> long Full GCs; consider ZGC.</li><li><b>Large temporary arrays:</b> humongous allocations in G1; stream data.</li><li><b>Copying tuning flags from blogs:</b> test each flag against your own GC log.</li></ul>`,
             r`// WRONG: manual GC in a request path
-void handle() { work(); System.gc(); }
+void handle() {
+    work();
+    System.gc();
+}
 
 // RIGHT: delete the call, then watch the log
 // java -Xlog:gc -jar app.jar | grep "System.gc"

@@ -200,7 +200,7 @@ const { register, handleSubmit, formState: { errors } } = useForm({ resolver: zo
 // OUTPUT:
 // listeners and timers are removed on unmount`]],
         [['Derived value, no effect needed.',
-            r`const [first, setFirst] = useState("Asha"), [last, setLast] = useState("R");
+            r`const [first, setFirst] = useState("Abaji"), [last, setLast] = useState("R");
 const full = first + " " + last;                      // compute during render
 
 // OUTPUT:

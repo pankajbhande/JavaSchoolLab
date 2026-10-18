@@ -52,7 +52,8 @@ server.tomcat.accept-count=50
 server.tomcat.max-connections=8192
 
 # OUTPUT:
-# Tomcat runs at most 100 request threads; 50 more connections may wait,
+# Tomcat runs at most 100 request threads;
+50 more connections may wait,
 # and further connections are refused or queued by the operating system.`]],
         [['Show which thread serves the request.',
             r`@RestController
@@ -261,7 +262,7 @@ public class SecurityConfig {
             ['In memory users for a demo.',
                 r`@Bean
 UserDetailsService users(PasswordEncoder enc) {
-    UserDetails u = User.withUsername("asha")
+    UserDetails u = User.withUsername("abaji")
             .password(enc.encode("secret")).roles("USER").build();
     UserDetails a = User.withUsername("root")
             .password(enc.encode("admin")).roles("ADMIN").build();
@@ -269,7 +270,7 @@ UserDetailsService users(PasswordEncoder enc) {
 }
 
 // OUTPUT:
-// Basic auth asha:secret -> authenticated with ROLE_USER`]],
+// Basic auth abaji:secret -> authenticated with ROLE_USER`]],
         [['Test access rules.',
             r`@WebMvcTest(AdminController.class)
 @Import(SecurityConfig.class)
@@ -297,8 +298,8 @@ public class ReportService {
 }
 
 // OUTPUT:
-// load("asha") as asha -> allowed
-// load("asha") as bob  -> AccessDeniedException`]]
+// load("abaji") as abaji -> allowed
+// load("abaji") as baji  -> AccessDeniedException`]]
     ),
     'mvc-centralized-exception-handling': x(
         ['<b>Centralized handling</b>: one place that turns exceptions from any controller into a consistent HTTP response, instead of try/catch in every method.',
@@ -437,7 +438,9 @@ CommonsRequestLoggingFilter requestLogging() {
 // DEBUG Before request [POST /orders?x=1, payload={"qty":2}]`]],
         [['Log pattern with MDC.',
             r`# application.properties
-logging.pattern.console=%d{HH:mm:ss} %-5level [%X{requestId}] %logger{20} - %msg%n
+logging.pattern.console=%d{HH:mm:ss}
+%-5level [%X{requestId}] %logger{20}
+- %msg%n
 
 # OUTPUT:
 # 10:15:02 INFO  [3f9a1c2e] c.s.RequestLogFilter - GET /products/5 -> 200 (12 ms)`],
@@ -494,7 +497,7 @@ public abstract class Auditable {
 }
 
 // OUTPUT: (varies)
-// insert into product (created_by, created_at, ...) values ('asha', '2026-10-09T10:15:00Z', ...)`],
+// insert into product (created_by, created_at, ...) values ('abaji', '2026-10-09T10:15:00Z', ...)`],
             ['Explicit audit event.',
                 r`public record AuditEvent(String actor, String action, String entity, Long id) { }
 
@@ -520,7 +523,7 @@ class AuditListener {
 }
 
 // OUTPUT:
-// AUDIT asha CANCEL Order#7`]],
+// AUDIT abaji CANCEL Order#7`]],
         [['Test the audit event.',
             r`@SpringBootTest
 class AuditTest {
@@ -529,7 +532,7 @@ class AuditTest {
 
     @Test
     void cancelPublishesAudit() {
-        service.cancel(7L, "asha");
+        service.cancel(7L, "abaji");
         assertEquals(1, events.stream(AuditEvent.class).count());
     }
 }
@@ -918,7 +921,8 @@ env:
       secretKeyRef: { name: shop-secret, key: db-password }
 
 # OUTPUT:
-# Same image runs in every environment; only these values differ.`]
+# Same image runs in every environment;
+only these values differ.`]
     ),
     'mvc-environment-profiles': dv(
         [`<p>Profiles are evaluated while the application context is prepared.</p><ul><li><b>Environment:</b> holds the active profile names; they come from <code>spring.profiles.active</code> or <code>SpringApplication.setAdditionalProfiles</code>.</li><li><b>Bean registration:</b> <code>@Profile</code> is a <code>@Conditional</code> (<code>ProfileCondition</code>); the condition is checked when the bean definition is scanned.</li><li><b>Config loading:</b> <code>ConfigDataEnvironment</code> loads <code>application.yml</code> first, then <code>application-{profile}.yml</code> for each active profile in order; later profiles win.</li><li><b>Default:</b> when nothing is active the profile named <code>default</code> is used.</li></ul>`,
@@ -1017,8 +1021,8 @@ public Map<String, Object> me(Authentication auth) {
 }
 
 // OUTPUT:
-// GET /me (basic auth asha:secret)
-// {"user":"asha","roles":["ROLE_USER"]}`],
+// GET /me (basic auth abaji:secret)
+// {"user":"abaji","roles":["ROLE_USER"]}`],
         [`<p>Common configuration variants:</p><ul><li><b>Form login:</b> <code>formLogin(Customizer.withDefaults())</code> for server rendered pages.</li><li><b>HTTP basic:</b> simple for internal tools and tests.</li><li><b>JWT resource server:</b> <code>oauth2ResourceServer(o -&gt; o.jwt(Customizer.withDefaults()))</code>.</li><li><b>Stateless:</b> <code>sessionManagement(s -&gt; s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))</code>.</li><li><b>CORS and CSRF:</b> <code>cors(...)</code> and <code>csrf(c -&gt; c.disable())</code> for token APIs.</li><li><b>Several chains:</b> use <code>@Order</code> and <code>securityMatcher</code> to give /api and web pages different rules.</li></ul>`,
             r`@Bean
 @Order(1)
@@ -1085,7 +1089,7 @@ public Order get(@PathVariable Long id) { return orders.find(id); }
 
 // OUTPUT:
 // GET /catalog/phones     -> 200 (anonymous)
-// GET /orders/5 as bob (owner asha) -> 403
+// GET /orders/5 as baji (owner abaji) -> 403
 // GET /admin/stats as USER -> 403`]
     ),
     'mvc-centralized-exception-handling': dv(
@@ -1230,7 +1234,7 @@ static String mask(String json) {
 }
 
 // OUTPUT:
-// mask({"user":"asha","password":"abc123"}) -> {"user":"asha","password":"****"}`],
+// mask({"user":"abaji","password":"abc123"}) -> {"user":"abaji","password":"****"}`],
         [`<p>Cost and tuning:</p><ul><li><b>Sampling:</b> log bodies only for errors or a small percentage of requests.</li><li><b>Async appenders:</b> Logback <code>AsyncAppender</code> moves disk I/O off the request thread.</li><li><b>Size limits:</b> cap payload length and skip content types such as multipart and octet-stream.</li><li><b>Skip noise:</b> exclude health checks and static resources.</li><li><b>Parameterized messages:</b> use <code>log.info(&quot;a {}&quot;, x)</code> so strings are not built when the level is off.</li></ul>`,
             r`<!-- logback-spring.xml (excerpt) -->
 <appender name="ASYNC" class="ch.qos.logback.classic.AsyncAppender">
@@ -1277,7 +1281,7 @@ public class AuditAspect {
 @interface Audited { String value(); }
 
 // OUTPUT:
-// AUDIT user=asha action=DELETE_PRODUCT args=[12]`],
+// AUDIT user=abaji action=DELETE_PRODUCT args=[12]`],
         [`<p>Design choices for an audit trail:</p><ul><li><b>Row level fields:</b> four auditing columns on every entity (who and when created or changed).</li><li><b>Full history:</b> Envers revisions, queried with <code>AuditReader</code>.</li><li><b>Action log table:</b> one row per business action with actor, action, entity, id, and a JSON diff.</li><li><b>External sink:</b> send events to Kafka or a log platform for long term, write once storage.</li><li><b>Soft delete plus audit:</b> never lose who deleted a row.</li></ul>`,
             r`@Entity
 @Table(name = "audit_log")
@@ -1293,7 +1297,7 @@ public class AuditLog {
 }
 
 // OUTPUT:
-// audit_log row: asha | UPDATE_PRICE | Product | 12 | {"old":100,"new":120} | 2026-10-09T10:15:00Z`],
+// audit_log row: abaji | UPDATE_PRICE | Product | 12 | {"old":100,"new":120} | 2026-10-09T10:15:00Z`],
         [`<p>Mistakes to avoid:</p><ul><li><b>@CreatedDate stays null:</b> missing <code>@EnableJpaAuditing</code> or the listener annotation.</li><li><b>Auditor is null:</b> background jobs have no user; return a system user such as <code>system</code>.</li><li><b>Audit outside the transaction:</b> a rollback leaves a row that claims a change happened.</li><li><b>Auditing everything:</b> reads and noise bury the important events.</li><li><b>Editable audit rows:</b> if the app can update them, they are not evidence.</li><li><b>Personal data:</b> storing full old and new values may break privacy rules.</li></ul>`,
             r`@Bean
 AuditorAware<String> auditor() {
@@ -1431,7 +1435,8 @@ management.endpoint.health.group.ready.show-details=never
 
 # OUTPUT:
 # GET /actuator/health/ready -> {"status":"UP"}
-# GET /actuator/health (anonymous) -> {"status":"UP"}  (no component details)`],
+# GET /actuator/health (anonymous) -> {"status":"UP"}
+(no component details)`],
         [`<p>Mistakes with health checks:</p><ul><li><b>Heavy checks:</b> a full query or remote call on each probe overloads dependencies.</li><li><b>Liveness depends on external services:</b> causes restart storms.</li><li><b>Details exposed to the public:</b> hostnames and error messages.</li><li><b>No timeout:</b> a hanging indicator makes the probe time out and the pod restart.</li><li><b>Always UP:</b> a check that catches every exception and returns UP.</li><li><b>Probes too aggressive:</b> a short period and threshold kill slow-starting apps; use a startup probe.</li></ul>`,
             r`// Wrong: a hanging call blocks the probe
 public Health health() {
@@ -1467,7 +1472,8 @@ readinessProbe:
   failureThreshold: 3
 
 # OUTPUT:
-# Slow start up to 150 s is tolerated; failing readiness removes the pod from the service.`],
+# Slow start up to 150 s is tolerated;
+failing readiness removes the pod from the service.`],
         [`<p>Scenario: the payment provider has an outage.</p><ul><li><b>Wanted behavior:</b> the app stays alive, keeps serving the catalog, and refuses checkout traffic gracefully.</li><li><b>Design:</b> payment health is reported in a separate group and not in liveness, and the checkout code uses a circuit breaker.</li><li><b>Alert:</b> a dashboard and alert on the group status, with no pod restarts.</li></ul>`,
             r`# application.properties
 management.endpoint.health.group.liveness.include=livenessState
@@ -1504,9 +1510,12 @@ management.tracing.sampling.probability=0.05
 management.otlp.tracing.endpoint=http://collector:4318/v1/traces
 
 # OUTPUT:
-# http_server_requests_seconds_bucket{le="0.1"} 4800
-# http_server_requests_seconds_bucket{le="0.5"} 5300
-# http_server_requests_seconds_bucket{le="+Inf"} 5400`],
+# http_server_requests_seconds_bucket{le="0.1"}
+4800
+# http_server_requests_seconds_bucket{le="0.5"}
+5300
+# http_server_requests_seconds_bucket{le="+Inf"}
+5400`],
         [`<p>Mistakes when monitoring performance:</p><ul><li><b>Averages only:</b> p99 may be 50 times the average.</li><li><b>Measuring in the wrong place:</b> client time includes network and queueing, server time does not.</li><li><b>100 percent trace sampling</b> under heavy load adds cost; sample 1 to 10 percent.</li><li><b>Guessing:</b> tuning code without a profile.</li><li><b>Tests on tiny data:</b> production data volumes expose N+1 queries.</li><li><b>Ignoring saturation:</b> latency rises when the pool or queue is full, not only when the code is slow.</li></ul>`,
             r`// Typical hidden N+1: one query for orders, then one per order for items
 List<Order> orders = orderRepo.findAll();

@@ -13,11 +13,11 @@ export const initStrRepr: Topic = {
         self.name = name
         self.marks = marks
 
-s = Student("Asha", 91)
+s = Student("Abaji", 91)
 print(s.name, s.marks)
 
 # OUTPUT:
-# Asha 91`,
+# Abaji 91`,
                 `class Broken:
     def __init__(self):
         return 42

@@ -149,7 +149,7 @@ for view in (TextView(), JsonView()):       # same model, two presentations
 # Count = 2
 # {"count": 2}`],
         [`Web frameworks route a URL to a controller, which asks the model for data and renders a template.`,
-            r`USERS = {1: "Asha"}                       # model data
+            r`USERS = {1: "Abaji"}                       # model data
 
 def get_user(uid):                          # model access
     return USERS.get(uid)
@@ -166,7 +166,7 @@ print(user_controller("/user/1"))
 print(user_controller("/user/9"))
 
 # OUTPUT:
-# <h1>Asha</h1>
+# <h1>Abaji</h1>
 # 404`],
         [`<b>Advantages:</b> parallel work (designer on views, developer on models), multiple views of the same data, clear place for each piece of code. Models can notify views when they change.`,
             r`class Model:
@@ -207,10 +207,10 @@ class User:                                 # model
 def user_view(u):                           # API "view" = serializer
     return json.dumps(asdict(u))
 
-print(user_view(User(1, "Asha")))
+print(user_view(User(1, "Abaji")))
 
 # OUTPUT:
-# {"id": 1, "name": "Asha"}`],
+# {"id": 1, "name": "Abaji"}`],
         `
                  user action
       +------+ ----------------> +------------+
@@ -267,12 +267,12 @@ def cli(argv):                              # delivery 1
 def web(body):                              # delivery 2
     return json.dumps(register_user(body["name"]))
 
-print(cli(["prog", "asha"]))
-print(web({"name": "ravi"}))
+print(cli(["prog", "abaji"]))
+print(web({"name": "raoji"}))
 
 # OUTPUT:
-# asha created
-# {"user": "ravi", "status": "created"}`],
+# abaji created
+# {"user": "raoji", "status": "created"}`],
         [`Teams test use cases in milliseconds with fake repositories and no web server, then plug real adapters in the main module.`,
             r`from dataclasses import dataclass
 
@@ -384,12 +384,12 @@ class ListStorage:                          # outbound adapter
 
 store = ListStorage()
 core = Core(store)
-print(core.register("asha"))
+print(core.register("abaji"))
 print(store.items)
 
 # OUTPUT:
-# registered asha
-# ['asha']`],
+# registered abaji
+# ['abaji']`],
         [`The core should be drivable and observable without a network or database. Inbound adapters (CLI, HTTP, tests) call the same port; outbound adapters can be swapped.`,
             r`class Core:
     def __init__(self, storage): self.storage = storage
@@ -404,11 +404,11 @@ def http_adapter(core, body):               # inbound adapter 2
     return {"status": 201, "body": core.register(body["name"])}
 
 core = Core([])
-print(cli_adapter(core, ["prog", "ravi"]))
+print(cli_adapter(core, ["prog", "raoji"]))
 print(http_adapter(core, {"name": "zed"}))
 
 # OUTPUT:
-# registered ravi
+# registered raoji
 # {'status': 201, 'body': 'registered zed'}`],
         [`In production the outbound port is backed by a real database; in tests by memory. The core code is identical in both cases.`,
             r`import sqlite3
@@ -429,12 +429,12 @@ class SqliteStorage:                        # outbound adapter for a real DB
         return [row[0] for row in self.db.execute("SELECT name FROM users")]
 
 storage = SqliteStorage()
-print(Core(storage).register("asha"))
+print(Core(storage).register("abaji"))
 print(storage.names())
 
 # OUTPUT:
-# registered asha
-# ['asha']`],
+# registered abaji
+# ['abaji']`],
         [`<b>Advantages:</b> technology-neutral core, drivers and infrastructure replaceable on both sides, easy to test with fake adapters, delays infrastructure decisions.`,
             r`class FakeMail:                            # fake outbound adapter records messages
     def __init__(self): self.sent = []
@@ -561,8 +561,8 @@ print(SupportCustomer(1, 2))                # same id links them, models stay se
     def __eq__(self, other): return isinstance(other, User) and self.id == other.id
     def __hash__(self): return hash(self.id)
 
-u1 = User(1, "Asha")
-u2 = User(1, "Asha Rao")                    # same person, name changed
+u1 = User(1, "Abaji")
+u2 = User(1, "Abaji Rao")                    # same person, name changed
 print(u1 == u2)
 
 # OUTPUT:
@@ -570,11 +570,11 @@ print(u1 == u2)
         [`<b>Disadvantages:</b> heavy up-front modelling with domain experts, a steep learning curve and a lot of ceremony. For plain CRUD it is overkill.`,
             r`# A simple admin screen needs none of: aggregates, factories, domain events.
 users = {}
-users[1] = {"name": "Asha"}                 # CRUD: a dict / table row is enough
+users[1] = {"name": "Abaji"}                 # CRUD: a dict / table row is enough
 print(users[1])
 
 # OUTPUT:
-# {'name': 'Asha'}`],
+# {'name': 'Abaji'}`],
         [`<b>Limitations:</b> DDD gives no technology advice, aggregate boundaries are hard to get right, and consistency <i>between</i> aggregates is eventual (via domain events), not transactional.`,
             r`events = []
 

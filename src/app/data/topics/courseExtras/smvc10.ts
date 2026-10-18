@@ -24,24 +24,26 @@ export const smvc10Extras: Record<string, Extra> = {
 public class HelloController {
     @GetMapping("/hello")
     public String hello(Model model) {
-        model.addAttribute("names", List.of("Asha", "Ravi"));
+        model.addAttribute("names", List.of("Abaji", "Raoji"));
         return "hello";               // templates/hello.ftlh
     }
 }
 // templates/hello.ftlh
 // <ul>
-//   <#list names as n><li>` + r`$` + r`{n}</li></#list>
+//   <#list names as n><li>` + r`$` + r`{n}
+</li></#list>
 // </ul>
 
 // OUTPUT:
 // GET /hello -> 200 OK
 // <ul>
-//   <li>Asha</li><li>Ravi</li>
+//   <li>Abaji</li><li>Raoji</li>
 // </ul>`],
             ['Show a default when a value is missing.',
                 r`// model has no "nick" attribute
 // templates/profile.ftlh
-// <p>Nick: ` + r`$` + r`{nick!"anonymous"}</p>
+// <p>Nick: ` + r`$` + r`{nick!"anonymous"}
+</p>
 // <#if nick??>has nick<#else>no nick</#if>
 
 // OUTPUT:
@@ -50,7 +52,8 @@ public class HelloController {
         [['A reusable macro.',
             r`<#-- templates/macros.ftlh -->
 <#macro badge text>
-  <span class="badge">` + r`$` + r`{text}</span>
+  <span class="badge">` + r`$` + r`{text}
+</span>
 </#macro>
 <#-- templates/page.ftlh -->
 <#import "macros.ftlh" as m>
@@ -60,7 +63,8 @@ public class HelloController {
 // <span class="badge">New</span>`],
             ['Escaping on .ftlh.',
                 r`// model: comment = "<script>alert(1)</script>"
-// templates/c.ftlh  ->  <p>` + r`$` + r`{comment}</p>
+// templates/c.ftlh  ->  <p>` + r`$` + r`{comment}
+</p>
 
 // OUTPUT:
 // <p>&lt;script&gt;alert(1)&lt;/script&gt;</p>`]]
@@ -85,7 +89,7 @@ public class HelloController {
             r`@GetMapping("/users")
 String users(Model model) {
     model.addAttribute("users", List.of(
-        Map.of("name", "Asha"), Map.of("name", "Ravi")));
+        Map.of("name", "Abaji"), Map.of("name", "Raoji")));
     return "users";                       // templates/users.mustache
 }
 // users.mustache:
@@ -93,7 +97,7 @@ String users(Model model) {
 // {{^users}}<p>No users</p>{{/users}}
 
 // OUTPUT:
-// <ul><li>Asha</li><li>Ravi</li></ul>`],
+// <ul><li>Abaji</li><li>Raoji</li></ul>`],
             ['Raw versus escaped output.',
                 r`// model: bio = "<b>Hi</b>"
 // {{bio}}   -> escaped
@@ -110,13 +114,13 @@ String users(Model model) {
 // <header>Home</header><main>Welcome</main>`],
             ['Prepare logic in Java.',
                 r`record Row(String name, boolean admin) {}
-// model "rows" = List.of(new Row("Asha", true), new Row("Ravi", false))
+// model "rows" = List.of(new Row("Abaji", true), new Row("Raoji", false))
 // {{#rows}}{{name}}{{#admin}} (admin){{/admin}}
 // {{/rows}}
 
 // OUTPUT:
-// Asha (admin)
-// Ravi`]]
+// Abaji (admin)
+// Raoji`]]
     ),
     'mvc-html-templates': x(
         ['<b>HTML template</b>: an HTML file with placeholders that Spring MVC fills with model data on the server before sending the page to the browser.',
@@ -139,22 +143,25 @@ String users(Model model) {
 class HomeController {
     @GetMapping("/")
     String home(Model model) {
-        model.addAttribute("name", "Asha");
+        model.addAttribute("name", "Abaji");
         return "home";
     }
 }
 // templates/home.html
-// <h1 th:text="Hello, ` + r`$` + r`{name}">Hello, placeholder</h1>
+// <h1 th:text="Hello, ` + r`$` + r`{name}
+">Hello, placeholder</h1>
 
 // OUTPUT:
-// <h1>Hello, Asha</h1>`],
+// <h1>Hello, Abaji</h1>`],
             ['Iterate a list.',
                 r`// <ul>
-//   <li th:each="n : ` + r`$` + r`{names}" th:text="` + r`$` + r`{n}">x</li>
+//   <li th:each="n : ` + r`$` + r`{names}
+" th:text="` + r`$` + r`{n}
+">x</li>
 // </ul>
 
 // OUTPUT:
-// <ul><li>Asha</li><li>Ravi</li></ul>`]],
+// <ul><li>Abaji</li><li>Raoji</li></ul>`]],
         [['Test the view.',
             r`@WebMvcTest(HomeController.class)
 class HomeControllerTest {
@@ -164,15 +171,17 @@ class HomeControllerTest {
         mvc.perform(get("/"))
            .andExpect(status().isOk())
            .andExpect(view().name("home"))
-           .andExpect(content().string(containsString("Hello, Asha")));
+           .andExpect(content().string(containsString("Hello, Abaji")));
     }
 }
 
 // OUTPUT:
 // Tests run: 1, Failures: 0`],
             ['Conditional markup.',
-                r`// <p th:if="` + r`$` + r`{items.isEmpty()}">Nothing here</p>
-// <p th:unless="` + r`$` + r`{items.isEmpty()}">Has items</p>
+                r`// <p th:if="` + r`$` + r`{items.isEmpty()}
+">Nothing here</p>
+// <p th:unless="` + r`$` + r`{items.isEmpty()}
+">Has items</p>
 
 // OUTPUT:
 // <p>Nothing here</p>   (when the list is empty)`]]
@@ -321,7 +330,8 @@ mvc.perform(get("/c"))
             ['A fragment with a parameter.',
                 r`<!-- fragments.html -->
 <nav th:fragment="nav(active)">
-  <a th:classappend="` + r`$` + r`{active == 'home'} ? 'on'" href="/">Home</a>
+  <a th:classappend="` + r`$` + r`{active == 'home'}
+? 'on'" href="/">Home</a>
 </nav>
 <!-- page -->
 <nav th:replace="~{fragments :: nav('home')}"></nav>
@@ -379,9 +389,11 @@ String register(@ModelAttribute RegisterForm form) {
 }
 
 // OUTPUT:
-// POST name=Asha&age=21 -> form.name = "Asha", form.age = 21`],
+// POST name=Abaji&age=21 -> form.name = "Abaji", form.age = 21`],
             ['The Thymeleaf side.',
-                r`<form th:object="` + r`$` + r`{registerForm}" th:action="@{/register}" method="post">
+                r`<form th:object="` + r`$` + r`{registerForm}
+" th:action="@{/register}
+" method="post">
   <input type="text" th:field="*{name}">
   <input type="number" th:field="*{age}">
   <button>Save</button>
@@ -396,7 +408,7 @@ void init(WebDataBinder binder) {
 }
 
 // OUTPUT:
-// POST name=Asha&age=21&admin=true -> admin is ignored`],
+// POST name=Abaji&age=21&admin=true -> admin is ignored`],
             ['Handle a conversion error.',
                 r`@PostMapping("/register")
 String register(@ModelAttribute RegisterForm form, BindingResult br) {
@@ -429,7 +441,10 @@ String register(@ModelAttribute RegisterForm form, BindingResult br) {
 class TodoController {
     private final List<String> todos = new ArrayList<>();
     @GetMapping("/todos")
-    String list(Model m) { m.addAttribute("todos", todos); return "todos"; }
+    String list(Model m) {
+        m.addAttribute("todos", todos);
+        return "todos";
+    }
     @PostMapping("/todos")
     String add(@RequestParam String text, RedirectAttributes ra) {
         todos.add(text);
@@ -442,8 +457,12 @@ class TodoController {
 // POST /todos text=Milk -> 302 Location: /todos
 // GET  /todos           -> HTML list with the message "Added"`],
             ['The matching template.',
-                r`<p th:if="` + r`$` + r`{msg}" th:text="` + r`$` + r`{msg}"></p>
-<ul><li th:each="t : ` + r`$` + r`{todos}" th:text="` + r`$` + r`{t}"></li></ul>
+                r`<p th:if="` + r`$` + r`{msg}
+" th:text="` + r`$` + r`{msg}
+"></p>
+<ul><li th:each="t : ` + r`$` + r`{todos}
+" th:text="` + r`$` + r`{t}
+"></li></ul>
 
 // OUTPUT:
 // <p>Added</p><ul><li>Milk</li></ul>`]],
@@ -492,7 +511,7 @@ String login(@RequestParam String user, @RequestParam String pass) {
 }
 
 // OUTPUT:
-// POST /login  user=asha&pass=*** -> 302 Location: /home`],
+// POST /login  user=abaji&pass=*** -> 302 Location: /home`],
             ['A search form with GET.',
                 r`<form action="/search" method="get"><input name="q"></form>
 @GetMapping("/search")
@@ -515,7 +534,7 @@ String prefs(@RequestParam(defaultValue = "false") boolean news) {
 // unchecked -> news = false ; checked -> news = true`],
             ['Test a form post.',
                 r`mvc.perform(post("/login")
-        .param("user", "asha").param("pass", "x"))
+        .param("user", "abaji").param("pass", "x"))
    .andExpect(status().is3xxRedirection())
    .andExpect(redirectedUrl("/home"));
 
@@ -547,7 +566,10 @@ String prefs(@RequestParam(defaultValue = "false") boolean news) {
 @Controller
 class UserController {
     @GetMapping("/users/new")
-    String form(Model m) { m.addAttribute("userForm", new UserForm()); return "user-form"; }
+    String form(Model m) {
+        m.addAttribute("userForm", new UserForm());
+        return "user-form";
+    }
     @PostMapping("/users")
     String save(@Valid @ModelAttribute UserForm userForm, BindingResult br) {
         if (br.hasErrors()) return "user-form";
@@ -557,11 +579,15 @@ class UserController {
 
 // OUTPUT:
 // POST name=&email=bad -> 200 user-form with 2 field errors
-// POST name=Asha&email=a@b.com -> 302 Location: /users`],
+// POST name=Abaji&email=a@b.com -> 302 Location: /users`],
             ['The Thymeleaf template.',
-                r`<form th:object="` + r`$` + r`{userForm}" th:action="@{/users}" method="post">
+                r`<form th:object="` + r`$` + r`{userForm}
+" th:action="@{/users}
+" method="post">
   <input th:field="*{name}">
-  <span th:if="` + r`$` + r`{#fields.hasErrors('name')}" th:errors="*{name}"></span>
+  <span th:if="` + r`$` + r`{#fields.hasErrors('name')}
+" th:errors="*{name}
+"></span>
   <input th:field="*{email}">
   <span th:errors="*{email}"></span>
   <button>Save</button>
@@ -575,7 +601,7 @@ class UserControllerTest {
     @Autowired MockMvc mvc;
     @Test
     void rejectsBadEmail() throws Exception {
-        mvc.perform(post("/users").param("name", "Asha").param("email", "bad"))
+        mvc.perform(post("/users").param("name", "Abaji").param("email", "bad"))
            .andExpect(status().isOk())
            .andExpect(model().attributeHasFieldErrors("userForm", "email"))
            .andExpect(view().name("user-form"));
@@ -608,9 +634,12 @@ export const smvc10Deep: Record<string, Deep> = {
             r`<#assign total = 0>
 <#list items as i>
   <#assign total = total + i.price>
-  <p>` + r`$` + r`{i.name?upper_case} - ` + r`$` + r`{i.price?string("0.00")}</p>
+  <p>` + r`$` + r`{i.name?upper_case}
+-` + r`$` + r`{i.price?string("0.00")}
+</p>
 </#list>
-<#if items?has_content>Total ` + r`$` + r`{total?string("0.00")}<#else>Empty</#if>
+<#if items?has_content>Total ` + r`$` + r`{total?string("0.00")}
+<#else>Empty</#if>
 
 # OUTPUT:
 # <p>PEN - 2.50</p>
@@ -623,7 +652,8 @@ return "hello.ftlh";      // looks for templates/hello.ftlh.ftlh
 return "hello";
 
 // template: id=1234 prints "1,234"; for a URL use the c builtin
-// <a href="/u/` + r`$` + r`{id?c}">profile</a>
+// <a href="/u/` + r`$` + r`{id?c}
+">profile</a>
 
 // OUTPUT:
 // <a href="/u/1234">profile</a>`],
@@ -635,7 +665,8 @@ spring.freemarker.settings.number_format=0.##
 server.compression.enabled=true
 
 # OUTPUT:
-# Templates parsed once; errors surface as a 500 with a stack trace in the log.`],
+# Templates parsed once;
+errors surface as a 500 with a stack trace in the log.`],
         [`<p>Scenario: an order confirmation page and an invoice email share the same engine.</p><ul><li>The same FreeMarker <code>Configuration</code> renders the web page and an HTML email.</li><li>A shared macro file keeps the address and price blocks identical.</li><li>A MockMvc test checks the page; a unit test processes the email template with a sample model.</li></ul>`,
             r`@Autowired Configuration cfg;      // freemarker.template.Configuration
 String renderEmail(Order o) throws Exception {
@@ -646,7 +677,7 @@ String renderEmail(Order o) throws Exception {
 }
 
 // OUTPUT:
-// <p>Thanks Asha, your order #1001 is confirmed.</p>`]
+// <p>Thanks Abaji, your order #1001 is confirmed.</p>`]
     ),
     'mvc-mustache': dv(
         [`<p>Mustache templates are compiled by JMustache into a tree of text and tag nodes.</p><ul><li><b>Config:</b> <code>MustacheAutoConfiguration</code> creates a <code>Mustache.Compiler</code> and a <code>MustacheViewResolver</code>.</li><li><b>Lookup:</b> a name is searched in the current context, then its parents, then the model map.</li><li><b>Sections:</b> a collection repeats, a boolean true shows once, false or empty hides, and an object becomes the new context.</li><li><b>Output:</b> the compiled template executes against the model and writes to the response.</li></ul>`,
@@ -659,8 +690,19 @@ String renderEmail(Order o) throws Exception {
         [`<p>Syntax summary:</p><ul><li><b>Variable:</b> <code>{{name}}</code> escaped, <code>{{{name}}}</code> or <code>{{&amp;name}}</code> raw.</li><li><b>Section:</b> <code>{{#x}}...{{/x}}</code>; inverted <code>{{^x}}...{{/x}}</code>.</li><li><b>Partial:</b> <code>{{&gt; file}}</code>.</li><li><b>Comment:</b> <code>{{! note }}</code>.</li><li><b>Dot:</b> <code>{{.}}</code> is the current item in a list of simple values.</li></ul>`,
             r`<!-- tags.mustache -->
 {{! a comment, not printed }}
-<ul>{{#tags}}<li>{{.}}</li>{{/tags}}</ul>
-{{^tags}}No tags{{/tags}}
+<ul> {
+    {#tags}
+}
+<li> {
+    {.}
+}
+</li> {
+    {/tags}
+}
+</ul>
+{{^tags}}No tags {
+    {/tags}
+}
 
 <!-- model: tags = ["java", "spring"] -->
 // OUTPUT:
@@ -704,7 +746,7 @@ String status(Model m) {
 // view.render(mav.getModel(), request, response);
 
 // OUTPUT:
-// "home" + {name=Asha} -> text/html body`],
+// "home" + {name=Abaji} -> text/html body`],
         [`<p>Ways to supply model data:</p><ul><li><b>Model parameter:</b> <code>model.addAttribute</code>.</li><li><b>ModelAndView:</b> return view and data together.</li><li><b>@ModelAttribute method:</b> data added for every handler in the controller.</li><li><b>@ControllerAdvice:</b> data shared by all controllers, such as the current user.</li></ul>`,
             r`@ControllerAdvice
 class GlobalModel {
@@ -713,18 +755,22 @@ class GlobalModel {
 }
 @GetMapping("/")
 ModelAndView home() {
-    return new ModelAndView("home", Map.of("name", "Asha"));
+    return new ModelAndView("home", Map.of("name", "Abaji"));
 }
 
 // OUTPUT:
-// Template sees both appName = "Shop" and name = "Asha".`],
+// Template sees both appName = "Shop" and name = "Abaji".`],
         [`<p>Mistakes:</p><ul><li><b>Forgetting @Controller:</b> <code>@RestController</code> writes the view name as text.</li><li><b>Template in wrong folder:</b> a 500 with <code>TemplateInputException</code>.</li><li><b>th:utext with user data:</b> XSS risk.</li><li><b>Entities with lazy fields:</b> <code>LazyInitializationException</code> during render.</li></ul>`,
             r`// WRONG: prints the text "home" in the browser
 @RestController
-class Bad { @GetMapping("/") String home() { return "home"; } }
+class Bad {
+    @GetMapping("/") String home() { return "home"; }
+}
 // RIGHT
 @Controller
-class Good { @GetMapping("/") String home() { return "home"; } }
+class Good {
+    @GetMapping("/") String home() { return "home"; }
+}
 
 // OUTPUT:
 // Bad  -> body: home
@@ -736,7 +782,8 @@ server.compression.enabled=true
 server.compression.mime-types=text/html,text/css,application/javascript
 
 # OUTPUT:
-# HTML responses are compressed; template parsing happens once.`],
+# HTML responses are compressed;
+template parsing happens once.`],
         [`<p>Scenario: a product list page.</p><ul><li>The service returns a list of small view records.</li><li>The controller adds it to the model and returns the view name.</li><li>A <code>@WebMvcTest</code> with a mocked service checks the HTML.</li></ul>`,
             r`record ProductView(String name, String price) {}
 @Controller
@@ -790,7 +837,8 @@ server.compression.min-response-size=1024
 spring.web.resources.cache.period=365d
 
 # OUTPUT:
-# Browser reuses assets for a year; URL changes when content changes.`],
+# Browser reuses assets for a year;
+URL changes when content changes.`],
         [`<p>Scenario: a marketing landing page next to a dynamic app.</p><ul><li><code>static/index.html</code> is the public home page.</li><li>Dynamic pages use templates and controllers.</li><li>Assets are versioned and cached, and a test confirms the welcome page.</li></ul>`,
             r`mvc.perform(get("/"))
    .andExpect(status().isOk())
@@ -857,7 +905,8 @@ mvc.perform(get("/old/report")).andExpect(forwardedUrl("/WEB-INF/views/old/repor
         [`<p>Layout techniques:</p><ul><li><b>Fragment with content:</b> pass markup as a parameter using a fragment expression.</li><li><b>Optional parameters:</b> use <code>th:with</code> or null checks.</li><li><b>Head merging:</b> <code>layout:title-pattern</code> builds page titles.</li><li><b>FreeMarker:</b> <code>&lt;#macro layout&gt;&lt;#nested&gt;&lt;/#macro&gt;</code> wraps page content.</li></ul>`,
             r`<!-- layout.ftlh -->
 <#macro page title>
-<html><head><title>` + r`$` + r`{title}</title></head>
+<html><head><title>` + r`$` + r`{title}
+</title></head>
 <body><header>Shop</header><#nested><footer>2026</footer></body></html>
 </#macro>
 <!-- page.ftlh -->
@@ -900,7 +949,7 @@ spring.thymeleaf.enabled=true
 // BindingResult result = binder.getBindingResult();
 
 // OUTPUT:
-// name=Asha&address.city=Pune -> form.getAddress().getCity() = "Pune"`],
+// name=Abaji&address.city=Pune -> form.getAddress().getCity() = "Pune"`],
         [`<p>Binding options:</p><ul><li><b>Formats:</b> <code>@DateTimeFormat(pattern = &quot;yyyy-MM-dd&quot;)</code>, <code>@NumberFormat</code>.</li><li><b>Custom type:</b> register a <code>Converter</code> or <code>Formatter</code> in <code>WebMvcConfigurer.addFormatters</code>.</li><li><b>Lists:</b> repeated names or indexed names such as <code>items[0].name</code>.</li><li><b>Binder rules:</b> <code>@InitBinder</code> with allowed, disallowed and required fields.</li></ul>`,
             r`public class BookingForm {
     @DateTimeFormat(pattern = "yyyy-MM-dd") private LocalDate date;
@@ -973,10 +1022,16 @@ String one(@PathVariable long id, Model m) {
         [`<p>Mistakes:</p><ul><li><b>No redirect after POST:</b> refresh repeats the action.</li><li><b>Large session:</b> storing lists in the session hurts scaling.</li><li><b>Mixing @RestController:</b> returns text instead of a page.</li><li><b>Flash with forward:</b> flash attributes only work with redirect.</li></ul>`,
             r`// WRONG: returns the page after POST; refresh re-posts the form
 @PostMapping("/todos")
-String bad(@RequestParam String text) { todos.add(text); return "todos"; }
+String bad(@RequestParam String text) {
+    todos.add(text);
+    return "todos";
+}
 // RIGHT
 @PostMapping("/todos")
-String good(@RequestParam String text) { todos.add(text); return "redirect:/todos"; }
+String good(@RequestParam String text) {
+    todos.add(text);
+    return "redirect:/todos";
+}
 
 // OUTPUT:
 // good -> refresh after the POST only reloads the list`],
@@ -989,7 +1044,8 @@ server.compression.enabled=true
 spring.data.web.pageable.default-page-size=20
 
 # OUTPUT:
-# Unchanged pages return 304 Not Modified; lists are paged by 20.`],
+# Unchanged pages return 304 Not Modified;
+lists are paged by 20.`],
         [`<p>Scenario: an internal admin application built only with SSR.</p><ul><li>Thymeleaf pages with a shared layout and Spring Security form login.</li><li>htmx loads table rows as fragments for sorting and paging.</li><li>MockMvc tests cover each page and each redirect.</li></ul>`,
             r`mvc.perform(get("/admin/users").with(user("admin").roles("ADMIN")))
    .andExpect(status().isOk())
@@ -1004,7 +1060,7 @@ spring.data.web.pageable.default-page-size=20
             r`POST /login HTTP/1.1
 Content-Type: application/x-www-form-urlencoded
 
-user=asha&pass=secret%21&remember=on
+user=abaji&pass=secret%21&remember=on
 
 # OUTPUT:
 # request.getParameter("pass") = "secret!"   (decoded by the container)`],
@@ -1090,7 +1146,7 @@ if (br.hasErrors()) return "user-form";
 // duplicate email -> 200 user-form with the message under the email field`],
         [`<p>Scenario: user registration.</p><ul><li>Form class with name, email, password and confirm password.</li><li>Controller validates, checks for duplicates, hashes the password and redirects to login.</li><li>MockMvc tests cover valid, invalid and duplicate cases.</li></ul>`,
             r`mvc.perform(post("/register").with(csrf())
-        .param("name", "Asha").param("email", "asha@x.com")
+        .param("name", "Abaji").param("email", "abaji@x.com")
         .param("password", "secret123").param("confirm", "secret123"))
    .andExpect(status().is3xxRedirection())
    .andExpect(redirectedUrl("/login"));

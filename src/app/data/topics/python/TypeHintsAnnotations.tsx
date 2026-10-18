@@ -19,11 +19,11 @@ Write <code>name: type</code> for each parameter and <code>-&gt; type</code> bef
 def log(message: str) -> None:        # returns nothing
     print("LOG:", message)
 
-print(greet("Asha", 2))
+print(greet("Abaji", 2))
 log("started")
 
 # OUTPUT:
-# Hello, Asha! Hello, Asha!
+# Hello, Abaji! Hello, Abaji!
 # LOG: started`
             ]
         },

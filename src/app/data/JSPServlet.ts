@@ -8881,7 +8881,7 @@ out.println("Welcome " + session.getAttribute("username"));
                                 codeExamples: [
                                     `<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
-<c:set var="names" value="'$'{['Ashish', 'Ravi', 'Neha']}" />
+<c:set var="names" value="'$'{['Ashish', 'Raoji', 'Netaji']}" />
 <ul>
 <c:forEach var="name" items="'$'{names}">
     <li>Hello, '$'{name}</li>
@@ -8927,7 +8927,7 @@ out.println("Welcome " + session.getAttribute("username"));
                                     `<%@ page contentType="text/html;charset=UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
-<c:set var="names" value="'$'{['Ashish','Ravi','Neha']}" />
+<c:set var="names" value="'$'{['Ashish','Raoji','Netaji']}" />
 
 <html>
 <head><title>JSP Full Example</title></head>
@@ -9045,7 +9045,7 @@ out.println("<p>Current Date: " + currentDate + "</p>");
                                     `<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
 <!-- Using JSTL forEach tag -->
-<c:set var="names" value="'$'{['Ashish', 'Ravi', 'Neha']}" />
+<c:set var="names" value="'$'{['Ashish', 'Raoji', 'Netaji']}" />
 <ul>
 <c:forEach var="name" items="'$'{names}">
    <li>'$'{name}</li>
@@ -9082,7 +9082,7 @@ out.println("<p>Current Date: " + currentDate + "</p>");
 &lt;html&gt;
 &lt;body&gt;
 &lt;h2&gt;Combined JSP Directives Demo&lt;/h2&gt;
-< c:set var="names" value="'$'{['Ashish', 'Ravi', 'Neha']}" />
+< c:set var="names" value="'$'{['Ashish', 'Raoji', 'Netaji']}" />
 < ul >
 < c:forEach var="name" items="'$'{names}" >
    < li >'$'{name}</li>

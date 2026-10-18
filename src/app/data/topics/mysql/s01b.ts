@@ -83,7 +83,7 @@ CREATE TABLE user_profile (
     bio     VARCHAR(200),
     FOREIGN KEY (user_id) REFERENCES app_user(id)
 );
-INSERT INTO app_user VALUES (1,'asha');
+INSERT INTO app_user VALUES (1,'abaji');
 INSERT INTO user_profile VALUES (1,'Loves SQL');
 SELECT u.login, p.bio FROM app_user u JOIN user_profile p ON p.user_id = u.id;
 
@@ -91,7 +91,7 @@ SELECT u.login, p.bio FROM app_user u JOIN user_profile p ON p.user_id = u.id;
 -- +-------+-----------+
 -- | login | bio       |
 -- +-------+-----------+
--- | asha  | Loves SQL |
+-- | abaji  | Loves SQL |
 -- +-------+-----------+`],
         [`Splitting rarely used or sensitive columns into their own table keeps the hot table narrow and lets you apply different privileges or storage.`,
             r`-- Second profile for the same user is rejected
@@ -101,7 +101,7 @@ INSERT INTO user_profile VALUES (1,'Another bio');
 -- ERROR 1062 (23000): Duplicate entry '1' for key 'user_profile.PRIMARY'`],
         [`Examples: user and passport details, employee and payroll record, order and invoice header. Many apps keep large BLOB or audit data in a 1:1 side table.`,
             r`-- LEFT JOIN shows users who have no profile yet (optional side)
-INSERT INTO app_user VALUES (2,'ravi');
+INSERT INTO app_user VALUES (2,'raoji');
 SELECT u.login, p.bio
 FROM app_user u LEFT JOIN user_profile p ON p.user_id = u.id;
 
@@ -109,8 +109,8 @@ FROM app_user u LEFT JOIN user_profile p ON p.user_id = u.id;
 -- +-------+-----------+
 -- | login | bio       |
 -- +-------+-----------+
--- | asha  | Loves SQL |
--- | ravi  | NULL      |
+-- | abaji  | Loves SQL |
+-- | raoji  | NULL      |
 -- +-------+-----------+`],
         [`<b>Advantages:</b> keeps the main table small and cache-friendly; isolates sensitive data; models true uniqueness.`,
             r`-- The narrow table scans fast because big text lives elsewhere
@@ -163,27 +163,27 @@ CREATE TABLE orders (
     amount      DECIMAL(8,2),
     FOREIGN KEY (customer_id) REFERENCES customer(id)
 );
-INSERT INTO customer VALUES (1,'Asha');
+INSERT INTO customer VALUES (1,'Abaji');
 INSERT INTO orders VALUES (1,1,100),(2,1,250),(3,1,75);
 SELECT c.name, COUNT(*) AS orders FROM customer c JOIN orders o ON o.customer_id = c.id GROUP BY c.name;
 
 -- OUTPUT:
--- +------+--------+
--- | name | orders |
--- +------+--------+
--- | Asha |      3 |
+-- +-------+--------+
+-- | name  | orders |
+-- +-------+--------+
+-- | Abaji |      3 |
 -- +------+--------+`],
         [`Storing the customer name inside every order duplicates it and invites inconsistency. A child table with a key reference stores each fact once.`,
             r`-- Rename once, every order reflects it through the join
-UPDATE customer SET name = 'Asha K' WHERE id = 1;
+UPDATE customer SET name = 'Abaji K' WHERE id = 1;
 SELECT o.id, c.name FROM orders o JOIN customer c ON c.id = o.customer_id LIMIT 2;
 
 -- OUTPUT:
--- +----+--------+
--- | id | name   |
--- +----+--------+
--- |  1 | Asha K |
--- |  2 | Asha K |
+-- +----+---------+
+-- | id | name    |
+-- +----+---------+
+-- |  1 | Abaji K |
+-- |  2 | Abaji K |
 -- +----+--------+`],
         [`The most common relationship: department-employees, category-products, post-comments, order-order_items.`,
             r`-- Total per parent
@@ -215,10 +215,10 @@ SHOW INDEX FROM orders;
 -- ERROR 1452 (23000): Cannot add or update a child row: a foreign key constraint fails`],
         `
    customer (1)                    orders (many)
-   ┌────┬──────┐                   ┌────┬─────────────┬────────┐
-   │  1 │ Asha │ ◄──┬──────────────│  1 │      1      │ 100.00 │
-   └────┴──────┘    ├──────────────│  2 │      1      │ 250.00 │
-                    └──────────────│  3 │      1      │  75.00 │
+   ┌────┬───────┐                  ┌────┬─────────────┬────────┐
+   │  1 │ Abaji │ ◄──┬─────────────│  1 │      1      │ 100.00 │
+   └────┴───────┘    ├─────────────│  2 │      1      │ 250.00 │
+                     └─────────────│  3 │      1      │  75.00 │
 `,
         `Always index the FK column (InnoDB does automatically) and pick ON DELETE behaviour deliberately: RESTRICT for business data, CASCADE only for true ownership like order lines. For very hot parents, watch FK lock contention on the parent row.`
     ),
@@ -234,19 +234,19 @@ CREATE TABLE enrolment (
     FOREIGN KEY (student_id) REFERENCES student(id),
     FOREIGN KEY (course_id)  REFERENCES course(id)
 );
-INSERT INTO student VALUES (1,'Asha'),(2,'Ravi');
+INSERT INTO student VALUES (1,'Abaji'),(2,'Raoji');
 INSERT INTO course  VALUES (10,'SQL'),(20,'Java');
 INSERT INTO enrolment VALUES (1,10),(1,20),(2,10);
 SELECT s.name, c.title FROM student s
 JOIN enrolment e ON e.student_id = s.id JOIN course c ON c.id = e.course_id ORDER BY s.name, c.title;
 
 -- OUTPUT:
--- +------+-------+
--- | name | title |
--- +------+-------+
--- | Asha | Java  |
--- | Asha | SQL   |
--- | Ravi | SQL   |
+-- +-------+-------+
+-- | name  | title |
+-- +-------+-------+
+-- | Abaji | Java  |
+-- | Abaji | SQL   |
+-- | Raoji | SQL   |
 -- +------+-------+`],
         [`Putting a list of course ids in one column breaks atomic values, blocks indexing and makes counting painful. The junction table keeps each link as a normal row.`,
             r`-- Which students take SQL? A plain indexed query on the junction table
@@ -295,10 +295,10 @@ ALTER TABLE enrolment ADD INDEX idx_course_student (course_id, student_id);
 -- | ref  | idx_course_student | Using index |`],
         `
    student            enrolment (junction)          course
-   ┌────┬──────┐      ┌────────────┬───────────┐   ┌────┬───────┐
-   │  1 │ Asha │◄─────│ student_id │ course_id │──►│ 10 │ SQL   │
-   │  2 │ Ravi │◄─────│     1      │    10     │   │ 20 │ Java  │
-   └────┴──────┘      │     1      │    20     │   └────┴───────┘
+   ┌────┬───────┐     ┌────────────┬───────────┐   ┌────┬───────┐
+   │  1 │ Abaji │◄────│ student_id │ course_id │──►│ 10 │ SQL   │
+   │  2 │ Raoji │◄────│     1      │    10     │   │ 20 │ Java  │
+   └────┴───────┘     │     1      │    20     │   └────┴───────┘
                       │     2      │    10     │
                       └────────────┴───────────┘
 `,
@@ -308,16 +308,16 @@ ALTER TABLE enrolment ADD INDEX idx_course_student (course_id, student_id);
     'Relational Database Concepts': dd(
         [`The <b>relational model</b> (E. F. Codd, 1970) stores data as <b>relations</b> (tables) of <b>tuples</b> (rows) with <b>attributes</b> (columns). Core ideas: keys, domains (types), integrity rules, and set-based operations (selection, projection, join).`,
             r`CREATE TABLE emp (id INT PRIMARY KEY, name VARCHAR(20), dept VARCHAR(10), salary INT);
-INSERT INTO emp VALUES (1,'Asha','IT',900),(2,'Ravi','HR',700),(3,'Mina','IT',800);
+INSERT INTO emp VALUES (1,'Abaji','IT',900),(2,'Raoji','HR',700),(3,'Mina','IT',800);
 -- Selection (rows) + Projection (columns)
 SELECT name, salary FROM emp WHERE dept = 'IT';
 
 -- OUTPUT:
--- +------+--------+
--- | name | salary |
--- +------+--------+
--- | Asha |    900 |
--- | Mina |    800 |
+-- +-------+--------+
+-- | name  | salary |
+-- +-------+--------+
+-- | Abaji |    900 |
+-- | Mina  |    800 |
 -- +------+--------+`],
         [`Because queries state <i>what</i> you want, not <i>how</i> to find it, the optimizer can choose the best plan and the same SQL keeps working as data grows or indexes change.`,
             r`-- Declarative: no loops. The engine decides how.
@@ -337,12 +337,12 @@ UNION
 SELECT name FROM emp WHERE salary < 800;
 
 -- OUTPUT:
--- +------+
--- | name |
--- +------+
--- | Asha |
--- | Mina |
--- | Ravi |
+-- +-------+
+-- | name  |
+-- +-------+
+-- | Abaji |
+-- | Mina  |
+-- | Raoji |
 -- +------+`],
         [`<b>Advantages:</b> data independence (storage can change without changing queries), integrity rules, a strong formal basis for optimization.`,
             r`-- Data independence: add an index, queries unchanged, plan improves
@@ -375,7 +375,7 @@ SELECT COUNT(*) AS n, COUNT(DISTINCT x) AS distinct_n FROM bag;
 -- +---+------------+`],
         `
    Relation (table)          emp(id, name, dept, salary)   <- schema
-   Tuple (row)               (1, Asha, IT, 900)
+   Tuple (row)               (1, Abaji, IT, 900)
    Attribute (column)        salary : INT                  <- domain
    Operators:  σ select   π project   ⋈ join   ∪ union   − difference
 `,

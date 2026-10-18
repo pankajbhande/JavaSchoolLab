@@ -156,8 +156,8 @@ EXPLAIN SELECT total FROM ord WHERE customer_id = 5;
             ['S', 'What is index skip scan?', 'MySQL 8.0.13+ can scan a composite index without the leading column predicate if that column has few distinct values; it is a fallback, not a design.']],
         [['Leftmost prefix demo.',
             r`CREATE TABLE emp2 (id INT PRIMARY KEY, last_name VARCHAR(20), first_name VARCHAR(20), city VARCHAR(20), KEY idx_name_city (last_name, first_name, city));
-EXPLAIN SELECT id FROM emp2 WHERE last_name = 'Rao' AND first_name = 'Asha';
-EXPLAIN SELECT id FROM emp2 WHERE first_name = 'Asha';
+EXPLAIN SELECT id FROM emp2 WHERE last_name = 'Rao' AND first_name = 'Abaji';
+EXPLAIN SELECT id FROM emp2 WHERE first_name = 'Abaji';
 
 -- OUTPUT: (example)
 -- first: type=ref key=idx_name_city key_len=...  uses 2 columns

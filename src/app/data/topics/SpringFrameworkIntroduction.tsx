@@ -59,7 +59,7 @@ public class CustomerService {
 // And so this is a legal unit test, with no server involved:
 //
 //   CustomerService service = new CustomerService(new FakeRepository());
-//   service.save(new Customer("Asha"));
+//   service.save(new Customer("Abaji"));
 //
 // OUTPUT:
 // (the fake repository records the call; the test asserts on it)`

@@ -129,8 +129,8 @@ def notify(user, send):
 
 def test_notify_sends_once(mocker):
     send = mocker.Mock()
-    notify("asha", send)
-    send.assert_called_once_with("asha", "Welcome!")
+    notify("abaji", send)
+    send.assert_called_once_with("abaji", "Welcome!")
 
 @pytest.mark.asyncio
 async def test_async_sleep():

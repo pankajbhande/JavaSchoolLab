@@ -49,13 +49,13 @@ print("after the block")
         print("session closed for", self.owner)
         return False
 
-with Account("Asha") as acc:
+with Account("Abaji") as acc:
     print("working with", acc.owner)
 
 # OUTPUT:
-# session opened for Asha
-# working with Asha
-# session closed for Asha`
+# session opened for Abaji
+# working with Abaji
+# session closed for Abaji`
             ]
         },
         {

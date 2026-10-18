@@ -134,7 +134,7 @@ users = Blueprint("users", __name__, url_prefix="/users")   # a route bundle
 
 @users.get("/")
 def list_users():
-    return {"users": ["ada", "bob"]}
+    return {"users": ["ada", "baji"]}
 
 app = Flask(__name__)
 app.register_blueprint(users)              # plug the bundle into the app
@@ -142,7 +142,7 @@ app.register_blueprint(users)              # plug the bundle into the app
 print(app.test_client().get("/users/").get_json())
 
 # OUTPUT:
-# {'users': ['ada', 'bob']}`],
+# {'users': ['ada', 'baji']}`],
         [`One file with 80 routes becomes unmaintainable. Blueprints split the API by feature (auth, billing, admin), and hooks give a single place for cross-cutting concerns such as logging, CORS headers and authentication.`,
             r`from flask import Flask, request, g
 

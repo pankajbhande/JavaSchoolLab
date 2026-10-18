@@ -129,7 +129,7 @@ public class EmployeeDemo implements CommandLineRunner {
     public void run(String... args) {
         // 1. Create and save a new Employee
         Employee emp = new Employee();
-        emp.setName("John Doe");
+        emp.setName("Jiva Doe");
         emp.setEmailAddress("john@company.com");
         emp.setSalary(55000);
         employeeRepository.save(emp); // INSERT happens here
@@ -140,7 +140,7 @@ public class EmployeeDemo implements CommandLineRunner {
     }
 }
 // OUTPUT:
-// Fetched: John Doe`]
+// Fetched: Jiva Doe`]
         }
     ],
 
@@ -156,8 +156,8 @@ other side, is a <strong>many-to-one</strong> (many <code>Employee</code>s belon
    +----+----------+        +----+--------+---------------+
    | id | name     |        | id | name   | department_id |  (FK)
    +----+----------+        +----+--------+---------------+
-   | 1  | Engg     |  <----  | 1  | John   |      1        |
-   |    |          |  <----  | 2  | Alice  |      1        |
+   | 1  | Engg     |  <----  | 1  | Jiva   |      1        |
+   |    |          |  <----  | 2  | Anaji  |      1        |
    +----+----------+         +----+--------+---------------+
 
    Department.employees  ------ @OneToMany (mappedBy = "department") ------>

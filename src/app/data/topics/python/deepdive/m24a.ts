@@ -38,7 +38,7 @@ asyncio.run(main())
             r`import asyncio
 
 async def get_user(uid):
-    await asyncio.sleep(0.1); return {"id": uid, "name": "Asha"}
+    await asyncio.sleep(0.1); return {"id": uid, "name": "Abaji"}
 async def get_orders(uid):
     await asyncio.sleep(0.2); return [101, 102]
 
@@ -49,7 +49,7 @@ async def handler(uid):                      # one request fans out to two backe
 print(asyncio.run(handler(7)))               # takes 0.2s, not 0.3s
 
 # OUTPUT:
-# {'id': 7, 'name': 'Asha', 'orders': [101, 102]}`],
+# {'id': 7, 'name': 'Abaji', 'orders': [101, 102]}`],
         [`<b>Advantages:</b> huge concurrency on one thread, no locks needed for most shared state (switches happen only at <code>await</code>), explicit suspension points make code easier to reason about.`,
             r`import asyncio
 

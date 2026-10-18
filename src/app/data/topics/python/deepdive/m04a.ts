@@ -269,14 +269,14 @@ except SyntaxError as e:
     print("args  :", args)
     print("kwargs:", kwargs)
 
-show(1, 2, 3, name="Asha", age=30)
+show(1, 2, 3, name="Abaji", age=30)
 nums = [10, 20]
 opts = {"sep": " | "}
 print(*nums, **opts)                # unpack at the call site
 
 # OUTPUT:
 # args  : (1, 2, 3)
-# kwargs: {'name': 'Asha', 'age': 30}
+# kwargs: {'name': 'Abaji', 'age': 30}
 # 10 | 20`],
         [`Sometimes a function must accept any number of inputs (<code>sum</code>-like, <code>print</code>-like) or forward whatever it receives to another function without knowing the details.`,
             r`def total(*numbers):

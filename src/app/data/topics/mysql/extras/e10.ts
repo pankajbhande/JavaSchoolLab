@@ -78,10 +78,10 @@ SELECT lvl, name FROM chain ORDER BY lvl, id;
 
 -- OUTPUT:
 -- lvl | name
---   1 | Anita
---   2 | Ravi
---   2 | Meena
---   3 | Kiran`],
+--   1 | Annaji
+--   2 | Raoji
+--   2 | Moropant
+--   3 | Kanhoji`],
             ['Generate a date series.',
                 r`WITH RECURSIVE d AS (SELECT DATE('2026-01-01') AS day UNION ALL SELECT day + INTERVAL 1 DAY FROM d WHERE day < '2026-01-05')
 SELECT day FROM d;
@@ -141,16 +141,16 @@ SELECT name FROM emp, a WHERE salary > a.v;
 
 -- OUTPUT: (all three)
 -- name
--- Asha
--- Meena`],
+-- Abaji
+-- Moropant`],
             ['Temp table with an index for repeated joins.',
                 r`CREATE TEMPORARY TABLE tmp_totals (customer_id INT PRIMARY KEY, spent DECIMAL(12,2))
   AS SELECT customer_id, SUM(total) FROM orders GROUP BY customer_id;
 SELECT c.name, t.spent FROM customers c JOIN tmp_totals t USING (customer_id);
 
 -- OUTPUT:
--- name | spent
--- Asha | 1500.00`]],
+-- name  | spent
+-- Abaji | 1500.00`]],
         [['Temp table disappears after the session.',
             r`-- reconnect
 SELECT * FROM tmp_totals;
@@ -196,9 +196,9 @@ FROM (SELECT 'A' AS name, 100 AS salary UNION ALL SELECT 'B',100 UNION ALL SELEC
                 r`SELECT dept, name, salary FROM (SELECT dept, name, salary, ROW_NUMBER() OVER (PARTITION BY dept ORDER BY salary DESC) AS rn FROM emp) t WHERE rn = 1;
 
 -- OUTPUT:
--- dept | name  | salary
---   10 | Asha  |  60000
---   20 | Meena |  70000`]],
+-- dept | name     | salary
+--   10 | Abaji    | 60000
+--   20 | Moropant | 70000`]],
         [['Delete duplicates keeping the newest.',
             r`DELETE u FROM users u JOIN (SELECT id, ROW_NUMBER() OVER (PARTITION BY email ORDER BY id DESC) AS rn FROM users) d ON d.id = u.id WHERE d.rn > 1;
 
@@ -208,10 +208,10 @@ FROM (SELECT 'A' AS name, 100 AS salary UNION ALL SELECT 'B',100 UNION ALL SELEC
                 r`SELECT player, score, DENSE_RANK() OVER (ORDER BY score DESC) AS position FROM scores;
 
 -- OUTPUT:
--- player | score | position
--- Ravi   |   95  | 1
--- Asha   |   95  | 1
--- Meena  |   80  | 2`]]
+-- player   | score | position
+-- Raoji    |    95 | 1
+-- Abaji    |    95 | 1
+-- Moropant |    80 | 2`]]
     ),
 
     'NTILE': x(
@@ -234,10 +234,10 @@ FROM (SELECT 'A' AS name, 100 AS salary UNION ALL SELECT 'B',100 UNION ALL SELEC
             r`SELECT name, salary, NTILE(2) OVER (ORDER BY salary DESC) AS half FROM emp;
 
 -- OUTPUT:
--- name  | salary | half
--- Meena |  70000 | 1
--- Asha  |  60000 | 1
--- Ravi  |  45000 | 2`],
+-- name     | salary | half
+-- Moropant |  70000 | 1
+-- Abaji    |  60000 | 1
+-- Raoji    |  45000 | 2`],
             ['Top 25% of customers by spend.',
                 r`SELECT customer_id, spent FROM (SELECT customer_id, spent, NTILE(4) OVER (ORDER BY spent DESC) AS q FROM customer_spend) t WHERE q = 1;
 
@@ -260,10 +260,10 @@ FROM (SELECT 'A' AS name, 100 AS salary UNION ALL SELECT 'B',100 UNION ALL SELEC
                 r`SELECT name, ROUND(PERCENT_RANK() OVER (ORDER BY salary), 2) AS pr, ROUND(CUME_DIST() OVER (ORDER BY salary), 2) AS cd FROM emp;
 
 -- OUTPUT:
--- name  | pr   | cd
--- Ravi  | 0.00 | 0.33
--- Asha  | 0.50 | 0.67
--- Meena | 1.00 | 1.00`]]
+-- name     | pr   | cd
+-- Raoji    | 0.00 | 0.33
+-- Abaji    | 0.50 | 0.67
+-- Moropant | 1.00 | 1.00`]]
     ),
 
     'LAG & LEAD': x(
@@ -333,32 +333,32 @@ FROM monthly_rev;
             r`SELECT dept, name, salary, FIRST_VALUE(salary) OVER (PARTITION BY dept ORDER BY salary DESC) - salary AS gap_to_top FROM emp;
 
 -- OUTPUT:
--- dept | name  | salary | gap_to_top
---   10 | Asha  |  60000 |          0
---   10 | Ravi  |  45000 |      15000
---   20 | Meena |  70000 |          0`],
+-- dept | name     | salary | gap_to_top
+--   10 | Abaji    |  60000 | 0
+--   10 | Raoji    |  45000 | 15000
+--   20 | Moropant |  70000 | 0`],
             ['LAST_VALUE with the right frame.',
                 r`SELECT name, salary, LAST_VALUE(name) OVER (ORDER BY salary ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) AS highest_paid FROM emp;
 
 -- OUTPUT:
--- name  | salary | highest_paid
--- Ravi  |  45000 | Meena
--- Asha  |  60000 | Meena
--- Meena |  70000 | Meena`]],
+-- name     | salary | highest_paid
+-- Raoji    |  45000 | Moropant
+-- Abaji    |  60000 | Moropant
+-- Moropant |  70000 | Moropant`]],
         [['Default frame trap.',
             r`SELECT name, LAST_VALUE(name) OVER (ORDER BY salary) AS last_name FROM emp;
 
 -- OUTPUT:
--- name  | last_name
--- Ravi  | Ravi
--- Asha  | Asha
--- Meena | Meena      (not the max: frame ends at current row)`],
+-- name     | last_name
+-- Raoji    | Raoji
+-- Abaji    | Abaji
+-- Moropant | Moropant      (not the max: frame ends at current row)`],
             ['NTH_VALUE.',
                 r`SELECT DISTINCT NTH_VALUE(name, 2) OVER (ORDER BY salary DESC ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) AS second_highest FROM emp;
 
 -- OUTPUT:
 -- second_highest
--- Asha`]]
+-- Abaji`]]
     ),
 
     'PARTITION BY & Window Frames': x(
@@ -381,18 +381,18 @@ FROM monthly_rev;
             r`SELECT name, dept, salary, ROUND(AVG(salary) OVER (PARTITION BY dept), 0) AS dept_avg, salary - AVG(salary) OVER (PARTITION BY dept) AS diff FROM emp;
 
 -- OUTPUT:
--- name  | dept | salary | dept_avg | diff
--- Asha  |   10 |  60000 | 52500    |  7500
--- Ravi  |   10 |  45000 | 52500    | -7500
--- Meena |   20 |  70000 | 70000    |     0`],
+-- name     | dept | salary | dept_avg | diff
+-- Abaji    |   10 |  60000 |    52500 | 7500
+-- Raoji    |   10 |  45000 |    52500 | -7500
+-- Moropant |   20 |  70000 |    70000 | 0`],
             ['Named window.',
                 r`SELECT name, dept, salary, SUM(salary) OVER w AS dept_total, COUNT(*) OVER w AS dept_count FROM emp WINDOW w AS (PARTITION BY dept);
 
 -- OUTPUT:
--- name  | dept | salary | dept_total | dept_count
--- Asha  |   10 |  60000 | 105000     | 2
--- Ravi  |   10 |  45000 | 105000     | 2
--- Meena |   20 |  70000 |  70000     | 1`]],
+-- name     | dept | salary | dept_total | dept_count
+-- Abaji    |   10 |  60000 |     105000 | 2
+-- Raoji    |   10 |  45000 |     105000 | 2
+-- Moropant |   20 |  70000 |      70000 | 1`]],
         [['ROWS vs RANGE with ties.',
             r`SELECT v, SUM(v) OVER (ORDER BY v ROWS UNBOUNDED PRECEDING) AS rows_sum, SUM(v) OVER (ORDER BY v RANGE UNBOUNDED PRECEDING) AS range_sum
 FROM (SELECT 1 AS v UNION ALL SELECT 2 UNION ALL SELECT 2 UNION ALL SELECT 3) t;
@@ -456,10 +456,10 @@ FROM (SELECT 1 AS v UNION ALL SELECT 2 UNION ALL SELECT 2 UNION ALL SELECT 3) t;
                 r`SELECT name, salary, ROUND(salary / SUM(salary) OVER () * 100, 1) AS pct_of_company FROM emp;
 
 -- OUTPUT:
--- name  | salary | pct_of_company
--- Asha  |  60000 | 34.3
--- Ravi  |  45000 | 25.7
--- Meena |  70000 | 40.0`]]
+-- name     | salary | pct_of_company
+-- Abaji    |  60000 | 34.3
+-- Raoji    |  45000 | 25.7
+-- Moropant |  70000 | 40.0`]]
     ),
 
     'Top-N per Group': x(
@@ -483,26 +483,26 @@ FROM (SELECT 1 AS v UNION ALL SELECT 2 UNION ALL SELECT 2 UNION ALL SELECT 3) t;
 SELECT dept, name, salary FROM ranked WHERE rn <= 2;
 
 -- OUTPUT:
--- dept | name  | salary
---   10 | Asha  |  60000
---   10 | Ravi  |  45000
---   20 | Meena |  70000`],
+-- dept | name     | salary
+--   10 | Abaji    | 60000
+--   10 | Raoji    | 45000
+--   20 | Moropant | 70000`],
             ['Include ties with DENSE_RANK.',
                 r`SELECT * FROM (SELECT name, dept, salary, DENSE_RANK() OVER (PARTITION BY dept ORDER BY salary DESC) AS dr FROM emp) t WHERE dr <= 2;
 
 -- OUTPUT:
--- name  | dept | salary | dr
--- Asha  |   10 |  60000 | 1
--- Ravi  |   10 |  45000 | 2
--- Meena |   20 |  70000 | 1`]],
+-- name     | dept | salary | dr
+-- Abaji    |   10 |  60000 | 1
+-- Raoji    |   10 |  45000 | 2
+-- Moropant |   20 |  70000 | 1`]],
         [['Latest 3 posts per author with a lateral join (8.0.14+).',
             r`SELECT a.name, p.title FROM authors a JOIN LATERAL (SELECT title FROM posts WHERE author_id = a.id ORDER BY created_at DESC LIMIT 3) p;
 
 -- OUTPUT:
--- name | title
--- Asha | Post C
--- Asha | Post B
--- Asha | Post A`],
+-- name  | title
+-- Abaji | Post C
+-- Abaji | Post B
+-- Abaji | Post A`],
             ['Supporting index.',
                 r`ALTER TABLE posts ADD INDEX idx_author_created (author_id, created_at);
 
@@ -528,19 +528,19 @@ SELECT dept, name, salary FROM ranked WHERE rn <= 2;
             ['S', 'What are the costs of large JSON documents?', 'Bigger rows, more I/O and replication volume, and harder partial indexing.']],
         [['Build and store JSON.',
             r`CREATE TABLE profiles (id INT PRIMARY KEY, data JSON);
-INSERT INTO profiles VALUES (1, JSON_OBJECT('name','Asha','skills',JSON_ARRAY('SQL','Java'),'active',TRUE));
+INSERT INTO profiles VALUES (1, JSON_OBJECT('name','Abaji','skills',JSON_ARRAY('SQL','Java'),'active',TRUE));
 SELECT data FROM profiles;
 
 -- OUTPUT:
 -- data
--- {"name": "Asha", "active": true, "skills": ["SQL", "Java"]}`],
+-- {"name": "Abaji", "active": true, "skills": ["SQL", "Java"]}`],
             ['Modify a document.',
                 r`UPDATE profiles SET data = JSON_SET(data, '$.city', 'Pune', '$.active', FALSE) WHERE id = 1;
 SELECT JSON_PRETTY(data) FROM profiles;
 
 -- OUTPUT:
 -- {
---   "city": "Pune", "name": "Asha", "active": false, "skills": ["SQL", "Java"]
+--   "city": "Pune", "name": "Abaji", "active": false, "skills": ["SQL", "Java"]
 -- }`]],
         [['Schema validation constraint.',
             r`ALTER TABLE profiles ADD CONSTRAINT chk_json CHECK (JSON_SCHEMA_VALID('{"type":"object","required":["name"]}', data));
@@ -577,8 +577,8 @@ SELECT JSON_LENGTH(data, '$.skills') FROM profiles WHERE id = 1;
             r`SELECT id, data->>'$.name' AS name, JSON_VALUE(data, '$.age' RETURNING UNSIGNED) AS age FROM people_json WHERE JSON_VALUE(data, '$.age' RETURNING UNSIGNED) > 25;
 
 -- OUTPUT:
--- id | name | age
---  1 | Asha |  30`],
+-- id | name  | age
+--  1 | Abaji | 30`],
             ['Array membership.',
                 r`SELECT id FROM profiles WHERE 'SQL' MEMBER OF (data->'$.skills');
 

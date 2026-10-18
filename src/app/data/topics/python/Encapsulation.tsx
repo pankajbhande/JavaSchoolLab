@@ -39,7 +39,7 @@ Java enforces this with <code>private</code> fields and getters/setters. Python 
     def get_balance(self):
         return self._balance
 
-acc = Account("Asha", 1000)
+acc = Account("Abaji", 1000)
 acc.deposit(500)
 acc.withdraw(300)
 print(acc.get_balance())
@@ -127,13 +127,13 @@ Java code starts with private fields plus <code>getX()</code>/<code>setX()</code
             raise ValueError("marks must be 0-100")
         self._marks = value
 
-s = Student("Asha", 80)
+s = Student("Abaji", 80)
 s.marks = 95                              # looks like a field, runs validation
 print(s.name, s.marks)
-s.name = "Ravi"
+s.name = "Raoji"
 
 # OUTPUT:
-# Asha 95
+# Abaji 95
 # AttributeError: property 'name' of 'Student' object has no setter`
             ]
         },
@@ -178,12 +178,12 @@ Returning an internal list lets callers modify the object behind its back. Retur
         return tuple(self._students)     # read-only snapshot
 
 c = Course()
-c.enrol("Asha")
+c.enrol("Abaji")
 print(c.students)
 c.students.append("Hacker")
 
 # OUTPUT:
-# ('Asha',)
+# ('Abaji',)
 # AttributeError: 'tuple' object has no attribute 'append'`
             ]
         },

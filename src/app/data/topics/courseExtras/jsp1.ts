@@ -112,7 +112,7 @@ Accept: text/html
 //
 // <h1>Hello Shop</h1>`],
             ['Send a POST with curl.',
-                r`curl -i -X POST -d "name=Asha&city=Pune" http://localhost:8080/shop/register
+                r`curl -i -X POST -d "name=Abaji&city=Pune" http://localhost:8080/shop/register
 
 // OUTPUT: (varies)
 // HTTP/1.1 302
@@ -166,14 +166,14 @@ Host: localhost:8080
 Content-Type: application/x-www-form-urlencoded
 Content-Length: 25
 
-user=asha&password=secret
+user=abaji&password=secret
 
 // OUTPUT:
 // HTTP/1.1 200
 // Set-Cookie: JSESSIONID=3F2A9C...; Path=/shop; HttpOnly
 // Content-Type: text/html;charset=UTF-8
 //
-// <p>Welcome asha</p>`],
+// <p>Welcome abaji</p>`],
             ['Timing phases with curl.',
                 r`curl -s -o /dev/null -w "dns=%{time_namelookup} connect=%{time_connect} total=%{time_total}\n" http://localhost:8080/shop/
 
@@ -271,13 +271,14 @@ tail -f logs/catalina.out
             r`<%@ page contentType="text/html;charset=UTF-8" %>
 <html><body>
 <h2>Hello JSP</h2>
-<% String name = request.getParameter("name"); %>
+<% String name = request.getParameter("name");
+%>
 <p>Welcome, <%= name == null ? "guest" : name %></p>
 </body></html>
 
-// OUTPUT: (GET /shop/hello.jsp?name=Asha)
+// OUTPUT: (GET /shop/hello.jsp?name=Abaji)
 // <h2>Hello JSP</h2>
-// <p>Welcome, Asha</p>`],
+// <p>Welcome, Abaji</p>`],
             ['Page directive and include.',
                 r`<%@ page import="java.util.Date" errorPage="error.jsp" %>
 <%@ include file="header.jspf" %>
@@ -298,8 +299,10 @@ req.getRequestDispatcher("/WEB-INF/views/list.jsp").forward(req, resp);
 // OUTPUT:
 // the list page renders products with no Java in the JSP`],
             ['Shared declaration variable is not thread safe.',
-                r`<%! int hits = 0; %>
-<% hits++; %>
+                r`<%! int hits = 0;
+%>
+<% hits++;
+%>
 <p>Hits: <%= hits %></p>
 
 // OUTPUT: (varies; two parallel requests can race and lose updates)
@@ -362,7 +365,7 @@ public class LifeServlet extends HttpServlet {
 }
 
 // OUTPUT: (varies under load)
-// Hello bob   (printed to the request that sent u=asha)`],
+// Hello baji   (printed to the request that sent u=abaji)`],
             ['Count requests safely.',
                 r`private final AtomicLong count = new AtomicLong();
 protected void doGet(HttpServletRequest rq, HttpServletResponse rs)
@@ -396,7 +399,10 @@ export const jsp1Deep: Record<string, Deep> = {
 server {
     listen 443 ssl;
     location /shop/ { proxy_pass http://shop_app; }
-    location /static/ { root /var/www; expires 7d; }
+    location /static/ {
+        root /var/www;
+        expires 7d;
+    }
 }
 
 // OUTPUT:
@@ -583,7 +589,8 @@ public void _jspService(HttpServletRequest request, HttpServletResponse response
             r`<jsp:include page="menu.jsp" />
 <%-- hidden comment --%>
 <!-- visible comment -->
-<% request.setAttribute("msg", "hi"); %>
+<% request.setAttribute("msg", "hi");
+%>
 <p><%= request.getAttribute("msg") %></p>
 
 // OUTPUT:
@@ -670,7 +677,8 @@ public class ReportServlet extends HttpServlet {
 @Override public void init() throws ServletException {
     try {
         ds = (DataSource) new InitialContext().lookup("java:comp/env/jdbc/shop");
-    } catch (NamingException e) { throw new ServletException(e); }
+    } catch (NamingException e) { throw new ServletException(e);
+    }
 }
 
 // OUTPUT:

@@ -13,29 +13,29 @@ CREATE TABLE emp  (
     FOREIGN KEY (dept_id) REFERENCES dept(id)
 );
 INSERT INTO dept VALUES (1,'IT'),(2,'HR');
-INSERT INTO emp  VALUES (10,'Asha',1),(11,'Ravi',1),(12,'Mina',2);
+INSERT INTO emp  VALUES (10,'Abaji',1),(11,'Raoji',1),(12,'Mina',2);
 SELECT d.name AS dept, e.name AS emp FROM dept d JOIN emp e ON e.dept_id = d.id ORDER BY e.id;
 
 -- OUTPUT:
--- +------+------+
--- | dept | emp  |
--- +------+------+
--- | IT   | Asha |
--- | IT   | Ravi |
--- | HR   | Mina |
+-- +------+-------+
+-- | dept | emp   |
+-- +------+-------+
+-- | IT   | Abaji |
+-- | IT   | Raoji |
+-- | HR   | Mina  |
 -- +------+------+`],
         [`Beginners often store a many-to-many list in one column, such as "10,20". It looks easy but breaks indexing, integrity and querying. The design rule exists to avoid exactly this.`,
             r`-- Anti-pattern: comma list in a column
 CREATE TABLE bad_student (id INT PRIMARY KEY, name VARCHAR(20), course_ids VARCHAR(50));
-INSERT INTO bad_student VALUES (1,'Asha','10,20'),(2,'Ravi','20');
+INSERT INTO bad_student VALUES (1,'Abaji','10,20'),(2,'Raoji','20');
 SELECT name FROM bad_student WHERE FIND_IN_SET(10, course_ids) > 0;   -- full scan, no FK, no index
 
 -- OUTPUT:
--- +------+
--- | name |
--- +------+
--- | Asha |
--- +------+
+-- +-------+
+-- | name  |
+-- +-------+
+-- | Abaji |
+-- +-------+
 -- Nothing stops course_ids = '10,999' (course 999 may not exist).`],
         [`Shops model orders (one customer, many orders), order items (one order, many items) and products (many orders contain many products) with the same two patterns.`,
             r`CREATE TABLE product (id INT PRIMARY KEY, name VARCHAR(30), price DECIMAL(8,2));
@@ -113,7 +113,7 @@ CREATE TABLE enrolment (
     CONSTRAINT fk_enr_student FOREIGN KEY (student_id) REFERENCES student(id),
     CONSTRAINT fk_enr_course  FOREIGN KEY (course_id)  REFERENCES course(id)
 );
-INSERT INTO student VALUES (1,'Asha'),(2,'Ravi');
+INSERT INTO student VALUES (1,'Abaji'),(2,'Raoji');
 INSERT INTO course  VALUES (100,'SQL'),(101,'Java');
 INSERT INTO enrolment VALUES (1,100),(1,101),(2,100);
 SELECT s.name, c.title FROM student s
@@ -121,12 +121,12 @@ JOIN enrolment e ON e.student_id = s.id JOIN course c ON c.id = e.course_id
 ORDER BY s.id, c.id;
 
 -- OUTPUT:
--- +------+-------+
--- | name | title |
--- +------+-------+
--- | Asha | SQL   |
--- | Asha | Java  |
--- | Ravi | SQL   |
+-- +-------+-------+
+-- | name  | title |
+-- +-------+-------+
+-- | Abaji | SQL   |
+-- | Abaji | Java  |
+-- | Raoji | SQL   |
 -- +------+-------+`],
         [`Real relationships have properties: when did the student enrol, what grade did they get, what is the line quantity? Those facts belong to the pair, so they need a place in the bridge table, not in either parent.`,
             r`ALTER TABLE enrolment
@@ -152,11 +152,11 @@ GROUP BY s.id, s.name
 ORDER BY s.id;
 
 -- OUTPUT:
--- +------+-----------+
--- | name | courses   |
--- +------+-----------+
--- | Asha | Java,SQL  |
--- | Ravi | SQL       |
+-- +-------+----------+
+-- | name  | courses  |
+-- +-------+----------+
+-- | Abaji | Java,SQL |
+-- | Raoji | SQL      |
 -- +------+-----------+`],
         [`<b>Advantages:</b> the composite PK makes duplicate pairs impossible, and FKs guarantee both sides exist. Either side can be queried and either can change independently.`,
             r`INSERT INTO enrolment (student_id, course_id) VALUES (1,100);   -- same pair twice
@@ -182,9 +182,9 @@ ORDER BY s.id;
 -- (school.enrolment, CONSTRAINT fk_enr_course FOREIGN KEY (course_id) REFERENCES course (id))`],
         `
    student                enrolment                   course
-   ┌────┬──────┐     ┌────────────┬───────────┬───────┐     ┌─────┬───────┐
-   │  1 │ Asha │◄────│     1      │    100    │ grade │────►│ 100 │ SQL   │
-   │  2 │ Ravi │◄─┐  │     1      │    101    │ ...   │──┐  │ 101 │ Java  │
+   ┌────┬───────┐    ┌────────────┬───────────┬───────┐     ┌─────┬───────┐
+   │  1 │ Abaji │◄───│     1      │    100    │ grade │────►│ 100 │ SQL   │
+   │  2 │ Raoji │◄┐  │     1      │    101    │ ...   │──┐  │ 101 │ Java  │
    └────┘         │  │     2      │    100    │       │  │  └─────┴───────┘
                   └──│            PK(student_id, course_id)  │
                      └────────────┴───────────┴───────┘     (two FKs, one per side)
@@ -200,7 +200,7 @@ CREATE TABLE orders (
     customer_id INT,
     CONSTRAINT fk_ord_cust FOREIGN KEY (customer_id) REFERENCES customer(id)
 );
-INSERT INTO customer VALUES (1,'Asha');
+INSERT INTO customer VALUES (1,'Abaji');
 INSERT INTO orders   VALUES (100,1);             -- ok: customer 1 exists
 INSERT INTO orders   VALUES (101,42);            -- orphan attempt
 
@@ -276,9 +276,9 @@ INSERT INTO person VALUES (2,'Kid',1),(1,'Boss',NULL);   -- child row is checked
 -- Fix: insert (1,'Boss',NULL) first, or insert in two statements.`],
         `
    parent: customer                 child: orders
-   ┌────┬──────┐                    ┌─────┬─────────────┐
-   │  1 │ Asha │◄───────────────────│ 100 │      1      │  valid
-   └────┴──────┘                    │ 102 │    NULL     │  valid (optional)
+   ┌────┬───────┐                   ┌─────┬─────────────┐
+   │  1 │ Abaji │◄──────────────────│ 100 │      1      │  valid
+   └────┴───────┘                   │ 102 │    NULL     │  valid (optional)
                        X───────────│ 101 │     42      │  REJECTED 1452
    DELETE parent 1 while 100 exists ──► REJECTED 1451 (RESTRICT/NO ACTION)
 `,
@@ -309,7 +309,7 @@ CREATE TABLE ticket (
     id INT PRIMARY KEY, subject VARCHAR(30), assignee_id INT NULL,
     FOREIGN KEY (assignee_id) REFERENCES staff(id) ON DELETE SET NULL
 );
-INSERT INTO staff  VALUES (1,'Asha');
+INSERT INTO staff  VALUES (1,'Abaji');
 INSERT INTO ticket VALUES (500,'Printer down',1);
 DELETE FROM staff WHERE id = 1;
 SELECT * FROM ticket;

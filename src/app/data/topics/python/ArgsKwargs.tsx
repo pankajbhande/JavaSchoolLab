@@ -42,11 +42,11 @@ Each <code>name=value</code> pair becomes a key and value in a dictionary, in th
     for key, value in info.items():
         print(f"{key}: {value}")
 
-profile(name="Asha", age=21, city="Pune")
+profile(name="Abaji", age=21, city="Pune")
 
 # OUTPUT:
-# {'name': 'Asha', 'age': 21, 'city': 'Pune'}
-# name: Asha
+# {'name': 'Abaji', 'age': 21, 'city': 'Pune'}
+# name: Abaji
 # age: 21
 # city: Pune`
             ]
@@ -60,10 +60,10 @@ Regular parameters take their values first; <code>*args</code> gets whatever pos
     print("Items:   ", items)
     print("Options: ", options)
 
-place_order("Asha", "pen", "book", express=True, gift_wrap=False)
+place_order("Abaji", "pen", "book", express=True, gift_wrap=False)
 
 # OUTPUT:
-# Customer: Asha
+# Customer: Abaji
 # Items:    ('pen', 'book')
 # Options:  {'express': True, 'gift_wrap': False}`
             ]
@@ -75,10 +75,10 @@ The same symbols work in the other direction when <b>calling</b> a function: <co
                 `def greet(name, greeting):
     print(f"{greeting}, {name}!")
 
-args = ["Ravi", "Hello"]
+args = ["Raoji", "Hello"]
 kwargs = {"name": "Sheru", "greeting": "Hi"}
 
-greet(*args)              # greet("Ravi", "Hello")
+greet(*args)              # greet("Raoji", "Hello")
 greet(**kwargs)           # greet(name="Sheru", greeting="Hi")
 
 def total(*numbers):
@@ -88,7 +88,7 @@ marks = [70, 85, 90]
 print(total(*marks))
 
 # OUTPUT:
-# Hello, Ravi!
+# Hello, Raoji!
 # Hi, Sheru!
 # 245`
             ]

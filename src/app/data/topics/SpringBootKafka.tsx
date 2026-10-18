@@ -324,7 +324,7 @@ public class KafkaProducerController {
 
     @PostMapping("/addCustomer")
     public String addCustomer(@RequestBody List<Customer> customers) {
-        // The PDF creates a throw-away Customer(105, "amit", ...) here and
+        // The PDF creates a throw-away Customer(105, "anandrao", ...) here and
         // prints it. It is never sent and never used - remove it, it only
         // makes students think a fourth record is being published.
         return customerService.addCustomer(customers);

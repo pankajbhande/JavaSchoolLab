@@ -5,7 +5,7 @@ export const s22k: Record<string, DeepDive> = {
     'CREATE, ALTER & DROP VIEW': dd(
         [`A <b>view</b> is a named, stored <code>SELECT</code>. It holds no data of its own; every time you query it, MySQL runs the underlying query. <code>CREATE VIEW</code> defines it, <code>ALTER VIEW</code> (or <code>CREATE OR REPLACE</code>) changes it, <code>DROP VIEW</code> removes it.`,
             r`CREATE TABLE emp (id INT PRIMARY KEY, name VARCHAR(20), dept VARCHAR(10), salary INT);
-INSERT INTO emp VALUES (1,'Asha','IT',900),(2,'Ben','HR',700),(3,'Cy','IT',800);
+INSERT INTO emp VALUES (1,'Abaji','IT',900),(2,'Ben','HR',700),(3,'Cy','IT',800);
 
 CREATE VIEW v_it AS
 SELECT id, name, salary FROM emp WHERE dept = 'IT';   -- stored query only
@@ -16,13 +16,13 @@ SELECT * FROM v_it;
 -- +----+-------+--------+
 -- | id | name  | salary |
 -- +----+-------+--------+
--- |  1 | Asha  |    900 |
+-- |  1 | Abaji |    900 |
 -- |  3 | Cy    |    800 |
 -- +----+-------+--------+`],
         [`Complex joins and filters get repeated across reports and services. A view gives them one name, one place to fix, and one stable interface even when the base tables are reorganised.`,
             r`-- Wrap a join once, reuse it everywhere.
 CREATE TABLE dept (code VARCHAR(10) PRIMARY KEY, boss VARCHAR(20));
-INSERT INTO dept VALUES ('IT','Rao'),('HR','Meena');
+INSERT INTO dept VALUES ('IT','Rao'),('HR','Moropant');
 
 CREATE OR REPLACE VIEW v_emp_boss AS
 SELECT e.name, e.dept, d.boss
@@ -31,10 +31,10 @@ FROM emp e JOIN dept d ON d.code = e.dept;
 SELECT * FROM v_emp_boss WHERE dept = 'HR';
 
 -- OUTPUT:
--- +------+------+--------+
--- | name | dept | boss   |
--- +------+------+--------+
--- | Ben  | HR   | Meena  |
+-- +------+------+----------+
+-- | name | dept | boss     |
+-- +------+------+----------+
+-- | Ben  | HR   | Moropant |
 -- +------+------+--------+`],
         [`Used for reporting layers, API read models, hiding column renames during migrations, and giving analysts a safe, simple surface. Inspect definitions with <code>SHOW CREATE VIEW</code> or information_schema.`,
             r`ALTER VIEW v_it AS
@@ -61,7 +61,7 @@ SELECT name, salary FROM v_it WHERE id = 1;
 -- +-------+--------+
 -- | name  | salary |
 -- +-------+--------+
--- | Asha  |    900 |
+-- | Abaji |    900 |
 -- +-------+--------+`],
         [`<b>Disadvantages:</b> hides cost (a simple-looking view may join five tables); nested views get slow and hard to debug; a view is not materialised, so nothing is cached.`,
             r`EXPLAIN SELECT * FROM v_it WHERE id = 3;     -- the optimizer merges the view into the base query
@@ -97,7 +97,7 @@ CHECK TABLE v_bad;
     'Updatable Views': dd(
         [`An <b>updatable view</b> lets you run <code>INSERT</code>, <code>UPDATE</code> and <code>DELETE</code> against it and MySQL forwards the change to the single base table. It must have a clear one-to-one mapping to rows.`,
             r`CREATE TABLE emp (id INT PRIMARY KEY, name VARCHAR(20), dept VARCHAR(10), salary INT);
-INSERT INTO emp VALUES (1,'Asha','IT',900),(2,'Ben','HR',700);
+INSERT INTO emp VALUES (1,'Abaji','IT',900),(2,'Ben','HR',700);
 CREATE VIEW v_it AS SELECT id, name, dept, salary FROM emp WHERE dept = 'IT';
 
 UPDATE v_it SET salary = 950 WHERE id = 1;     -- changes base table emp
@@ -173,18 +173,18 @@ UPDATE v_sum SET total = 0 WHERE dept = 'IT';
     'Views for Security': dd(
         [`A view can expose only chosen columns and rows of a table. If users get <code>SELECT</code> on the view but no privilege on the table, they see just the allowed slice. <code>SQL SECURITY DEFINER</code> runs the view with the creator's rights.`,
             r`CREATE TABLE staff (id INT PRIMARY KEY, name VARCHAR(20), email VARCHAR(30), salary INT, ssn CHAR(9));
-INSERT INTO staff VALUES (1,'Asha','a@x.com',900,'111223333'),(2,'Ben','b@x.com',700,'222334444');
+INSERT INTO staff VALUES (1,'Abaji','a@x.com',900,'111223333'),(2,'Ben','b@x.com',700,'222334444');
 
 CREATE VIEW v_staff_public AS SELECT id, name, email FROM staff;   -- no salary, no ssn
 
 SELECT * FROM v_staff_public;
 
 -- OUTPUT:
--- +----+------+---------+
--- | id | name | email   |
--- +----+------+---------+
--- |  1 | Asha | a@x.com |
--- |  2 | Ben  | b@x.com |
+-- +----+-------+---------+
+-- | id | name  | email   |
+-- +----+-------+---------+
+-- |  1 | Abaji | a@x.com |
+-- |  2 | Ben   | b@x.com |
 -- +----+------+---------+`],
         [`MySQL privileges are granted per table or per column, but not per row. Views add row-level filtering and computed masking so you can follow least privilege without duplicating data.`,
             r`CREATE USER 'report'@'%' IDENTIFIED BY 'S3cret!pass';
@@ -204,10 +204,10 @@ FROM staff;
 SELECT * FROM v_staff_masked WHERE id = 1;
 
 -- OUTPUT:
--- +----+------+-------------+-----------+
--- | id | name | ssn         | email     |
--- +----+------+-------------+-----------+
--- |  1 | Asha | ***-**-3333 | a***@x.com|
+-- +----+-------+-------------+------------+
+-- | id | name  | ssn         | email      |
+-- +----+-------+-------------+------------+
+-- |  1 | Abaji | ***-**-3333 | a***@x.com |
 -- +----+------+-------------+-----------+`],
         [`<b>Advantages:</b> least privilege, row and column filtering, masking, a single audited entry point, and no change to the underlying schema.`,
             r`-- DEFINER view: callers need rights only on the view.

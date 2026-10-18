@@ -68,10 +68,10 @@ b.items.clear();       // anyone can break the rules
         if (marks < 0 || marks > 100) throw new IllegalArgumentException("marks");
     }
 }
-System.out.println(new Student("Asha", 88));
+System.out.println(new Student("Abaji", 88));
 
 // OUTPUT:
-// Student[name=Asha, marks=88]`]]
+// Student[name=Abaji, marks=88]`]]
     ),
 
     'inheritance in Java': x(
@@ -94,14 +94,17 @@ System.out.println(new Student("Asha", 88));
             r`class Employee {
     String name;
     double salary;
-    Employee(String n, double s) { name = n; salary = s; }
+    Employee(String n, double s) {
+        name = n;
+        salary = s;
+    }
     double bonus() { return salary * 0.1; }
 }
 class Manager extends Employee {
     Manager(String n, double s) { super(n, s); }
     @Override double bonus() { return super.bonus() + 5000; }
 }
-Employee e = new Manager("Asha", 100000);
+Employee e = new Manager("Abaji", 100000);
 System.out.println(e.bonus());
 
 // OUTPUT:
@@ -162,10 +165,18 @@ System.out.println(r.area());
             ['S', 'What does sealed do?', 'It restricts which classes can extend or implement a type, enabling exhaustive pattern matching.'],
             ['S', 'Why keep hierarchies shallow?', 'Deep hierarchies are rigid and hard to understand and change.']],
         [['Multilevel and hierarchical.',
-            r`class Animal { void eat() { System.out.println("eats"); } }
-class Mammal extends Animal { void feed() { System.out.println("milk"); } }
-class Dog extends Mammal { void bark() { System.out.println("woof"); } }  // multilevel
-class Cat extends Mammal { void meow() { System.out.println("meow"); } }  // hierarchical
+            r`class Animal {
+    void eat() { System.out.println("eats"); }
+}
+class Mammal extends Animal {
+    void feed() { System.out.println("milk"); }
+}
+class Dog extends Mammal {
+    void bark() { System.out.println("woof"); }
+}  // multilevel
+class Cat extends Mammal {
+    void meow() { System.out.println("meow"); }
+}  // hierarchical
 Dog d = new Dog();
 d.eat();
 d.feed();
@@ -232,7 +243,9 @@ System.out.println(new A().getClass().getSuperclass().getName());
     String header() { return "== "; }
     String footer() { return " =="; }
 }
-class SalesReport extends Report { String body() { return "sales 100"; } }
+class SalesReport extends Report {
+    String body() { return "sales 100"; }
+}
 System.out.println(new SalesReport().generate());
 
 // OUTPUT:
@@ -250,15 +263,17 @@ class SmsNotifier implements Notifier {
     }
 }
 for (Notifier n : List.of(new EmailNotifier(), new SmsNotifier()))
-    n.send("asha", "hi");
+    n.send("abaji", "hi");
 
 // OUTPUT:
-// mail to asha: hi
-// sms to asha: hi`]],
+// mail to abaji: hi
+// sms to abaji: hi`]],
         [['Cannot instantiate.',
             r`abstract class Shape { abstract double area(); }
 // new Shape();   // error: Shape is abstract
-Shape s = new Shape() { double area() { return 1.0; } };   // anonymous subclass
+Shape s = new Shape() {
+    double area() { return 1.0; }
+};  // anonymous subclass
 System.out.println(s.area());
 
 // OUTPUT:
@@ -266,10 +281,10 @@ System.out.println(s.area());
             ['Lambda for a single abstract method.',
                 r`// Notifier has one abstract method, so a lambda can implement it
 Notifier n = (to, msg) -> System.out.println(to + ":" + msg);
-n.send("ravi", "ok");
+n.send("raoji", "ok");
 
 // OUTPUT:
-// ravi:ok`]]
+// raoji:ok`]]
     ),
 
     'Polymorphism in java': x(
@@ -299,7 +314,10 @@ class Circle extends Shape {
 
 class Rect extends Shape {
     double w, h;
-    Rect(double w, double h) { this.w = w; this.h = h; }
+    Rect(double w, double h) {
+        this.w = w;
+        this.h = h;
+    }
     double area() { return w * h; }
 }
 
@@ -386,7 +404,8 @@ System.out.println(r.days());
     }
 }
 Date[] in = { new Date(0) };
-Schedule s = new Schedule(in); in[0].setTime(999);
+Schedule s = new Schedule(in);
+in[0].setTime(999);
 System.out.println(s.slots()[0].getTime());
 
 // OUTPUT:
@@ -503,7 +522,9 @@ System.out.println(s.added);
             r`interface A { default String who() { return "A"; } }
 interface B extends A { default String who() { return "B"; } }
 class C implements A, B {}                    // B is more specific than A
-class P { public String who() { return "P"; } }
+class P {
+    public String who() { return "P"; }
+}
 class D extends P implements A {}             // class wins over interface
 System.out.println(new C().who() + " " + new D().who());
 
@@ -567,7 +588,10 @@ System.out.println(new Range(5) + " " + new Range(5).contains(3));
 }
 interface Job {
     void run();                                // public abstract
-    default void twice() { run(); run(); }
+    default void twice() {
+        run();
+        run();
+    }
     static Job of(Runnable r) { return r::run; }
     private void helper() { }                  // Java 9+
 }
@@ -599,7 +623,13 @@ class InMemoryOrderRepository implements OrderRepository {
 // the service works with either implementation`],
         [`Mistakes: interfaces with one implementation created out of habit, huge fat interfaces (violating interface segregation), leaky abstractions that expose SQL or HTTP details, abstract classes used when an interface suffices, and default methods that hold state-dependent logic. Keep abstractions small and honest.`,
             r`// fat interface: every client must know all five methods
-interface Everything { void save(); void load(); void render(); void email(); void print(); }
+interface Everything {
+    void save();
+    void load();
+    void render();
+    void email();
+    void print();
+}
 
 // segregated: small interfaces
 interface Saver { void save(); }
@@ -626,7 +656,7 @@ public double viaInterface(State s) { return s.shape.area(); }
 }
 
 // OUTPUT: (varies by data)
-// Asha`]
+// Abaji`]
     ),
 
     'Polymorphism in java': dv(
@@ -666,7 +696,9 @@ System.out.println(e.accept(eval));
 // OUTPUT:
 // 9`],
         [`Mistakes: expecting overload resolution at run time (it uses the static type), overriding with a different parameter type (becomes an overload), narrowing access, hiding static methods, and relying on field polymorphism. Always use @Override.`,
-            r`class Animal { void speak(Animal a) { System.out.println("animal"); } }
+            r`class Animal {
+    void speak(Animal a) { System.out.println("animal"); }
+}
 class Dog extends Animal {
     void speak(Dog d) { System.out.println("dog"); }  // overload, not override
 }
@@ -683,7 +715,10 @@ a.speak(new Dog());
 // OUTPUT:
 // the JIT log shows how many receiver types were observed`],
         [`Real-world: a payment service chooses a gateway implementation at run time (strategy), and a plugin system loads implementations with <code>ServiceLoader</code>.`,
-            r`interface PaymentGateway { String name(); void pay(long cents); }
+            r`interface PaymentGateway {
+    String name();
+    void pay(long cents);
+}
 ServiceLoader<PaymentGateway> loader = ServiceLoader.load(PaymentGateway.class);
 for (PaymentGateway g : loader) System.out.println("found " + g.name());
 

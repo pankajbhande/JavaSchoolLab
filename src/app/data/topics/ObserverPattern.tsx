@@ -99,11 +99,11 @@ public class Test {
     public static void main(String[] args) {
         NewsPublisher channel = new NewsPublisher();
 
-        Viewer ravi = new Viewer("Ravi");
-        Viewer priya = new Viewer("Priya");
+        Viewer raoji = new Viewer("Raoji");
+        Viewer prataprao = new Viewer("Prataprao");
 
-        channel.subscribe(ravi);
-        channel.subscribe(priya);
+        channel.subscribe(raoji);
+        channel.subscribe(prataprao);
 
         channel.uploadVideo("Observer Pattern Explained");
     }

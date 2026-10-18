@@ -17,7 +17,7 @@ import java.util.List;
 
 public class SlowInsertDemo {
     public static void main(String[] args) throws SQLException {
-        List<String> names = List.of("Aarav", "Bhavna", "Chetan");
+        List<String> names = List.of("Ajabrao", "Bhavna", "Chetan");
 
         try (Connection con = DriverManager.getConnection(
                 "jdbc:mysql://localhost:3306/company", "root", "password");

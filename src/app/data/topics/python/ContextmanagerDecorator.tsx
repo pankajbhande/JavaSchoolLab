@@ -40,13 +40,13 @@ def shopping_cart(owner):
     yield cart                       # bound by "as"
     print(owner, "checked out", cart)
 
-with shopping_cart("Asha") as items:
+with shopping_cart("Abaji") as items:
     items.append("pen")
     items.append("book")
 
 # OUTPUT:
-# cart created for Asha
-# Asha checked out ['pen', 'book']`
+# cart created for Abaji
+# Abaji checked out ['pen', 'book']`
             ]
         },
         {

@@ -24,7 +24,7 @@ print(ops["+"](5, 3), ops["-"](5, 3))
 # OUTPUT:
 # 8 2`],
         [`Sorting with a key function, event handlers, plugin registries, command routers in web frameworks, and higher-order helpers like <code>map</code> and <code>filter</code>.`,
-            r`people = [("Zed", 30), ("Amy", 25), ("Bob", 35)]
+            r`people = [("Zed", 30), ("Amy", 25), ("Baji", 35)]
 print(sorted(people, key=lambda p: p[1]))     # function passed as an argument
 
 def apply(fn, value):                         # higher-order function
@@ -32,7 +32,7 @@ def apply(fn, value):                         # higher-order function
 print(apply(str.upper, "abc"))
 
 # OUTPUT:
-# [('Amy', 25), ('Zed', 30), ('Bob', 35)]
+# [('Amy', 25), ('Zed', 30), ('Baji', 35)]
 # ABC`],
         [`<b>Advantages:</b> flexible, composable code; behaviour can be chosen at runtime; functions carry useful metadata and can even hold attributes.`,
             r`def work(): pass

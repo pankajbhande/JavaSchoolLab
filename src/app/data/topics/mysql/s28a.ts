@@ -5,7 +5,7 @@ export const s28a: Record<string, DeepDive> = {
     'ROW_NUMBER, RANK & DENSE_RANK': dd(
         [`<b>Window functions</b> compute a value for each row using a set of related rows (the "window") <i>without collapsing rows</i> like GROUP BY does. The three ranking functions number rows by an <code>ORDER BY</code> inside <code>OVER (...)</code>: <code>ROW_NUMBER</code> is always unique, <code>RANK</code> leaves gaps after ties, <code>DENSE_RANK</code> does not.`,
             r`CREATE TABLE scores (student VARCHAR(10), score INT);
-INSERT INTO scores VALUES ('Asha',90),('Ravi',85),('Meena',85),('John',70);
+INSERT INTO scores VALUES ('Abaji',90),('Raoji',85),('Moropant',85),('Jiva',70);
 
 SELECT student, score,
        ROW_NUMBER() OVER (ORDER BY score DESC) AS rn,     -- 1,2,3,4 (ties broken arbitrarily)
@@ -15,13 +15,13 @@ FROM   scores
 ORDER  BY score DESC, student;
 
 -- OUTPUT (rn for the tied rows may swap - example):
--- +---------+-------+----+-----+------+
--- | student | score | rn | rnk | drnk |
--- +---------+-------+----+-----+------+
--- | Asha    |    90 |  1 |   1 |    1 |
--- | Meena   |    85 |  2 |   2 |    2 |
--- | Ravi    |    85 |  3 |   2 |    2 |
--- | John    |    70 |  4 |   4 |    3 |
+-- +----------+-------+----+-----+------+
+-- | student  | score | rn | rnk | drnk |
+-- +----------+-------+----+-----+------+
+-- | Abaji    |    90 |  1 |   1 |    1 |
+-- | Moropant |    85 |  2 |   2 |    2 |
+-- | Raoji    |    85 |  3 |   2 |    2 |
+-- | Jiva     |    70 |  4 |   4 |    3 |
 -- +---------+-------+----+-----+------+`],
         [`Leaderboards, "second highest salary", de-duplication and pagination all need ranking. Before MySQL 8.0 this required self-joins or user variables; window functions make it declarative and correct.`,
             r`-- Second-highest score, tie-safe, using DENSE_RANK
@@ -30,11 +30,11 @@ FROM  (SELECT student, score, DENSE_RANK() OVER (ORDER BY score DESC) AS d FROM 
 WHERE d = 2;                        -- window functions cannot be in WHERE, so wrap them
 
 -- OUTPUT:
--- +---------+-------+
--- | student | score |
--- +---------+-------+
--- | Ravi    |    85 |
--- | Meena   |    85 |
+-- +----------+-------+
+-- | student  | score |
+-- +----------+-------+
+-- | Raoji    |    85 |
+-- | Moropant |    85 |
 -- +---------+-------+`],
         [`Real use: de-duplicate rows by keeping <code>ROW_NUMBER() = 1</code> per business key, and rank products within each category by sales.`,
             r`CREATE TABLE contacts (id INT PRIMARY KEY, email VARCHAR(30), created DATE);
@@ -78,13 +78,13 @@ SELECT student, score,
 FROM scores ORDER BY rn;
 
 -- OUTPUT:
--- +---------+-------+----+
--- | student | score | rn |
--- +---------+-------+----+
--- | Asha    |    90 |  1 |
--- | Meena   |    85 |  2 |
--- | Ravi    |    85 |  3 |
--- | John    |    70 |  4 |
+-- +----------+-------+----+
+-- | student  | score | rn |
+-- +----------+-------+----+
+-- | Abaji    |    90 |  1 |
+-- | Moropant |    85 |  2 |
+-- | Raoji    |    85 |  3 |
+-- | Jiva     |    70 |  4 |
 -- +---------+-------+----+`],
         [`<b>Limitations:</b> window functions are allowed only in SELECT and ORDER BY (not WHERE, GROUP BY or HAVING); they are evaluated after WHERE/GROUP BY/HAVING; and they require MySQL 8.0+.`,
             r`SELECT student FROM scores WHERE ROW_NUMBER() OVER (ORDER BY score) = 1;
@@ -317,21 +317,21 @@ SELECT d, sales, LAG(sales, 7) OVER (ORDER BY d) AS same_day_last_week FROM dail
     'FIRST_VALUE & LAST_VALUE': dd(
         [`<code>FIRST_VALUE(expr)</code> returns the value from the first row of the window frame and <code>LAST_VALUE(expr)</code> from the last row of the frame. Careful: with an ORDER BY, the default frame ends at the <i>current row</i>, so LAST_VALUE returns the current row's value unless you widen the frame.`,
             r`CREATE TABLE emp (name VARCHAR(8), dept VARCHAR(4), sal INT);
-INSERT INTO emp VALUES ('Asha','IT',90),('Ravi','IT',80),('Meena','IT',70),('Zoya','HR',60),('Omar','HR',50);
+INSERT INTO emp VALUES ('Abaji','IT',90),('Raoji','IT',80),('Moropant','IT',70),('Zoya','HR',60),('Omar','HR',50);
 
 SELECT name, dept, sal,
        FIRST_VALUE(name) OVER (PARTITION BY dept ORDER BY sal DESC) AS top_earner
 FROM emp ORDER BY dept, sal DESC;
 
 -- OUTPUT:
--- +-------+------+-----+------------+
--- | name  | dept | sal | top_earner |
--- +-------+------+-----+------------+
--- | Zoya  | HR   |  60 | Zoya       |
--- | Omar  | HR   |  50 | Zoya       |
--- | Asha  | IT   |  90 | Asha       |
--- | Ravi  | IT   |  80 | Asha       |
--- | Meena | IT   |  70 | Asha       |
+-- +----------+------+-----+------------+
+-- | name     | dept | sal | top_earner |
+-- +----------+------+-----+------------+
+-- | Zoya     | HR   |  60 | Zoya       |
+-- | Omar     | HR   |  50 | Zoya       |
+-- | Abaji    | IT   |  90 | Abaji      |
+-- | Raoji    | IT   |  80 | Abaji      |
+-- | Moropant | IT   |  70 | Abaji      |
 -- +-------+------+-----+------------+`],
         [`You often need to compare each row to the group's best, worst, opening or closing value - "how far is each salary below the department maximum?", "price change since the first quote" - without a separate join.`,
             r`SELECT name, sal,
@@ -339,12 +339,12 @@ FROM emp ORDER BY dept, sal DESC;
 FROM emp WHERE dept = 'IT' ORDER BY sal DESC;
 
 -- OUTPUT:
--- +-------+-----+------------+
--- | name  | sal | gap_to_top |
--- +-------+-----+------------+
--- | Asha  |  90 |          0 |
--- | Ravi  |  80 |         10 |
--- | Meena |  70 |         20 |
+-- +----------+-----+------------+
+-- | name     | sal | gap_to_top |
+-- +----------+-----+------------+
+-- | Abaji    |  90 |          0 |
+-- | Raoji    |  80 |         10 |
+-- | Moropant | 70  |         20 |
 -- +-------+-----+------------+`],
         [`Real use: OHLC style reports (open = first price of the day, close = last price), "latest status per ticket", and baselines for percent-change charts.`,
             r`CREATE TABLE ticks (sym VARCHAR(3), ts TIME, price DECIMAL(6,2));
@@ -374,7 +374,7 @@ FROM emp ORDER BY dept;
 -- | dept | lowest_paid |
 -- +------+-------------+
 -- | HR   | Omar        |
--- | IT   | Meena       |
+-- | IT   | Moropant    |
 -- +------+-------------+`],
         [`<b>Disadvantages:</b> the LAST_VALUE default-frame trap silently returns wrong data; people forget it and see the current row repeated.`,
             r`-- The trap: default frame is RANGE BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
@@ -383,13 +383,13 @@ SELECT name, sal,
 FROM emp WHERE dept = 'IT' ORDER BY sal DESC;
 
 -- OUTPUT:
--- +-------+-----+-----------+
--- | name  | sal | last_name |
--- +-------+-----+-----------+
--- | Asha  |  90 | Asha      |   <- not Meena: frame stops at the current row
--- | Ravi  |  80 | Ravi      |
--- | Meena |  70 | Meena     |
--- +-------+-----+-----------+`],
+-- +----------+-----+-----------+
+-- | name     | sal | last_name |
+-- +----------+-----+-----------+
+-- | Abaji    |  90 | Abaji     |   <- not Moropant: frame stops at the current row
+-- | Raoji    |  80 | Raoji     |
+-- | Moropant |  70 | Moropant  |
+-- +----------+-----+-----------+`],
         [`<b>Limitations:</b> with RANGE frames, peer rows (equal ORDER BY values) are all inside the frame, so LAST_VALUE may pick any of the tied rows; NULL values are respected unless you use <code>IGNORE NULLS</code>, which MySQL does not support (it supports RESPECT NULLS only).`,
             r`-- Fix the trap with an explicit full frame (or use FIRST_VALUE with reversed ORDER BY)
 SELECT name, sal,
@@ -398,20 +398,20 @@ SELECT name, sal,
 FROM emp WHERE dept = 'IT' ORDER BY sal DESC;
 
 -- OUTPUT:
--- +-------+-----+--------+
--- | name  | sal | lowest |
--- +-------+-----+--------+
--- | Asha  |  90 | Meena  |
--- | Ravi  |  80 | Meena  |
--- | Meena |  70 | Meena  |
+-- +----------+-----+----------+
+-- | name     | sal | lowest   |
+-- +----------+-----+----------+
+-- | Abaji    |  90 | Moropant |
+-- | Raoji    |  80 | Moropant |
+-- | Moropant |  70 | Moropant |
 -- +-------+-----+--------+`],
         `
    partition (dept IT) ordered by sal DESC
 
    row        sal   default frame (to current row)   full frame
-   Asha        90   [Asha]                           [Asha Ravi Meena]
-   Ravi        80   [Asha Ravi]                      [Asha Ravi Meena]
-   Meena       70   [Asha Ravi Meena]                [Asha Ravi Meena]
+   Abaji        90   [Abaji]                           [Abaji Raoji Moropant]
+   Raoji        80   [Abaji Raoji]                      [Abaji Raoji Moropant]
+   Moropant       70   [Abaji Raoji Moropant]                [Abaji Raoji Moropant]
    FIRST_VALUE = first of frame      LAST_VALUE = last of frame
 `,
         `Prefer FIRST_VALUE with the order reversed over LAST_VALUE so you never depend on frame subtleties, or declare a named WINDOW with an explicit ROWS frame and reuse it. For "latest row per group" at scale, ROW_NUMBER = 1 with a supporting index is often cheaper than DISTINCT over a windowed value for every row.`

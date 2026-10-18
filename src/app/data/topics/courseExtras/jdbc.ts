@@ -30,12 +30,15 @@ try (Connection c = DriverManager.getConnection(url, "shop_app", System.getenv("
 }
 
 // OUTPUT:
-// 1 Asha`],
+// 1 Abaji`],
             ['Insert and read the generated key.',
                 r`try (PreparedStatement ps = c.prepareStatement("INSERT INTO customers (name) VALUES (?)", Statement.RETURN_GENERATED_KEYS)) {
-    ps.setString(1, "Ravi");
+    ps.setString(1, "Raoji");
     ps.executeUpdate();
-    try (ResultSet keys = ps.getGeneratedKeys()) { keys.next(); System.out.println("new id " + keys.getLong(1)); }
+    try (ResultSet keys = ps.getGeneratedKeys()) {
+        keys.next();
+        System.out.println("new id " + keys.getLong(1));
+    }
 }
 
 // OUTPUT:
@@ -50,7 +53,8 @@ System.out.println(md.getDriverName() + " " + md.getDriverVersion());
 // MySQL Connector/J 8.3.0`],
             ['Update with affected row count.',
                 r`try (PreparedStatement ps = c.prepareStatement("UPDATE customers SET name = ? WHERE id = ?")) {
-    ps.setString(1, "Asha R"); ps.setLong(2, 1);
+    ps.setString(1, "Abaji R");
+    ps.setLong(2, 1);
     System.out.println(ps.executeUpdate() + " row(s) updated");
 }
 
@@ -84,8 +88,11 @@ try (Connection c = DriverManager.getConnection(url, System.getenv("DB_USER"), S
 // connected: true`],
             ['A DataSource with Hikari.',
                 r`HikariConfig cfg = new HikariConfig();
-cfg.setJdbcUrl(url); cfg.setUsername(user); cfg.setPassword(pass);
-cfg.setMaximumPoolSize(10); cfg.setConnectionTimeout(3000);
+cfg.setJdbcUrl(url);
+cfg.setUsername(user);
+cfg.setPassword(pass);
+cfg.setMaximumPoolSize(10);
+cfg.setConnectionTimeout(3000);
 DataSource ds = new HikariDataSource(cfg);
 try (Connection c = ds.getConnection()) { System.out.println(c.getCatalog()); }
 
@@ -93,7 +100,9 @@ try (Connection c = ds.getConnection()) { System.out.println(c.getCatalog()); }
 // shop`]],
         [['Fail fast when the database is down.',
             r`try (Connection c = DriverManager.getConnection("jdbc:mysql://10.255.255.1:3306/shop?connectTimeout=2000", "u", "p")) { }
-catch (SQLException e) { System.out.println(e.getSQLState() + " " + e.getMessage().substring(0, 24)); }
+catch (SQLException e) {
+    System.out.println(e.getSQLState() + " " + e.getMessage().substring(0, 24));
+}
 
 // OUTPUT:
 // 08001 Communications link fa`],
@@ -137,12 +146,14 @@ try (PreparedStatement ps = c.prepareStatement("SELECT id FROM users WHERE name 
 String marks = String.join(",", Collections.nCopies(ids.size(), "?"));
 try (PreparedStatement ps = c.prepareStatement("SELECT id, name FROM customers WHERE id IN (" + marks + ")")) {
     for (int i = 0; i < ids.size(); i++) ps.setLong(i + 1, ids.get(i));
-    try (ResultSet rs = ps.executeQuery()) { while (rs.next()) System.out.println(rs.getString("name")); }
+    try (ResultSet rs = ps.executeQuery()) {
+        while (rs.next()) System.out.println(rs.getString("name"));
+    }
 }
 
 // OUTPUT:
-// Asha
-// Meena`]],
+// Abaji
+// Moropant`]],
         [['Allow-list for ORDER BY.',
             r`Set<String> allowed = Set.of("name", "created_at");
 String col = allowed.contains(sort) ? sort : "created_at";
@@ -184,7 +195,7 @@ try (PreparedStatement ps = c.prepareStatement("SELECT id, name, created_on FROM
 System.out.println(list.get(0));
 
 // OUTPUT:
-// Customer[id=1, name=Asha, createdOn=2026-01-05]`],
+// Customer[id=1, name=Abaji, createdOn=2026-01-05]`],
             ['Generic printing with metadata.',
                 r`try (ResultSet rs = stmt.executeQuery("SELECT * FROM customers")) {
     ResultSetMetaData md = rs.getMetaData();
@@ -196,7 +207,9 @@ System.out.println(list.get(0));
         [['Stream a large result.',
             r`try (PreparedStatement ps = c.prepareStatement("SELECT id, payload FROM events", ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY)) {
     ps.setFetchSize(Integer.MIN_VALUE);
-    try (ResultSet rs = ps.executeQuery()) { while (rs.next()) process(rs.getLong(1), rs.getString(2)); }
+    try (ResultSet rs = ps.executeQuery()) {
+        while (rs.next()) process(rs.getLong(1), rs.getString(2));
+    }
 }
 
 // OUTPUT:
@@ -240,12 +253,14 @@ try (CallableStatement cs = c.prepareCall("{call dept_count(?, ?)}")) {
             ['Procedure returning a result set.',
                 r`try (CallableStatement cs = c.prepareCall("{call emp_by_dept(?)}")) {
     cs.setInt(1, 10);
-    try (ResultSet rs = cs.executeQuery()) { while (rs.next()) System.out.println(rs.getString("name")); }
+    try (ResultSet rs = cs.executeQuery()) {
+        while (rs.next()) System.out.println(rs.getString("name"));
+    }
 }
 
 // OUTPUT:
-// Asha
-// Ravi`]],
+// Abaji
+// Raoji`]],
         [['Map a SIGNAL error.',
             r`try { cs.execute(); }
 catch (SQLException e) {
@@ -257,7 +272,8 @@ catch (SQLException e) {
 // BusinessException: Insufficient funds`],
             ['INOUT parameter.',
                 r`CallableStatement cs = c.prepareCall("{call add_tax(?, ?)}");
-cs.setBigDecimal(1, new BigDecimal("1000.00")); cs.registerOutParameter(1, Types.DECIMAL);
+cs.setBigDecimal(1, new BigDecimal("1000.00"));
+cs.registerOutParameter(1, Types.DECIMAL);
 cs.setBigDecimal(2, new BigDecimal("18"));
 cs.execute();
 System.out.println(cs.getBigDecimal(1));
@@ -287,11 +303,18 @@ System.out.println(cs.getBigDecimal(1));
     c.setAutoCommit(false);
     try (PreparedStatement d = c.prepareStatement("UPDATE accounts SET balance = balance - ? WHERE id = ? AND balance >= ?");
          PreparedStatement k = c.prepareStatement("UPDATE accounts SET balance = balance + ? WHERE id = ?")) {
-        d.setBigDecimal(1, amt); d.setLong(2, from); d.setBigDecimal(3, amt);
+        d.setBigDecimal(1, amt);
+        d.setLong(2, from);
+        d.setBigDecimal(3, amt);
         if (d.executeUpdate() != 1) throw new IllegalStateException("insufficient funds");
-        k.setBigDecimal(1, amt); k.setLong(2, to); k.executeUpdate();
+        k.setBigDecimal(1, amt);
+        k.setLong(2, to);
+        k.executeUpdate();
         c.commit();
-    } catch (Exception e) { c.rollback(); throw e; }
+    } catch (Exception e) {
+        c.rollback();
+        throw e;
+    }
     finally { c.setAutoCommit(true); }
 }
 
@@ -309,8 +332,14 @@ c.commit();            // A is committed
 // rows: A`]],
         [['Retry on deadlock.',
             r`for (int attempt = 1; attempt <= 3; attempt++) {
-    try { transfer(from, to, amt); break; }
-    catch (SQLException e) { if (e.getErrorCode() != 1213 || attempt == 3) throw e; Thread.sleep(50L * attempt); }
+    try {
+        transfer(from, to, amt);
+        break;
+    }
+    catch (SQLException e) {
+        if (e.getErrorCode() != 1213 || attempt == 3) throw e;
+        Thread.sleep(50L * attempt);
+    }
 }
 
 // OUTPUT:
@@ -345,10 +374,16 @@ try (PreparedStatement ps = c.prepareStatement(sql)) {
     c.setAutoCommit(false);
     int n = 0;
     for (Event e : events) {
-        ps.setLong(1, e.userId()); ps.setString(2, e.kind()); ps.addBatch();
-        if (++n % 1000 == 0) { ps.executeBatch(); c.commit(); }
+        ps.setLong(1, e.userId());
+        ps.setString(2, e.kind());
+        ps.addBatch();
+        if (++n % 1000 == 0) {
+            ps.executeBatch();
+            c.commit();
+        }
     }
-    ps.executeBatch(); c.commit();
+    ps.executeBatch();
+    c.commit();
 }
 
 // OUTPUT:
@@ -357,7 +392,9 @@ try (PreparedStatement ps = c.prepareStatement(sql)) {
                 r`int[] counts = ps.executeBatch();
 System.out.println(Arrays.stream(counts).sum() + " rows");
 try { ps.executeBatch(); }
-catch (BatchUpdateException e) { System.out.println("ok until index " + e.getUpdateCounts().length); }
+catch (BatchUpdateException e) {
+    System.out.println("ok until index " + e.getUpdateCounts().length);
+}
 
 // OUTPUT:
 // 1000 rows`]],
@@ -409,8 +446,13 @@ catch (SQLException e) { throw new DataAccessFailure("insert user", e); }
 // OUTPUT:
 // deadlock and timeout retried; constraint violations fail immediately`],
             ['Close errors do not hide the main one.',
-                r`try (Connection c = ds.getConnection(); PreparedStatement ps = c.prepareStatement(sql)) { ps.executeUpdate(); }
-catch (SQLException e) { for (Throwable s : e.getSuppressed()) log.warn("close failed", s); throw e; }
+                r`try (Connection c = ds.getConnection(); PreparedStatement ps = c.prepareStatement(sql)) {
+    ps.executeUpdate();
+}
+catch (SQLException e) {
+    for (Throwable s : e.getSuppressed()) log.warn("close failed", s);
+    throw e;
+}
 
 // OUTPUT:
 // the primary exception is preserved with suppressed close errors attached`]]
@@ -434,9 +476,14 @@ catch (SQLException e) { for (Throwable s : e.getSuppressed()) log.warn("close f
             ['S', 'How do you detect connection leaks?', 'Enable leak detection (HikariCP leakDetectionThreshold) and look at active versus idle counts.']],
         [['HikariCP configuration.',
             r`HikariConfig cfg = new HikariConfig();
-cfg.setJdbcUrl("jdbc:mysql://db:3306/shop"); cfg.setUsername("shop_app"); cfg.setPassword(System.getenv("DB_PASS"));
-cfg.setMaximumPoolSize(10); cfg.setMinimumIdle(5);
-cfg.setConnectionTimeout(3000); cfg.setMaxLifetime(1_500_000); cfg.setLeakDetectionThreshold(20_000);
+cfg.setJdbcUrl("jdbc:mysql://db:3306/shop");
+cfg.setUsername("shop_app");
+cfg.setPassword(System.getenv("DB_PASS"));
+cfg.setMaximumPoolSize(10);
+cfg.setMinimumIdle(5);
+cfg.setConnectionTimeout(3000);
+cfg.setMaxLifetime(1_500_000);
+cfg.setLeakDetectionThreshold(20_000);
 HikariDataSource ds = new HikariDataSource(cfg);
 
 // OUTPUT:
@@ -481,23 +528,29 @@ try (Connection c2 = ds.getConnection()) { /* use */ }
         [['CachedRowSet usage.',
             r`RowSetFactory f = RowSetProvider.newFactory();
 try (CachedRowSet crs = f.createCachedRowSet()) {
-    crs.setUrl("jdbc:mysql://localhost:3306/shop"); crs.setUsername("shop_app"); crs.setPassword(pass);
+    crs.setUrl("jdbc:mysql://localhost:3306/shop");
+    crs.setUsername("shop_app");
+    crs.setPassword(pass);
     crs.setCommand("SELECT id, name FROM customers");
     crs.execute();                                    // connection closed after load
     while (crs.next()) System.out.println(crs.getString("name"));
 }
 
 // OUTPUT:
-// Asha
-// Ravi`],
+// Abaji
+// Raoji`],
             ['Edit and sync.',
-                r`crs.absolute(1); crs.updateString("name", "Asha R"); crs.updateRow();
+                r`crs.absolute(1);
+crs.updateString("name", "Abaji R");
+crs.updateRow();
 crs.acceptChanges(connection);
 
 // OUTPUT: (SQL)
 // UPDATE customers SET name = ? WHERE id = ? AND name = ?`]],
         [['Serialize between layers.',
-            r`try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("customers.ser"))) { out.writeObject(crs); }
+            r`try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("customers.ser"))) {
+    out.writeObject(crs);
+}
 
 // OUTPUT:
 // customers.ser contains the cached rows (no live connection)`],
@@ -529,14 +582,17 @@ crs.acceptChanges(connection);
     private final DataSource ds;
     public Optional<Customer> find(long id) throws SQLException {
         try (Connection c = ds.getConnection(); PreparedStatement ps = c.prepareStatement("SELECT id, name FROM customers WHERE id = ?")) {
-            ps.setQueryTimeout(5); ps.setLong(1, id);
-            try (ResultSet rs = ps.executeQuery()) { return rs.next() ? Optional.of(new Customer(rs.getLong(1), rs.getString(2))) : Optional.empty(); }
+            ps.setQueryTimeout(5);
+            ps.setLong(1, id);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next() ? Optional.of(new Customer(rs.getLong(1), rs.getString(2))) : Optional.empty();
+            }
         }
     }
 }
 
 // OUTPUT:
-// Optional[Customer[id=1, name=Asha]]`],
+// Optional[Customer[id=1, name=Abaji]]`],
             ['Integration test with Testcontainers.',
                 r`@Testcontainers class CustomerDaoIT {
     @Container static MySQLContainer<?> mysql = new MySQLContainer<>("mysql:8.0");
@@ -586,7 +642,9 @@ String s = rs.getString("name");
             r`Statement st = c.createStatement();
 ResultSet rs = st.executeQuery("SELECT * FROM users WHERE name = '" + name + "'");    // injection + leak
 // correct
-try (PreparedStatement ps = c.prepareStatement("SELECT id FROM users WHERE name = ?")) { ps.setString(1, name); }
+try (PreparedStatement ps = c.prepareStatement("SELECT id FROM users WHERE name = ?")) {
+    ps.setString(1, name);
+}
 
 // OUTPUT:
 // the first form leaks the statement and result set and is injectable`],
@@ -604,8 +662,13 @@ for (Customer cu : customers) { count(cu.id()); }
     private final DataSource ds;
     public long insert(long customerId, BigDecimal total) throws SQLException {
         try (Connection c = ds.getConnection(); PreparedStatement ps = c.prepareStatement("INSERT INTO orders (customer_id, total) VALUES (?, ?)", Statement.RETURN_GENERATED_KEYS)) {
-            ps.setLong(1, customerId); ps.setBigDecimal(2, total); ps.executeUpdate();
-            try (ResultSet k = ps.getGeneratedKeys()) { k.next(); return k.getLong(1); }
+            ps.setLong(1, customerId);
+            ps.setBigDecimal(2, total);
+            ps.executeUpdate();
+            try (ResultSet k = ps.getGeneratedKeys()) {
+                k.next();
+                return k.getLong(1);
+            }
         }
     }
 }
@@ -617,8 +680,11 @@ for (Customer cu : customers) { count(cu.id()); }
     'jdbc-connection-setup': dv(
         [`Opening a connection performs a TCP connect, optional TLS handshake, protocol handshake, authentication (caching_sha2_password involves a challenge and, on first use, an RSA exchange unless TLS is on) and session setup (charset, time zone, isolation, autocommit). That costs milliseconds, which is why pools exist. URL options become properties that tune this and later behaviour.`,
             r`Properties p = new Properties();
-p.setProperty("user", "shop_app"); p.setProperty("password", System.getenv("DB_PASS"));
-p.setProperty("sslMode", "VERIFY_IDENTITY"); p.setProperty("connectTimeout", "3000"); p.setProperty("socketTimeout", "30000");
+p.setProperty("user", "shop_app");
+p.setProperty("password", System.getenv("DB_PASS"));
+p.setProperty("sslMode", "VERIFY_IDENTITY");
+p.setProperty("connectTimeout", "3000");
+p.setProperty("socketTimeout", "30000");
 long t0 = System.nanoTime();
 try (Connection c = DriverManager.getConnection("jdbc:mysql://db.internal:3306/shop", p)) {
     System.out.println((System.nanoTime() - t0) / 1_000_000 + " ms to connect");
@@ -648,7 +714,9 @@ ps.setObject(1, OffsetDateTime.now(ZoneOffset.UTC));
 -- Threads_cached  |      54`],
         [`Real-world configuration externalized per environment: the code reads the URL, user and password from environment variables so the same artifact runs everywhere.`,
             r`HikariConfig cfg = new HikariConfig();
-cfg.setJdbcUrl(System.getenv("DB_URL")); cfg.setUsername(System.getenv("DB_USER")); cfg.setPassword(System.getenv("DB_PASS"));
+cfg.setJdbcUrl(System.getenv("DB_URL"));
+cfg.setUsername(System.getenv("DB_USER"));
+cfg.setPassword(System.getenv("DB_PASS"));
 cfg.setMaximumPoolSize(Integer.parseInt(System.getenv().getOrDefault("DB_POOL", "10")));
 
 // OUTPUT:
@@ -666,14 +734,19 @@ try (PreparedStatement ps = c.prepareStatement(sql)) {
 }
 
 // OUTPUT:
-// Asha
-// Ravi`],
+// Abaji
+// Raoji`],
         [`Execution methods: <code>executeQuery</code>, <code>executeUpdate</code>, <code>executeLargeUpdate</code>, <code>execute</code>, <code>executeBatch</code>. Options: <code>RETURN_GENERATED_KEYS</code>, result set type and concurrency, fetch size, max rows, query timeout.`,
             r`try (PreparedStatement ps = c.prepareStatement("INSERT INTO orders (customer_id, total) VALUES (?, ?)", Statement.RETURN_GENERATED_KEYS)) {
-    ps.setQueryTimeout(5); ps.setMaxRows(100);
-    ps.setLong(1, 7); ps.setBigDecimal(2, new BigDecimal("500.00"));
+    ps.setQueryTimeout(5);
+    ps.setMaxRows(100);
+    ps.setLong(1, 7);
+    ps.setBigDecimal(2, new BigDecimal("500.00"));
     long affected = ps.executeLargeUpdate();
-    try (ResultSet k = ps.getGeneratedKeys()) { k.next(); System.out.println(affected + " row, id " + k.getLong(1)); }
+    try (ResultSet k = ps.getGeneratedKeys()) {
+        k.next();
+        System.out.println(affected + " row, id " + k.getLong(1));
+    }
 }
 
 // OUTPUT:
@@ -694,11 +767,19 @@ ps.setLong(1, 9876543210L);
         [`Real-world search: dynamic filters built from fixed fragments with every value bound, an allow-listed sort column, and a bounded page size.`,
             r`StringBuilder sql = new StringBuilder("SELECT id, name, price FROM products WHERE 1 = 1");
 List<Object> params = new ArrayList<>();
-if (category != null) { sql.append(" AND category_id = ?"); params.add(category); }
-if (maxPrice != null) { sql.append(" AND price <= ?"); params.add(maxPrice); }
+if (category != null) {
+    sql.append(" AND category_id = ?");
+    params.add(category);
+}
+if (maxPrice != null) {
+    sql.append(" AND price <= ?");
+    params.add(maxPrice);
+}
 sql.append(" ORDER BY ").append(Set.of("name", "price").contains(sort) ? sort : "name").append(" LIMIT ?");
 params.add(Math.min(size, 100));
-try (PreparedStatement ps = c.prepareStatement(sql.toString())) { for (int i = 0; i < params.size(); i++) ps.setObject(i + 1, params.get(i)); }
+try (PreparedStatement ps = c.prepareStatement(sql.toString())) {
+    for (int i = 0; i < params.size(); i++) ps.setObject(i + 1, params.get(i));
+}
 
 // OUTPUT:
 // SELECT id, name, price FROM products WHERE 1 = 1 AND category_id = ? ORDER BY price LIMIT ?`]
@@ -714,13 +795,16 @@ try (PreparedStatement ps = c.prepareStatement(sql.toString())) { for (int i = 0
 
 // OUTPUT:
 // before first: true
-// 1: Asha
-// 2: Ravi`],
+// 1: Abaji
+// 2: Raoji`],
         [`Types: <code>TYPE_FORWARD_ONLY</code> (default), <code>TYPE_SCROLL_INSENSITIVE</code>; concurrency <code>CONCUR_READ_ONLY</code> or <code>CONCUR_UPDATABLE</code>. Navigate with next, previous, absolute, relative; read with typed getters; update in place with updateXxx and updateRow. Holdability controls whether a commit closes it.`,
             r`try (Statement st = c.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
      ResultSet rs = st.executeQuery("SELECT id, name FROM customers ORDER BY id")) {
-    rs.last(); System.out.println("rows: " + rs.getRow());
-    rs.absolute(1); rs.updateString("name", "Asha R"); rs.updateRow();
+    rs.last();
+    System.out.println("rows: " + rs.getRow());
+    rs.absolute(1);
+    rs.updateString("name", "Abaji R");
+    rs.updateRow();
 }
 
 // OUTPUT:
@@ -735,7 +819,11 @@ Integer safe = rs.getObject("age", Integer.class);   // NULL stays null
         [`Memory is the main risk: a 5-million-row result with default settings can exhaust the heap. Stream with fetch size, add LIMIT/keyset chunks, or push aggregation into SQL.`,
             r`try (PreparedStatement ps = c.prepareStatement("SELECT id, payload FROM events", ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY)) {
     ps.setFetchSize(Integer.MIN_VALUE);               // stream
-    try (ResultSet rs = ps.executeQuery()) { long n = 0; while (rs.next()) n++; System.out.println(n); }
+    try (ResultSet rs = ps.executeQuery()) {
+        long n = 0;
+        while (rs.next()) n++;
+        System.out.println(n);
+    }
 }
 
 // OUTPUT:
@@ -747,14 +835,16 @@ Integer safe = rs.getObject("age", Integer.class);   // NULL stays null
 
 // OUTPUT:
 // id,name
-// 1,Asha`]
+// 1,Abaji`]
     ),
 
     'jdbc-stored-procedures': dv(
         [`A CallableStatement sends a CALL to the server. IN values are bound like prepared parameters; OUT and INOUT values come back in the final packet, which the driver stores so getXxx can read them after execution. Result sets produced inside the procedure are returned before the OUT values and must be consumed first.`,
             r`// CREATE PROCEDURE transfer(IN p_from INT, IN p_to INT, IN p_amt DECIMAL(10,2), OUT p_status VARCHAR(20))
 try (CallableStatement cs = c.prepareCall("{call transfer(?, ?, ?, ?)}")) {
-    cs.setInt(1, 1); cs.setInt(2, 2); cs.setBigDecimal(3, new BigDecimal("100.00"));
+    cs.setInt(1, 1);
+    cs.setInt(2, 2);
+    cs.setBigDecimal(3, new BigDecimal("100.00"));
     cs.registerOutParameter(4, Types.VARCHAR);
     cs.execute();
     System.out.println(cs.getString(4));
@@ -766,9 +856,16 @@ try (CallableStatement cs = c.prepareCall("{call transfer(?, ?, ?, ?)}")) {
             r`try (CallableStatement cs = c.prepareCall("{call report_summary(?)}")) {
     cs.setInt(1, 2026);
     boolean hasRs = cs.execute();
-    while (hasRs) { try (ResultSet rs = cs.getResultSet()) { while (rs.next()) System.out.println(rs.getString(1)); } hasRs = cs.getMoreResults(); }
+    while (hasRs) {
+        try (ResultSet rs = cs.getResultSet()) { while (rs.next()) System.out.println(rs.getString(1)); }
+        hasRs = cs.getMoreResults();
+    }
 }
-try (CallableStatement fn = c.prepareCall("{? = call gst(?)}")) { fn.registerOutParameter(1, Types.DECIMAL); fn.setBigDecimal(2, new BigDecimal("100")); fn.execute(); }
+try (CallableStatement fn = c.prepareCall("{? = call gst(?)}")) {
+    fn.registerOutParameter(1, Types.DECIMAL);
+    fn.setBigDecimal(2, new BigDecimal("100"));
+    fn.execute();
+}
 
 // OUTPUT:
 // Q1 ... Q2 ...`],
@@ -805,9 +902,16 @@ catch (SQLException e) {
             r`c.setAutoCommit(false);
 try (PreparedStatement p1 = c.prepareStatement("UPDATE acct SET bal = bal - ? WHERE id = ? AND bal >= ?");
      PreparedStatement p2 = c.prepareStatement("UPDATE acct SET bal = bal + ? WHERE id = ?")) {
-    p1.setBigDecimal(1, amt); p1.setLong(2, 1); p1.setBigDecimal(3, amt);
-    if (p1.executeUpdate() == 0) { c.rollback(); return; }
-    p2.setBigDecimal(1, amt); p2.setLong(2, 2); p2.executeUpdate();
+    p1.setBigDecimal(1, amt);
+    p1.setLong(2, 1);
+    p1.setBigDecimal(3, amt);
+    if (p1.executeUpdate() == 0) {
+        c.rollback();
+        return;
+    }
+    p2.setBigDecimal(1, amt);
+    p2.setLong(2, 2);
+    p2.executeUpdate();
     c.commit();
 }
 
@@ -823,9 +927,19 @@ PreparedStatement opt = c.prepareStatement("UPDATE docs SET body = ?, version = 
 // optimistic update affected 0 rows => someone else changed it`],
         [`Mistakes: transactions left open on pooled connections, one transaction spread across several connections (not a transaction), user think-time inside a transaction, and ignoring deadlocks. Always commit or roll back in finally, restore auto-commit, retry deadlocks.`,
             r`Connection c = ds.getConnection();
-try { c.setAutoCommit(false); work(c); c.commit(); }
-catch (Exception e) { c.rollback(); throw e; }
-finally { c.setAutoCommit(true); c.close(); }
+try {
+    c.setAutoCommit(false);
+    work(c);
+    c.commit();
+}
+catch (Exception e) {
+    c.rollback();
+    throw e;
+}
+finally {
+    c.setAutoCommit(true);
+    c.close();
+}
 
 // OUTPUT:
 // the pooled connection is returned clean`],
@@ -839,7 +953,9 @@ finally { c.setAutoCommit(true); c.close(); }
             r`c.setAutoCommit(false);
 long orderId = insertOrder(c, customerId, total);
 try (PreparedStatement ps = c.prepareStatement("INSERT INTO outbox (event, payload) VALUES (?, ?)")) {
-    ps.setString(1, "ORDER_CREATED"); ps.setString(2, "{\"orderId\":" + orderId + "}"); ps.executeUpdate();
+    ps.setString(1, "ORDER_CREATED");
+    ps.setString(2, "{\"orderId\":" + orderId + "}");
+    ps.executeUpdate();
 }
 c.commit();
 
@@ -851,7 +967,11 @@ c.commit();
         [`Without batching each executeUpdate is one network round trip plus one server-side statement. addBatch stores parameter sets client-side; executeBatch sends them together. With <code>rewriteBatchedStatements=true</code> Connector/J rewrites compatible INSERTs into one multi-row INSERT (and other batches into multi-statement packets), cutting latency dramatically.`,
             r`String sql = "INSERT INTO events (user_id, kind) VALUES (?, ?)";
 try (PreparedStatement ps = c.prepareStatement(sql)) {
-    for (int i = 0; i < 1000; i++) { ps.setLong(1, i); ps.setString(2, "click"); ps.addBatch(); }
+    for (int i = 0; i < 1000; i++) {
+        ps.setLong(1, i);
+        ps.setString(2, "click");
+        ps.addBatch();
+    }
     int[] counts = ps.executeBatch();
     System.out.println(counts.length + " statements in one round trip");
 }
@@ -863,16 +983,26 @@ try (PreparedStatement ps = c.prepareStatement(sql)) {
 c.setAutoCommit(false);
 try (PreparedStatement ps = c.prepareStatement("INSERT INTO products (sku, name, price) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE name = VALUES(name), price = VALUES(price)")) {
     for (Product p : products) {
-        ps.setString(1, p.sku()); ps.setString(2, p.name()); ps.setBigDecimal(3, p.price()); ps.addBatch();
-        if (++n % batchSize == 0) { ps.executeBatch(); c.commit(); }
+        ps.setString(1, p.sku());
+        ps.setString(2, p.name());
+        ps.setBigDecimal(3, p.price());
+        ps.addBatch();
+        if (++n % batchSize == 0) {
+            ps.executeBatch();
+            c.commit();
+        }
     }
-    ps.executeBatch(); c.commit();
+    ps.executeBatch();
+    c.commit();
 }
 
 // OUTPUT:
 // idempotent import; reruns update existing rows`],
         [`Mistakes: forgetting the driver option (batches still send one statement at a time), a single enormous batch (memory and lock time), no transaction control, and not handling BatchUpdateException. Chunk, commit per chunk and inspect the update counts on failure.`,
-            r`try { ps.executeBatch(); c.commit(); }
+            r`try {
+    ps.executeBatch();
+    c.commit();
+}
 catch (BatchUpdateException e) {
     c.rollback();
     int[] done = e.getUpdateCounts();
@@ -890,14 +1020,23 @@ System.out.println(92.0 / 2.1);
 // 43.8095...`],
         [`Real-world nightly import: read a file, validate, batch in chunks with an upsert, record counts and rejected rows.`,
             r`try (BufferedReader in = Files.newBufferedReader(path)) {
-    String line; int n = 0, rejected = 0;
+    String line;
+    int n = 0, rejected = 0;
     while ((line = in.readLine()) != null) {
         Product p = parse(line);
-        if (p == null) { rejected++; continue; }
-        bind(ps, p); ps.addBatch();
-        if (++n % 1000 == 0) { ps.executeBatch(); c.commit(); }
+        if (p == null) {
+            rejected++;
+            continue;
+        }
+        bind(ps, p);
+        ps.addBatch();
+        if (++n % 1000 == 0) {
+            ps.executeBatch();
+            c.commit();
+        }
     }
-    ps.executeBatch(); c.commit();
+    ps.executeBatch();
+    c.commit();
     log.info("imported {} rows, rejected {}", n, rejected);
 }
 
@@ -908,7 +1047,8 @@ System.out.println(92.0 / 2.1);
     'jdbc-exception-handling': dv(
         [`When the server returns an error packet, the driver maps the MySQL error number and SQLSTATE to a Java exception. Specific subclasses (integrity violation, timeout, transient, non-transient connection) exist in JDBC 4. The exception chain holds the message, vendor code, SQLSTATE and the cause; try-with-resources attaches close failures as suppressed exceptions.`,
             r`try (PreparedStatement ps = c.prepareStatement("INSERT INTO users (email) VALUES (?)")) {
-    ps.setString(1, "a@x.com"); ps.executeUpdate();
+    ps.setString(1, "a@x.com");
+    ps.executeUpdate();
 } catch (SQLIntegrityConstraintViolationException e) {
     System.out.println("duplicate: " + e.getErrorCode() + " " + e.getSQLState());
 } catch (SQLTimeoutException e) {
@@ -942,8 +1082,14 @@ catch (RetryableException e) { retry.run(() -> dao.save(o)); }
         [`Retries must be bounded with backoff and jitter, and only for transient errors. Measure retry counts: a rising rate signals contention that needs a design fix, not more retries.`,
             r`int attempts = 0;
 while (true) {
-    try { service.transfer(from, to, amt); break; }
-    catch (RetryableException e) { if (++attempts >= 3) throw e; Thread.sleep((long) (50 * Math.pow(2, attempts) + ThreadLocalRandom.current().nextInt(30))); }
+    try {
+        service.transfer(from, to, amt);
+        break;
+    }
+    catch (RetryableException e) {
+        if (++attempts >= 3) throw e;
+        Thread.sleep((long) (50 * Math.pow(2, attempts) + ThreadLocalRandom.current().nextInt(30)));
+    }
 }
 
 // OUTPUT:
@@ -951,9 +1097,15 @@ while (true) {
         [`Real-world: a DAO boundary translates SQL errors into domain exceptions, so services and controllers never see JDBC types.`,
             r`public long create(Customer c) {
     try (Connection cn = ds.getConnection(); PreparedStatement ps = cn.prepareStatement("INSERT INTO customers (email, name) VALUES (?, ?)", RETURN_GENERATED_KEYS)) {
-        ps.setString(1, c.email()); ps.setString(2, c.name()); ps.executeUpdate();
-        try (ResultSet k = ps.getGeneratedKeys()) { k.next(); return k.getLong(1); }
-    } catch (SQLIntegrityConstraintViolationException e) { throw new EmailAlreadyUsed(c.email(), e); }
+        ps.setString(1, c.email());
+        ps.setString(2, c.name());
+        ps.executeUpdate();
+        try (ResultSet k = ps.getGeneratedKeys()) {
+            k.next();
+            return k.getLong(1);
+        }
+    } catch (SQLIntegrityConstraintViolationException e) { throw new EmailAlreadyUsed(c.email(), e);
+    }
       catch (SQLException e) { throw new DataAccessFailure("create customer", e); }
 }
 
@@ -964,9 +1116,14 @@ while (true) {
     'jdbc-connection-pooling': dv(
         [`A pool opens connections ahead of time and keeps them in a concurrent data structure. getConnection hands out an idle one (or creates one up to the maximum, or waits up to the connection timeout). The returned object is a proxy: close() resets state (auto-commit, isolation, read-only) and returns the physical connection to the pool. A housekeeper thread retires old or broken connections.`,
             r`HikariConfig cfg = new HikariConfig();
-cfg.setJdbcUrl(url); cfg.setUsername(user); cfg.setPassword(pass);
-cfg.setMaximumPoolSize(10); cfg.setMinimumIdle(10);              // fixed-size pool: recommended
-cfg.setConnectionTimeout(3000); cfg.setMaxLifetime(1_500_000); cfg.setKeepaliveTime(300_000);
+cfg.setJdbcUrl(url);
+cfg.setUsername(user);
+cfg.setPassword(pass);
+cfg.setMaximumPoolSize(10);
+cfg.setMinimumIdle(10);  // fixed-size pool: recommended
+cfg.setConnectionTimeout(3000);
+cfg.setMaxLifetime(1_500_000);
+cfg.setKeepaliveTime(300_000);
 cfg.addDataSourceProperty("cachePrepStmts", "true");
 HikariDataSource ds = new HikariDataSource(cfg);
 
@@ -1029,19 +1186,30 @@ crs.execute(connection);
 do { while (crs.next()) process(crs.getLong("id")); } while (crs.nextPage());
 
 FilteredRowSet frs = factory.createFilteredRowSet();
-frs.setFilter(new Predicate() { public boolean evaluate(RowSet rs) { try { return rs.getInt("age") > 30; } catch (SQLException e) { return false; } } public boolean evaluate(Object v, int col) { return true; } public boolean evaluate(Object v, String col) { return true; } });
+frs.setFilter(new Predicate() {
+    public boolean evaluate(RowSet rs) {
+        try { return rs.getInt("age") > 30; } catch (SQLException e) { return false; }
+    }
+    public boolean evaluate(Object v, int col) { return true; }
+    public boolean evaluate(Object v, String col) { return true; }
+});
 
 // OUTPUT:
 // paged load of the cached customers; client-side filter on age`],
         [`Mistakes: caching big results (memory), assuming acceptChanges is safe under concurrent writers (it fails when originals changed), and using RowSets across threads. They are mostly historical; prefer DTO lists and explicit UPDATE statements.`,
-            r`crs.absolute(1); crs.updateString("name", "Asha R"); crs.updateRow();
+            r`crs.absolute(1);
+crs.updateString("name", "Abaji R");
+crs.updateRow();
 try { crs.acceptChanges(connection); }
-catch (SyncProviderException e) { System.out.println("conflict: another transaction changed the row"); }
+catch (SyncProviderException e) {
+    System.out.println("conflict: another transaction changed the row");
+}
 
 // OUTPUT:
 // conflict: another transaction changed the row`],
         [`Cost model: the whole result lives in the heap, and acceptChanges issues one UPDATE per changed row with all original column values in the WHERE clause. For large or hot tables write explicit SQL.`,
-            r`UPDATE customers SET name = ? WHERE id = ? AND name = ? AND email = ? AND created_on = ?;       -- shape of the generated statement
+            r`UPDATE customers SET name = ? WHERE id = ? AND name = ? AND email = ? AND created_on = ?;
+-- shape of the generated statement
 
 -- OUTPUT:
 -- Query OK, 1 row affected   (0 rows affected => synchronization conflict)`],
@@ -1059,8 +1227,15 @@ for (crs.beforeFirst(); crs.next(); ) dtos.add(new Customer(crs.getLong("id"), c
             r`public <T> T inTransaction(SqlFunction<Connection, T> work) throws SQLException {
     try (Connection c = ds.getConnection()) {
         c.setAutoCommit(false);
-        try { T r = work.apply(c); c.commit(); return r; }
-        catch (Exception e) { c.rollback(); throw e; }
+        try {
+            T r = work.apply(c);
+            c.commit();
+            return r;
+        }
+        catch (Exception e) {
+            c.rollback();
+            throw e;
+        }
         finally { c.setAutoCommit(true); }
     }
 }
@@ -1089,7 +1264,12 @@ SELECT id, kind, created_at FROM events WHERE user_id = ? AND created_at >= ? OR
 -- q                                     | count_star | avg_ms | rows_examined
 -- SELECT id , name FROM customers WHERE | 9120344    | 0.42   | 1`],
         [`Real-world service template: DataSource bean, repositories with explicit SQL, a transaction helper, a health check query, and Testcontainers tests running migrations before each test class.`,
-            r`@Bean HealthIndicator db(DataSource ds) { return () -> { try (Connection c = ds.getConnection()) { return c.isValid(2) ? Health.up().build() : Health.down().build(); } catch (SQLException e) { return Health.down(e).build(); } }; }
+            r`@Bean HealthIndicator db(DataSource ds) {
+    return () -> { try (Connection c = ds.getConnection()) {
+        return c.isValid(2) ? Health.up().build() : Health.down().build();
+    } catch (SQLException e) { return Health.down(e).build(); }
+    };
+}
 
 // OUTPUT:
 // {"status":"UP","components":{"db":{"status":"UP"}}}`]

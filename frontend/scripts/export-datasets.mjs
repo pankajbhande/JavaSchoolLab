@@ -2,7 +2,7 @@
 // to plain JSON that the Spring Boot server serves. Like export-content.mjs, nothing is rewritten by hand: this
 // evaluates the same code the app runs and writes the result out.
 //
-//   npm run export:datasets            (writes into ../backend/src/main/resources/datasets)
+//   npm run export:datasets            (writes into ../src/main/resources/datasets)
 //   node scripts/export-datasets.mjs --out some/dir
 //   npm run verify:datasets            (re-evaluates the source and compares with the written files)
 //
@@ -20,7 +20,7 @@ import { pathToFileURL } from 'node:url';
 
 const root = process.cwd();
 const arg = (name) => { const i = process.argv.indexOf(name); return i >= 0 ? process.argv[i + 1] : undefined; };
-const outDir = path.resolve(arg('--out') ?? path.join(root, '..', 'backend', 'src', 'main', 'resources', 'datasets'));
+const outDir = path.resolve(arg('--out') ?? path.join(root, '..', 'src', 'main', 'resources', 'datasets'));
 const verifyOnly = process.argv.includes('--verify');
 
 const esbuild = await import(pathToFileURL(path.resolve(root, 'node_modules/esbuild/lib/main.js')).href);

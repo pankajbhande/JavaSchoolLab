@@ -1,5 +1,5 @@
-node_modules
-dist
+**/node_modules
+**/dist
 
 # Environment files — may contain secrets
 .env
@@ -11,3 +11,16 @@ dist
 .DS_Store
 Thumbs.db
 *.log
+
+# Spring Boot / Maven
+target/
+.idea/
+*.iml
+/application.properties
+
+# Eclipse / STS files written when the project is imported
+.project
+.classpath
+.settings/
+bin/
+.factorypath

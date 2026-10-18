@@ -1,5 +1,5 @@
 // Freshness guard: while the TypeScript course sources still exist, the JSON copy under
-// backend/src/main/resources/content/ must match them.
+// src/main/resources/content/ must match them.
 //
 //   npm run check:content
 //

@@ -17,7 +17,7 @@ const root = process.cwd();
 
 // The course list comes from the JSON copy of the content (written by `npm run export:content`),
 // so this script no longer needs the TypeScript course data or esbuild.
-const indexFile = path.join(root, '../backend/src/main/resources/content/index.json');
+const indexFile = path.join(root, '../src/main/resources/content/index.json');
 if (!fs.existsSync(indexFile)) {
   console.error(`Missing ${indexFile}
 Run \`npm run export:content\` first to generate the course content JSON.`);

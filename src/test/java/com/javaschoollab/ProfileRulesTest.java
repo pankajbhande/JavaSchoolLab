@@ -50,7 +50,7 @@ class ProfileRulesTest {
 
     @Test
     void agreesWithTheTypeScriptCopyUsedForInstantFeedback() throws Exception {
-        Path ts = Path.of("..", "frontend", "src", "app", "lib", "profileHandle.ts");
+        Path ts = Path.of("frontend", "src", "app", "lib", "profileHandle.ts");
         assumeTrue(Files.exists(ts), "front-end source not alongside this module");
         String src = Files.readString(ts);
 

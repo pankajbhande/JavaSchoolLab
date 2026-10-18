@@ -2,7 +2,7 @@
 // Spring Boot server serves. Nothing is rewritten by hand: this evaluates the same code the app runs
 // (coursesData = base courses + extras + deep dives, already merged) and writes the result out.
 //
-//   npm run export:content            (writes into ../backend/src/main/resources)
+//   npm run export:content            (writes into ../src/main/resources)
 //   node scripts/export-content.mjs --out some/dir
 //
 // "Without loss" is checked, not assumed:
@@ -21,7 +21,7 @@ import { pathToFileURL } from 'node:url';
 
 const root = process.cwd();
 const arg = (name) => { const i = process.argv.indexOf(name); return i >= 0 ? process.argv[i + 1] : undefined; };
-const resources = path.resolve(arg('--out') ?? path.join(root, '..', 'backend', 'src', 'main', 'resources'));
+const resources = path.resolve(arg('--out') ?? path.join(root, '..', 'src', 'main', 'resources'));
 const contentDir = path.join(resources, 'content');
 const assetsDir = path.join(resources, 'static', 'content-assets');
 const verifyOnly = process.argv.includes('--verify');

@@ -8,7 +8,7 @@ import { predictChallenges } from './predictOutput';
 import { allStudyPacks } from './studyPacks';
 import { learningPaths } from './learningPaths';
 
-const dir = path.resolve(process.cwd(), '../backend/src/main/resources/datasets');
+const dir = path.resolve(process.cwd(), '../src/main/resources/datasets');
 const read = (f: string) => JSON.parse(fs.readFileSync(path.join(dir, f), 'utf8'));
 const sum = <T,>(a: T[], f: (x: T) => number) => a.reduce((n, x) => n + f(x), 0);
 

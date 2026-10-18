@@ -1,8 +1,9 @@
-# JavaSchoolLab backend (Spring Boot)
+# JavaSchoolLab Spring Boot backend: details
 
-This folder is the Maven project to import into STS (**File > Import > Maven > Existing Maven Projects**, root = this `backend` folder).
+The Maven project is the repository root (import it into STS: **File > Import > Maven > Existing Maven Projects**, root = the repository folder).
 
-The Spring Boot version of the API in `../node-server` (Node/Express), plus hosting for the built React site.
+
+The Spring Boot version of the API in `node-server` (Node/Express), plus hosting for the built React site.
 **All 35 endpoints of the Node server are ported**, with the same URLs, JSON and messages, so the React app needs no change.
 
 Java 21, Spring Boot 3.4, Spring Security, JdbcTemplate, Flyway, MySQL, JJWT.
@@ -37,7 +38,7 @@ Because nothing is left on the Node side, you can switch the whole API over at o
 
 ## Run it
 
-Needs JDK 21 and Maven (or use Docker below). Configuration is by environment variables, the same names as `../node-server/.env.example`:
+Needs JDK 21 and Maven (or use Docker below). Configuration is by environment variables, the same names as `node-server/.env.example`:
 
 | Variable | Meaning |
 |---|---|
@@ -58,7 +59,7 @@ $env:DB_PASSWORD = '<your mysql password>'
 mvn spring-boot:run
 ```
 
-Flyway creates and updates the tables on startup (`src/main/resources/db/migration`, mirrors `../node-server/migrations`).
+Flyway creates and updates the tables on startup (`src/main/resources/db/migration`, mirrors `node-server/migrations`).
 On a database the Node migrations already built, it adopts it without changing any data.
 Keep the two folders in step until the Node server is retired.
 
@@ -148,7 +149,7 @@ They are public, send a strong `ETag` and `Cache-Control: no-cache`, so a client
 ## Tests
 
 `mvn test` runs 126 tests (including the 7 architecture rules): validation rules, Node-token and bcrypt compatibility, the streak/XP/review maths
-(the same cases as `../node-server/lib/progress.test.js`), and the whole flow against the real Spring context: sign-in
+(the same cases as `node-server/lib/progress.test.js`), and the whole flow against the real Spring context: sign-in
 (OTP, register, password and OTP login, change password, 401/403 rules), progress (topics, import, study time clamps,
 summary, weekly goal, quiz grading, review queue), profile and avatar checks, bookmarks and notes, certificate issuing and public verification, public profiles (opt-in, privacy, handle rules and ownership), the leaderboard, the 429 limits, the visitor counter, the course content API (every course checked against its manifest hash and counts), and site hosting with the React-route fallback. The tests use H2 in MySQL mode; the
 MySQL-only Flyway scripts have **not** been run in CI yet, so run the app once against a real MySQL before relying on them.
@@ -171,4 +172,4 @@ Flyway without touching its data, 54/54 smoke checks, and 18/18 Node-vs-Spring r
 1. Run `mvn test`, then run the two scripts above against **your own** MySQL (they have passed on a throwaway MySQL 8.4).
 2. Use the same `JWT_SECRET` as the Node server so nobody is logged out.
 3. Point the proxy (or the React app's `VITE_API_BASE_URL`) at Spring Boot, keep Node stopped but available for a few days as a fallback.
-4. When you are happy, delete `../node-server`. Until then keep `src/main/resources/db/migration` and `../node-server/migrations` in step.
+4. When you are happy, delete `node-server`. Until then keep `src/main/resources/db/migration` and `node-server/migrations` in step.

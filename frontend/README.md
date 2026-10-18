@@ -259,7 +259,7 @@ See `docs/quiz-banks.md` to add one.
 ## Retiring the TypeScript course data (not done: groundwork only)
 
 The course content exists twice: as TypeScript under `src/app/data/**` (the editing source today) and as JSON in
-`../backend/src/main/resources/content/` (what the Spring server serves). Nothing has been deleted. The git tag
+`../src/main/resources/content/` (what the Spring server serves). Nothing has been deleted. The git tag
 `pre-ts-removal` marks the last state with the TypeScript present; restore it with
 `git checkout pre-ts-removal -- src/app/data`.
 
@@ -270,7 +270,7 @@ Already prepared, with no change in behaviour:
 - `npm run check:content` fails if the JSON has drifted from the TypeScript (it is the same as `verify:content`, and a no-op
   once the TypeScript is gone). Run it, or `npm run export:content`, after editing the TypeScript.
 - The text helper `highlight` lives in `src/app/lib/highlight.ts`, not inside the course-data folder.
-- `../backend/Dockerfile` builds the site with `VITE_CONTENT_SOURCE=api`; `docker/docker-compose.spring.yml` runs
+- `../Dockerfile` builds the site with `VITE_CONTENT_SOURCE=api`; `docker/docker-compose.spring.yml` runs
   Spring + MySQL as one stack; `docker/nginx.conf` proxies `/content-assets/` (harmless with Express).
 
 Still to do before a deletion would be safe: remove the bundled branch of `courseLoader.ts`; port or drop the five tests that

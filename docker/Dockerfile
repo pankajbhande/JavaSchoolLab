@@ -10,8 +10,8 @@ COPY frontend/package.json frontend/package-lock.json ./
 RUN --mount=type=cache,target=/root/.npm npm ci --ignore-scripts --no-audit --no-fund --prefer-offline
 
 COPY frontend/ .
-# The sitemap and course-stats scripts read the exported course index from the backend resources (../backend from /app).
-COPY backend/src/main/resources/content/index.json /backend/src/main/resources/content/index.json
+# The sitemap and course-stats scripts read the exported course index from the Spring resources (../src from /app).
+COPY src/main/resources/content/index.json /src/main/resources/content/index.json
 
 # VITE_* values are inlined into the bundle at build time, not read at runtime.
 # "/api" makes the browser call the same origin, where nginx proxies to the API container.

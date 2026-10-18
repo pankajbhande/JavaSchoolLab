@@ -21,7 +21,7 @@ import org.junit.jupiter.api.Test;
 /**
  * The package-per-service structure, enforced. Each service (user, auth, progress, ...) is one package with a controller,
  * a service and a repository. These tests fail the build when someone breaks the boundaries, so the structure stays easy to
- * maintain. See the "Architecture" section of backend/README.md.
+ * maintain. See the "Architecture" section of docs/backend.md.
  */
 class ArchitectureTest {
 

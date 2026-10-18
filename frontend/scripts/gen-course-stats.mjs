@@ -16,7 +16,7 @@ import os from 'os';
 const root = process.cwd();
 
 // courseStats.ts and courseIndex.ts come from the JSON copy of the content (`npm run export:content`).
-const indexFile = path.join(root, '../backend/src/main/resources/content/index.json');
+const indexFile = path.join(root, '../src/main/resources/content/index.json');
 if (!fs.existsSync(indexFile)) {
   console.error(`Missing ${indexFile}
 Run \`npm run export:content\` first to generate the course content JSON.`);

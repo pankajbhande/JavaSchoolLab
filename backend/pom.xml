@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-parent</artifactId>
+    <version>3.4.5</version>
+    <relativePath/>
+  </parent>
+
+  <groupId>com.javaschoollab</groupId>
+  <artifactId>javaschoollab-server</artifactId>
+  <version>0.1.0</version>
+  <name>javaschoollab-server</name>
+  <description>JavaSchoolLab API (Spring Boot) and host for the built React site</description>
+
+  <properties>
+    <java.version>21</java.version>
+    <jjwt.version>0.12.6</jjwt.version>
+    <!-- Folder holding the built React site (npm run build:fast). Used by -Pwith-site. -->
+    <frontend.dist>${project.basedir}/../frontend/dist</frontend.dist>
+    <!-- mvn -Pwith-site -Dfrontend.skip=true  reuses the existing dist/ instead of rebuilding the React site. -->
+    <frontend.skip>false</frontend.skip>
+    <node.version>v22.11.0</node.version>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-web</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-security</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-jdbc</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-mail</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.mysql</groupId>
+      <artifactId>mysql-connector-j</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.flywaydb</groupId>
+      <artifactId>flyway-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.flywaydb</groupId>
+      <artifactId>flyway-mysql</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.jsonwebtoken</groupId>
+      <artifactId>jjwt-api</artifactId>
+      <version>${jjwt.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.jsonwebtoken</groupId>
+      <artifactId>jjwt-impl</artifactId>
+      <version>${jjwt.version}</version>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.jsonwebtoken</groupId>
+      <artifactId>jjwt-jackson</artifactId>
+      <version>${jjwt.version}</version>
+      <scope>runtime</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.security</groupId>
+      <artifactId>spring-security-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.tngtech.archunit</groupId>
+      <artifactId>archunit</artifactId>
+      <version>1.3.0</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.h2database</groupId>
+      <artifactId>h2</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <!--
+            Tests always use the in-memory H2 database. These system properties outrank the local, git-ignored
+            application.properties (which points at your MySQL), so running the tests never depends on it.
+          -->
+          <systemPropertyVariables>
+            <spring.datasource.url>jdbc:h2:mem:jsl;MODE=MySQL;DB_CLOSE_DELAY=-1</spring.datasource.url>
+            <spring.datasource.username>sa</spring.datasource.username>
+            <spring.datasource.password></spring.datasource.password>
+            <spring.datasource.driver-class-name>org.h2.Driver</spring.datasource.driver-class-name>
+          </systemPropertyVariables>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+  <profiles>
+    <!--
+      mvn -Pwith-site package: builds the React site (npm install + npm run build, with its own Node so nothing needs
+      installing) and bakes it into the jar, so one java -jar serves both the API and the website.
+    -->
+    <profile>
+      <id>with-site</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>com.github.eirslett</groupId>
+            <artifactId>frontend-maven-plugin</artifactId>
+            <version>1.15.1</version>
+            <configuration>
+              <!-- The React project is the sibling frontend/ folder; Node is downloaded into target/ so nothing is added to it. -->
+              <workingDirectory>${project.basedir}/../frontend</workingDirectory>
+              <installDirectory>${project.build.directory}/frontend-tools</installDirectory>
+              <skip>${frontend.skip}</skip>
+            </configuration>
+            <executions>
+              <execution>
+                <id>install-node</id>
+                <goals><goal>install-node-and-npm</goal></goals>
+                <configuration>
+                  <nodeVersion>${node.version}</nodeVersion>
+                </configuration>
+              </execution>
+              <execution>
+                <id>npm-install</id>
+                <goals><goal>npm</goal></goals>
+                <configuration>
+                  <!-- Install scripts are skipped: an unused dependency (doppiojvm) would otherwise try to download a JDK. -->
+                  <arguments>install --ignore-scripts --no-audit --no-fund --prefer-offline</arguments>
+                </configuration>
+              </execution>
+              <execution>
+                <id>npm-build</id>
+                <goals><goal>npm</goal></goals>
+                <configuration>
+                  <!-- Sitemap, type-check and production build: the same as npm run build. -->
+                  <arguments>run build</arguments>
+                  <environmentVariables>
+                    <!-- The site is served by this same app, so the browser calls the API on its own address. -->
+                    <VITE_API_BASE_URL>/api</VITE_API_BASE_URL>
+                    <!-- Courses, quizzes, study packs and learning paths are read from this server (/api/content/**). -->
+                    <VITE_CONTENT_SOURCE>api</VITE_CONTENT_SOURCE>
+                    <NODE_OPTIONS>--max-old-space-size=4096</NODE_OPTIONS>
+                  </environmentVariables>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-resources-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>copy-built-site</id>
+                <phase>process-resources</phase>
+                <goals><goal>copy-resources</goal></goals>
+                <configuration>
+                  <outputDirectory>${project.build.outputDirectory}/static</outputDirectory>
+                  <resources>
+                    <resource>
+                      <directory>${frontend.dist}</directory>
+                    </resource>
+                  </resources>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+</project>

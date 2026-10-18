@@ -1,0 +1,11 @@
+target/
+.idea/
+*.iml
+/application.properties
+
+# Eclipse / STS files written when the project is imported
+.project
+.classpath
+.settings/
+bin/
+.factorypath

@@ -11,7 +11,7 @@ against questions nobody wrote is worse than not certifying at all.
 
 ## Where banks live
 
-`src/app/data/quiz/banks/<name>.ts`, registered in `src/app/data/quiz/index.ts`.
+`frontend/src/app/data/quiz/banks/<name>.ts`, registered in `frontend/src/app/data/quiz/index.ts`.
 
 ## Keys
 
@@ -25,7 +25,7 @@ Two shapes, checked most specific first:
 Module ids are **not** unique across courses — both Java and JSP Servlets have a module
 called `exception-handling` — which is why module keys are course-scoped.
 
-Find the ids in `src/app/data/coursesData.ts`: course `id`, then `subTopics[].id`.
+Find the ids in `frontend/src/app/data/coursesData.ts`: course `id`, then `subTopics[].id`.
 
 ## Shape
 
@@ -56,7 +56,7 @@ export const myBank: QuizBank = {
 };
 ```
 
-Then add it to `BANKS` in `src/app/data/quiz/index.ts`.
+Then add it to `BANKS` in `frontend/src/app/data/quiz/index.ts`.
 
 ## Rules that matter
 
@@ -71,7 +71,7 @@ Then add it to `BANKS` in `src/app/data/quiz/index.ts`.
 
 ## Engine behaviour
 
-`src/app/services/quizEngine.ts`:
+`frontend/src/app/services/quizEngine.ts`:
 
 - Fisher-Yates shuffle of both question order and options, from a seeded PRNG.
 - One seed per attempt, held in component state, so React re-renders do not reshuffle the

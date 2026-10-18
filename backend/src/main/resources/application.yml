@@ -1,0 +1,56 @@
+# Same environment variables as the Node server (node-server/.env.example), so the two are interchangeable.
+# Real values come from the environment; nothing secret is stored in this file.
+
+server:
+  # Behind nginx or a load balancer set FORWARD_HEADERS_STRATEGY=native so the rate limit sees real visitor addresses
+  # (the Node server used TRUST_PROXY for this).
+  forward-headers-strategy: ${FORWARD_HEADERS_STRATEGY:none}
+  port: ${PORT:3001}              # 3001 matches the Node API, so the React app's default API address still works
+  compression:
+    enabled: true
+    mime-types: application/json,text/html,text/css,application/javascript,text/plain
+    min-response-size: 1024
+
+spring:
+  application:
+    name: javaschoollab
+  datasource:
+    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:javaschoollab}?createDatabaseIfNotExist=true&useUnicode=true&characterEncoding=utf8
+    username: ${DB_USER:root}
+    password: ${DB_PASSWORD:}
+    hikari:
+      maximum-pool-size: ${DB_POOL_SIZE:10}
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    # An existing database (built by the Node server's migrations) has tables but no Flyway history.
+    # Baseline at 0 so every migration is considered; they are all re-runnable, so nothing is lost.
+    baseline-on-migrate: true
+    baseline-version: 0
+  web:
+    resources:
+      static-locations: classpath:/static/   # the built React site, when packaged with -Pwith-site
+
+app:
+  rate-limit:
+    verify-per-minute: ${VERIFY_RATE_LIMIT:60}          # public certificate verification, per client address
+    profile-per-minute: ${PROFILE_RATE_LIMIT:60}        # public learner profile pages
+    handle-check-per-minute: ${HANDLE_RATE_LIMIT:40}     # "is this handle free?" while typing
+  jwt:
+    secret: ${JWT_SECRET:}        # REQUIRED. Use the same value as the Node server to keep users signed in.
+    expires-days: 7
+  cors:
+    origins: ${CORS_ORIGIN:}      # comma-separated; empty = allow any origin (development only)
+  otp:
+    dev-echo: ${OTP_DEV_ECHO:false}   # returns the OTP in the response; ignored under the "prod" profile
+  mail:
+    host: ${SMTP_HOST:}
+    port: ${SMTP_PORT:465}
+    user: ${SMTP_USER:}
+    pass: ${SMTP_PASS:}
+    from: ${SMTP_FROM:}
+    secure: ${SMTP_SECURE:}
+
+logging:
+  level:
+    com.javaschoollab: INFO

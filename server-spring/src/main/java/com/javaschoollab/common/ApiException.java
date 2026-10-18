@@ -1,4 +1,4 @@
-package com.javaschoollab.auth;
+package com.javaschoollab.common;
 
 import org.springframework.http.HttpStatus;
 

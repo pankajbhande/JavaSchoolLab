@@ -60,6 +60,45 @@ Flyway creates and updates the tables on startup (`src/main/resources/db/migrati
 On a database the Node migrations already built, it adopts it without changing any data.
 Keep the two folders in step until the Node server is retired.
 
+## Architecture: one package per service
+
+One application, one jar, one database, but the code is organised as **services, each in its own package**. To change a feature
+you work in one package; to see what a feature depends on you read its `package-info.java`.
+
+```
+com.javaschoollab
+  common        shared kernel: ApiException(+Handler), RateLimiter, JsonInput, @PublicApi (depends on nothing)
+  config        AppProperties          security   JwtService, JwtAuthFilter, SecurityConfig       web   SpaWebConfig
+  user          users                     Identifier, Validation, UserService, UserRepository
+  auth          sign-up, sign-in, OTP     AuthController, OtpController, AuthService, OtpService, MailService, OtpRepository
+  progress      topics, study time, goal  ProgressController, ProgressService, ProgressMath, ProgressRepository
+  quiz          quiz attempts, review     QuizController, ReviewController, QuizService, ReviewSchedule, QuizRepository
+  leaderboard   ranking                   LeaderboardController, LeaderboardService, LeaderboardRepository (read-only, several tables)
+  notes         bookmarks, notes          BookmarksController, NotesController, BookmarkService, NoteService, two repositories
+  certificate   certificates              CertificateController, CertificateService, CertificateUid, CertificateRepository
+  profile       own details + public page ProfileController, ProfileService, PublicProfileController, PublicProfileService, ProfileSettingsRepository
+  content       course content as JSON    ContentController, ContentService, DatasetController, DatasetService
+  visitor       page-load counter         VisitorController, VisitorService, VisitorRepository
+```
+
+Inside a service the layers are flat classes named by suffix: **Controller** (HTTP only), **Service** (all the rules), **Repository**
+(SQL only). Which service may use which (always through the other's `*Service`):
+
+```
+auth -> user      progress -> quiz      certificate -> quiz      leaderboard -> progress
+profile -> user, certificate, progress, quiz            everything -> common, security, config
+```
+
+The rules are enforced by `ArchitectureTest` (it fails the build): controllers never touch repositories or SQL; services never touch
+SQL; a repository is only used inside its own package; a package uses another only through its `*Service`, records, enums and
+`@PublicApi` helpers, and only the allowed ones above; no cycles; the shared kernel and infrastructure never depend on a service;
+every service package has a `package-info.java`.
+
+**Adding a feature as a new service:** create `com.javaschoollab.<name>` with `<Name>Controller`, `<Name>Service`,
+`<Name>Repository` and a `package-info.java`; add the package to `ALLOWED` in `ArchitectureTest` with the services it uses; if it needs a
+table, add a Flyway migration (`src/main/resources/db/migration`). To use another service, inject its `*Service`; if you need something it
+does not offer yet, add a method to that service, never reach into its repository.
+
 ## Serve the website from the same app
 
 One command builds the React site and the API into a single jar:
@@ -106,7 +145,7 @@ They are public, send a strong `ETag` and `Cache-Control: no-cache`, so a client
 
 ## Tests
 
-`mvn test` runs 112 tests: validation rules, Node-token and bcrypt compatibility, the streak/XP/review maths
+`mvn test` runs 126 tests (including the 7 architecture rules): validation rules, Node-token and bcrypt compatibility, the streak/XP/review maths
 (the same cases as `../server/lib/progress.test.js`), and the whole flow against the real Spring context: sign-in
 (OTP, register, password and OTP login, change password, 401/403 rules), progress (topics, import, study time clamps,
 summary, weekly goal, quiz grading, review queue), profile and avatar checks, bookmarks and notes, certificate issuing and public verification, public profiles (opt-in, privacy, handle rules and ownership), the leaderboard, the 429 limits, the visitor counter, the course content API (every course checked against its manifest hash and counts), and site hosting with the React-route fallback. The tests use H2 in MySQL mode; the

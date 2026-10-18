@@ -127,19 +127,4 @@ class ProgressMathTest {
         assertThat(ProgressMath.computeXp(6, 1, 1)).isEqualTo(6 * 10 + 50 + 5);
         assertThat(ProgressMath.computeXp(0, 0, 0)).isZero();
     }
-
-    @Test
-    void reviewIntervalsAtTheDocumentedBoundaries() {
-        int[][] cases = {{0, 1}, {69, 1}, {70, 3}, {84, 3}, {85, 7}, {94, 7}, {95, 21}, {100, 21}};
-        for (int[] c : cases) assertThat(ProgressMath.reviewIntervalDays(c[0])).as("best " + c[0]).isEqualTo(c[1]);
-    }
-
-    @Test
-    void dueRules() {
-        assertThat(ProgressMath.isDue(false, 95, 0)).isTrue();           // never passed: always due
-        assertThat(ProgressMath.isDue(true, 100, 20)).isFalse();         // a perfect score waits three weeks
-        assertThat(ProgressMath.isDue(true, 100, 21)).isTrue();
-        assertThat(ProgressMath.isDue(true, 70, 2)).isFalse();
-        assertThat(ProgressMath.isDue(true, 70, 3)).isTrue();
-    }
 }

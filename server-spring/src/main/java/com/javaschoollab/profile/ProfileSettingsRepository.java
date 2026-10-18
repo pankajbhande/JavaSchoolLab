@@ -1,6 +1,5 @@
 package com.javaschoollab.profile;
 
-import com.javaschoollab.profile.PublicProfiles.Cert;
 import com.javaschoollab.profile.PublicProfiles.Profile;
 import java.time.Instant;
 import java.util.List;
@@ -71,14 +70,6 @@ public class ProfileSettingsRepository {
                         rs.getString("avatar"), rs.getTimestamp("created_at").toInstant(),
                         rs.getBoolean("show_certificates"), rs.getBoolean("show_stats"), rs.getBoolean("show_badges"),
                         rs.getBoolean("show_progress"))), handle).stream().findFirst();
-    }
-
-    public List<Cert> certificatesOf(long userId) {
-        return jdbc.query("""
-                SELECT certificate_uid, course_name, topic_name, score, total_questions, issued_at
-                FROM certificates WHERE user_id = ? ORDER BY issued_at DESC, id DESC LIMIT 200""",
-                (rs, n) -> new Cert(rs.getString(1), rs.getString(2), rs.getString(3), rs.getInt(4), rs.getInt(5),
-                        rs.getTimestamp(6).toInstant()), userId);
     }
 
     private static String nz(String s) {

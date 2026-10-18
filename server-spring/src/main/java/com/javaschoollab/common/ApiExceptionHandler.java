@@ -1,4 +1,4 @@
-package com.javaschoollab.auth;
+package com.javaschoollab.common;
 
 import java.util.Map;
 import org.slf4j.Logger;

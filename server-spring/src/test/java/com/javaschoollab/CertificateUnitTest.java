@@ -3,7 +3,7 @@ package com.javaschoollab;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.javaschoollab.certificate.CertificateUid;
-import com.javaschoollab.certificate.RateLimiter;
+import com.javaschoollab.common.RateLimiter;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;

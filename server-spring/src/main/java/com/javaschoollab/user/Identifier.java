@@ -1,4 +1,4 @@
-package com.javaschoollab.auth;
+package com.javaschoollab.user;
 
 import java.util.Optional;
 

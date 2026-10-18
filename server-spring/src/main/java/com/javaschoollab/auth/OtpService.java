@@ -1,5 +1,10 @@
 package com.javaschoollab.auth;
 
+import com.javaschoollab.common.ApiException;
+import com.javaschoollab.user.Identifier;
+import com.javaschoollab.user.UserService;
+import com.javaschoollab.user.Validation;
+
 import com.javaschoollab.config.AppProperties;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
@@ -21,12 +26,12 @@ public class OtpService {
     static final int EXPIRES_MINUTES = 5;
 
     private final OtpRepository otps;
-    private final UserRepository users;
+    private final UserService users;
     private final MailService mail;
     private final boolean devEcho;
     private final boolean production;
 
-    public OtpService(OtpRepository otps, UserRepository users, MailService mail, AppProperties props, Environment env) {
+    public OtpService(OtpRepository otps, UserService users, MailService mail, AppProperties props, Environment env) {
         this.otps = otps;
         this.users = users;
         this.mail = mail;

@@ -1,5 +1,7 @@
 package com.javaschoollab;
 
+import com.javaschoollab.user.Identifier;
+
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.not;

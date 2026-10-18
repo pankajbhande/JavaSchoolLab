@@ -1,4 +1,4 @@
-package com.javaschoollab.certificate;
+package com.javaschoollab.common;
 
 import java.time.Clock;
 import java.time.Duration;

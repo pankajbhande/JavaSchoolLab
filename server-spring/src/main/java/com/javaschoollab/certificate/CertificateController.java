@@ -1,19 +1,16 @@
 package com.javaschoollab.certificate;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.javaschoollab.auth.ApiException;
-import com.javaschoollab.certificate.CertificateRepository.Certificate;
+import com.javaschoollab.common.RateLimiter;
 import com.javaschoollab.config.AppProperties;
 import com.javaschoollab.security.AuthUser;
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.Clock;
 import java.time.Duration;
-import java.time.Instant;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.OptionalLong;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.CacheControl;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -28,52 +25,24 @@ import org.springframework.web.bind.annotation.RestController;
 
 /**
  * Certificates. They are publicly verifiable (the QR code on one opens /verify/{id}), so the score is taken from
- * the learner's own recorded, passed quiz attempt, never from the request: the server must not print whatever a
- * client claims. Asking again for the same pass returns the same certificate and id.
+ * the learner's own recorded, passed quiz attempt, never from the request: see {@link CertificateService}.
  */
 @RestController
 @RequestMapping("/api/certificates")
 public class CertificateController {
 
-    private static final int ID_ATTEMPTS = 5;
-
-    private final CertificateRepository repo;
+    private final CertificateService certificates;
     private final RateLimiter verifyLimiter;
 
-    public CertificateController(CertificateRepository repo, AppProperties props) {
-        this.repo = repo;
+    public CertificateController(CertificateService certificates, AppProperties props) {
+        this.certificates = certificates;
         this.verifyLimiter = new RateLimiter(Duration.ofMinutes(1), props.rateLimit().verifyPerMinute(), Clock.systemUTC());
     }
 
     @PostMapping
     public ResponseEntity<Map<String, Object>> issue(@AuthenticationPrincipal AuthUser user, @RequestBody JsonNode body) {
-        String courseName = text(body, "courseName");
-        String topicName = text(body, "topicName");
-        if (courseName.isEmpty() || topicName.isEmpty()) {
-            throw ApiException.badRequest("Course name and topic name are required");
-        }
-
-        var best = repo.bestPassedAttempt(user.id(), topicName)
-                .orElseThrow(() -> new ApiException(HttpStatus.FORBIDDEN,
-                        "Pass this module's test first, then you can download the certificate."));
-
-        var existing = repo.findExisting(user.id(), topicName, courseName, best.score(), best.totalQuestions());
-        if (existing.isPresent()) {
-            var e = existing.get();
-            return ResponseEntity.ok(owned(e.id(), e.certificateUid(), user.fullName(), courseName, topicName, best.score(), best.totalQuestions(), e.issuedAt()));
-        }
-
-        for (int tries = 0; tries < ID_ATTEMPTS; tries++) {
-            String uid = CertificateUid.generate();
-            try {
-                long id = repo.insert(user.id(), uid, courseName, topicName, best.score(), best.totalQuestions());
-                return ResponseEntity.status(HttpStatus.CREATED)
-                        .body(owned(id, uid, user.fullName(), courseName, topicName, best.score(), best.totalQuestions(), Instant.now()));
-            } catch (DuplicateKeyException collision) {
-                // an id collision (about 1 in 10^18): draw another
-            }
-        }
-        throw new IllegalStateException("could not allocate a certificate id");
+        IssueResult result = certificates.issue(user.id(), user.fullName(), text(body, "courseName"), text(body, "topicName"));
+        return ResponseEntity.status(result.created() ? HttpStatus.CREATED : HttpStatus.OK).body(owned(result.certificate()));
     }
 
     /** What the QR code opens: only what is printed on the certificate, and 404 for an unknown id. Rate limited because it needs no login. */
@@ -85,10 +54,7 @@ public class CertificateController {
                     .header(HttpHeaders.RETRY_AFTER, String.valueOf(wait.getAsLong()))
                     .body(Map.<String, Object>of("error", "Too many requests. Please wait a minute and try again."));
         }
-        String id = uid == null ? "" : uid.trim();
-        if (!CertificateUid.isValid(id)) return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.<String, Object>of("valid", false));
-
-        return repo.findByUid(id)
+        return certificates.verify(uid)
                 .map(c -> {
                     Map<String, Object> out = new LinkedHashMap<>();
                     out.put("valid", true);
@@ -107,23 +73,20 @@ public class CertificateController {
 
     @GetMapping
     public List<Map<String, Object>> mine(@AuthenticationPrincipal AuthUser user) {
-        return repo.forUser(user.id()).stream()
-                .map(c -> owned(c.id(), c.certificateUid(), c.studentName(), c.courseName(), c.topicName(), c.score(), c.totalQuestions(), c.issuedAt()))
-                .toList();
+        return certificates.forUser(user.id()).stream().map(CertificateController::owned).toList();
     }
 
     /** camelCase, matching the CertificateData type the React app declares. */
-    private static Map<String, Object> owned(long id, String uid, String studentName, String courseName, String topicName,
-                                             int score, int totalQuestions, Instant issuedAt) {
+    private static Map<String, Object> owned(Certificate c) {
         Map<String, Object> m = new LinkedHashMap<>();
-        m.put("id", id);
-        m.put("certificateUid", uid);
-        m.put("studentName", studentName);
-        m.put("courseName", courseName);
-        m.put("topicName", topicName);
-        m.put("score", score);
-        m.put("totalQuestions", totalQuestions);
-        m.put("issuedAt", issuedAt);
+        m.put("id", c.id());
+        m.put("certificateUid", c.certificateUid());
+        m.put("studentName", c.studentName());
+        m.put("courseName", c.courseName());
+        m.put("topicName", c.topicName());
+        m.put("score", c.score());
+        m.put("totalQuestions", c.totalQuestions());
+        m.put("issuedAt", c.issuedAt());
         return m;
     }
 

@@ -2,8 +2,8 @@ package com.javaschoollab;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.javaschoollab.auth.Identifier;
-import com.javaschoollab.auth.Validation;
+import com.javaschoollab.user.Identifier;
+import com.javaschoollab.user.Validation;
 import java.time.LocalDate;
 import org.junit.jupiter.api.Test;
 

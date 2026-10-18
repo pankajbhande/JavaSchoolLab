@@ -1,11 +1,13 @@
-package com.javaschoollab.auth;
+package com.javaschoollab.user;
 
+import com.javaschoollab.common.PublicApi;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
 /** The same rules, with the same messages, as the sign-in form and the Node server. The browser check is a courtesy; this is the real one. */
+@PublicApi
 public final class Validation {
 
     private static final Pattern EMAIL = Pattern.compile("^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$");

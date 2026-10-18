@@ -1,4 +1,4 @@
-package com.javaschoollab.auth;
+package com.javaschoollab.user;
 
 import java.sql.PreparedStatement;
 import java.time.Instant;
@@ -13,10 +13,6 @@ import org.springframework.stereotype.Repository;
 /** The users table, read and written with plain SQL (the same statements the Node server ran). */
 @Repository
 public class UserRepository {
-
-    public record UserRow(long id, String fullName, String email, String mobile, String passwordHash,
-                          String loginType, String gender, LocalDate dob, String organization,
-                          String avatar, Instant createdAt) {}
 
     private static final String COLUMNS =
             "id, full_name, email, mobile, password_hash, login_type, gender, dob, organization, avatar, created_at";

@@ -17,7 +17,7 @@ import org.springframework.core.env.Profiles;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-/** Send and verify the six-digit code that proves someone controls an email or mobile number. */
+/** Send and verify the six-digit code that proves someone controls an email address. */
 @Service
 public class OtpService {
 
@@ -43,8 +43,7 @@ public class OtpService {
         if (isBlank(identifier) || isBlank(identifierType) || isBlank(purpose)) {
             throw ApiException.badRequest("Identifier, type, and purpose are required");
         }
-        Identifier type = Identifier.of(identifierType)
-                .orElseThrow(() -> ApiException.badRequest("Identifier type must be email or mobile"));
+        Identifier type = Identifier.emailOnly(identifierType);
         String bad = Validation.identifierError(type, identifier);
         if (bad != null) throw ApiException.badRequest(bad);
 
@@ -72,10 +71,7 @@ public class OtpService {
             }
         } else if (production) {
             otps.delete(id);
-            if (type == Identifier.EMAIL) {
-                throw new ApiException(HttpStatus.SERVICE_UNAVAILABLE, "Email verification is temporarily unavailable. Please try again later.");
-            }
-            throw new ApiException(HttpStatus.NOT_IMPLEMENTED, "Mobile OTP is not available yet. Please register with your email address.");
+            throw new ApiException(HttpStatus.SERVICE_UNAVAILABLE, "Email verification is temporarily unavailable. Please try again later.");
         }
         if (!delivered && !production) {
             log.info("[OTP] {}: {} => OTP: {} (purpose: {})", identifierType, identifier, otp, purpose);
@@ -92,7 +88,7 @@ public class OtpService {
         if (isBlank(identifier) || isBlank(identifierType) || isBlank(otp) || isBlank(purpose)) {
             throw ApiException.badRequest("All fields are required");
         }
-        Identifier.of(identifierType).orElseThrow(() -> ApiException.badRequest("Identifier type must be email or mobile"));
+        Identifier.emailOnly(identifierType);
         long id = otps.findUnused(identifier, identifierType, otp, purpose, LocalDateTime.now())
                 .orElseThrow(() -> ApiException.unauthorized("Invalid or expired OTP. Please try again."));
         otps.markUsed(id);

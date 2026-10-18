@@ -5,6 +5,7 @@ import { toast } from 'sonner';
 import { registerWithOtp, loginUser, loginWithOtp, sendOtp, verifyOtp } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { ScrollDatePicker } from './ScrollDatePicker';
+import { GoogleSignInButton } from './GoogleSignInButton';
 
 const FIELD = 'w-full border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400 focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:border-orange-500 outline-none aria-[invalid=true]:border-red-500 disabled:opacity-60';
 const FOCUS = 'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600';
@@ -18,7 +19,7 @@ export function LoginModal({ onClose, message }: LoginModalProps) {
   const { login, loginAsGuest } = useAuth();
   const [mode, setMode] = useState<'login' | 'register'>('login');
   const [authMethod, setAuthMethod] = useState<'password' | 'otp'>('password');
-  const [loginType, setLoginType] = useState<'email' | 'mobile'>('email');
+  const [loginType] = useState<'email' | 'mobile'>('email');   // email only; see the note above the form
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [mobile, setMobile] = useState('');
@@ -273,33 +274,7 @@ export function LoginModal({ onClose, message }: LoginModalProps) {
           </div>
 
           <div className="p-6">
-            {/* Login Type Toggle */}
-            <div role="group" aria-label="Sign in with" className="flex bg-gray-100 dark:bg-gray-700 rounded-lg p-1 mb-4">
-              <button
-                type="button"
-                aria-pressed={loginType === 'email'}
-                onClick={() => { setLoginType('email'); resetOtp(); }}
-                className={`${FOCUS} flex-1 flex items-center justify-center gap-2 py-2 rounded-md text-sm font-medium transition-all ${
-                  loginType === 'email'
-                    ? 'bg-white dark:bg-gray-600 shadow text-orange-700 dark:text-orange-300'
-                    : 'text-gray-600 dark:text-gray-300'
-                }`}
-              >
-                <Mail className="w-4 h-4" /> Email
-              </button>
-              <button
-                type="button"
-                aria-pressed={loginType === 'mobile'}
-                onClick={() => { setLoginType('mobile'); resetOtp(); }}
-                className={`${FOCUS} flex-1 flex items-center justify-center gap-2 py-2 rounded-md text-sm font-medium transition-all ${
-                  loginType === 'mobile'
-                    ? 'bg-white dark:bg-gray-600 shadow text-orange-700 dark:text-orange-300'
-                    : 'text-gray-600 dark:text-gray-300'
-                }`}
-              >
-                <Phone className="w-4 h-4" /> Mobile
-              </button>
-            </div>
+            {/* Sign-up and sign-in are email only (the server rejects mobile numbers), so there is no Email/Mobile switch. */}
 
             {/* OTP Verify Screen */}
             {otpStep === 'verify' && !otpVerified && (
@@ -543,6 +518,15 @@ export function LoginModal({ onClose, message }: LoginModalProps) {
                 )}
 
                 {/* Toggle Login/Register */}
+                <GoogleSignInButton
+                  onSuccess={res => {
+                    login(res.token, res.user);
+                    toast.success(`Welcome, ${res.user.fullName?.split(' ')[0] || 'there'}!`);
+                    onClose();
+                  }}
+                  onError={msg => { setError(msg); toast.error(msg); }}
+                />
+
                 <p className="text-center text-sm text-gray-600 dark:text-gray-300 mt-4">
                   {mode === 'login' ? "Don't have an account? " : 'Already have an account? '}
                   <button type="button" onClick={() => switchMode(mode === 'login' ? 'register' : 'login')}

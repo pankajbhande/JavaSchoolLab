@@ -19,8 +19,10 @@ public class AuthService {
     private final OtpService otp;
     private final JwtService jwt;
     private final PasswordEncoder encoder;
+    private final GoogleTokenVerifier google;
 
-    public AuthService(UserService users, OtpService otp, JwtService jwt, PasswordEncoder encoder) {
+    public AuthService(UserService users, OtpService otp, JwtService jwt, PasswordEncoder encoder, GoogleTokenVerifier google) {
+        this.google = google;
         this.users = users;
         this.otp = otp;
         this.jwt = jwt;
@@ -31,8 +33,7 @@ public class AuthService {
         if (isEmpty(r.fullName()) || isEmpty(r.password()) || isEmpty(r.loginType())) {
             throw ApiException.badRequest("Full name, password, and login type are required");
         }
-        Identifier type = Identifier.of(r.loginType())
-                .orElseThrow(() -> ApiException.badRequest("Login type must be email or mobile"));
+        Identifier type = Identifier.emailOnly(r.loginType());
         String value = type == Identifier.EMAIL ? r.email() : r.mobile();
         firstError(Validation.identifierError(type, value), Validation.passwordError(r.password()), Validation.nameError(r.fullName()));
 
@@ -46,8 +47,7 @@ public class AuthService {
         if (isEmpty(r.fullName()) || isEmpty(r.password()) || isEmpty(r.loginType()) || isEmpty(r.otp())) {
             throw ApiException.badRequest("All fields are required");
         }
-        Identifier type = Identifier.of(r.loginType())
-                .orElseThrow(() -> ApiException.badRequest("Login type must be email or mobile"));
+        Identifier type = Identifier.emailOnly(r.loginType());
         String identifier = type == Identifier.EMAIL ? r.email() : r.mobile();
         firstError(Validation.identifierError(type, identifier), Validation.passwordError(r.password()), Validation.nameError(r.fullName()));
 
@@ -65,7 +65,7 @@ public class AuthService {
         if (isEmpty(r.password()) || isEmpty(r.loginType())) {
             throw ApiException.badRequest("Password and login type are required");
         }
-        Identifier by = "email".equals(r.loginType()) ? Identifier.EMAIL : Identifier.MOBILE;
+        Identifier by = Identifier.emailOnly(r.loginType());
         String value = by == Identifier.EMAIL ? r.email() : r.mobile();
         if (isEmpty(value)) throw ApiException.badRequest(by.wire() + " is required");
 
@@ -81,8 +81,7 @@ public class AuthService {
         if (isEmpty(r.loginType()) || isEmpty(r.otp())) {
             throw ApiException.badRequest("Login type and OTP are required");
         }
-        Identifier by = Identifier.of(r.loginType())
-                .orElseThrow(() -> ApiException.badRequest("Login type must be email or mobile"));
+        Identifier by = Identifier.emailOnly(r.loginType());
         String identifier = by == Identifier.EMAIL ? r.email() : r.mobile();
         if (isEmpty(identifier)) throw ApiException.badRequest(r.loginType() + " is required");
 
@@ -91,6 +90,24 @@ public class AuthService {
                 .orElseThrow(() -> ApiException.notFound("User not found"));
         otp.spend(otpId);   // a verified code must not log anyone in a second time
         return sessionFor(user);
+    }
+
+    /**
+     * "Continue with Google": Google has already proved the email address, so there is no password or code to check.
+     * Someone with no account yet gets one (its password is random and unknown to everyone); someone who already has
+     * an account with that email is signed in to it.
+     */
+    public AuthSession loginWithGoogle(GoogleLoginRequest r) {
+        if (r == null || isEmpty(r.credential())) throw ApiException.badRequest("Google credential is required");
+        GoogleProfile profile = google.verify(r.credential());
+        UserRow existing = users.findBy(Identifier.EMAIL, profile.email()).orElse(null);
+        if (existing != null) return sessionFor(existing);
+        String unusableSecret = java.util.UUID.randomUUID().toString();   // bcrypt accepts at most 72 bytes
+        return create(profile.name(), profile.email(), null, unusableSecret, "email", null, null, null);
+    }
+
+    public String googleClientId() {
+        return google.clientId();
     }
 
     public UserRow currentUser(long id) {

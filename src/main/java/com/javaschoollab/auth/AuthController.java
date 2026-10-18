@@ -44,6 +44,17 @@ public class AuthController {
         return session(auth.loginWithOtp(r));
     }
 
+    @PostMapping("/google")
+    public Map<String, Object> google(@RequestBody GoogleLoginRequest r) {
+        return session(auth.loginWithGoogle(r));
+    }
+
+    /** Public settings the login form needs (the Google client id is not a secret). An empty id hides the Google button. */
+    @GetMapping("/config")
+    public Map<String, Object> config() {
+        return Map.of("googleClientId", auth.googleClientId());
+    }
+
     @GetMapping("/me")
     public Map<String, Object> me(@AuthenticationPrincipal AuthUser principal) {
         UserRow u = auth.currentUser(principal.id());

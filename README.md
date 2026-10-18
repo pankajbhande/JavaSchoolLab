@@ -20,6 +20,23 @@ docs/            authoring notes and backend details (docs/backend.md)
 
 The React app lives in `frontend/`. After `npm install` it has a large `node_modules`; if STS feels slow, right-click `frontend` > Properties > Resource > Resource Filters and exclude it, or leave `npm install` to the Maven build (`-Pwith-site`), which keeps its own copy under `target/`.
 
+## Environments: local and production
+
+| | Local (default) | Production |
+|---|---|---|
+| Profile | `local`, active automatically in STS and `mvn spring-boot:run` | `prod`, set `SPRING_PROFILES_ACTIVE=prod` (the Docker compose file does this) |
+| Config file | `application-local.yml` plus your git-ignored `application.properties` | `application-prod.yml`, values come from environment variables |
+| Database | MySQL on localhost:3306, user root | `DB_HOST`, `DB_NAME`, `DB_USER`, `DB_PASSWORD` (required) |
+| Sign-up code | printed in the console and returned in the response (`dev-echo`) | emailed through SMTP only, never returned |
+| Secrets | `app.jwt.secret` in `application.properties` | `JWT_SECRET` (required, 32+ characters) |
+| CORS | Vite and local ports | `CORS_ORIGIN` (required): your public site address |
+| Errors / logs | detailed, DEBUG for the app | no messages or stack traces to clients, WARN/INFO logs |
+
+In production a missing required value stops the app at start-up instead of running half-configured.
+Sign-up, sign-in and one-time codes are **email only**; mobile numbers are rejected by the API.
+**Continue with Google** is optional: set `app.google.client-id` (local) or `GOOGLE_CLIENT_ID` (production) to an OAuth "Web application"
+client id from Google Cloud Console and the button appears on the login form. Leave it empty and the button stays hidden.
+
 ## Everyday commands
 
 | What | Where | Command |

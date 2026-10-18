@@ -14,6 +14,8 @@ server:
 spring:
   application:
     name: javaschoollab
+  profiles:
+    default: local   # STS / mvn spring-boot:run use the "local" profile; production sets SPRING_PROFILES_ACTIVE=prod
   datasource:
     url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:javaschoollab}?createDatabaseIfNotExist=true&useUnicode=true&characterEncoding=utf8
     username: ${DB_USER:root}
@@ -41,6 +43,8 @@ app:
     expires-days: 7
   cors:
     origins: ${CORS_ORIGIN:}      # comma-separated; empty = allow any origin (development only)
+  google:
+    client-id: ${GOOGLE_CLIENT_ID:}   # OAuth "Web application" client id from Google Cloud Console; empty = Google sign-in is off
   otp:
     dev-echo: ${OTP_DEV_ECHO:false}   # returns the OTP in the response; ignored under the "prod" profile
   mail:

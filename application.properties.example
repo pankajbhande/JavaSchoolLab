@@ -16,3 +16,9 @@ app.jwt.secret=put-a-random-string-of-at-least-32-characters-here
 # --- Development conveniences (remove for production) -----------------------------------------------------------
 # Returns the one-time code in the API response and prints it in the console, so you can sign up without email.
 app.otp.dev-echo=true
+
+# --- Continue with Google (optional) ---------------------------------------------------------------------------------
+# Google Cloud Console > APIs & Services > Credentials > Create credentials > OAuth client ID > "Web application".
+# Add http://localhost:3001 (and http://localhost:5173 for the Vite dev server) under "Authorized JavaScript origins",
+# plus your real site address for production. Paste the client id here; leave empty to hide the Google button.
+app.google.client-id=

@@ -1,0 +1,19 @@
+# LOCAL profile: active by default when you run from STS or `mvn spring-boot:run`.
+# Safe developer defaults, no secrets. Your MySQL password and JWT secret go in the git-ignored application.properties
+# (copy application.properties.example), which overrides anything here.
+
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/${DB_NAME:javaschoollab}?createDatabaseIfNotExist=true&useUnicode=true&characterEncoding=utf8
+    username: ${DB_USER:root}
+
+app:
+  otp:
+    dev-echo: true          # sign-up codes appear in the API response and the console, so no email is needed
+  cors:
+    origins: http://localhost:5173,http://localhost:3000,http://localhost:3001   # Vite dev server and the Spring port
+
+logging:
+  level:
+    com.javaschoollab: DEBUG
+    org.flywaydb: INFO

@@ -90,6 +90,18 @@ export async function loginWithOtp(data: { email?: string; mobile?: string; logi
   return res.json();
 }
 
+export async function getAuthConfig(): Promise<{ googleClientId: string }> {
+  const res = await fetch(`${API_BASE}/auth/config`);
+  if (!res.ok) throw new Error("Could not read sign-in settings");
+  return res.json();
+}
+
+export async function loginWithGoogle(credential: string): Promise<AuthResponse> {
+  const res = await fetch(`${API_BASE}/auth/google`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ credential }) });
+  if (!res.ok) { const err = await res.json().catch(() => ({})); throw new Error(err.error || "Google sign-in failed"); }
+  return res.json();
+}
+
 export async function fetchCurrentUser(): Promise<User> {
   const res = await fetch(`${API_BASE}/auth/me`, { headers: authHeaders() });
   if (!res.ok) throw new Error('Not authenticated');

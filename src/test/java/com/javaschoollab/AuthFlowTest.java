@@ -122,7 +122,19 @@ class AuthFlowTest {
         send("/api/otp/send", """
                 {"identifier":"x@y.zz","identifierType":"fax","purpose":"register"}""")
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.error").value("Identifier type must be email or mobile"));
+                .andExpect(jsonPath("$.error").value(containsString("Only email")));
+        send("/api/otp/send", """
+                {"identifier":"9876543210","identifierType":"mobile","purpose":"register"}""")
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error").value(containsString("Only email")));
+        send("/api/auth/login", """
+                {"mobile":"9876543210","password":"secret1","loginType":"mobile"}""")
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error").value(containsString("Only email")));
+        send("/api/auth/register", """
+                {"fullName":"Tanaji Malusare","mobile":"9876543210","password":"secret123","loginType":"mobile"}""")
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error").value(containsString("Only email")));
         send("/api/otp/send", "{}").andExpect(status().isBadRequest());
     }
 

@@ -24,6 +24,7 @@ public class SecurityConfig {
     private static final String[] PUBLIC_API = {
             "/api/otp/**",
             "/api/auth/register", "/api/auth/login", "/api/auth/register-otp", "/api/auth/login-otp",
+            "/api/auth/google", "/api/auth/config",
             "/api/visitors/**",
             "/api/certificates/verify/**",           // what the QR code on a certificate opens
             "/api/profiles/**",                       // public learner profile pages (opt-in, see PublicProfileController)

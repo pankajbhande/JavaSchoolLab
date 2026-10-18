@@ -11,22 +11,19 @@
 // is what would make each page independently indexable.
 import path from 'path';
 import fs from 'fs';
-import os from 'os';
-import { pathToFileURL } from 'url';
 
 const SITE = (process.env.SITE_URL || 'https://javaschoollab.com').replace(/\/+$/, '');
 const root = process.cwd();
-const esbuild = await import(pathToFileURL(path.resolve(root, 'node_modules/esbuild/lib/main.js')).href);
-const out = path.join(os.tmpdir(), 'jsl-sitemap-' + process.pid + '.mjs');
 
-await esbuild.build({
-  entryPoints: [path.join(root, 'src/app/data/coursesData.ts')],
-  bundle: true, format: 'esm', outfile: out, logLevel: 'error',
-  loader: { '.png': 'empty', '.jpg': 'empty', '.jpeg': 'empty', '.svg': 'empty', '.mp3': 'empty', '.gif': 'empty' },
-  external: ['react', 'react-dom', 'motion', 'motion/react', 'lucide-react', 'react/jsx-runtime'],
-});
-const { coursesData } = await import(pathToFileURL(out).href);
-fs.rmSync(out, { force: true });
+// The course list comes from the JSON copy of the content (written by `npm run export:content`),
+// so this script no longer needs the TypeScript course data or esbuild.
+const indexFile = path.join(root, 'server-spring/src/main/resources/content/index.json');
+if (!fs.existsSync(indexFile)) {
+  console.error(`Missing ${indexFile}
+Run \`npm run export:content\` first to generate the course content JSON.`);
+  process.exit(1);
+}
+const coursesData = JSON.parse(fs.readFileSync(indexFile, 'utf8'));
 
 // Must match src/app/lib/slug.ts exactly, or the sitemap will advertise 404s.
 const slugify = (id) => id.trim().replace(/\s+/g, '_');

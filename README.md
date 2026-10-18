@@ -255,3 +255,26 @@ topic that explains both.
 Tests are built only from reviewed question banks in `src/app/data/quiz/banks/`. Modules
 with no bank say so and offer no certificate, rather than serving a generated quiz.
 See `docs/quiz-banks.md` to add one.
+
+## Retiring the TypeScript course data (not done: groundwork only)
+
+The course content exists twice: as TypeScript under `src/app/data/**` (the editing source today) and as JSON in
+`server-spring/src/main/resources/content/` (what the Spring server serves). Nothing has been deleted. The git tag
+`pre-ts-removal` marks the last state with the TypeScript present; restore it with
+`git checkout pre-ts-removal -- src/app/data`.
+
+Already prepared, with no change in behaviour:
+
+- `npm run gen:sitemap` and `npm run gen:course-stats` read `content/index.json` (byte-identical output to the old
+  TypeScript-based versions). `courseLoadMap.ts` is only regenerated while `coursesData.ts` exists.
+- `npm run check:content` fails if the JSON has drifted from the TypeScript (it is the same as `verify:content`, and a no-op
+  once the TypeScript is gone). Run it, or `npm run export:content`, after editing the TypeScript.
+- The text helper `highlight` lives in `src/app/lib/highlight.ts`, not inside the course-data folder.
+- `server-spring/Dockerfile` builds the site with `VITE_CONTENT_SOURCE=api`; `docker/docker-compose.spring.yml` runs
+  Spring + MySQL as one stack; `docker/nginx.conf` proxies `/content-assets/` (harmless with Express).
+
+Still to do before a deletion would be safe: remove the bundled branch of `courseLoader.ts`; port or drop the five tests that
+compare against the TypeScript (`courseLoader.test.ts`, `courseStats.test.ts`, `studyPacks.test.ts`, `slug.test.ts`,
+`interviewQA.test.ts`); retire `export:content`/`verify:content`/`npm run kp`; decide how content will be edited (22 MB of
+JSON by hand has no type checking, and a hand edit makes the server refuse the course until `manifest.json` is updated);
+deploy and test the Spring stack with the TypeScript still present (first load, search, flashcards, offline, API down).

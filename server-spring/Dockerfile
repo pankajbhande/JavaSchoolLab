@@ -1,6 +1,7 @@
 # syntax=docker/dockerfile:1.7
 #
-# One image that serves the API and the built React site.
+# One image that serves the API, the built React site and the course content (the jar contains
+# the content, so the site is built with VITE_CONTENT_SOURCE=api and reads courses from its own API).
 # Build from the app/ folder (the context needs both the React source and server-spring/):
 #
 #   docker build -f server-spring/Dockerfile -t javaschoollab .
@@ -16,8 +17,9 @@ RUN --mount=type=cache,target=/root/.npm npm ci --ignore-scripts --no-audit --no
 COPY . .
 # The site is served by the same Spring Boot app, so the browser calls the API on its own origin.
 ARG VITE_API_BASE_URL=/api
+ARG VITE_CONTENT_SOURCE=api
 ARG SITE_URL=https://javaschoollab.com
-ENV VITE_API_BASE_URL=$VITE_API_BASE_URL SITE_URL=$SITE_URL NODE_OPTIONS=--max-old-space-size=4096
+ENV VITE_API_BASE_URL=$VITE_API_BASE_URL VITE_CONTENT_SOURCE=$VITE_CONTENT_SOURCE SITE_URL=$SITE_URL NODE_OPTIONS=--max-old-space-size=4096
 RUN npm run build
 
 # ---- Stage 2: build the jar with the site baked in -----------------------------------

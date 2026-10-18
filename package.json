@@ -17,6 +17,7 @@
     "kp": "node scripts/dump-keypoints.mjs",
     "export:content": "node scripts/export-content.mjs",
     "verify:content": "node scripts/export-content.mjs --verify",
+    "check:content": "node scripts/check-content-fresh.mjs",
     "export:datasets": "node scripts/export-datasets.mjs",
     "verify:datasets": "node scripts/export-datasets.mjs --verify"
   },

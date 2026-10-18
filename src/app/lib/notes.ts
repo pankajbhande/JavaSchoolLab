@@ -6,7 +6,7 @@
 //
 // <pre>, <table>, <script> and <style> regions are never touched, and so are lines that are not bullets.
 // The source data is untouched; this runs on the way to the screen.
-import { highlight } from '../data/topics/courseExtras/javaLayout';
+import { highlight } from './highlight';
 
 const BULLET = /^(?:•|&bull;|&#8226;)\s*([\s\S]+)$/;
 const PROTECTED = /<(pre|table|script|style|ul|ol)\b[\s\S]*?<\/\1>/gi;

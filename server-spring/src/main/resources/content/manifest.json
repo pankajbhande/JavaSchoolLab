@@ -1,0 +1,575 @@
+{
+ "generatedBy": "scripts/export-content.mjs",
+ "courses": 31,
+ "totals": {
+  "modules": 324,
+  "topics": 3588,
+  "blocks": 25880,
+  "codeExamples": 18101,
+  "codeExplanations": 558,
+  "interviewQA": 446,
+  "cheatNotes": 975,
+  "interviewQuestions": 3135,
+  "characters": 19585253
+ },
+ "items": [
+  {
+   "id": "software-foundations",
+   "name": "Software Fundamentals",
+   "file": "courses/software-foundations.json",
+   "bytes": 461855,
+   "sha256": "50390381fcf757841e7782c3d2ad167976df635f61c85b48cdd996eea2ea356f",
+   "counts": {
+    "modules": 4,
+    "topics": 41,
+    "blocks": 508,
+    "codeExamples": 28,
+    "codeExplanations": 0,
+    "interviewQA": 0,
+    "cheatNotes": 15,
+    "interviewQuestions": 10,
+    "characters": 441275
+   }
+  },
+  {
+   "id": "programming-fundamentals",
+   "name": "Programming Fundamentals",
+   "file": "courses/programming-fundamentals.json",
+   "bytes": 229326,
+   "sha256": "7264c53a175809c35886c39536d6b79f1f0fb5cf37a493ffa3e582fd059305dc",
+   "counts": {
+    "modules": 3,
+    "topics": 25,
+    "blocks": 222,
+    "codeExamples": 143,
+    "codeExplanations": 0,
+    "interviewQA": 0,
+    "cheatNotes": 16,
+    "interviewQuestions": 10,
+    "characters": 214069
+   }
+  },
+  {
+   "id": "HTML and CSS",
+   "name": "HTML & CSS",
+   "file": "courses/html-and-css.json",
+   "bytes": 1368136,
+   "sha256": "54c39607971fee5b68d7aea20892afb67e7943515e41f65a45d8eb60570c755a",
+   "counts": {
+    "modules": 46,
+    "topics": 783,
+    "blocks": 1291,
+    "codeExamples": 634,
+    "codeExplanations": 0,
+    "interviewQA": 0,
+    "cheatNotes": 46,
+    "interviewQuestions": 20,
+    "characters": 1227249
+   }
+  },
+  {
+   "id": "java",
+   "name": "Java",
+   "file": "courses/java.json",
+   "bytes": 2274736,
+   "sha256": "197d9d30638c26ccfed1b560ce6b4531c469f1f6fabedb1ead31e328464c6662",
+   "counts": {
+    "modules": 10,
+    "topics": 89,
+    "blocks": 2470,
+    "codeExamples": 1607,
+    "codeExplanations": 0,
+    "interviewQA": 446,
+    "cheatNotes": 98,
+    "interviewQuestions": 2070,
+    "characters": 1994784
+   }
+  },
+  {
+   "id": "jdbc",
+   "name": "JDBC",
+   "file": "courses/jdbc.json",
+   "bytes": 182662,
+   "sha256": "e0cda7c2152c9ae2229ac9730c6610446a4b31c893769e93ab2e39267979e423",
+   "counts": {
+    "modules": 1,
+    "topics": 11,
+    "blocks": 225,
+    "codeExamples": 141,
+    "codeExplanations": 0,
+    "interviewQA": 0,
+    "cheatNotes": 36,
+    "interviewQuestions": 5,
+    "characters": 168950
+   }
+  },
+  {
+   "id": "spring-core",
+   "name": "Spring Core",
+   "file": "courses/spring-core.json",
+   "bytes": 104758,
+   "sha256": "bd69f45eac55da39b83ee4004648eac560146e075f0e17b1bc5bdc5a4d2d1d07",
+   "counts": {
+    "modules": 2,
+    "topics": 4,
+    "blocks": 93,
+    "codeExamples": 84,
+    "codeExplanations": 0,
+    "interviewQA": 0,
+    "cheatNotes": 45,
+    "interviewQuestions": 10,
+    "characters": 94880
+   }
+  },
+  {
+   "id": "spring-mvc",
+   "name": "Spring MVC",
+   "file": "courses/spring-mvc.json",
+   "bytes": 2866382,
+   "sha256": "a1c84c09d1269727684bf013475236d9c4c985c0a2a13c40188fbebbf7c38666",
+   "counts": {
+    "modules": 35,
+    "topics": 443,
+    "blocks": 4630,
+    "codeExamples": 3430,
+    "codeExplanations": 0,
+    "interviewQA": 0,
+    "cheatNotes": 36,
+    "interviewQuestions": 5,
+    "characters": 2622624
+   }
+  },
+  {
+   "id": "spring-boot",
+   "name": "Spring Boot",
+   "file": "courses/spring-boot.json",
+   "bytes": 2399940,
+   "sha256": "938d17ecab91670a932fc852d989f01584e8e7b23e38de807eb0ba0b8664707d",
+   "counts": {
+    "modules": 30,
+    "topics": 530,
+    "blocks": 1325,
+    "codeExamples": 1270,
+    "codeExplanations": 0,
+    "interviewQA": 0,
+    "cheatNotes": 96,
+    "interviewQuestions": 5,
+    "characters": 2266303
+   }
+  },
+  {
+   "id": "java-memory-jvm",
+   "name": "Java Memory & JVM",
+   "file": "courses/java-memory-jvm.json",
+   "bytes": 602980,
+   "sha256": "f55a3cb7aaf1ac736d12a6fc2e97ab19895174ef7b93b7b721294a696d7b96c7",
+   "counts": {
+    "modules": 5,
+    "topics": 36,
+    "blocks": 815,
+    "codeExamples": 436,
+    "codeExplanations": 0,
+    "interviewQA": 0,
+    "cheatNotes": 15,
+    "interviewQuestions": 10,
+    "characters": 567794
+   }
+  },
+  {
+   "id": "jsp-servlet",
+   "name": "JSP Servlets",
+   "file": "courses/jsp-servlet.json",
+   "bytes": 556076,
+   "sha256": "f31a9d11fc3576b5774b55df2fa2988cfb9f694ccd30bcf304fd620b11ba2e45",
+   "counts": {
+    "modules": 10,
+    "topics": 43,
+    "blocks": 872,
+    "codeExamples": 641,
+    "codeExplanations": 0,
+    "interviewQA": 0,
+    "cheatNotes": 48,
+    "interviewQuestions": 0,
+    "characters": 504956
+   }
+  },
+  {
+   "id": "collection",
+   "name": "Collection Framework",
+   "file": "courses/collection.json",
+   "bytes": 514268,
+   "sha256": "d4259d36f253f47877810ba88f48c97162c884b61fb4e204b8e7b58021c1779f",
+   "counts": {
+    "modules": 6,
+    "topics": 16,
+    "blocks": 344,
+    "codeExamples": 415,
+    "codeExplanations": 0,
+    "interviewQA": 0,
+    "cheatNotes": 57,
+    "interviewQuestions": 138,
+    "characters": 475109
+   }
+  },
+  {
+   "id": "design-patterns",
+   "name": "Design Patterns in Java",
+   "file": "courses/design-patterns.json",
+   "bytes": 126094,
+   "sha256": "d1f6c1b83d5b31b627109b6278f5148424fc16ef81ad01d73b11f427a693479b",
+   "counts": {
+    "modules": 3,
+    "topics": 23,
+    "blocks": 69,
+    "codeExamples": 43,
+    "codeExplanations": 0,
+    "interviewQA": 0,
+    "cheatNotes": 48,
+    "interviewQuestions": 25,
+    "characters": 113469
+   }
+  },
+  {
+   "id": "enterprise-patterns-1",
+   "name": "Enterprise Design Patterns",
+   "file": "courses/enterprise-patterns-1.json",
+   "bytes": 57122,
+   "sha256": "51842f868488783f9547efc356ce54ff50e96f425699452f507a6695623216ae",
+   "counts": {
+    "modules": 2,
+    "topics": 15,
+    "blocks": 44,
+    "codeExamples": 19,
+    "codeExplanations": 0,
+    "interviewQA": 0,
+    "cheatNotes": 7,
+    "interviewQuestions": 10,
+    "characters": 51973
+   }
+  },
+  {
+   "id": "microservices-patterns-1",
+   "name": "Microservices Design Patterns",
+   "file": "courses/microservices-patterns-1.json",
+   "bytes": 70877,
+   "sha256": "d2404c4caa85b9fd4dd34b88a9f71cf1d3f42ee8888e1a4bd227799e34eb68ec",
+   "counts": {
+    "modules": 2,
+    "topics": 19,
+    "blocks": 62,
+    "codeExamples": 14,
+    "codeExplanations": 0,
+    "interviewQA": 0,
+    "cheatNotes": 9,
+    "interviewQuestions": 10,
+    "characters": 64947
+   }
+  },
+  {
+   "id": "messaging-patterns-1",
+   "name": "Integration & Messaging Patterns",
+   "file": "courses/messaging-patterns-1.json",
+   "bytes": 42980,
+   "sha256": "4768a9da941c4e1b0047fa81a87432877bf8a18db1822344bac696a202005908",
+   "counts": {
+    "modules": 2,
+    "topics": 14,
+    "blocks": 42,
+    "codeExamples": 12,
+    "codeExplanations": 0,
+    "interviewQA": 0,
+    "cheatNotes": 7,
+    "interviewQuestions": 10,
+    "characters": 38290
+   }
+  },
+  {
+   "id": "architectural-patterns",
+   "name": "Architectural Patterns",
+   "file": "courses/architectural-patterns.json",
+   "bytes": 30048,
+   "sha256": "bc179e1cb7d6aea7b9e88fc865acac3ecfed2ce80a70cb4800d4437eb38a4574",
+   "counts": {
+    "modules": 1,
+    "topics": 12,
+    "blocks": 29,
+    "codeExamples": 3,
+    "codeExplanations": 0,
+    "interviewQA": 0,
+    "cheatNotes": 8,
+    "interviewQuestions": 10,
+    "characters": 26417
+   }
+  },
+  {
+   "id": "cloud-native-patterns",
+   "name": "Cloud-Native Patterns",
+   "file": "courses/cloud-native-patterns.json",
+   "bytes": 28903,
+   "sha256": "39ad616769b5c76b0f26b1f31c922a6bbb453c5bbe8a2227274d191acde2328c",
+   "counts": {
+    "modules": 1,
+    "topics": 10,
+    "blocks": 26,
+    "codeExamples": 13,
+    "codeExplanations": 0,
+    "interviewQA": 0,
+    "cheatNotes": 11,
+    "interviewQuestions": 10,
+    "characters": 25006
+   }
+  },
+  {
+   "id": "microservices-fundamentals",
+   "name": "Microservices",
+   "file": "courses/microservices-fundamentals.json",
+   "bytes": 56512,
+   "sha256": "ffa0d9de34037ef1214aa762d2d62d56db43e9d78a9190182f59815738709db8",
+   "counts": {
+    "modules": 2,
+    "topics": 14,
+    "blocks": 56,
+    "codeExamples": 14,
+    "codeExplanations": 0,
+    "interviewQA": 0,
+    "cheatNotes": 8,
+    "interviewQuestions": 10,
+    "characters": 51420
+   }
+  },
+  {
+   "id": "mysql",
+   "name": "MySQL",
+   "file": "courses/mysql.json",
+   "bytes": 2640939,
+   "sha256": "406f133804babb26e7d0260f8ee10a25f0e8edf839dbf497548f75f5da0fd961",
+   "counts": {
+    "modules": 48,
+    "topics": 247,
+    "blocks": 4848,
+    "codeExamples": 3634,
+    "codeExplanations": 0,
+    "interviewQA": 0,
+    "cheatNotes": 62,
+    "interviewQuestions": 5,
+    "characters": 2408345
+   }
+  },
+  {
+   "id": "hibernate",
+   "name": "Hibernate",
+   "file": "courses/hibernate.json",
+   "bytes": 132272,
+   "sha256": "92d79c527988c9946280a1e09e58a081d94839a32704ad231fb2968a4963c0b7",
+   "counts": {
+    "modules": 1,
+    "topics": 10,
+    "blocks": 207,
+    "codeExamples": 152,
+    "codeExplanations": 0,
+    "interviewQA": 0,
+    "cheatNotes": 42,
+    "interviewQuestions": 5,
+    "characters": 118539
+   }
+  },
+  {
+   "id": "react-js",
+   "name": "ReactJS",
+   "file": "courses/react-js.json",
+   "bytes": 159917,
+   "sha256": "ef78b1b69cb0a805f10bbbf2a9313b3279525312b8c02588acb39d51e420b8dd",
+   "counts": {
+    "modules": 1,
+    "topics": 15,
+    "blocks": 233,
+    "codeExamples": 189,
+    "codeExplanations": 0,
+    "interviewQA": 0,
+    "cheatNotes": 39,
+    "interviewQuestions": 4,
+    "characters": 144932
+   }
+  },
+  {
+   "id": "javascript",
+   "name": "JavaScript",
+   "file": "courses/javascript.json",
+   "bytes": 124806,
+   "sha256": "469996dd9bfe913bd3a665568efdd7f25bf7dd57a3c0a3e43c9630ee3bed55f9",
+   "counts": {
+    "modules": 3,
+    "topics": 16,
+    "blocks": 228,
+    "codeExamples": 175,
+    "codeExplanations": 0,
+    "interviewQA": 0,
+    "cheatNotes": 22,
+    "interviewQuestions": 8,
+    "characters": 111370
+   }
+  },
+  {
+   "id": "angular",
+   "name": "Angular",
+   "file": "courses/angular.json",
+   "bytes": 32984,
+   "sha256": "1994e536ac5d9d0d31e08eac998d36a5ac0d249aaea013b844c6e2c3eb35ccfb",
+   "counts": {
+    "modules": 2,
+    "topics": 4,
+    "blocks": 54,
+    "codeExamples": 42,
+    "codeExplanations": 0,
+    "interviewQA": 0,
+    "cheatNotes": 20,
+    "interviewQuestions": 8,
+    "characters": 28251
+   }
+  },
+  {
+   "id": "flutter",
+   "name": "Flutter",
+   "file": "courses/flutter.json",
+   "bytes": 12738,
+   "sha256": "debcc8c62111a55db1ea1099dd7c01a4eb68d2a59b51685eb74f975edc73a315",
+   "counts": {
+    "modules": 3,
+    "topics": 5,
+    "blocks": 7,
+    "codeExamples": 7,
+    "codeExplanations": 0,
+    "interviewQA": 0,
+    "cheatNotes": 24,
+    "interviewQuestions": 8,
+    "characters": 9201
+   }
+  },
+  {
+   "id": "javafx",
+   "name": "JavaFX",
+   "file": "courses/javafx.json",
+   "bytes": 34080,
+   "sha256": "663b12a2c7bea28f817b5f6c61f9683f4c4bcc0fa99fb41d5580140471fc96d6",
+   "counts": {
+    "modules": 2,
+    "topics": 4,
+    "blocks": 53,
+    "codeExamples": 41,
+    "codeExplanations": 0,
+    "interviewQA": 0,
+    "cheatNotes": 17,
+    "interviewQuestions": 6,
+    "characters": 29742
+   }
+  },
+  {
+   "id": "python",
+   "name": "Python",
+   "file": "courses/python.json",
+   "bytes": 3738810,
+   "sha256": "601d0dbc375dd372f821d4fae83766b824ba92517cc920730721694d3c7cc116",
+   "counts": {
+    "modules": 40,
+    "topics": 397,
+    "blocks": 5496,
+    "codeExamples": 4037,
+    "codeExplanations": 111,
+    "interviewQA": 0,
+    "cheatNotes": 51,
+    "interviewQuestions": 23,
+    "characters": 3357735
+   }
+  },
+  {
+   "id": "machine-learning",
+   "name": "Machine Learning",
+   "file": "courses/machine-learning.json",
+   "bytes": 1933125,
+   "sha256": "f8812d440511393773e1fc613123183cdda59be2bdddd174e014d1971d4b2161",
+   "counts": {
+    "modules": 20,
+    "topics": 355,
+    "blocks": 787,
+    "codeExamples": 431,
+    "codeExplanations": 423,
+    "interviewQA": 0,
+    "cheatNotes": 28,
+    "interviewQuestions": 16,
+    "characters": 1503861
+   }
+  },
+  {
+   "id": "data-science",
+   "name": "Data Science",
+   "file": "courses/data-science.json",
+   "bytes": 6663,
+   "sha256": "4c3cc7b3e7400b77bb43a1676cc8272e496cd46107bf3d5281cb118aae98fb42",
+   "counts": {
+    "modules": 2,
+    "topics": 4,
+    "blocks": 5,
+    "codeExamples": 5,
+    "codeExplanations": 0,
+    "interviewQA": 0,
+    "cheatNotes": 17,
+    "interviewQuestions": 8,
+    "characters": 4039
+   }
+  },
+  {
+   "id": "algorithms",
+   "name": "Data Structures & Algorithms",
+   "file": "courses/algorithms.json",
+   "bytes": 1057813,
+   "sha256": "3b92ad077a4932b5f1d62ceb705897317de3d7e2b845246c28cf5bd9d6d4c277",
+   "counts": {
+    "modules": 23,
+    "topics": 327,
+    "blocks": 763,
+    "codeExamples": 441,
+    "codeExplanations": 24,
+    "interviewQA": 0,
+    "cheatNotes": 22,
+    "interviewQuestions": 658,
+    "characters": 914483
+   }
+  },
+  {
+   "id": "digital-image-analysis",
+   "name": "Digital Image Analysis",
+   "file": "courses/digital-image-analysis.json",
+   "bytes": 11266,
+   "sha256": "a106b00018cd1030ad426009ede66d36d23b06fd76511046b31bc08ad76ac9fb",
+   "counts": {
+    "modules": 8,
+    "topics": 49,
+    "blocks": 49,
+    "codeExamples": 0,
+    "codeExplanations": 0,
+    "interviewQA": 0,
+    "cheatNotes": 14,
+    "interviewQuestions": 10,
+    "characters": 3337
+   }
+  },
+  {
+   "id": "math-foundations-cs",
+   "name": "Mathematical Foundation for Computer Science",
+   "file": "courses/math-foundations-cs.json",
+   "bytes": 7054,
+   "sha256": "b6c5677a92a0b94a0210ab72f08c7ce4fc3fa64b18d00831f607bd02bb50a486",
+   "counts": {
+    "modules": 6,
+    "topics": 27,
+    "blocks": 27,
+    "codeExamples": 0,
+    "codeExplanations": 0,
+    "interviewQA": 0,
+    "cheatNotes": 11,
+    "interviewQuestions": 8,
+    "characters": 1903
+   }
+  }
+ ]
+}

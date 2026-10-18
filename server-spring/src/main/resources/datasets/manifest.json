@@ -1,0 +1,58 @@
+{
+ "generatedBy": "scripts/export-datasets.mjs",
+ "datasets": 4,
+ "totals": {
+  "banks": 8,
+  "questions": 68,
+  "challenges": 99,
+  "packs": 19,
+  "keypoints": 156,
+  "interviewQA": 130,
+  "mcq": 132,
+  "paths": 6,
+  "steps": 29
+ },
+ "items": [
+  {
+   "name": "quiz-banks",
+   "file": "quiz-banks.json",
+   "bytes": 44568,
+   "sha256": "da09dbd2a962159e83aa30fc8c335b1b72c968d438bd47ae957cb2f65537629e",
+   "counts": {
+    "banks": 8,
+    "questions": 68
+   }
+  },
+  {
+   "name": "predict-output",
+   "file": "predict-output.json",
+   "bytes": 71326,
+   "sha256": "4fa825294e934b59c75c239fdced83330a15addb1463f6b7ad9f0cfa79dfb356",
+   "counts": {
+    "challenges": 99
+   }
+  },
+  {
+   "name": "study-packs",
+   "file": "study-packs.json",
+   "bytes": 61302,
+   "sha256": "9915f101ab1b7a4602954d7059b0eb64b8b5a139fb4a37c4d8d66518f8f158f1",
+   "counts": {
+    "packs": 19,
+    "keypoints": 156,
+    "interviewQA": 130,
+    "mcq": 132
+   }
+  },
+  {
+   "name": "learning-paths",
+   "file": "learning-paths.json",
+   "bytes": 1641,
+   "sha256": "e9d9adf0133bbe22bc86dcbd1097ffedbadf70bcdf5b273110acd69e99f4bdc1",
+   "counts": {
+    "paths": 6,
+    "steps": 29
+   }
+  }
+ ]
+}

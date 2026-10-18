@@ -14,7 +14,11 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "verify": "npm run typecheck && npm test && npm run build",
-    "kp": "node scripts/dump-keypoints.mjs"
+    "kp": "node scripts/dump-keypoints.mjs",
+    "export:content": "node scripts/export-content.mjs",
+    "verify:content": "node scripts/export-content.mjs --verify",
+    "export:datasets": "node scripts/export-datasets.mjs",
+    "verify:datasets": "node scripts/export-datasets.mjs --verify"
   },
   "dependencies": {
     "@emotion/react": "11.14.0",

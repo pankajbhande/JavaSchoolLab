@@ -70,6 +70,94 @@ export function computeStreaks(days, today) {
   return { currentStreak, longestStreak };
 }
 
+/** YYYY-MM-DD shifted by n days (local calendar arithmetic). */
+export function addDaysIso(iso, n) {
+  const d = new Date(iso + 'T00:00:00');
+  d.setDate(d.getDate() + n);
+  return toLocalDateString(d);
+}
+
+/** The Monday of the week containing `iso`; a freeze is allowance-per-Monday-week. */
+export function mondayOf(iso) {
+  const d = new Date(iso + 'T00:00:00');
+  return addDaysIso(iso, -((d.getDay() + 6) % 7));
+}
+
+/**
+ * Streaks with the weekly streak freeze.
+ *
+ * Every learner gets ONE freeze per Monday-to-Sunday week. It is applied automatically: a single
+ * missed day sitting between two studied days (or between the last studied day and today) is
+ * bridged instead of ending the streak, provided that week's freeze has not already been spent.
+ * A bridged day keeps the streak alive but does not add to its length.
+ *
+ * Nothing extra is stored. Freezes are re-derived from study_days on every call, like XP, so they
+ * can never drift. Bridges are assigned newest-first, so the current streak gets first claim on a
+ * week's freeze.
+ *
+ * @param days  [{ date: 'YYYY-MM-DD' }], any order.
+ * @param today 'YYYY-MM-DD'.
+ * @returns {{ currentStreak, longestStreak, freezeUsedDates: string[], freezeAvailable: boolean,
+ *             studiedToday: boolean, atRisk: boolean }}
+ *   freezeUsedDates: missed days the current streak survived thanks to a freeze (newest first).
+ *   freezeAvailable: this week's freeze is still unspent.
+ *   atRisk: there is a live streak and nothing has been studied yet today.
+ */
+export function computeStreakInfo(days, today) {
+  const dates = [...new Set(days.map(d => d.date))].sort().reverse(); // newest first
+  const usedWeeks = new Set();
+  const frozen = [];
+  const tryFreeze = (missedIso) => {
+    const week = mondayOf(missedIso);
+    if (usedWeeks.has(week)) return false;
+    usedWeeks.add(week);
+    return true;
+  };
+
+  const studiedToday = dates[0] === today;
+  if (dates.length === 0) {
+    return { currentStreak: 0, longestStreak: 0, freezeUsedDates: [], freezeAvailable: true, studiedToday: false, atRisk: false };
+  }
+
+  // Is the streak still alive as of today?
+  const gapToday = daysBetween(dates[0], today);
+  let currentActive = gapToday <= 1;
+  if (!currentActive && gapToday === 2) {
+    const yesterday = addDaysIso(today, -1);
+    if (tryFreeze(yesterday)) { currentActive = true; frozen.push(yesterday); }
+  }
+
+  let currentStreak = 0;
+  let longestStreak = 0;
+  let run = 1;
+  const closeRun = () => {
+    longestStreak = Math.max(longestStreak, run);
+    if (currentActive) { currentStreak = run; currentActive = false; }
+  };
+  for (let i = 1; i < dates.length; i++) {
+    const gap = daysBetween(dates[i], dates[i - 1]);
+    if (gap === 1) {
+      run++;
+    } else if (gap === 2 && tryFreeze(addDaysIso(dates[i], 1))) {
+      if (currentActive) frozen.push(addDaysIso(dates[i], 1));
+      run++;
+    } else {
+      closeRun();
+      run = 1;
+    }
+  }
+  closeRun();
+
+  return {
+    currentStreak,
+    longestStreak,
+    freezeUsedDates: frozen,
+    freezeAvailable: !usedWeeks.has(mondayOf(today)),
+    studiedToday,
+    atRisk: !studiedToday && currentStreak > 0,
+  };
+}
+
 export function computeXp({ topicsSeen, modulesPassed, studyDays }) {
   return topicsSeen * XP_PER_TOPIC
     + modulesPassed * XP_PER_MODULE_PASSED

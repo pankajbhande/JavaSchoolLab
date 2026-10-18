@@ -5,9 +5,14 @@ import jwt from 'jsonwebtoken';
 import mysql from 'mysql2/promise';
 import {
   XP_PER_TOPIC, XP_PER_MODULE_PASSED, XP_PER_STUDY_DAY,
-  todayLocal, toLocalDateString, computeStreaks, computeXp, reviewIntervalDays, isDue,
+  todayLocal, toLocalDateString, computeStreakInfo, computeXp, reviewIntervalDays, isDue,
 } from './lib/progress.js';
 import { smtpConfigured, sendOtpEmail } from './lib/mailer.js';
+import { generateCertificateUid, isCertificateUid, createRateLimiter } from './lib/certificates.js';
+import {
+  normalizeHandle, handleError, cleanBio, bioError, cleanDisplayName, DISPLAY_NAME_MAX,
+  buildPublicProfile, settingsFromRow,
+} from './lib/profiles.js';
 
 // Load server/.env when present (Node >= 20.6 built-in; no dotenv dependency needed).
 // Missing file is fine — the defaults below keep local dev working out of the box.
@@ -16,6 +21,9 @@ try { process.loadEnvFile(new URL('.env', import.meta.url)); } catch { /* no .en
 const IS_PROD = process.env.NODE_ENV === 'production';
 
 const app = express();
+// Behind a reverse proxy (nginx, a load balancer) every request arrives from the proxy address, so the
+// per-client rate limit would be shared by everyone. Set TRUST_PROXY=1 (number of proxies) there.
+if (process.env.TRUST_PROXY) app.set("trust proxy", Number(process.env.TRUST_PROXY) || process.env.TRUST_PROXY);
 
 // In production, only the configured front-end origin may call this API.
 // CORS_ORIGIN accepts a comma-separated list; unset means "allow any" (dev only).
@@ -44,7 +52,26 @@ const pool = mysql.createPool({
 // The OTP/auth routes select users by a column named in the request body
 // (identifierType / loginType). Resolving it through this allowlist keeps an
 // attacker-controlled string from ever reaching the SQL text.
+const verifyLimiter = createRateLimiter({ windowMs: 60_000, max: 60 });
 const IDENTIFIER_COLUMNS = { email: 'email', mobile: 'mobile' };
+
+// Same rules as the sign-in form (LoginModal), enforced here too: the browser check is a courtesy,
+// the server is what stops junk or abuse reaching the database.
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+function identifierError(type, value) {
+  if (typeof value !== 'string' || !value.trim()) return `${type === 'email' ? 'Email' : 'Mobile number'} is required`;
+  const v = value.trim();
+  if (type === 'email') return v.length <= 254 && EMAIL_RE.test(v) ? null : 'Enter a valid email address, like name@example.com';
+  const digits = v.replace(/\D/g, '');
+  return /^\+?[0-9 ()-]+$/.test(v) && digits.length >= 7 && digits.length <= 15 ? null : 'Enter a valid mobile number (7 to 15 digits)';
+}
+function passwordError(password) {
+  if (typeof password !== 'string' || password.length < 4) return 'Password must be at least 4 characters';
+  return password.length > 128 ? 'Password must be at most 128 characters' : null;
+}
+function nameError(name) {
+  return typeof name === 'string' && name.trim() && name.trim().length <= 100 ? null : 'Full name is required (up to 100 characters)';
+}
 function columnFor(identifierType) {
   const column = IDENTIFIER_COLUMNS[identifierType];
   if (!column) throw new Error('Invalid identifier type');
@@ -83,6 +110,8 @@ app.post('/api/otp/send', async (req, res) => {
     if (!IDENTIFIER_COLUMNS[identifierType]) {
       return res.status(400).json({ error: 'Identifier type must be email or mobile' });
     }
+    const badIdentifier = identifierError(identifierType, identifier);
+    if (badIdentifier) return res.status(400).json({ error: badIdentifier });
 
     // For register: check user doesn't already exist
     if (purpose === 'register') {
@@ -204,9 +233,11 @@ app.post('/api/auth/register-otp', async (req, res) => {
     }
 
     const identifier = loginType === 'email' ? email : mobile;
-    if (!identifier) {
-      return res.status(400).json({ error: `${loginType} is required` });
+    if (!IDENTIFIER_COLUMNS[loginType]) {
+      return res.status(400).json({ error: 'Login type must be email or mobile' });
     }
+    const invalid = identifierError(loginType, identifier) || passwordError(password) || nameError(fullName);
+    if (invalid) return res.status(400).json({ error: invalid });
 
     // Verify OTP
     const [otpRows] = await pool.query(
@@ -232,6 +263,8 @@ app.post('/api/auth/register-otp', async (req, res) => {
       'INSERT INTO users (full_name, email, mobile, password_hash, login_type, gender, dob, organization) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
       [fullName, email || null, mobile || null, passwordHash, loginType, gender || null, dob || null, organization || null]
     );
+    // The code has done its job: remove it so it cannot be used a second time
+    await pool.query('DELETE FROM otp_codes WHERE id = ?', [otpRows[0].id]);
 
     const token = jwt.sign({ id: result.insertId, fullName, email, mobile }, JWT_SECRET, { expiresIn: '7d' });
 
@@ -279,6 +312,8 @@ app.post('/api/auth/login-otp', async (req, res) => {
     }
 
     const user = rows[0];
+    // Single use: a verified code must not log anyone in a second time
+    await pool.query('DELETE FROM otp_codes WHERE id = ?', [otpRows[0].id]);
     const token = jwt.sign(
       { id: user.id, fullName: user.full_name, email: user.email, mobile: user.mobile },
       JWT_SECRET,
@@ -306,12 +341,11 @@ app.post('/api/auth/register', async (req, res) => {
       return res.status(400).json({ error: 'Full name, password, and login type are required' });
     }
 
-    if (loginType === 'email' && !email) {
-      return res.status(400).json({ error: 'Email is required' });
+    if (!IDENTIFIER_COLUMNS[loginType]) {
+      return res.status(400).json({ error: 'Login type must be email or mobile' });
     }
-    if (loginType === 'mobile' && !mobile) {
-      return res.status(400).json({ error: 'Mobile number is required' });
-    }
+    const invalid = identifierError(loginType, loginType === 'email' ? email : mobile) || passwordError(password) || nameError(fullName);
+    if (invalid) return res.status(400).json({ error: invalid });
 
     // Check if user already exists
     const field = loginType === 'email' ? 'email' : 'mobile';
@@ -385,13 +419,13 @@ app.post('/api/auth/login', async (req, res) => {
 // Get current user
 app.get('/api/auth/me', authenticateToken, async (req, res) => {
   try {
-    const [rows] = await pool.query('SELECT id, full_name, email, mobile, login_type, gender, dob, organization, created_at FROM users WHERE id = ?', [req.user.id]);
+    const [rows] = await pool.query('SELECT id, full_name, email, mobile, login_type, gender, dob, organization, avatar, created_at FROM users WHERE id = ?', [req.user.id]);
     if (rows.length === 0) return res.status(404).json({ error: 'User not found' });
     const u = rows[0];
     res.json({
       id: u.id, fullName: u.full_name, email: u.email, mobile: u.mobile, loginType: u.login_type,
       gender: u.gender, dob: u.dob ? toLocalDateString(u.dob) : null, organization: u.organization,
-      createdAt: u.created_at,
+      avatar: u.avatar || null, createdAt: u.created_at,
     });
   } catch (err) {
     res.status(500).json({ error: 'Failed to fetch user' });
@@ -400,20 +434,55 @@ app.get('/api/auth/me', authenticateToken, async (req, res) => {
 
 // ==================== CERTIFICATE ROUTES ====================
 
-// Issue certificate (requires login)
+// Issue certificate (requires login).
+// The score is taken from the student's own recorded, passed quiz attempt for this module, never
+// from the request: certificates are publicly verifiable now, so the server must not print
+// whatever a client claims. Asking again for the same pass returns the same certificate (same ID).
 app.post('/api/certificates', authenticateToken, async (req, res) => {
   try {
-    const { courseName, topicName, score, totalQuestions } = req.body;
-    if (!courseName || !topicName || score === undefined) {
-      return res.status(400).json({ error: 'Course name, topic name, and score are required' });
+    const { courseName, topicName } = req.body;
+    if (!courseName || !topicName) {
+      return res.status(400).json({ error: 'Course name and topic name are required' });
     }
 
-    const certificateUid = `JSL-${Date.now()}-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
-
-    const [result] = await pool.query(
-      'INSERT INTO certificates (user_id, certificate_uid, course_name, topic_name, score, total_questions) VALUES (?, ?, ?, ?, ?, ?)',
-      [req.user.id, certificateUid, courseName, topicName, score, totalQuestions || 20]
+    const [attempts] = await pool.query(
+      `SELECT score, total_questions FROM quiz_attempts
+       WHERE user_id = ? AND module_name = ? AND passed = TRUE
+       ORDER BY percentage DESC, score DESC, id ASC LIMIT 1`,
+      [req.user.id, topicName]
     );
+    if (attempts.length === 0) {
+      return res.status(403).json({ error: 'Pass this module\'s test first, then you can download the certificate.' });
+    }
+    const { score, total_questions: totalQuestions } = attempts[0];
+
+    const [existing] = await pool.query(
+      `SELECT id, certificate_uid, issued_at FROM certificates
+       WHERE user_id = ? AND topic_name = ? AND course_name = ? AND score = ? AND total_questions = ?
+       ORDER BY id ASC LIMIT 1`,
+      [req.user.id, topicName, courseName, score, totalQuestions]
+    );
+    if (existing.length > 0) {
+      return res.json({
+        id: existing[0].id, certificateUid: existing[0].certificate_uid, studentName: req.user.fullName,
+        courseName, topicName, score, totalQuestions, issuedAt: existing[0].issued_at,
+      });
+    }
+
+    let certificateUid, result;
+    for (let tries = 0; tries < 5; tries++) {
+      certificateUid = generateCertificateUid();
+      try {
+        [result] = await pool.query(
+          'INSERT INTO certificates (user_id, certificate_uid, course_name, topic_name, score, total_questions) VALUES (?, ?, ?, ?, ?, ?)',
+          [req.user.id, certificateUid, courseName, topicName, score, totalQuestions]
+        );
+        break;
+      } catch (e) {
+        if (e.code !== 'ER_DUP_ENTRY') throw e; // an ID collision: draw another
+      }
+    }
+    if (!result) throw new Error('could not allocate a certificate id');
 
     res.status(201).json({
       id: result.insertId,
@@ -422,12 +491,43 @@ app.post('/api/certificates', authenticateToken, async (req, res) => {
       courseName,
       topicName,
       score,
-      totalQuestions: totalQuestions || 20,
+      totalQuestions,
       issuedAt: new Date().toISOString()
     });
   } catch (err) {
     console.error('Certificate error:', err);
     res.status(500).json({ error: 'Failed to issue certificate' });
+  }
+});
+
+// Public verification: what the QR code on a certificate opens. Returns only what is printed on the
+// certificate itself, and 404 for an unknown ID. Rate limited because it needs no login.
+app.get('/api/certificates/verify/:uid', verifyLimiter, async (req, res) => {
+  try {
+    const uid = String(req.params.uid || '').trim();
+    if (!isCertificateUid(uid)) return res.status(404).json({ valid: false });
+    const [rows] = await pool.query(
+      `SELECT c.certificate_uid, c.course_name, c.topic_name, c.score, c.total_questions, c.issued_at, u.full_name
+       FROM certificates c JOIN users u ON u.id = c.user_id WHERE c.certificate_uid = ? LIMIT 1`,
+      [uid]
+    );
+    if (rows.length === 0) return res.status(404).json({ valid: false });
+    const r = rows[0];
+    res.set('Cache-Control', 'public, max-age=60');
+    res.json({
+      valid: true,
+      certificateUid: r.certificate_uid,
+      studentName: r.full_name,
+      courseName: r.course_name,
+      topicName: r.topic_name,
+      score: r.score,
+      totalQuestions: r.total_questions,
+      percentage: r.total_questions > 0 ? Math.round((r.score / r.total_questions) * 100) : 0,
+      issuedAt: r.issued_at,
+    });
+  } catch (err) {
+    console.error('Certificate verify error:', err);
+    res.status(500).json({ error: 'Could not verify this certificate right now' });
   }
 });
 
@@ -549,7 +649,7 @@ app.post('/api/progress/study', authenticateToken, async (req, res) => {
 app.get('/api/progress/summary', authenticateToken, async (req, res) => {
   try {
     const uid = req.user.id;
-    const [[topicRows], [courseRows], [dayRows], [attemptRows], [recentRows]] = await Promise.all([
+    const [[topicRows], [courseRows], [dayRows], [attemptRows], [recentRows], [goalRows]] = await Promise.all([
       pool.query('SELECT COUNT(*) AS n FROM topic_progress WHERE user_id = ?', [uid]),
       pool.query(
         `SELECT course_id, COUNT(*) AS topics_seen, MAX(last_seen_at) AS last_seen
@@ -567,6 +667,7 @@ app.get('/api/progress/summary', authenticateToken, async (req, res) => {
         `SELECT course_id, module_id, topic_id, last_seen_at
          FROM topic_progress WHERE user_id = ? ORDER BY last_seen_at DESC LIMIT 1`, [uid]
       ),
+      pool.query('SELECT weekly_goal_minutes FROM users WHERE id = ?', [uid]),
     ]);
 
     const days = dayRows.map(r => ({
@@ -577,7 +678,7 @@ app.get('/api/progress/summary', authenticateToken, async (req, res) => {
     // A streak stays alive if the most recent studied day is today or yesterday; counting
     // only from today would break every streak the moment midnight passed.
     const today = todayLocal();
-    const { currentStreak, longestStreak } = computeStreaks(days, today);
+    const { currentStreak, longestStreak, freezeUsedDates, freezeAvailable, studiedToday, atRisk } = computeStreakInfo(days, today);
 
     const topicsSeen = topicRows[0].n;
     const modulesPassed = attemptRows.length;
@@ -590,11 +691,18 @@ app.get('/api/progress/summary', authenticateToken, async (req, res) => {
       xp,
       currentStreak,
       longestStreak,
+      // Weekly streak freeze: one missed day per Monday-week is forgiven automatically.
+      streakFreeze: { available: freezeAvailable, usedDates: freezeUsedDates.slice(0, 3) },
+      studiedToday,
+      streakAtRisk: atRisk,
       topicsSeen,
       modulesPassed,
       studySecondsToday: todaySeconds,
       studySecondsTotal: totalSeconds,
       studiedDates: days.slice(0, 60).map(d => d.date),
+      // About a year of per-day seconds, newest first, for the activity heatmap and the weekly goal.
+      studyDays: days.slice(0, 371),
+      weeklyGoalMinutes: goalRows[0]?.weekly_goal_minutes ?? null,
       byCourse: Object.fromEntries(courseRows.map(r => [r.course_id, r.topics_seen])),
       passedModules: attemptRows.map(r => ({ courseId: r.course_id, moduleId: r.module_id, best: r.best })),
       resume: recentRows[0]
@@ -604,6 +712,27 @@ app.get('/api/progress/summary', authenticateToken, async (req, res) => {
   } catch (err) {
     console.error('progress/summary error:', err);
     res.status(500).json({ error: 'Failed to load progress' });
+  }
+});
+
+// Weekly study goal in minutes. `null` (or 0) clears it. Bounded so a typo cannot store nonsense.
+const GOAL_MIN_MINUTES = 10;
+const GOAL_MAX_MINUTES = 1680; // 28 hours; more than a week can reasonably hold
+app.put('/api/progress/goal', authenticateToken, async (req, res) => {
+  try {
+    const raw = req.body?.minutes;
+    let minutes = null;
+    if (raw !== null && raw !== 0) {
+      minutes = Number(raw);
+      if (!Number.isInteger(minutes) || minutes < GOAL_MIN_MINUTES || minutes > GOAL_MAX_MINUTES) {
+        return res.status(400).json({ error: `Choose a goal between ${GOAL_MIN_MINUTES} minutes and ${GOAL_MAX_MINUTES / 60} hours a week` });
+      }
+    }
+    await pool.query('UPDATE users SET weekly_goal_minutes = ? WHERE id = ?', [minutes, req.user.id]);
+    res.set('Cache-Control', 'no-store').json({ weeklyGoalMinutes: minutes });
+  } catch (err) {
+    console.error('progress/goal error:', err);
+    res.status(500).json({ error: 'Failed to save your goal' });
   }
 });
 
@@ -728,6 +857,46 @@ app.patch('/api/auth/profile', authenticateToken, async (req, res) => {
   } catch (err) {
     console.error('profile error:', err);
     res.status(500).json({ error: 'Failed to update profile' });
+  }
+});
+
+// Profile photo. The browser sends a ~256px JPEG/PNG/WebP as a data URL; the server re-checks everything
+// (type, size, and that the bytes really are that image format) because the browser check is only a courtesy.
+const AVATAR_MAX_CHARS = 90_000;
+const AVATAR_MAGIC = {
+  jpeg: b => b[0] === 0xff && b[1] === 0xd8 && b[2] === 0xff,
+  png: b => b[0] === 0x89 && b[1] === 0x50 && b[2] === 0x4e && b[3] === 0x47,
+  webp: b => b.toString('ascii', 0, 4) === 'RIFF' && b.toString('ascii', 8, 12) === 'WEBP',
+};
+function avatarError(value) {
+  if (typeof value !== 'string') return 'Choose an image';
+  if (value.length > AVATAR_MAX_CHARS) return 'That image is too large. Please choose a smaller one';
+  const m = /^data:image\/(jpeg|png|webp);base64,([A-Za-z0-9+/]+={0,2})$/.exec(value);
+  if (!m) return 'Use a JPG, PNG or WebP image';
+  const bytes = Buffer.from(m[2], 'base64');
+  return bytes.length > 12 && AVATAR_MAGIC[m[1]](bytes) ? null : 'That file is not a valid image';
+}
+
+app.put('/api/profile/avatar', authenticateToken, async (req, res) => {
+  try {
+    const image = req.body?.image;
+    const problem = avatarError(image);
+    if (problem) return res.status(400).json({ error: problem });
+    await pool.query('UPDATE users SET avatar = ? WHERE id = ?', [image, req.user.id]);
+    res.set('Cache-Control', 'no-store').json({ avatar: image });
+  } catch (err) {
+    console.error('avatar save error:', err);
+    res.status(500).json({ error: 'Failed to save your photo' });
+  }
+});
+
+app.delete('/api/profile/avatar', authenticateToken, async (req, res) => {
+  try {
+    await pool.query('UPDATE users SET avatar = NULL WHERE id = ?', [req.user.id]);
+    res.set('Cache-Control', 'no-store').json({ avatar: null });
+  } catch (err) {
+    console.error('avatar delete error:', err);
+    res.status(500).json({ error: 'Failed to remove your photo' });
   }
 });
 
@@ -877,6 +1046,167 @@ app.get('/api/leaderboard', authenticateToken, async (req, res) => {
   } catch (err) {
     console.error('leaderboard error:', err);
     res.status(500).json({ error: 'Failed to load leaderboard' });
+  }
+});
+
+// ==================== PUBLIC LEARNER PROFILES ====================
+// Strictly opt-in (migration 003). The public route returns only the sections the owner switched on,
+// via buildPublicProfile() in lib/profiles.js; email, mobile, DOB, organisation and ids are never read.
+
+const profileLimiter = createRateLimiter({ windowMs: 60_000, max: 60 });
+const handleCheckLimiter = createRateLimiter({ windowMs: 60_000, max: 40 });
+
+// One body for "no such handle" and "not published", so the response cannot reveal which handles exist.
+const PROFILE_NOT_FOUND = { error: 'Profile not found' };
+
+// Public: GET /api/profiles/:handle
+app.get('/api/profiles/:handle', profileLimiter, async (req, res) => {
+  try {
+    const handle = normalizeHandle(req.params.handle);
+    const notFound = () => res.set('Cache-Control', 'no-store').status(404).json(PROFILE_NOT_FOUND);
+    if (handleError(handle)) return notFound();
+    const [rows] = await pool.query(
+      `SELECT p.user_id, p.handle, p.display_name, p.bio, p.show_certificates, p.show_stats, p.show_badges, p.show_progress,
+              u.full_name, u.avatar, u.created_at
+       FROM user_profiles p JOIN users u ON u.id = p.user_id
+       WHERE p.handle = ? AND p.is_public = 1 LIMIT 1`,
+      [handle]
+    );
+    if (rows.length === 0) return notFound();
+    const profile = rows[0];
+    const uid = profile.user_id;
+    const data = {};
+
+    const needActivity = profile.show_stats || profile.show_badges;
+    const [certRows, topicCourseRows, dayRows, passedRows] = await Promise.all([
+      profile.show_certificates || profile.show_badges
+        ? pool.query(
+            `SELECT certificate_uid, course_name, topic_name, score, total_questions, issued_at
+             FROM certificates WHERE user_id = ? ORDER BY issued_at DESC LIMIT 200`, [uid]).then(r => r[0])
+        : [],
+      profile.show_progress || needActivity
+        ? pool.query('SELECT course_id, COUNT(*) AS n FROM topic_progress WHERE user_id = ? GROUP BY course_id', [uid]).then(r => r[0])
+        : [],
+      needActivity
+        ? pool.query('SELECT study_date, seconds FROM study_days WHERE user_id = ? ORDER BY study_date DESC LIMIT 400', [uid]).then(r => r[0])
+        : [],
+      needActivity
+        ? pool.query(
+            `SELECT COUNT(DISTINCT CONCAT(course_id, '/', module_id)) AS n FROM quiz_attempts
+             WHERE user_id = ? AND passed = TRUE`, [uid]).then(r => r[0])
+        : [],
+    ]);
+
+    data.certificates = certRows;
+    data.byCourse = Object.fromEntries(topicCourseRows.map(r => [r.course_id, Number(r.n)]));
+    if (needActivity) {
+      const days = dayRows.map(r => ({ date: toLocalDateString(r.study_date), seconds: r.seconds }));
+      const { currentStreak, longestStreak } = computeStreakInfo(days, todayLocal());
+      const topicsSeen = topicCourseRows.reduce((a, r) => a + Number(r.n), 0);
+      const modulesPassed = Number(passedRows[0]?.n || 0);
+      const studySecondsTotal = days.reduce((a, d) => a + d.seconds, 0);
+      data.stats = {
+        xp: computeXp({ topicsSeen, modulesPassed, studyDays: days.length }),
+        currentStreak, longestStreak, topicsSeen, modulesPassed, studyDays: days.length, studySecondsTotal,
+      };
+      data.badgeInput = { topicsSeen, longestStreak, modulesPassed, studySecondsTotal, certificates: certRows.length };
+    }
+
+    res.set('Cache-Control', 'public, max-age=10');
+    res.json(buildPublicProfile(profile, data));
+  } catch (err) {
+    console.error('public profile error:', err);
+    res.status(500).json({ error: 'Could not load this profile right now' });
+  }
+});
+
+async function loadProfileSettings(userId) {
+  const [rows] = await pool.query('SELECT * FROM user_profiles WHERE user_id = ? LIMIT 1', [userId]);
+  return rows[0] || null;
+}
+
+// Mine: current settings (everything off when I have never configured a profile).
+app.get('/api/profile/settings', authenticateToken, async (req, res) => {
+  try {
+    res.set('Cache-Control', 'no-store');
+    res.json(settingsFromRow(await loadProfileSettings(req.user.id)));
+  } catch (err) {
+    console.error('profile settings error:', err);
+    res.status(500).json({ error: 'Failed to load profile settings' });
+  }
+});
+
+// Mine: is this handle free? (My own current handle counts as free.)
+app.get('/api/profile/handle-available', authenticateToken, handleCheckLimiter, async (req, res) => {
+  try {
+    res.set('Cache-Control', 'no-store');
+    const handle = normalizeHandle(req.query.handle);
+    const problem = handleError(handle);
+    if (problem) return res.json({ handle, available: false, reason: problem });
+    const [rows] = await pool.query('SELECT user_id FROM user_profiles WHERE handle = ? LIMIT 1', [handle]);
+    const taken = rows.length > 0 && rows[0].user_id !== req.user.id;
+    res.json({ handle, available: !taken, reason: taken ? 'That handle is already taken' : null });
+  } catch (err) {
+    console.error('handle check error:', err);
+    res.status(500).json({ error: 'Could not check that handle' });
+  }
+});
+
+// Mine: update settings. Only the fields sent change. Publishing needs a valid, free handle.
+app.put('/api/profile/settings', authenticateToken, async (req, res) => {
+  try {
+    const body = req.body || {};
+    const cur = settingsFromRow(await loadProfileSettings(req.user.id));
+    const flag = (key) => {
+      if (body[key] === undefined) return cur[key];
+      if (typeof body[key] !== 'boolean') throw Object.assign(new Error(`${key} must be true or false`), { status: 400 });
+      return body[key];
+    };
+    const next = {
+      isPublic: flag('isPublic'),
+      showCertificates: flag('showCertificates'),
+      showStats: flag('showStats'),
+      showBadges: flag('showBadges'),
+      showProgress: flag('showProgress'),
+      handle: body.handle === undefined ? cur.handle : normalizeHandle(body.handle),
+      bio: body.bio === undefined ? cur.bio : cleanBio(body.bio),
+      displayName: body.displayName === undefined ? cur.displayName : cleanDisplayName(body.displayName),
+    };
+    if (next.bio) { const e = bioError(next.bio); if (e) return res.status(400).json({ error: e }); }
+    if (next.displayName.length > DISPLAY_NAME_MAX) return res.status(400).json({ error: `Display name must be ${DISPLAY_NAME_MAX} characters or fewer` });
+    if (next.isPublic || next.handle) {
+      const e = handleError(next.handle);
+      if (e) return res.status(400).json({ error: e });
+    }
+    try {
+      // Not INSERT ... ON DUPLICATE KEY UPDATE: that also fires on the UNIQUE handle key and would overwrite
+      // the OTHER user's row when a handle is taken. An explicit update/insert turns a clash into ER_DUP_ENTRY.
+      const values = [next.handle || null, next.displayName || null, next.bio || null, next.isPublic, next.showCertificates,
+        next.showStats, next.showBadges, next.showProgress];
+      if (await loadProfileSettings(req.user.id)) {
+        await pool.query(
+          `UPDATE user_profiles SET handle = ?, display_name = ?, bio = ?, is_public = ?, show_certificates = ?,
+             show_stats = ?, show_badges = ?, show_progress = ? WHERE user_id = ?`,
+          [...values, req.user.id]
+        );
+      } else {
+        await pool.query(
+          `INSERT INTO user_profiles
+             (handle, display_name, bio, is_public, show_certificates, show_stats, show_badges, show_progress, user_id)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+          [...values, req.user.id]
+        );
+      }
+    } catch (e) {
+      if (e.code === 'ER_DUP_ENTRY') return res.status(409).json({ error: 'That handle is already taken' });
+      throw e;
+    }
+    res.set('Cache-Control', 'no-store');
+    res.json(settingsFromRow(await loadProfileSettings(req.user.id)));
+  } catch (err) {
+    if (err.status === 400) return res.status(400).json({ error: err.message });
+    console.error('profile update error:', err);
+    res.status(500).json({ error: 'Failed to save profile settings' });
   }
 });
 

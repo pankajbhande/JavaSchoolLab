@@ -97,6 +97,22 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
       </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <!--
+            Tests always use the in-memory H2 database. These system properties outrank the local, git-ignored
+            application.properties (which points at your MySQL), so running the tests never depends on it.
+          -->
+          <systemPropertyVariables>
+            <spring.datasource.url>jdbc:h2:mem:jsl;MODE=MySQL;DB_CLOSE_DELAY=-1</spring.datasource.url>
+            <spring.datasource.username>sa</spring.datasource.username>
+            <spring.datasource.password></spring.datasource.password>
+            <spring.datasource.driver-class-name>org.h2.Driver</spring.datasource.driver-class-name>
+          </systemPropertyVariables>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
 
@@ -144,6 +160,8 @@
                   <environmentVariables>
                     <!-- The site is served by this same app, so the browser calls the API on its own address. -->
                     <VITE_API_BASE_URL>/api</VITE_API_BASE_URL>
+                    <!-- Courses, quizzes, study packs and learning paths are read from this server (/api/content/**). -->
+                    <VITE_CONTENT_SOURCE>api</VITE_CONTENT_SOURCE>
                     <NODE_OPTIONS>--max-old-space-size=4096</NODE_OPTIONS>
                   </environmentVariables>
                 </configuration>

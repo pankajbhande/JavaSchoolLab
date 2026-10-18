@@ -29,6 +29,11 @@ public class SpaWebConfig implements WebMvcConfigurer {
                 .addResourceLocations("classpath:/static/assets/")
                 .setCacheControl(CacheControl.maxAge(Duration.ofDays(365)).cachePublic().immutable());
 
+        // Course images are named by content hash too (written by npm run export:content).
+        registry.addResourceHandler("/content-assets/**")
+                .addResourceLocations("classpath:/static/content-assets/")
+                .setCacheControl(CacheControl.maxAge(Duration.ofDays(365)).cachePublic().immutable());
+
         // Everything else (index.html, sw.js, manifest, icons) must be re-checked, or a new deploy would not show up.
         registry.addResourceHandler("/**")
                 .addResourceLocations("classpath:/static/")

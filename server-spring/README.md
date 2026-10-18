@@ -19,6 +19,8 @@ Java 21, Spring Boot 3.4, Spring Security, JdbcTemplate, Flyway, MySQL, JJWT.
 | `GET`/`POST`/`DELETE /api/bookmarks`, `GET`/`PUT /api/notes` | ported |
 | `POST`/`GET /api/certificates`, public `GET /api/certificates/verify/{id}` (rate limited) | ported |
 | `GET /api/leaderboard` | ported |
+| `GET /api/content/datasets/{name}` and `/api/content/datasets/manifest` (public) | new: quiz banks, predict-output, study packs, learning paths, served from JSON |
+| `GET /api/content/courses`, `/api/content/courses/{id}`, `/api/content/manifest` (public) | new: the course content, served from JSON (see "Course content") |
 | `GET /api/profiles/{handle}` (public), `GET`/`PUT /api/profile/settings`, `GET /api/profile/handle-available` | ported (opt-in, rate limited) |
 
 Because nothing is left on the Node side, you can switch the whole API over at once. See "Switching over" below.
@@ -91,12 +93,23 @@ docker run -p 3001:3001 --env-file /srv/javaschoollab/.env javaschoollab
 The image contains no user data. Keep MySQL outside it (managed MySQL, or the `db_data` volume in `../docker`) and the
 `.env` outside the code folder, so replacing the code never touches users, visitor count or secrets.
 
+## Course content
+
+The courses live as JSON in `src/main/resources/content` (`index.json` names only, `manifest.json`, `courses/<id>.json`) with their images in `static/content-assets`.
+They are generated from the TypeScript sources: run `npm run export:content` from the `app/` folder, and `npm run verify:content` to check the written files against the source.
+`manifest.json` holds a SHA-256 and counts for every course.
+
+The API serves the raw files (never re-written), reading each course on first request, checking its SHA-256 (a mismatch is a logged 500) and caching it in memory:
+`GET /api/content/courses` (index), `GET /api/content/courses/{id}` (404 `{"error":"Course not found"}` for an unknown id; ids may contain spaces), `GET /api/content/manifest`.
+The four small data sets (quiz banks, predict-the-output challenges, study packs, learning paths) live in `src/main/resources/datasets` with their own `manifest.json` and are served the same way at `GET /api/content/datasets/{quiz-banks|predict-output|study-packs|learning-paths|manifest}` (unknown name: 404 `{"error":"Dataset not found"}`).
+They are public, send a strong `ETag` and `Cache-Control: no-cache`, so a client revalidates and gets a cheap `304`, and are gzip-compressed.
+
 ## Tests
 
-`mvn test` runs 103 tests: validation rules, Node-token and bcrypt compatibility, the streak/XP/review maths
+`mvn test` runs 112 tests: validation rules, Node-token and bcrypt compatibility, the streak/XP/review maths
 (the same cases as `../server/lib/progress.test.js`), and the whole flow against the real Spring context: sign-in
 (OTP, register, password and OTP login, change password, 401/403 rules), progress (topics, import, study time clamps,
-summary, weekly goal, quiz grading, review queue), profile and avatar checks, bookmarks and notes, certificate issuing and public verification, public profiles (opt-in, privacy, handle rules and ownership), the leaderboard, the 429 limits, the visitor counter, and site hosting with the React-route fallback. The tests use H2 in MySQL mode; the
+summary, weekly goal, quiz grading, review queue), profile and avatar checks, bookmarks and notes, certificate issuing and public verification, public profiles (opt-in, privacy, handle rules and ownership), the leaderboard, the 429 limits, the visitor counter, the course content API (every course checked against its manifest hash and counts), and site hosting with the React-route fallback. The tests use H2 in MySQL mode; the
 MySQL-only Flyway scripts have **not** been run in CI yet, so run the app once against a real MySQL before relying on them.
 
 ## Testing against a real MySQL

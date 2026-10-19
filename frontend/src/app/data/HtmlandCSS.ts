@@ -37320,158 +37320,1381 @@ Today we learn about &lt;b&gt;HTML&lt;/b&gt;.</pre>
                 name: 'HTML Accessibility',
                 topics: [
                         {
-                            // TODO: authored content pending.
                             id: 'html-a11y-web-accessibility',
                             name: 'Web Accessibility',
                             beginner: [
                                 {
-                                    content: `<h3>Web Accessibility</h3>
-&bull; Part of the HTML Accessibility section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• <b>Web accessibility</b> means building sites that <b>everyone can use</b>, including people with disabilities.<br>
+• It covers vision, hearing, movement and thinking differences.<br>
+• It also helps people on slow networks, small screens or in bright sunlight.<br>
+• The main standard is WCAG, with the principles POUR.<br><br>
+
+<h3>Key Points</h3>
+• <b>P</b>erceivable: content can be seen or heard.<br>
+• <b>O</b>perable: it works with keyboard and other input.<br>
+• <b>U</b>nderstandable: clear language and predictable behaviour.<br>
+• <b>R</b>obust: it works with assistive technology.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>basics</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  button, input { font: inherit; padding: 6px 10px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Accessible page</h1>
+  <p>Uses real headings, a button and a labelled field.</p>
+  <label for="n">Name</label> <input id="n">
+  <button>Send</button>
+</main>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Start with semantic HTML, which gives most accessibility for free.<br>
+• Test with the keyboard only, a screen reader and browser audits such as Lighthouse.<br>
+• Make sure text has enough contrast, at least 4.5 to 1.<br>
+• Never rely on colour alone.<br><br>
+
+<h3>Common Mistakes</h3>
+• Treating accessibility as a final polish step.<br>
+• Using div and span for everything.<br>
+• Removing focus outlines.<br>
+• Images with no alt text.<br><br>
+
+<h3>Try It Yourself</h3>
+• Add a skip link to a page, check keyboard navigation with the Tab key and compare low and high contrast text.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>skip link</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  button, input { font: inherit; padding: 6px 10px; }
+  .skip { position: absolute; left: -999px; } .skip:focus { left: 8px; top: 8px; background: #fff; padding: 6px; }
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<nav>Menu...</nav>
+<main id="main" tabindex="-1"><h1>Content</h1></main>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Laws in many countries require accessible public sites.<br>
+• Teams add automated checks to continuous integration.<br>
+• Design systems bake in accessible patterns.<br>
+• Real users with disabilities test key flows.<br><br>
+
+<h3>Best Practices</h3>
+• Build it in from the start.<br>
+• Use native elements.<br>
+• Test with real assistive technology.<br>
+• Write plain language.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> What do the four POUR principles stand for?<br>
+• <b>A:</b> Perceivable, Operable, Understandable and Robust, the four principles that WCAG success criteria are organised under.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>contrast</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  button, input { font: inherit; padding: 6px 10px; }
+  .bad { color: #aaa; } .good { color: #1f2937; }
+</style>
+</head>
+<body>
+<p class="bad">Low contrast text (hard to read)</p>
+<p class="good">Good contrast text (easy to read)</p>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-a11y-semantic-accessibility',
                             name: 'Semantic Accessibility',
                             beginner: [
                                 {
-                                    content: `<h3>Semantic Accessibility</h3>
-&bull; Part of the HTML Accessibility section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• <b>Semantic accessibility</b> means using HTML elements for their <b>meaning</b>.<br>
+• A button is a button, a nav is navigation, a heading is a heading.<br>
+• Browsers and assistive technology understand these meanings automatically.<br>
+• It gives keyboard support and roles for free.<br><br>
+
+<h3>Key Points</h3>
+• Use <b>header</b>, <b>nav</b>, <b>main</b>, <b>aside</b> and <b>footer</b> as landmarks.<br>
+• Use headings in order, h1 then h2 and so on.<br>
+• Use <b>button</b> for actions and <b>a</b> for navigation.<br>
+• Use lists for lists and tables for data.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>landmarks</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  button, input { font: inherit; padding: 6px 10px; }
+</style>
+</head>
+<body>
+<header><h1>Site</h1></header>
+<nav aria-label="Main"><a href="/">Home</a> <a href="/about">About</a></nav>
+<main><h2>Welcome</h2><p>Main content.</p></main>
+<footer>&copy; 2026</footer>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Screen reader users jump between landmarks and headings.<br>
+• One main element per page.<br>
+• Label repeated landmarks, such as two navs, with aria-label.<br>
+• Prefer native elements over ARIA roles.<br><br>
+
+<h3>Common Mistakes</h3>
+• Using div with onclick instead of a button.<br>
+• Skipping heading levels for styling.<br>
+• Several main elements.<br>
+• Making links that look like buttons act like buttons without proper roles.<br><br>
+
+<h3>Try It Yourself</h3>
+• Replace a clickable div with a real button, add landmarks and labels to a page and check the heading outline.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>div vs button</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  button, input { font: inherit; padding: 6px 10px; }
+</style>
+</head>
+<body>
+<div onclick="alert('hi')" style="padding:6px;border:1px solid #999;display:inline-block">Fake button (no keyboard)</div>
+<button onclick="alert('hi')">Real button (keyboard ready)</button>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Frameworks still render real buttons and links.<br>
+• Audits flag clickable divs.<br>
+• Landmarks help users skip repeated menus.<br>
+• Search engines also use the structure.<br><br>
+
+<h3>Best Practices</h3>
+• The first rule of ARIA: use native HTML when it exists.<br>
+• Keep one h1.<br>
+• Test with a screen reader landmark list.<br>
+• Review the outline.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> Why is a button better than a div with a click handler?<br>
+• <b>A:</b> A button is focusable, activates with Enter and Space, has the right role for screen readers and works in forms, with no extra code.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>heading outline</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  button, input { font: inherit; padding: 6px 10px; }
+</style>
+</head>
+<body>
+<h1>Course</h1>
+<h2>Module 1</h2><h3>Lesson 1.1</h3><h3>Lesson 1.2</h3>
+<h2>Module 2</h2>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-a11y-aria',
                             name: 'ARIA',
                             beginner: [
                                 {
-                                    content: `<h3>ARIA</h3>
-&bull; Part of the HTML Accessibility section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• <b>ARIA</b> (Accessible Rich Internet Applications) adds <b>extra meaning</b> for assistive technology.<br>
+• It consists of roles, states and properties set through attributes.<br>
+• It changes what screen readers announce, not how things look or behave.<br>
+• It is a repair tool, not a first choice.<br><br>
+
+<h3>Key Points</h3>
+• <b>role</b> says what an element is, such as dialog or tab.<br>
+• <b>aria-*</b> attributes describe state, such as aria-expanded.<br>
+• No ARIA is better than bad ARIA.<br>
+• ARIA never adds keyboard behaviour by itself.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>aria</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  button, input { font: inherit; padding: 6px 10px; }
+</style>
+</head>
+<body>
+<button aria-expanded="false" aria-controls="p" id="b">Details</button>
+<div id="p" hidden>Extra information.</div>
+<script>b.onclick = () => { const o = b.getAttribute('aria-expanded') === 'true'; b.setAttribute('aria-expanded', !o); p.hidden = o; };</script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Use <b>aria-label</b> for icon buttons.<br>
+• Use <b>aria-labelledby</b> and <b>aria-describedby</b> to point to visible text.<br>
+• Use <b>aria-live</b> regions to announce updates.<br>
+• Keep states in sync with script.<br><br>
+
+<h3>Common Mistakes</h3>
+• Adding roles that duplicate native roles, such as role="button" on a button.<br>
+• Using ARIA without keyboard support.<br>
+• Leaving states stale after changes.<br>
+• Hiding focusable items with aria-hidden.<br><br>
+
+<h3>Try It Yourself</h3>
+• Make a disclosure button that updates aria-expanded, an icon button with aria-label and a polite live region announcing updates.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>live region</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  button, input { font: inherit; padding: 6px 10px; }
+</style>
+</head>
+<body>
+<button id="b">Add to cart</button>
+<p id="s" role="status" aria-live="polite"></p>
+<script>let n = 0; b.onclick = () => s.textContent = 'Items in cart: ' + (++n);</script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Custom widgets such as tabs and comboboxes need ARIA patterns.<br>
+• Design systems follow the ARIA Authoring Practices.<br>
+• Single page apps announce route changes.<br>
+• Linting rules catch invalid ARIA.<br><br>
+
+<h3>Best Practices</h3>
+• Use native elements first.<br>
+• Follow documented patterns.<br>
+• Test with screen readers.<br>
+• Keep ARIA values accurate.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> What is the first rule of ARIA?<br>
+• <b>A:</b> If a native HTML element or attribute already gives the semantics and behaviour you need, use it instead of adding ARIA.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>label icon button</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  button, input { font: inherit; padding: 6px 10px; }
+</style>
+</head>
+<body>
+<button aria-label="Close dialog" style="width:40px;height:40px">&times;</button>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-a11y-aria-roles',
                             name: 'ARIA Roles',
                             beginner: [
                                 {
-                                    content: `<h3>ARIA Roles</h3>
-&bull; Part of the HTML Accessibility section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• An <b>ARIA role</b> tells assistive technology <b>what an element is or does</b>.<br>
+• It is set with the <b>role</b> attribute.<br>
+• Native elements already have roles, such as button or navigation.<br>
+• Roles are needed for custom widgets.<br><br>
+
+<h3>Key Points</h3>
+• Landmark roles: main, navigation, banner, contentinfo, search.<br>
+• Widget roles: button, tab, tablist, dialog, menu, switch.<br>
+• Document roles: article, heading, list.<br>
+• Presentation roles remove meaning.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>roles</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  button, input { font: inherit; padding: 6px 10px; }
+</style>
+</head>
+<body>
+<div role="navigation" aria-label="Breadcrumb">Home / Courses / HTML</div>
+<div role="alert">Form saved</div>
+<div role="switch" aria-checked="true" tabindex="0">Notifications: on</div>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Pair roles with required states, such as aria-selected on tabs.<br>
+• Add keyboard handling expected for the role.<br>
+• Prefer <b>nav</b> over role="navigation".<br>
+• Use role="presentation" only to remove meaning, for example from layout tables.<br><br>
+
+<h3>Common Mistakes</h3>
+• Redundant roles such as role="main" on main.<br>
+• Roles with no required child roles, such as tab without tablist.<br>
+• Inventing role names.<br>
+• Putting role on elements that cannot support it.<br><br>
+
+<h3>Try It Yourself</h3>
+• Build a two-tab interface with correct roles, aria-selected and aria-controls, and switch panels with a click.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>tabs</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  button, input { font: inherit; padding: 6px 10px; }
+  [role=tab][aria-selected=true] { background: #fed7aa; }
+</style>
+</head>
+<body>
+<div role="tablist">
+  <button role="tab" aria-selected="true" id="t1" aria-controls="p1">One</button>
+  <button role="tab" aria-selected="false" id="t2" aria-controls="p2">Two</button>
+</div>
+<div role="tabpanel" id="p1">Panel one</div><div role="tabpanel" id="p2" hidden>Panel two</div>
+<script>
+  document.querySelectorAll('[role=tab]').forEach(t => t.onclick = () => {
+    document.querySelectorAll('[role=tab]').forEach(x => { x.setAttribute('aria-selected', x === t); document.getElementById(x.getAttribute('aria-controls')).hidden = x !== t; });
+  });
+</script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Tab, dialog and menu components rely on roles.<br>
+• Testing libraries query by role.<br>
+• Audits check that roles are valid.<br>
+• Screen readers announce the role with the label.<br><br>
+
+<h3>Best Practices</h3>
+• Choose native elements where possible.<br>
+• Follow the patterns in the ARIA guide.<br>
+• Test keyboard behaviour.<br>
+• Keep roles minimal.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> Why not add role="button" to a div?<br>
+• <b>A:</b> It tells screen readers it is a button but adds no keyboard support or focus. A real button element gives all of that automatically.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>status</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  button, input { font: inherit; padding: 6px 10px; }
+</style>
+</head>
+<body>
+<p role="status">Saved 2 seconds ago</p><p role="alert">Error: payment failed</p>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-a11y-aria-states',
                             name: 'ARIA States',
                             beginner: [
                                 {
-                                    content: `<h3>ARIA States</h3>
-&bull; Part of the HTML Accessibility section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• <b>ARIA states</b> describe the <b>current condition</b> of an element.<br>
+• They change as the user interacts.<br>
+• Examples: aria-expanded, aria-checked, aria-selected, aria-disabled and aria-pressed.<br>
+• Scripts must update them.<br><br>
+
+<h3>Key Points</h3>
+• <b>aria-expanded</b> says whether a panel is open.<br>
+• <b>aria-checked</b> is for custom checkboxes and switches.<br>
+• <b>aria-pressed</b> is for toggle buttons.<br>
+• <b>aria-hidden</b> hides content from assistive technology.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>states</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  button, input { font: inherit; padding: 6px 10px; }
+</style>
+</head>
+<body>
+<button id="b" aria-pressed="false">Mute</button>
+<script>b.onclick = () => b.setAttribute('aria-pressed', b.getAttribute('aria-pressed') !== 'true');</script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Keep the visual state and the ARIA state in sync.<br>
+• Use CSS attribute selectors such as <b>[aria-expanded="true"]</b> to style states.<br>
+• Use <b>aria-current="page"</b> for the active link.<br>
+• Use <b>aria-invalid</b> on fields with errors.<br><br>
+
+<h3>Common Mistakes</h3>
+• Forgetting to update the value after clicks.<br>
+• Using aria-hidden on focusable elements.<br>
+• Using strings like yes instead of true.<br>
+• Using aria-disabled without blocking the action.<br><br>
+
+<h3>Try It Yourself</h3>
+• Create a toggle button using aria-pressed, a menu button using aria-expanded styled from the attribute and navigation with aria-current.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>css from state</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  button, input { font: inherit; padding: 6px 10px; }
+  button[aria-expanded="true"]::after { content: " \\25B2"; } button[aria-expanded="false"]::after { content: " \\25BC"; }
+</style>
+</head>
+<body>
+<button id="b" aria-expanded="false">Menu</button>
+<script>b.onclick = () => b.setAttribute('aria-expanded', b.getAttribute('aria-expanded') !== 'true');</script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Menus, accordions and toggles each expose state.<br>
+• Frameworks bind aria attributes to component state.<br>
+• Tests assert aria values.<br>
+• Navigation marks the current page with aria-current.<br><br>
+
+<h3>Best Practices</h3>
+• Make state the single source of truth.<br>
+• Style from the attribute.<br>
+• Test with a screen reader.<br>
+• Avoid conflicting native and ARIA states.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> Which attribute shows that a toggle button is on?<br>
+• <b>A:</b> aria-pressed="true" on a button announces that the toggle is pressed or on.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>current page</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  button, input { font: inherit; padding: 6px 10px; }
+  a[aria-current="page"] { font-weight: bold; text-decoration: none; color: #ea580c; }
+</style>
+</head>
+<body>
+<nav><a href="/" aria-current="page">Home</a> | <a href="/courses">Courses</a> | <a href="/about">About</a></nav>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-a11y-aria-properties',
                             name: 'ARIA Properties',
                             beginner: [
                                 {
-                                    content: `<h3>ARIA Properties</h3>
-&bull; Part of the HTML Accessibility section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• <b>ARIA properties</b> describe <b>relationships and fixed characteristics</b> of elements.<br>
+• They usually do not change as often as states.<br>
+• Examples: aria-label, aria-labelledby, aria-describedby, aria-controls and aria-required.<br>
+• They give names and descriptions.<br><br>
+
+<h3>Key Points</h3>
+• <b>aria-label</b> sets an accessible name directly as text.<br>
+• <b>aria-labelledby</b> takes the id of an element whose text is the name.<br>
+• <b>aria-describedby</b> points to extra help text.<br>
+• <b>aria-controls</b> links a control to what it changes.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>properties</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  button, input { font: inherit; padding: 6px 10px; }
+</style>
+</head>
+<body>
+<label for="p">Password</label>
+<input id="p" type="password" aria-describedby="h" required>
+<small id="h">Use at least 8 characters.</small>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Prefer visible labels with aria-labelledby over hidden aria-label strings.<br>
+• Combine several ids in aria-describedby separated by spaces.<br>
+• Use <b>aria-required</b> on custom controls only.<br>
+• Use <b>aria-live</b> properties for announcements.<br><br>
+
+<h3>Common Mistakes</h3>
+• Using aria-label on non-interactive divs where it is ignored.<br>
+• Pointing to ids that do not exist.<br>
+• Duplicating visible text so it is read twice.<br>
+• Overusing aria-label and breaking translation.<br><br>
+
+<h3>Try It Yourself</h3>
+• Give a section a name with aria-labelledby, add a hint using aria-describedby and build a labelled dialog.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>labelledby</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  button, input { font: inherit; padding: 6px 10px; }
+</style>
+</head>
+<body>
+<section aria-labelledby="h"><h2 id="h">Latest news</h2><p>Story...</p></section>
+<button aria-describedby="w">Delete</button><span id="w" hidden>This cannot be undone.</span>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Forms, dialogs and regions use these relationships.<br>
+• Frameworks generate unique ids for them.<br>
+• Audit tools check for missing names.<br>
+• Translators must translate aria-label too.<br><br>
+
+<h3>Best Practices</h3>
+• Use native labels first.<br>
+• Keep ids unique and valid.<br>
+• Write short names.<br>
+• Test with a screen reader.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> What is the difference between aria-label and aria-labelledby?<br>
+• <b>A:</b> aria-label supplies the name as a text string, while aria-labelledby points to the id of another element whose visible text becomes the name.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>dialog</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  button, input { font: inherit; padding: 6px 10px; }
+</style>
+</head>
+<body>
+<div role="dialog" aria-modal="true" aria-labelledby="t" aria-describedby="d" style="border:1px solid #999;padding:1rem">
+  <h2 id="t">Delete file?</h2><p id="d">The file will be removed permanently.</p>
+  <button>Cancel</button> <button>Delete</button>
+</div>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-a11y-accessible-forms',
                             name: 'Accessible Forms',
                             beginner: [
                                 {
-                                    content: `<h3>Accessible Forms</h3>
-&bull; Part of the HTML Accessibility section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• <b>Accessible forms</b> can be completed by keyboard and screen reader users.<br>
+• They need clear labels, instructions and error messages.<br>
+• Native form controls provide most of the support.<br>
+• Good forms are better for everyone.<br><br>
+
+<h3>Key Points</h3>
+• Every control needs a <b>label</b> connected with for and id.<br>
+• Group related controls with <b>fieldset</b> and <b>legend</b>.<br>
+• Use the right <b>type</b> and <b>autocomplete</b> values.<br>
+• Mark required fields in text and with the required attribute.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>accessible form</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  button, input { font: inherit; padding: 6px 10px; }
+  label { display: block; margin-top: 10px; font-weight: 600; }
+</style>
+</head>
+<body>
+<form>
+  <label for="e">Email (required)</label>
+  <input id="e" type="email" autocomplete="email" required>
+  <fieldset><legend>Contact by</legend>
+    <label><input type="radio" name="c"> Email</label>
+    <label><input type="radio" name="c"> Phone</label>
+  </fieldset>
+  <button>Send</button>
+</form>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Link errors to fields with <b>aria-describedby</b> and set <b>aria-invalid</b>.<br>
+• Move focus to the first error or an error summary after submit.<br>
+• Explain how to fix each problem.<br>
+• Do not rely on colour alone for errors.<br><br>
+
+<h3>Common Mistakes</h3>
+• Placeholders as labels.<br>
+• Errors shown only in red.<br>
+• Timeouts with no warning.<br>
+• Focus lost after validation.<br><br>
+
+<h3>Try It Yourself</h3>
+• Build a form with labels, a fieldset, linked error messages with aria-invalid and a focus move to the first error.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>error pattern</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  button, input { font: inherit; padding: 6px 10px; }
+  .err { color: #b91c1c; } input[aria-invalid="true"] { border: 2px solid #b91c1c; }
+</style>
+</head>
+<body>
+<form id="f" novalidate>
+  <label for="e">Email</label>
+  <input id="e" type="email" required aria-describedby="m">
+  <div id="m" class="err" role="alert"></div>
+  <button>Send</button>
+</form>
+<script>
+  f.onsubmit = ev => { ev.preventDefault();
+    const bad = !e.checkValidity();
+    e.setAttribute('aria-invalid', bad); m.textContent = bad ? 'Error: enter an email like name@example.com' : ''; if (bad) e.focus(); };
+</script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Checkout and sign-up flows are audited carefully.<br>
+• Error summaries list all problems with links to fields.<br>
+• Autocomplete tokens help users with disabilities.<br>
+• Usability tests include screen reader users.<br><br>
+
+<h3>Best Practices</h3>
+• Test with only a keyboard.<br>
+• Write kind error text.<br>
+• Keep forms short.<br>
+• Allow enough time.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> What should happen to focus when a form submission fails validation?<br>
+• <b>A:</b> Focus should move to the first invalid field or an error summary, so keyboard and screen reader users immediately learn what to fix.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>summary</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  button, input { font: inherit; padding: 6px 10px; }
+  .sum { border: 2px solid #b91c1c; padding: .5rem 1rem; }
+</style>
+</head>
+<body>
+<div class="sum" role="alert" tabindex="-1"><strong>2 problems found</strong><ul><li><a href="#a">Email is required</a></li><li><a href="#b">Password is too short</a></li></ul></div>
+<input id="a" aria-label="Email"> <input id="b" aria-label="Password">
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-a11y-accessible-tables',
                             name: 'Accessible Tables',
                             beginner: [
                                 {
-                                    content: `<h3>Accessible Tables</h3>
-&bull; Part of the HTML Accessibility section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• <b>Accessible tables</b> use markup so assistive technology can read <b>headers with each cell</b>.<br>
+• They are used only for real tabular data.<br>
+• The structure is caption, thead, tbody, th and td.<br>
+• Visual styling alone does not create meaning.<br><br>
+
+<h3>Key Points</h3>
+• Use <b>th</b> with <b>scope</b> for headers.<br>
+• Add a <b>caption</b> to name the table.<br>
+• Avoid merged cells where possible.<br>
+• Never use tables for layout.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>accessible table</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  button, input { font: inherit; padding: 6px 10px; }
+  table { border-collapse: collapse; } th, td { border: 1px solid #cbd5e1; padding: 6px 10px; }
+</style>
+</head>
+<body>
+<table>
+  <caption>Weekly hours</caption>
+  <thead><tr><th scope="col">Course</th><th scope="col">Hours</th></tr></thead>
+  <tbody><tr><th scope="row">HTML</th><td>3</td></tr></tbody>
+</table>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Use <b>headers</b> and ids for complex tables.<br>
+• Make wide tables scrollable with a labelled, focusable wrapper.<br>
+• Keep cell text concise.<br>
+• Provide a summary or description for complex data.<br><br>
+
+<h3>Common Mistakes</h3>
+• Fake headers made with bold td cells.<br>
+• Layout tables.<br>
+• CSS that removes table semantics, such as display: block, without roles.<br>
+• Spans that make navigation confusing.<br><br>
+
+<h3>Try It Yourself</h3>
+• Create a data table with caption, column and row headers and a scrollable focusable wrapper for narrow screens.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>scroll wrapper</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  button, input { font: inherit; padding: 6px 10px; }
+  .w { overflow-x: auto; max-width: 300px; }
+</style>
+</head>
+<body>
+<div class="w" role="region" aria-label="Fees table" tabindex="0">
+<table border="1"><caption>Fees</caption><tr><th scope="col">Course</th><th scope="col">Q1</th><th scope="col">Q2</th><th scope="col">Q3</th><th scope="col">Q4</th></tr>
+<tr><th scope="row">Java</th><td>1000</td><td>1000</td><td>1200</td><td>1200</td></tr></table></div>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Government data pages are tested with NVDA and JAWS.<br>
+• Design systems include accessible table components.<br>
+• Responsive designs keep semantics when stacking.<br>
+• Exports to CSV complement tables.<br><br>
+
+<h3>Best Practices</h3>
+• Mark headers properly.<br>
+• Test with a screen reader.<br>
+• Keep structure simple.<br>
+• Provide alternatives for huge tables.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> What does scope="row" do on a th?<br>
+• <b>A:</b> It marks the cell as the header for the rest of its row, so screen readers announce it with every data cell in that row.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>complex</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  button, input { font: inherit; padding: 6px 10px; }
+  table { border-collapse: collapse; } th, td { border: 1px solid #cbd5e1; padding: 4px 8px; }
+</style>
+</head>
+<body>
+<table>
+  <tr><th rowspan="2" id="n">Name</th><th colspan="2" id="m">Marks</th></tr>
+  <tr><th id="t" headers="m">Theory</th><th id="p" headers="m">Practical</th></tr>
+  <tr><td headers="n">Asha</td><td headers="m t">45</td><td headers="m p">48</td></tr>
+</table>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-a11y-keyboard-navigation',
                             name: 'Keyboard Navigation',
                             beginner: [
                                 {
-                                    content: `<h3>Keyboard Navigation</h3>
-&bull; Part of the HTML Accessibility section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• <b>Keyboard navigation</b> lets people use a site without a mouse.<br>
+• Many users depend on it: screen reader users, people with motor difficulties and power users.<br>
+• Native links, buttons and form controls work with the keyboard automatically.<br>
+• Everything interactive must be reachable and usable.<br><br>
+
+<h3>Key Points</h3>
+• <b>Tab</b> moves forward and <b>Shift+Tab</b> moves back.<br>
+• <b>Enter</b> activates links and buttons, <b>Space</b> activates buttons and checkboxes.<br>
+• Arrow keys move within groups such as radios and tabs.<br>
+• <b>Esc</b> closes dialogs and menus.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>tab order</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  button, input { font: inherit; padding: 6px 10px; }
+</style>
+</head>
+<body>
+<a href="#">Link</a> <button>Button</button> <input placeholder="Field"> <select><option>Option</option></select>
+<p>Press Tab to move through the controls.</p>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Use <b>tabindex="0"</b> to make a custom element focusable and <b>-1</b> to focus it only from script.<br>
+• Never use positive tabindex values.<br>
+• Keep the DOM order in line with the visual order.<br>
+• Provide visible focus styles with <b>:focus-visible</b>.<br><br>
+
+<h3>Common Mistakes</h3>
+• Removing outlines with outline: none and no replacement.<br>
+• Positive tabindex values that scramble the order.<br>
+• Keyboard traps in custom widgets.<br>
+• Mouse-only handlers such as onclick on divs.<br><br>
+
+<h3>Try It Yourself</h3>
+• Tab through a page, add a visible focus style, and build a toolbar where arrow keys move focus between buttons using a roving tabindex.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>focus style</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  button, input { font: inherit; padding: 6px 10px; }
+  :focus-visible { outline: 3px solid #2563eb; outline-offset: 2px; }
+</style>
+</head>
+<body>
+<button>One</button> <button>Two</button> <a href="#">Three</a>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Modals trap focus inside and return it on close.<br>
+• Skip links jump past repeated navigation.<br>
+• Menus support arrow keys.<br>
+• Tests use keyboard-only runs.<br><br>
+
+<h3>Best Practices</h3>
+• Test every flow with only the keyboard.<br>
+• Keep focus visible.<br>
+• Offer skip links.<br>
+• Handle Esc to close layers.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> What does tabindex="-1" do?<br>
+• <b>A:</b> It removes the element from the Tab order but still lets you focus it from script or a link, which is useful for moving focus to headings or dialogs.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>roving tabindex</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  button, input { font: inherit; padding: 6px 10px; }
+</style>
+</head>
+<body>
+<div role="toolbar" aria-label="Format" id="tb">
+  <button tabindex="0">Bold</button><button tabindex="-1">Italic</button><button tabindex="-1">Underline</button>
+</div>
+<script>
+  const bs = [...tb.children];
+  tb.onkeydown = e => { const i = bs.indexOf(document.activeElement); if (i < 0) return;
+    const n = e.key === 'ArrowRight' ? (i + 1) % bs.length : e.key === 'ArrowLeft' ? (i + bs.length - 1) % bs.length : -1;
+    if (n >= 0) { bs.forEach(x => x.tabIndex = -1); bs[n].tabIndex = 0; bs[n].focus(); } };
+</script>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-a11y-focus-management',
                             name: 'Focus Management',
                             beginner: [
                                 {
-                                    content: `<h3>Focus Management</h3>
-&bull; Part of the HTML Accessibility section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• <b>Focus management</b> means controlling <b>where keyboard focus goes</b> when the page changes.<br>
+• Focus shows which element will receive key presses.<br>
+• Dynamic content can leave focus lost or in the wrong place.<br>
+• Moving it carefully helps screen reader and keyboard users.<br><br>
+
+<h3>Key Points</h3>
+• Use <b>element.focus()</b> to move focus.<br>
+• Elements that are not naturally focusable need <b>tabindex="-1"</b>.<br>
+• When opening a dialog, move focus inside.<br>
+• When closing it, return focus to the trigger.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>focus</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  button, input { font: inherit; padding: 6px 10px; }
+</style>
+</head>
+<body>
+<button id="b">Focus the field</button> <input id="i" placeholder="Here">
+<script>b.onclick = () => i.focus();</script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Trap focus inside modal dialogs, or use the native dialog element.<br>
+• After a route change in a single page app, move focus to the new heading.<br>
+• Use <b>:focus-within</b> to style containers.<br>
+• Use <b>preventScroll</b> to avoid jumps.<br><br>
+
+<h3>Common Mistakes</h3>
+• Opening a dialog without moving focus.<br>
+• Losing focus when removing the focused element.<br>
+• Autofocus on fields that scroll the page.<br>
+• Focus indicators that are hard to see.<br><br>
+
+<h3>Try It Yourself</h3>
+• Build a dialog that moves focus inside when opened and returns it to the opening button when closed, plus a button that focuses a heading.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>return focus</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  button, input { font: inherit; padding: 6px 10px; }
+</style>
+</head>
+<body>
+<button id="o">Open dialog</button>
+<dialog id="d"><p>Hello</p><button id="c">Close</button></dialog>
+<script>o.onclick = () => d.showModal(); c.onclick = () => d.close(); d.onclose = () => o.focus();</script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Native dialog elements handle most focus work.<br>
+• Single page apps announce route changes.<br>
+• Toast messages use live regions without stealing focus.<br>
+• Form errors move focus to the summary.<br><br>
+
+<h3>Best Practices</h3>
+• Use native dialog where possible.<br>
+• Test with keyboard and screen reader.<br>
+• Do not steal focus without reason.<br>
+• Restore focus after closing.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> Where should focus go after a modal closes?<br>
+• <b>A:</b> Back to the element that opened it, so keyboard users continue from where they were.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>heading focus</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  button, input { font: inherit; padding: 6px 10px; }
+</style>
+</head>
+<body>
+<button onclick="h.focus()">Go to section</button>
+<h2 id="h" tabindex="-1">Section heading</h2>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-a11y-screen-readers',
                             name: 'Screen Readers',
                             beginner: [
                                 {
-                                    content: `<h3>Screen Readers</h3>
-&bull; Part of the HTML Accessibility section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• <b>Screen readers</b> read page content aloud or show it in braille.<br>
+• Popular ones: NVDA and JAWS on Windows, VoiceOver on Mac and iOS, TalkBack on Android.<br>
+• They use the accessibility tree built from your HTML.<br>
+• Users move by headings, links, landmarks and form fields.<br><br>
+
+<h3>Key Points</h3>
+• Good structure lets users skip to what they need.<br>
+• Alt text, labels and roles supply the spoken words.<br>
+• Live regions announce changes.<br>
+• Hidden content with display none is not read.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>screen reader text</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  button, input { font: inherit; padding: 6px 10px; }
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+</style>
+</head>
+<body>
+<button><span aria-hidden="true">&#9733;</span><span class="sr">Add to favourites</span></button>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Use visually hidden text for extra context, such as Read more about HTML.<br>
+• Hide purely decorative items with aria-hidden="true".<br>
+• Give links meaningful text, not click here.<br>
+• Announce updates with role="status" or aria-live.<br><br>
+
+<h3>Common Mistakes</h3>
+• Hiding content with display none that should be read.<br>
+• Links called Read more repeated many times.<br>
+• Auto-updating content with no announcement.<br>
+• Reading order that differs from the visual order.<br><br>
+
+<h3>Try It Yourself</h3>
+• Add visually hidden text to an icon button, change vague link text to descriptive text and add a polite status message when saving.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>link text</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  button, input { font: inherit; padding: 6px 10px; }
+</style>
+</head>
+<body>
+<p>Read more about <a href="#">flexbox layout</a>.</p>
+<p>Bad: <a href="#">Click here</a></p>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Accessibility audits include screen reader tests.<br>
+• Teams learn basic NVDA or VoiceOver commands.<br>
+• Browser tools show the accessibility tree.<br>
+• Content designers write for listening.<br><br>
+
+<h3>Best Practices</h3>
+• Test with at least one screen reader.<br>
+• Use the browser accessibility tree view.<br>
+• Write descriptive text.<br>
+• Keep order logical.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> How do live regions help screen reader users?<br>
+• <b>A:</b> They announce changes in content, such as a saved message, without moving focus, so users learn about updates they cannot see.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>announce</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  button, input { font: inherit; padding: 6px 10px; }
+</style>
+</head>
+<body>
+<button id="b">Save</button>
+<div id="s" role="status" aria-live="polite" class="sr" style="position:static;width:auto;height:auto;clip:auto"></div>
+<script>b.onclick = () => { s.textContent = ''; setTimeout(() => s.textContent = 'Saved successfully', 50); };</script>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-a11y-alternative-text',
                             name: 'Alternative Text',
                             beginner: [
                                 {
-                                    content: `<h3>Alternative Text</h3>
-&bull; Part of the HTML Accessibility section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• <b>Alternative text</b> (alt) is a short text that <b>describes an image</b>.<br>
+• It is read by screen readers and shown when the image fails to load.<br>
+• It is set with the alt attribute on img.<br>
+• It also helps search engines.<br><br>
+
+<h3>Key Points</h3>
+• Describe the purpose of the image, not every detail.<br>
+• Use an empty <b>alt=""</b> for decorative images.<br>
+• Never leave the attribute out.<br>
+• Do not start with Image of or Picture of.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>alt</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  button, input { font: inherit; padding: 6px 10px; }
+</style>
+</head>
+<body>
+<img alt="Bar chart: learners grew from 1200 in September to 1800 in October" width="200" height="80" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='80'%3E%3Crect width='200' height='80' fill='%23fde68a'/%3E%3C/svg%3E">
+<img alt="" width="40" height="20" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='20'%3E%3Crect width='40' height='20' fill='%23e2e8f0'/%3E%3C/svg%3E"> decorative
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• For image links, describe where the link goes.<br>
+• For complex charts, give a short alt and a longer description nearby.<br>
+• Icons next to text can be hidden with empty alt.<br>
+• Text in images should be repeated in alt.<br><br>
+
+<h3>Common Mistakes</h3>
+• Using file names as alt text.<br>
+• Stuffing keywords for SEO.<br>
+• Missing alt, so screen readers read the file name.<br>
+• Too long descriptions in alt.<br><br>
+
+<h3>Try It Yourself</h3>
+• Write alt text for an informative image, a linked logo and a decorative image, and add a figure caption that explains a chart.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>linked image</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  button, input { font: inherit; padding: 6px 10px; }
+</style>
+</head>
+<body>
+<a href="/courses"><img alt="Browse all courses" width="120" height="40" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='40'%3E%3Crect width='120' height='40' fill='%23ea580c'/%3E%3C/svg%3E"></a>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Content teams write alt text during publishing.<br>
+• Automated tools flag missing alt.<br>
+• Charts include data tables as an alternative.<br>
+• Social platforms ask for alt text on images.<br><br>
+
+<h3>Best Practices</h3>
+• Ask what the image communicates.<br>
+• Keep alt short.<br>
+• Use empty alt for decoration.<br>
+• Add long descriptions separately.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> When should an image have an empty alt attribute?<br>
+• <b>A:</b> When it is purely decorative or repeats nearby text, so screen readers skip it instead of reading meaningless or duplicate information.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>figure and description</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  button, input { font: inherit; padding: 6px 10px; }
+</style>
+</head>
+<body>
+<figure>
+  <img alt="Line chart of monthly learners" width="200" height="70" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='70'%3E%3Crect width='200' height='70' fill='%23dbeafe'/%3E%3C/svg%3E">
+  <figcaption>Learners rose steadily from 1200 to 1800 between September and October.</figcaption>
+</figure>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-a11y-accessibility-best-practices',
                             name: 'Accessibility Best Practices',
                             beginner: [
                                 {
-                                    content: `<h3>Accessibility Best Practices</h3>
-&bull; Part of the HTML Accessibility section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• <b>Accessibility best practices</b> are habits that keep a site usable for everyone.<br>
+• They combine good HTML, CSS, scripts and content writing.<br>
+• They are checked with tools, guidelines and real users.<br>
+• Following them also improves SEO and usability.<br><br>
+
+<h3>Key Points</h3>
+• Use semantic elements and a logical heading outline.<br>
+• Ensure keyboard access and visible focus.<br>
+• Provide text alternatives and captions.<br>
+• Meet colour contrast and allow zoom to 200 percent.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>best practice page</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  button, input { font: inherit; padding: 6px 10px; }
+</style>
+</head>
+<body>
+<a href="#m" style="position:absolute;left:-999px">Skip to content</a>
+<header><nav aria-label="Main"><a href="/">Home</a></nav></header>
+<main id="m"><h1>Page title</h1><p>Clear, simple language.</p></main>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Test automatically with axe or Lighthouse and manually with a keyboard and screen reader.<br>
+• Respect user preferences such as <b>prefers-reduced-motion</b> and <b>prefers-color-scheme</b>.<br>
+• Use relative units so text can scale.<br>
+• Write descriptive link text and form labels.<br><br>
+
+<h3>Common Mistakes</h3>
+• Relying on automated tests alone, which find only some issues.<br>
+• Disabling zoom.<br>
+• Auto-playing media with no pause.<br>
+• Time limits with no extension.<br><br>
+
+<h3>Try It Yourself</h3>
+• Audit a page with Lighthouse, fix issues, add a reduced motion rule and make the touch targets at least 44 by 44 pixels.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>reduced motion</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  button, input { font: inherit; padding: 6px 10px; }
+  .box { animation: spin 2s linear infinite; width: 40px; height: 40px; background: #ea580c; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @media (prefers-reduced-motion: reduce) { .box { animation: none; } }
+</style>
+</head>
+<body>
+<div class="box"></div><p>The animation stops if your system prefers reduced motion.</p>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Teams add accessibility checks to pull requests.<br>
+• Design reviews include contrast and focus states.<br>
+• Legal reviews reference WCAG levels A, AA and AAA.<br>
+• Users with disabilities join testing sessions.<br><br>
+
+<h3>Best Practices</h3>
+• Aim for WCAG 2.2 AA.<br>
+• Include accessibility in the definition of done.<br>
+• Train the whole team.<br>
+• Fix issues early.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> Why are automated accessibility tools not enough?<br>
+• <b>A:</b> They detect only a portion of problems, such as missing alt text or low contrast. Judgement issues like meaningful alt text and logical reading order need manual and user testing.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>target size</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  button, input { font: inherit; padding: 6px 10px; }
+  button { min-width: 44px; min-height: 44px; }
+</style>
+</head>
+<body>
+<button>OK</button> <button>Cancel</button>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         }
@@ -37482,218 +38705,2104 @@ Today we learn about &lt;b&gt;HTML&lt;/b&gt;.</pre>
                 name: 'HTML Browser APIs',
                 topics: [
                         {
-                            // TODO: authored content pending.
                             id: 'html-apis-geolocation-api',
                             name: 'Geolocation API',
                             beginner: [
                                 {
-                                    content: `<h3>Geolocation API</h3>
-&bull; Part of the HTML Browser APIs section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• The <b>Geolocation API</b> finds the <b>position of the device</b>.<br>
+• It is available through <b>navigator.geolocation</b>.<br>
+• The user must give permission first.<br>
+• It works only on secure pages (HTTPS or localhost).<br><br>
+
+<h3>Key Points</h3>
+• <b>getCurrentPosition</b> reads the position once.<br>
+• <b>watchPosition</b> keeps reporting changes.<br>
+• The result has latitude, longitude and accuracy in metres.<br>
+• Errors report denied permission, unavailable position or timeout.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>geolocation</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  button, input { font: inherit; padding: 6px 10px; }
+  pre { background: #0f172a; color: #e2e8f0; padding: .75rem; border-radius: 8px; white-space: pre-wrap; }
+</style>
+</head>
+<body>
+<button id="b">Where am I?</button>
+<pre id="o">Press the button</pre>
+<script>
+  b.onclick = () => {
+    if (!navigator.geolocation) { o.textContent = 'Geolocation not supported'; return; }
+    navigator.geolocation.getCurrentPosition(
+      p => o.textContent = 'Lat ' + p.coords.latitude.toFixed(4) + ', Lon ' + p.coords.longitude.toFixed(4) + ' (+/- ' + Math.round(p.coords.accuracy) + ' m)',
+      e => o.textContent = 'Could not get location: ' + e.message);
+  };
+</script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Pass options such as <b>enableHighAccuracy</b>, <b>timeout</b> and <b>maximumAge</b>.<br>
+• Ask only after a user action, never on page load.<br>
+• Explain why you need the location before the prompt.<br>
+• Stop watching with <b>clearWatch</b>.<br><br>
+
+<h3>Common Mistakes</h3>
+• Requesting location on page load, which users deny.<br>
+• Not handling errors.<br>
+• Ignoring accuracy values.<br>
+• Using it on non-secure origins, where it fails.<br><br>
+
+<h3>Try It Yourself</h3>
+• Create a button that shows the current coordinates with graceful error handling, and a distance function that uses two coordinates.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>watch</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  button, input { font: inherit; padding: 6px 10px; }
+  pre { background: #0f172a; color: #e2e8f0; padding: .75rem; border-radius: 8px; white-space: pre-wrap; }
+</style>
+</head>
+<body>
+<button id="s">Start</button> <button id="x">Stop</button>
+<pre id="o"></pre>
+<script>
+  let id;
+  s.onclick = () => id = navigator.geolocation?.watchPosition(p => o.textContent = p.coords.latitude + ', ' + p.coords.longitude, e => o.textContent = e.message, { enableHighAccuracy: true });
+  x.onclick = () => navigator.geolocation.clearWatch(id);
+</script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Delivery, ride and weather apps use location.<br>
+• Store locators sort by distance.<br>
+• Privacy laws require clear consent.<br>
+• IP lookups are a coarse fallback.<br><br>
+
+<h3>Best Practices</h3>
+• Ask in context and explain the benefit.<br>
+• Handle denial gracefully.<br>
+• Do not store location without need.<br>
+• Offer manual entry.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> Why should you request geolocation after a user action?<br>
+• <b>A:</b> Prompts on page load feel intrusive and are usually denied. Asking after a click, with context, is understood and more often accepted.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>distance</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  button, input { font: inherit; padding: 6px 10px; }
+  pre { background: #0f172a; color: #e2e8f0; padding: .75rem; border-radius: 8px; white-space: pre-wrap; }
+</style>
+</head>
+<body>
+<pre id="o">Distance from Pune to Mumbai: </pre>
+<script>
+  const rad = d => d * Math.PI / 180;
+  function km(a, b, c, d) { const x = Math.sin(rad(c - a) / 2) ** 2 + Math.cos(rad(a)) * Math.cos(rad(c)) * Math.sin(rad(d - b) / 2) ** 2; return 12742 * Math.asin(Math.sqrt(x)); }
+  o.textContent += km(18.52, 73.86, 19.07, 72.88).toFixed(0) + ' km (Haversine)';
+</script>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-apis-web-storage',
                             name: 'Web Storage',
                             beginner: [
                                 {
-                                    content: `<h3>Web Storage</h3>
-&bull; Part of the HTML Browser APIs section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• <b>Web Storage</b> saves <b>key and value pairs</b> in the browser.<br>
+• It has two parts: localStorage and sessionStorage.<br>
+• Data is stored as strings.<br>
+• The limit is about 5 MB per origin.<br><br>
+
+<h3>Key Points</h3>
+• Methods: <b>setItem</b>, <b>getItem</b>, <b>removeItem</b> and <b>clear</b>.<br>
+• Data never goes to the server automatically, unlike cookies.<br>
+• It is synchronous, so large writes can block.<br>
+• Storage is separate for each origin.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>web storage</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  button, input { font: inherit; padding: 6px 10px; }
+  pre { background: #0f172a; color: #e2e8f0; padding: .75rem; border-radius: 8px; white-space: pre-wrap; }
+</style>
+</head>
+<body>
+<pre id="o"></pre>
+<script>
+  const store = (() => { try { localStorage.setItem('t', '1'); localStorage.removeItem('t'); return localStorage; } catch (e) { const m = {}; return { getItem: k => m[k] ?? null, setItem: (k, v) => m[k] = String(v), removeItem: k => delete m[k], clear: () => Object.keys(m).forEach(k => delete m[k]) }; } })();
+  store.setItem('theme', 'dark');
+  o.textContent = 'Saved theme: ' + store.getItem('theme');
+</script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Store objects with <b>JSON.stringify</b> and read with <b>JSON.parse</b>.<br>
+• Listen to the <b>storage</b> event to sync tabs.<br>
+• Wrap access in try and catch, because storage may be blocked.<br>
+• Use it for preferences, not secrets.<br><br>
+
+<h3>Common Mistakes</h3>
+• Storing passwords or tokens that scripts can steal.<br>
+• Forgetting that values are strings.<br>
+• Assuming storage always works in private mode.<br>
+• Large data that should go in IndexedDB.<br><br>
+
+<h3>Try It Yourself</h3>
+• Save and load a user preferences object with JSON, using a safe wrapper in case storage is blocked.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>JSON</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  button, input { font: inherit; padding: 6px 10px; }
+  pre { background: #0f172a; color: #e2e8f0; padding: .75rem; border-radius: 8px; white-space: pre-wrap; }
+</style>
+</head>
+<body>
+<pre id="o"></pre>
+<script>
+  const store = (() => { try { localStorage.setItem('t', '1'); localStorage.removeItem('t'); return localStorage; } catch (e) { const m = {}; return { getItem: k => m[k] ?? null, setItem: (k, v) => m[k] = String(v), removeItem: k => delete m[k], clear: () => Object.keys(m).forEach(k => delete m[k]) }; } })();
+  store.setItem('user', JSON.stringify({ name: 'Asha', level: 3 }));
+  const u = JSON.parse(store.getItem('user'));
+  o.textContent = u.name + ' is level ' + u.level;
+</script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Saving a theme, language or draft text.<br>
+• Remembering collapsed panels.<br>
+• Cross-tab updates via the storage event.<br>
+• Feature flags in development.<br><br>
+
+<h3>Best Practices</h3>
+• Never store sensitive data.<br>
+• Handle quota and errors.<br>
+• Version your keys.<br>
+• Use IndexedDB for bigger data.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> Why is localStorage a poor place for session tokens?<br>
+• <b>A:</b> Any script on the page can read it, so a cross-site scripting bug exposes the token. HttpOnly cookies cannot be read by scripts.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>storage event</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  button, input { font: inherit; padding: 6px 10px; }
+  pre { background: #0f172a; color: #e2e8f0; padding: .75rem; border-radius: 8px; white-space: pre-wrap; }
+</style>
+</head>
+<body>
+<pre id="o">Open this page in two tabs to see sync.</pre>
+<script>addEventListener('storage', e => o.textContent = e.key + ' changed to ' + e.newValue);</script>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-apis-local-storage',
                             name: 'Local Storage',
                             beginner: [
                                 {
-                                    content: `<h3>Local Storage</h3>
-&bull; Part of the HTML Browser APIs section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• <b>localStorage</b> keeps data <b>with no expiry date</b>.<br>
+• It survives closing the browser and restarting the computer.<br>
+• It is shared by all tabs of the same origin.<br>
+• Clearing site data removes it.<br><br>
+
+<h3>Key Points</h3>
+• Use <b>localStorage.setItem(key, value)</b> to save.<br>
+• Use <b>getItem</b> to read, which returns null when missing.<br>
+• Use <b>removeItem</b> or <b>clear</b> to delete.<br>
+• The <b>length</b> and <b>key(i)</b> let you list entries.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>localStorage</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  button, input { font: inherit; padding: 6px 10px; }
+  pre { background: #0f172a; color: #e2e8f0; padding: .75rem; border-radius: 8px; white-space: pre-wrap; }
+</style>
+</head>
+<body>
+<input id="n" placeholder="Your name"> <button id="s">Save</button>
+<p id="o"></p>
+<script>
+  const store = (() => { try { localStorage.setItem('t', '1'); localStorage.removeItem('t'); return localStorage; } catch (e) { const m = {}; return { getItem: k => m[k] ?? null, setItem: (k, v) => m[k] = String(v), removeItem: k => delete m[k], clear: () => Object.keys(m).forEach(k => delete m[k]) }; } })();
+  n.value = store.getItem('name') || '';
+  s.onclick = () => { store.setItem('name', n.value); o.textContent = 'Saved ' + n.value; };
+</script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Build a to-do list that stays after reload.<br>
+• Debounce frequent writes such as draft text.<br>
+• Check for null before using a value.<br>
+• Prefix keys with the app name to avoid collisions.<br><br>
+
+<h3>Common Mistakes</h3>
+• Storing large lists, which slows page load.<br>
+• Assuming values persist forever. Users can clear them.<br>
+• Reading before checking support.<br>
+• Storing personal data without consent.<br><br>
+
+<h3>Try It Yourself</h3>
+• Create a to-do list whose items are stored with localStorage and restored when the page opens again.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>todo</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  button, input { font: inherit; padding: 6px 10px; }
+  pre { background: #0f172a; color: #e2e8f0; padding: .75rem; border-radius: 8px; white-space: pre-wrap; }
+</style>
+</head>
+<body>
+<input id="i"> <button id="a">Add</button><ul id="l"></ul>
+<script>
+  const store = (() => { try { localStorage.setItem('t', '1'); localStorage.removeItem('t'); return localStorage; } catch (e) { const m = {}; return { getItem: k => m[k] ?? null, setItem: (k, v) => m[k] = String(v), removeItem: k => delete m[k], clear: () => Object.keys(m).forEach(k => delete m[k]) }; } })();
+  let items = JSON.parse(store.getItem('todo') || '[]');
+  const draw = () => l.innerHTML = items.map(t => '<li>' + t.replace(/</g, '&lt;') + '</li>').join('');
+  a.onclick = () => { if (i.value) { items.push(i.value); store.setItem('todo', JSON.stringify(items)); i.value = ''; draw(); } };
+  draw();
+</script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Theme and language choices use localStorage.<br>
+• Offline drafts are saved here.<br>
+• Analytics IDs are stored with consent.<br>
+• Developers inspect it in the Application tab.<br><br>
+
+<h3>Best Practices</h3>
+• Keep it small and non-sensitive.<br>
+• Namespace keys.<br>
+• Handle missing values.<br>
+• Provide a reset option.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> How long does localStorage data last?<br>
+• <b>A:</b> Until the script or the user removes it. It has no expiry time and survives restarts, unlike sessionStorage.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>counter</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  button, input { font: inherit; padding: 6px 10px; }
+  pre { background: #0f172a; color: #e2e8f0; padding: .75rem; border-radius: 8px; white-space: pre-wrap; }
+</style>
+</head>
+<body>
+<button id="b">Visits</button> <span id="c"></span>
+<script>
+  const store = (() => { try { localStorage.setItem('t', '1'); localStorage.removeItem('t'); return localStorage; } catch (e) { const m = {}; return { getItem: k => m[k] ?? null, setItem: (k, v) => m[k] = String(v), removeItem: k => delete m[k], clear: () => Object.keys(m).forEach(k => delete m[k]) }; } })();
+  const show = () => c.textContent = store.getItem('visits') || 0;
+  b.onclick = () => { store.setItem('visits', Number(store.getItem('visits') || 0) + 1); show(); }; show();
+</script>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-apis-session-storage',
                             name: 'Session Storage',
                             beginner: [
                                 {
-                                    content: `<h3>Session Storage</h3>
-&bull; Part of the HTML Browser APIs section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• <b>sessionStorage</b> keeps data <b>only for one tab session</b>.<br>
+• It is cleared when the tab or window closes.<br>
+• Each tab has its own copy, even for the same site.<br>
+• The API is the same as localStorage.<br><br>
+
+<h3>Key Points</h3>
+• Reloading the page keeps the data.<br>
+• Opening the same site in a new tab starts empty.<br>
+• Use it for temporary state, such as a wizard in progress.<br>
+• The limit is about 5 MB.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>sessionStorage</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  button, input { font: inherit; padding: 6px 10px; }
+  pre { background: #0f172a; color: #e2e8f0; padding: .75rem; border-radius: 8px; white-space: pre-wrap; }
+</style>
+</head>
+<body>
+<pre id="o"></pre>
+<script>
+  const s = (() => { try { sessionStorage.setItem('t', '1'); return sessionStorage; } catch (e) { const m = {}; return { getItem: k => m[k] ?? null, setItem: (k, v) => m[k] = String(v) }; } })();
+  const n = Number(s.getItem('n') || 0) + 1; s.setItem('n', n);
+  o.textContent = 'You loaded this page ' + n + ' time(s) in this tab session.';
+</script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Keep form progress across steps and reloads.<br>
+• Remember scroll positions or filters for the current visit.<br>
+• Use for one-time banners shown once per session.<br>
+• Clear sensitive state on logout.<br><br>
+
+<h3>Common Mistakes</h3>
+• Expecting data to be shared across tabs.<br>
+• Using it for long-term preferences.<br>
+• Storing secrets.<br>
+• Forgetting that duplicated tabs copy the data.<br><br>
+
+<h3>Try It Yourself</h3>
+• Create a form that keeps a draft in sessionStorage and a banner that shows only once per tab session.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>banner once</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  button, input { font: inherit; padding: 6px 10px; }
+  pre { background: #0f172a; color: #e2e8f0; padding: .75rem; border-radius: 8px; white-space: pre-wrap; }
+</style>
+</head>
+<body>
+<div id="bn" style="background:#fef3c7;padding:8px">Welcome back! <button id="x">Dismiss</button></div>
+<script>
+  let m = {}; const ss = { get: k => { try { return sessionStorage.getItem(k); } catch (e) { return m[k]; } }, set: (k, v) => { try { sessionStorage.setItem(k, v); } catch (e) { m[k] = v; } } };
+  if (ss.get('seen')) bn.hidden = true;
+  x.onclick = () => { ss.set('seen', 1); bn.hidden = true; };
+</script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Checkout steps and multi-page wizards keep temporary choices.<br>
+• Single page apps remember the last tab per session.<br>
+• Login redirects store the target page.<br>
+• Analytics may mark session start.<br><br>
+
+<h3>Best Practices</h3>
+• Use it for short-lived state.<br>
+• Clean up when done.<br>
+• Do not store secrets.<br>
+• Fall back gracefully.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> What is the difference between localStorage and sessionStorage?<br>
+• <b>A:</b> localStorage persists until cleared and is shared across tabs, while sessionStorage lasts for one tab session and is not shared with other tabs.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>draft</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  button, input { font: inherit; padding: 6px 10px; }
+  pre { background: #0f172a; color: #e2e8f0; padding: .75rem; border-radius: 8px; white-space: pre-wrap; }
+</style>
+</head>
+<body>
+<textarea id="t" rows="3" cols="30" placeholder="Draft survives reload in this tab"></textarea>
+<script>
+  let mem = '';
+  const get = () => { try { return sessionStorage.getItem('d') || ''; } catch (e) { return mem; } };
+  const set = v => { try { sessionStorage.setItem('d', v); } catch (e) { mem = v; } };
+  t.value = get(); t.oninput = () => set(t.value);
+</script>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-apis-history-api',
                             name: 'History API',
                             beginner: [
                                 {
-                                    content: `<h3>History API</h3>
-&bull; Part of the HTML Browser APIs section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• The <b>History API</b> lets scripts <b>change the address bar and back button</b> without reloading.<br>
+• It is the base of client-side routing.<br>
+• Methods: pushState, replaceState and the popstate event.<br>
+• The page itself does not reload.<br><br>
+
+<h3>Key Points</h3>
+• <b>history.pushState(state, "", url)</b> adds an entry.<br>
+• <b>history.replaceState</b> changes the current entry.<br>
+• <b>popstate</b> fires when the user goes back or forward.<br>
+• The URL must have the same origin.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>pushState</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  button, input { font: inherit; padding: 6px 10px; }
+  pre { background: #0f172a; color: #e2e8f0; padding: .75rem; border-radius: 8px; white-space: pre-wrap; }
+</style>
+</head>
+<body>
+<button id="a">Go to /courses</button> <button id="b">Go to /about</button>
+<pre id="o"></pre>
+<script>
+  const show = () => o.textContent = 'State: ' + JSON.stringify(history.state);
+  a.onclick = () => { history.pushState({ page: 'courses' }, '', '#courses'); show(); };
+  b.onclick = () => { history.pushState({ page: 'about' }, '', '#about'); show(); };
+  addEventListener('popstate', show);
+</script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Render the right view in the popstate handler.<br>
+• Use replaceState to fix the URL without adding entries.<br>
+• Servers must return the app for deep URLs.<br>
+• Update the title and focus for accessibility.<br><br>
+
+<h3>Common Mistakes</h3>
+• Forgetting to handle popstate, so Back breaks.<br>
+• Pushing too many entries.<br>
+• Using URLs from another origin.<br>
+• Not updating the document title.<br><br>
+
+<h3>Try It Yourself</h3>
+• Build a tiny router with two views using pushState and popstate so Back and Forward work.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>mini router</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  button, input { font: inherit; padding: 6px 10px; }
+  pre { background: #0f172a; color: #e2e8f0; padding: .75rem; border-radius: 8px; white-space: pre-wrap; }
+</style>
+</head>
+<body>
+<nav><a href="#home" data-p="home">Home</a> | <a href="#docs" data-p="docs">Docs</a></nav>
+<h2 id="v">Home</h2>
+<script>
+  const show = p => v.textContent = p;
+  document.querySelector('nav').onclick = e => { const p = e.target.dataset.p; if (!p) return; e.preventDefault(); history.pushState({ p }, '', '#' + p); show(p); };
+  addEventListener('popstate', e => show(e.state ? e.state.p : 'home'));
+</script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• React Router, Vue Router and Angular Router use it.<br>
+• Search pages update the URL with filters.<br>
+• Modals add history entries so Back closes them.<br>
+• Analytics track virtual page views.<br><br>
+
+<h3>Best Practices</h3>
+• Handle popstate.<br>
+• Keep URLs meaningful and shareable.<br>
+• Configure the server for deep links.<br>
+• Manage focus after navigation.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> What event fires when the user presses the Back button after pushState?<br>
+• <b>A:</b> popstate. Your handler reads event.state and renders the matching view.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>replaceState</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  button, input { font: inherit; padding: 6px 10px; }
+  pre { background: #0f172a; color: #e2e8f0; padding: .75rem; border-radius: 8px; white-space: pre-wrap; }
+</style>
+</head>
+<body>
+<button onclick="history.replaceState(null, '', '#filter=new'); o.textContent = location.hash">Apply filter</button>
+<pre id="o"></pre>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-apis-url-api',
                             name: 'URL API',
                             beginner: [
                                 {
-                                    content: `<h3>URL API</h3>
-&bull; Part of the HTML Browser APIs section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• The <b>URL API</b> parses and builds web addresses safely.<br>
+• The <b>URL</b> object has parts such as protocol, host, pathname, search and hash.<br>
+• <b>URLSearchParams</b> reads and writes query strings.<br>
+• It avoids error-prone string handling.<br><br>
+
+<h3>Key Points</h3>
+• <b>new URL(text, base)</b> creates an object, or throws for invalid text.<br>
+• Change a part by assigning to its property.<br>
+• <b>url.searchParams</b> is a URLSearchParams instance.<br>
+• <b>url.href</b> gives the full text again.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>URL</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  button, input { font: inherit; padding: 6px 10px; }
+  pre { background: #0f172a; color: #e2e8f0; padding: .75rem; border-radius: 8px; white-space: pre-wrap; }
+</style>
+</head>
+<body>
+<pre id="o"></pre>
+<script>
+  const u = new URL('https://javaschoollab.com/search?q=html&page=2#results');
+  o.textContent = [u.hostname, u.pathname, u.search, u.hash, u.searchParams.get('q')].join('\\n');
+</script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Use <b>searchParams.set</b>, <b>append</b>, <b>delete</b> and <b>has</b>.<br>
+• Encoding of special characters is handled for you.<br>
+• Use <b>URL.canParse</b> to validate input.<br>
+• Combine with fetch for clean API calls.<br><br>
+
+<h3>Common Mistakes</h3>
+• Building query strings by hand with plus signs.<br>
+• Forgetting to encode user input.<br>
+• Passing a relative URL without a base.<br>
+• Trusting a parsed URL without checking the protocol.<br><br>
+
+<h3>Try It Yourself</h3>
+• Parse a URL into its parts, build a query string with URLSearchParams including special characters and validate user input as http or https.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>build query</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  button, input { font: inherit; padding: 6px 10px; }
+  pre { background: #0f172a; color: #e2e8f0; padding: .75rem; border-radius: 8px; white-space: pre-wrap; }
+</style>
+</head>
+<body>
+<pre id="o"></pre>
+<script>
+  const u = new URL('https://example.com/api/courses');
+  u.searchParams.set('level', 'beginner'); u.searchParams.append('tag', 'html'); u.searchParams.append('tag', 'css');
+  u.searchParams.set('q', 'Java & Spring');
+  o.textContent = u.href;
+</script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• API clients build request URLs this way.<br>
+• Routers read parameters.<br>
+• Link validators check the protocol.<br>
+• Tracking tools remove parameters.<br><br>
+
+<h3>Best Practices</h3>
+• Use URL and URLSearchParams everywhere.<br>
+• Allow only http and https for user links.<br>
+• Keep encoding automatic.<br>
+• Handle parse errors.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> Why use URLSearchParams instead of string concatenation?<br>
+• <b>A:</b> It encodes special characters correctly and handles repeated keys, which avoids broken or injectable query strings.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>validate</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  button, input { font: inherit; padding: 6px 10px; }
+  pre { background: #0f172a; color: #e2e8f0; padding: .75rem; border-radius: 8px; white-space: pre-wrap; }
+</style>
+</head>
+<body>
+<input id="i" value="https://example.com" size="30"> <button id="b">Check</button> <span id="o"></span>
+<script>b.onclick = () => { try { const u = new URL(i.value); o.textContent = /^https?:$/.test(u.protocol) ? 'Safe link' : 'Blocked protocol'; } catch (e) { o.textContent = 'Not a valid URL'; } };</script>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-apis-fetch-api',
                             name: 'Fetch API',
                             beginner: [
                                 {
-                                    content: `<h3>Fetch API</h3>
-&bull; Part of the HTML Browser APIs section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• The <b>Fetch API</b> makes <b>HTTP requests</b> from the browser.<br>
+• It returns a Promise, so you use then or async and await.<br>
+• It replaces the older XMLHttpRequest.<br>
+• It can call APIs and load files.<br><br>
+
+<h3>Key Points</h3>
+• <b>fetch(url)</b> sends a GET request by default.<br>
+• The promise resolves to a Response object.<br>
+• Read the body with <b>response.json()</b> or <b>text()</b>.<br>
+• Check <b>response.ok</b>, because HTTP errors do not reject.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>fetch</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  button, input { font: inherit; padding: 6px 10px; }
+  pre { background: #0f172a; color: #e2e8f0; padding: .75rem; border-radius: 8px; white-space: pre-wrap; }
+</style>
+</head>
+<body>
+<button id="b">Load</button>
+<pre id="o"></pre>
+<script>
+  b.onclick = async () => {
+    try {
+      const r = await fetch('https://jsonplaceholder.typicode.com/todos/1');
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      o.textContent = JSON.stringify(await r.json(), null, 2);
+    } catch (e) { o.textContent = 'Error: ' + e.message; }
+  };
+</script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• POST JSON with <b>method</b>, <b>headers</b> and <b>body</b>.<br>
+• Cancel requests with <b>AbortController</b>.<br>
+• Handle CORS rules set by the server.<br>
+• Show loading and error states.<br><br>
+
+<h3>Common Mistakes</h3>
+• Assuming a 404 rejects the promise. It does not.<br>
+• Forgetting to set Content-Type for JSON bodies.<br>
+• No timeout or cancel for slow requests.<br>
+• Ignoring CORS errors.<br><br>
+
+<h3>Try It Yourself</h3>
+• Fetch JSON with error handling, send a POST with a JSON body and add a button that cancels a slow request with AbortController.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>POST</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  button, input { font: inherit; padding: 6px 10px; }
+  pre { background: #0f172a; color: #e2e8f0; padding: .75rem; border-radius: 8px; white-space: pre-wrap; }
+</style>
+</head>
+<body>
+<pre id="o"></pre>
+<script>
+  (async () => {
+    try {
+      const r = await fetch('https://jsonplaceholder.typicode.com/posts', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ title: 'Hello', body: 'From fetch', userId: 1 }) });
+      o.textContent = r.status + ' ' + JSON.stringify(await r.json());
+    } catch (e) { o.textContent = 'Error: ' + e.message; }
+  })();
+</script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Every single page app talks to APIs with fetch.<br>
+• Libraries such as Axios wrap similar behaviour.<br>
+• Service workers intercept fetch events.<br>
+• Retry and cache layers sit on top.<br><br>
+
+<h3>Best Practices</h3>
+• Always check response.ok.<br>
+• Use AbortController for timeouts.<br>
+• Handle errors visibly.<br>
+• Never expose secrets in browser requests.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> Does fetch reject on a 404 or 500 response?<br>
+• <b>A:</b> No. It only rejects on network failures, so you must check response.ok or response.status yourself.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>abort</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  button, input { font: inherit; padding: 6px 10px; }
+  pre { background: #0f172a; color: #e2e8f0; padding: .75rem; border-radius: 8px; white-space: pre-wrap; }
+</style>
+</head>
+<body>
+<button id="b">Start slow request</button> <button id="c">Cancel</button><pre id="o"></pre>
+<script>
+  let ac;
+  b.onclick = async () => { ac = new AbortController(); o.textContent = 'Loading...';
+    try { await fetch('https://httpbin.org/delay/5', { signal: ac.signal }); o.textContent = 'Done'; } catch (e) { o.textContent = e.name === 'AbortError' ? 'Cancelled' : 'Error: ' + e.message; } };
+  c.onclick = () => ac && ac.abort();
+</script>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-apis-web-workers',
                             name: 'Web Workers',
                             beginner: [
                                 {
-                                    content: `<h3>Web Workers</h3>
-&bull; Part of the HTML Browser APIs section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• <b>Web Workers</b> run JavaScript in a <b>background thread</b>.<br>
+• They keep the page responsive during heavy work.<br>
+• A worker has no access to the DOM.<br>
+• Main thread and worker talk through messages.<br><br>
+
+<h3>Key Points</h3>
+• Create one with <b>new Worker("file.js")</b>.<br>
+• Send data with <b>postMessage</b>.<br>
+• Receive with the <b>message</b> event.<br>
+• Stop it with <b>terminate()</b>.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>worker</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  button, input { font: inherit; padding: 6px 10px; }
+  pre { background: #0f172a; color: #e2e8f0; padding: .75rem; border-radius: 8px; white-space: pre-wrap; }
+</style>
+</head>
+<body>
+<button id="b">Sum 100 million</button>
+<pre id="o"></pre>
+<script>
+  const code = "onmessage = e => { let s = 0; for (let i = 0; i < e.data; i++) s += i; postMessage(s); }";
+  const w = new Worker(URL.createObjectURL(new Blob([code], { type: 'text/javascript' })));
+  w.onmessage = e => o.textContent = 'Result: ' + e.data;
+  b.onclick = () => { o.textContent = 'Working... (page stays responsive)'; w.postMessage(1e8); };
+</script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Data is copied by structured clone, or moved with transferables.<br>
+• Use workers for parsing, image processing and compression.<br>
+• Libraries such as Comlink make messaging easier.<br>
+• Shared workers and worklets exist for special cases.<br><br>
+
+<h3>Common Mistakes</h3>
+• Running heavy loops on the main thread.<br>
+• Trying to touch the DOM from a worker.<br>
+• Sending huge objects back and forth.<br>
+• Creating too many workers.<br><br>
+
+<h3>Try It Yourself</h3>
+• Move a heavy loop into a Web Worker created from a Blob, display the result and handle a worker error.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>transfer</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  button, input { font: inherit; padding: 6px 10px; }
+  pre { background: #0f172a; color: #e2e8f0; padding: .75rem; border-radius: 8px; white-space: pre-wrap; }
+</style>
+</head>
+<body>
+<pre id="o"></pre>
+<script>
+  const code = "onmessage = e => postMessage(e.data.byteLength, [e.data]);";
+  const w = new Worker(URL.createObjectURL(new Blob([code], { type: 'text/javascript' })));
+  const buf = new ArrayBuffer(1024 * 1024);
+  w.onmessage = e => o.textContent = 'Worker got ' + e.data + ' bytes; sender length now ' + buf.byteLength;
+  w.postMessage(buf, [buf]);
+</script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Image editors and PDF tools use workers.<br>
+• Search indexes are built off the main thread.<br>
+• Crypto and compression run in workers.<br>
+• Profilers show long tasks that should move.<br><br>
+
+<h3>Best Practices</h3>
+• Move work over 50 ms.<br>
+• Keep messages small.<br>
+• Terminate when done.<br>
+• Handle worker errors.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> Why can a worker not change the DOM?<br>
+• <b>A:</b> The DOM is not thread safe, so workers run in an isolated scope without document or window access. They send results back for the main thread to render.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>error</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  button, input { font: inherit; padding: 6px 10px; }
+  pre { background: #0f172a; color: #e2e8f0; padding: .75rem; border-radius: 8px; white-space: pre-wrap; }
+</style>
+</head>
+<body>
+<pre id="o"></pre>
+<script>
+  const w = new Worker(URL.createObjectURL(new Blob(['throw new Error("boom")'], { type: 'text/javascript' })));
+  w.onerror = e => { o.textContent = 'Worker error: ' + e.message; e.preventDefault(); };
+</script>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-apis-service-workers',
                             name: 'Service Workers',
                             beginner: [
                                 {
-                                    content: `<h3>Service Workers</h3>
-&bull; Part of the HTML Browser APIs section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• A <b>service worker</b> is a script that sits <b>between your page and the network</b>.<br>
+• It enables offline pages, caching and push notifications.<br>
+• It runs in the background, separate from the page.<br>
+• It requires HTTPS (or localhost).<br><br>
+
+<h3>Key Points</h3>
+• Register it with <b>navigator.serviceWorker.register("/sw.js")</b>.<br>
+• Lifecycle events: install, activate and fetch.<br>
+• It controls pages within its scope.<br>
+• Updates install in the background and activate later.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>service worker</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  button, input { font: inherit; padding: 6px 10px; }
+  pre { background: #0f172a; color: #e2e8f0; padding: .75rem; border-radius: 8px; white-space: pre-wrap; }
+</style>
+</head>
+<body>
+<pre id="o"></pre>
+<script>
+  o.textContent = 'serviceWorker' in navigator
+    ? 'Service workers are supported. In your app you would call navigator.serviceWorker.register("/sw.js").'
+    : 'Not supported here';
+</script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Cache assets in the install event with the Cache API.<br>
+• Answer fetch events from the cache, then the network.<br>
+• Pick a strategy: cache first, network first or stale while revalidate.<br>
+• Version caches to ship updates.<br><br>
+
+<h3>Common Mistakes</h3>
+• Caching too much, so users see old pages.<br>
+• Forgetting to delete old caches in activate.<br>
+• Registering on pages outside the scope.<br>
+• Testing only in the first visit.<br><br>
+
+<h3>Try It Yourself</h3>
+• Write a service worker that caches an offline page on install and serves it when a fetch fails, then register it from the page.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>sw.js sketch</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  button, input { font: inherit; padding: 6px 10px; }
+  pre { background: #0f172a; color: #e2e8f0; padding: .75rem; border-radius: 8px; white-space: pre-wrap; }
+</style>
+</head>
+<body>
+<pre>// sw.js
+const CACHE = 'v1';
+self.addEventListener('install', e =>
+  e.waitUntil(caches.open(CACHE).then(c => c.addAll(['/', '/offline.html']))));
+self.addEventListener('fetch', e =>
+  e.respondWith(fetch(e.request).catch(() => caches.match('/offline.html'))));</pre>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Progressive web apps rely on service workers.<br>
+• News sites serve offline reading.<br>
+• This project has an offline.html fallback.<br>
+• Workbox simplifies strategies.<br><br>
+
+<h3>Best Practices</h3>
+• Version your caches.<br>
+• Provide an offline fallback page.<br>
+• Test updates carefully.<br>
+• Use tools like Workbox.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> What are the main lifecycle events of a service worker?<br>
+• <b>A:</b> install, where you cache files, activate, where you clean old caches, and fetch, where you answer requests from cache or network.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>update flow</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  button, input { font: inherit; padding: 6px 10px; }
+  pre { background: #0f172a; color: #e2e8f0; padding: .75rem; border-radius: 8px; white-space: pre-wrap; }
+</style>
+</head>
+<body>
+<pre>navigator.serviceWorker.register('/sw.js').then(reg => {
+  reg.addEventListener('updatefound', () => {
+    // show a "New version available" banner
+  });
+});</pre>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-apis-notifications-api',
                             name: 'Notifications API',
                             beginner: [
                                 {
-                                    content: `<h3>Notifications API</h3>
-&bull; Part of the HTML Browser APIs section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• The <b>Notifications API</b> shows <b>system notifications</b> outside the page.<br>
+• The user must grant permission first.<br>
+• It needs a secure context.<br>
+• Notifications can appear even when the tab is in the background.<br><br>
+
+<h3>Key Points</h3>
+• Check <b>Notification.permission</b>: default, granted or denied.<br>
+• Ask with <b>Notification.requestPermission()</b> after a user action.<br>
+• Create with <b>new Notification(title, options)</b>.<br>
+• Options include body, icon and tag.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>notification</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  button, input { font: inherit; padding: 6px 10px; }
+  pre { background: #0f172a; color: #e2e8f0; padding: .75rem; border-radius: 8px; white-space: pre-wrap; }
+</style>
+</head>
+<body>
+<button id="b">Notify me</button>
+<pre id="o"></pre>
+<script>
+  b.onclick = async () => {
+    if (!('Notification' in window)) { o.textContent = 'Not supported'; return; }
+    const p = await Notification.requestPermission();
+    o.textContent = 'Permission: ' + p;
+    if (p === 'granted') new Notification('Hello!', { body: 'This is a test notification' });
+  };
+</script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Use a service worker and <b>showNotification</b> for notifications on mobile.<br>
+• Use <b>tag</b> to replace instead of stacking.<br>
+• Handle the <b>click</b> event to open the right page.<br>
+• Respect denial and never nag.<br><br>
+
+<h3>Common Mistakes</h3>
+• Requesting permission on page load.<br>
+• Sending too many notifications.<br>
+• Assuming mobile browsers allow the plain constructor.<br>
+• No fallback when denied.<br><br>
+
+<h3>Try It Yourself</h3>
+• Create a button that requests permission, shows a notification when allowed and displays the current permission status.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>with tag</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  button, input { font: inherit; padding: 6px 10px; }
+  pre { background: #0f172a; color: #e2e8f0; padding: .75rem; border-radius: 8px; white-space: pre-wrap; }
+</style>
+</head>
+<body>
+<button id="b">Send</button>
+<script>b.onclick = () => { if (Notification.permission === 'granted') { const n = new Notification('Lesson ready', { body: 'HTML Forms', tag: 'lesson' }); n.onclick = () => window.focus(); } else alert('Allow notifications first'); };</script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Chat, email and reminder apps use notifications.<br>
+• Push messages arrive through service workers.<br>
+• Users disable sites that spam.<br>
+• Permission UI changes across browsers.<br><br>
+
+<h3>Best Practices</h3>
+• Explain the value before asking.<br>
+• Send useful, rare messages.<br>
+• Provide settings to opt out.<br>
+• Handle denial gracefully.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> When should you ask for notification permission?<br>
+• <b>A:</b> After the user takes an action that shows the value, such as enabling reminders, never on page load.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>status</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  button, input { font: inherit; padding: 6px 10px; }
+  pre { background: #0f172a; color: #e2e8f0; padding: .75rem; border-radius: 8px; white-space: pre-wrap; }
+</style>
+</head>
+<body>
+<pre id="o"></pre><script>o.textContent = 'Current permission: ' + (window.Notification ? Notification.permission : 'unsupported');</script>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-apis-clipboard-api',
                             name: 'Clipboard API',
                             beginner: [
                                 {
-                                    content: `<h3>Clipboard API</h3>
-&bull; Part of the HTML Browser APIs section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• The <b>Clipboard API</b> reads and writes the <b>system clipboard</b>.<br>
+• It is available through <b>navigator.clipboard</b>.<br>
+• It works on secure pages and needs a user gesture.<br>
+• It replaces the old execCommand approach.<br><br>
+
+<h3>Key Points</h3>
+• <b>writeText(text)</b> copies text.<br>
+• <b>readText()</b> pastes text and needs permission.<br>
+• Both return promises.<br>
+• <b>write()</b> handles images and rich data.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>copy</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  button, input { font: inherit; padding: 6px 10px; }
+  pre { background: #0f172a; color: #e2e8f0; padding: .75rem; border-radius: 8px; white-space: pre-wrap; }
+</style>
+</head>
+<body>
+<input id="t" value="npm install" size="20"> <button id="b">Copy</button> <span id="o"></span>
+<script>
+  b.onclick = async () => {
+    try { await navigator.clipboard.writeText(t.value); o.textContent = 'Copied!'; }
+    catch (e) { t.select(); document.execCommand('copy'); o.textContent = 'Copied (fallback)'; }
+  };
+</script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Show feedback such as a tick after copying.<br>
+• Fall back to select and execCommand where needed.<br>
+• Use the <b>copy</b> and <b>paste</b> events to intercept.<br>
+• Ask permission before reading.<br><br>
+
+<h3>Common Mistakes</h3>
+• Calling it without a user click.<br>
+• Reading the clipboard on page load.<br>
+• No feedback to the user.<br>
+• No fallback for insecure pages.<br><br>
+
+<h3>Try It Yourself</h3>
+• Create a copy button for a code block that confirms success, with a fallback when the clipboard API is blocked.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>copy code</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  button, input { font: inherit; padding: 6px 10px; }
+  pre { background: #0f172a; color: #e2e8f0; padding: .75rem; border-radius: 8px; white-space: pre-wrap; }
+</style>
+</head>
+<body>
+<pre id="c">System.out.println("Hello");</pre><button id="b">Copy code</button>
+<script>b.onclick = () => navigator.clipboard?.writeText(c.textContent).then(() => b.textContent = 'Copied!', () => b.textContent = 'Copy blocked');</script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Code blocks have copy buttons.<br>
+• Share buttons copy links.<br>
+• Editors paste rich text.<br>
+• Browsers prompt for read access.<br><br>
+
+<h3>Best Practices</h3>
+• Only copy on a click.<br>
+• Give clear feedback.<br>
+• Do not read without need.<br>
+• Provide a manual fallback.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> Why does the Clipboard API need a user gesture?<br>
+• <b>A:</b> To stop pages from silently reading or overwriting what the user copied, which could expose private data.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>paste</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  button, input { font: inherit; padding: 6px 10px; }
+  pre { background: #0f172a; color: #e2e8f0; padding: .75rem; border-radius: 8px; white-space: pre-wrap; }
+</style>
+</head>
+<body>
+<button id="b">Paste</button> <pre id="o"></pre>
+<script>b.onclick = async () => { try { o.textContent = await navigator.clipboard.readText(); } catch (e) { o.textContent = 'Permission denied or unsupported'; } };</script>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-apis-websocket-api',
                             name: 'WebSocket API',
                             beginner: [
                                 {
-                                    content: `<h3>WebSocket API</h3>
-&bull; Part of the HTML Browser APIs section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• The <b>WebSocket API</b> opens a <b>two-way connection</b> between browser and server.<br>
+• The server can send messages at any time.<br>
+• It uses ws:// or secure wss:// addresses.<br>
+• It suits chat, live scores and dashboards.<br><br>
+
+<h3>Key Points</h3>
+• Create with <b>new WebSocket(url)</b>.<br>
+• Events: open, message, error and close.<br>
+• Send with <b>socket.send(data)</b>.<br>
+• Close with <b>socket.close()</b>.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>websocket</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  button, input { font: inherit; padding: 6px 10px; }
+  pre { background: #0f172a; color: #e2e8f0; padding: .75rem; border-radius: 8px; white-space: pre-wrap; }
+</style>
+</head>
+<body>
+<pre id="o">Connecting...</pre>
+<script>
+  const ws = new WebSocket('wss://echo.websocket.events');
+  ws.onopen = () => { o.textContent = 'Open. Sending hello...'; ws.send('hello'); };
+  ws.onmessage = e => { o.textContent += '\\nServer says: ' + e.data; ws.close(); };
+  ws.onerror = () => o.textContent += '\\nConnection error';
+</script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Reconnect with backoff when the connection drops.<br>
+• Send JSON strings and parse them on receipt.<br>
+• Use heartbeats to detect dead connections.<br>
+• Check <b>readyState</b> before sending.<br><br>
+
+<h3>Common Mistakes</h3>
+• Sending before the connection is open.<br>
+• No reconnect logic.<br>
+• Using ws:// on HTTPS pages, which is blocked.<br>
+• No authentication of the connection.<br><br>
+
+<h3>Try It Yourself</h3>
+• Connect to an echo WebSocket, send a JSON message, display the reply and show the connection state.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>json messages</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  button, input { font: inherit; padding: 6px 10px; }
+  pre { background: #0f172a; color: #e2e8f0; padding: .75rem; border-radius: 8px; white-space: pre-wrap; }
+</style>
+</head>
+<body>
+<pre id="o"></pre>
+<script>
+  const ws = new WebSocket('wss://echo.websocket.events');
+  ws.onopen = () => ws.send(JSON.stringify({ type: 'greet', name: 'Asha' }));
+  ws.onmessage = e => { try { o.textContent = 'Got: ' + JSON.stringify(JSON.parse(e.data)); } catch (err) { o.textContent = 'Got text: ' + e.data; } ws.close(); };
+</script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Trading screens and chat apps use WebSockets.<br>
+• Server-Sent Events suit one-way streams.<br>
+• Libraries such as Socket.IO add reconnect and rooms.<br>
+• Load balancers must support long connections.<br><br>
+
+<h3>Best Practices</h3>
+• Authenticate and validate messages.<br>
+• Reconnect with backoff.<br>
+• Limit message size.<br>
+• Use wss in production.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> When is a WebSocket a better fit than repeated fetch calls?<br>
+• <b>A:</b> When the server must push updates quickly and often, such as chat or live prices, because a persistent connection avoids the delay and overhead of polling.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>status</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  button, input { font: inherit; padding: 6px 10px; }
+  pre { background: #0f172a; color: #e2e8f0; padding: .75rem; border-radius: 8px; white-space: pre-wrap; }
+</style>
+</head>
+<body>
+<pre id="o"></pre><script>
+  const ws = new WebSocket('wss://echo.websocket.events');
+  const names = ['connecting', 'open', 'closing', 'closed'];
+  o.textContent = 'State: ' + names[ws.readyState];
+  ws.onopen = () => { o.textContent = 'State: ' + names[ws.readyState]; ws.close(); };
+</script>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-apis-indexeddb',
                             name: 'IndexedDB',
                             beginner: [
                                 {
-                                    content: `<h3>IndexedDB</h3>
-&bull; Part of the HTML Browser APIs section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• <b>IndexedDB</b> is a <b>database in the browser</b> for large amounts of structured data.<br>
+• It stores objects, files and blobs.<br>
+• It is asynchronous, so it does not block the page.<br>
+• Data persists until cleared.<br><br>
+
+<h3>Key Points</h3>
+• Data lives in object stores inside a database.<br>
+• Operations run inside transactions.<br>
+• You can index fields for fast lookups.<br>
+• The raw API uses requests and events.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>indexeddb</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  button, input { font: inherit; padding: 6px 10px; }
+  pre { background: #0f172a; color: #e2e8f0; padding: .75rem; border-radius: 8px; white-space: pre-wrap; }
+</style>
+</head>
+<body>
+<pre id="o"></pre>
+<script>
+  if (!window.indexedDB) o.textContent = 'IndexedDB not supported';
+  else {
+    const req = indexedDB.open('demo', 1);
+    req.onupgradeneeded = () => req.result.createObjectStore('notes', { keyPath: 'id', autoIncrement: true });
+    req.onsuccess = () => {
+      const db = req.result, tx = db.transaction('notes', 'readwrite');
+      tx.objectStore('notes').add({ text: 'Hello IndexedDB' });
+      tx.oncomplete = () => o.textContent = 'Saved a note';
+    };
+    req.onerror = () => o.textContent = 'Blocked: ' + (req.error && req.error.message);
+  }
+</script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Use <b>createIndex</b> to search by fields.<br>
+• Wrap the API in promises or use the idb library.<br>
+• Handle version upgrades in <b>onupgradeneeded</b>.<br>
+• Store files and blobs for offline use.<br><br>
+
+<h3>Common Mistakes</h3>
+• Forgetting that all work happens in transactions.<br>
+• Version mismatches.<br>
+• Blocking on requests with synchronous thinking.<br>
+• Not handling quota or blocked errors.<br><br>
+
+<h3>Try It Yourself</h3>
+• Open a database, create an object store and save and read a record using small promise helpers.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>promise wrapper</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  button, input { font: inherit; padding: 6px 10px; }
+  pre { background: #0f172a; color: #e2e8f0; padding: .75rem; border-radius: 8px; white-space: pre-wrap; }
+</style>
+</head>
+<body>
+<pre id="o"></pre>
+<script>
+  const p = r => new Promise((res, rej) => { r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); });
+  (async () => {
+    try {
+      const open = indexedDB.open('demo2', 1);
+      open.onupgradeneeded = () => open.result.createObjectStore('kv');
+      const db = await p(open);
+      const s = db.transaction('kv', 'readwrite').objectStore('kv');
+      await p(s.put('Asha', 'name'));
+      o.textContent = 'Read back: ' + await p(db.transaction('kv').objectStore('kv').get('name'));
+    } catch (e) { o.textContent = 'IndexedDB blocked here: ' + e; }
+  })();
+</script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Offline-first apps store data locally.<br>
+• Editors keep drafts and images.<br>
+• Libraries such as Dexie improve the API.<br>
+• PWAs sync later with the server.<br><br>
+
+<h3>Best Practices</h3>
+• Use a wrapper library.<br>
+• Version your schema.<br>
+• Keep transactions short.<br>
+• Handle quota errors.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> Why choose IndexedDB over localStorage for big data?<br>
+• <b>A:</b> It is asynchronous, supports indexes and transactions, stores objects and blobs and has much larger limits, while localStorage is synchronous, string only and small.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>index</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  button, input { font: inherit; padding: 6px 10px; }
+  pre { background: #0f172a; color: #e2e8f0; padding: .75rem; border-radius: 8px; white-space: pre-wrap; }
+</style>
+</head>
+<body>
+<pre>store.createIndex('byEmail', 'email', { unique: true });
+const user = await index.get('asha@example.com');</pre>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-apis-cache-api',
                             name: 'Cache API',
                             beginner: [
                                 {
-                                    content: `<h3>Cache API</h3>
-&bull; Part of the HTML Browser APIs section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• The <b>Cache API</b> stores <b>request and response pairs</b>.<br>
+• It is mostly used by service workers.<br>
+• It is available through <b>caches</b>.<br>
+• It enables offline pages.<br><br>
+
+<h3>Key Points</h3>
+• <b>caches.open(name)</b> opens or creates a cache.<br>
+• <b>cache.put</b> and <b>cache.add</b> store responses.<br>
+• <b>cache.match(request)</b> finds one.<br>
+• <b>caches.delete(name)</b> removes a cache.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>cache</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  button, input { font: inherit; padding: 6px 10px; }
+  pre { background: #0f172a; color: #e2e8f0; padding: .75rem; border-radius: 8px; white-space: pre-wrap; }
+</style>
+</head>
+<body>
+<pre id="o"></pre>
+<script>
+  (async () => {
+    if (!('caches' in window)) { o.textContent = 'Cache API not available here'; return; }
+    try {
+      const c = await caches.open('demo-v1');
+      await c.put('/hello', new Response('Hello from cache'));
+      o.textContent = await (await c.match('/hello')).text();
+    } catch (e) { o.textContent = 'Blocked: ' + e.message; }
+  })();
+</script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Choose a strategy: cache first, network first, or stale while revalidate.<br>
+• Name caches with a version.<br>
+• Delete old caches on activate.<br>
+• Respect storage limits.<br><br>
+
+<h3>Common Mistakes</h3>
+• Never invalidating the cache, so users see stale content.<br>
+• Caching responses that vary per user.<br>
+• Caching POST requests.<br>
+• Forgetting that responses can be used only once unless cloned.<br><br>
+
+<h3>Try It Yourself</h3>
+• Store a response in a named cache, read it back with match and write the fetch handler that clones a network response before caching it.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>clone response</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  button, input { font: inherit; padding: 6px 10px; }
+  pre { background: #0f172a; color: #e2e8f0; padding: .75rem; border-radius: 8px; white-space: pre-wrap; }
+</style>
+</head>
+<body>
+<pre>self.addEventListener('fetch', e => {
+  e.respondWith(caches.match(e.request).then(hit =>
+    hit || fetch(e.request).then(res => {
+      const copy = res.clone();            // body can be read once
+      caches.open('v1').then(c => c.put(e.request, copy));
+      return res;
+    })));
+});</pre>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• PWAs cache their app shell.<br>
+• News apps cache articles for offline reading.<br>
+• Workbox manages strategies.<br>
+• DevTools show cache contents.<br><br>
+
+<h3>Best Practices</h3>
+• Version cache names.<br>
+• Clean up old versions.<br>
+• Do not cache sensitive responses.<br>
+• Test offline mode.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> Why must you clone a Response before caching it?<br>
+• <b>A:</b> A response body is a stream that can be read only once, so one copy goes to the cache and the other is returned to the page.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>list caches</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  button, input { font: inherit; padding: 6px 10px; }
+  pre { background: #0f172a; color: #e2e8f0; padding: .75rem; border-radius: 8px; white-space: pre-wrap; }
+</style>
+</head>
+<body>
+<pre id="o"></pre><script>caches ? caches.keys().then(k => o.textContent = 'Caches: ' + (k.join(', ') || '(none)')).catch(e => o.textContent = e.message) : 0;</script>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-apis-file-api',
                             name: 'File API',
                             beginner: [
                                 {
-                                    content: `<h3>File API</h3>
-&bull; Part of the HTML Browser APIs section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• The <b>File API</b> lets scripts <b>read files the user selects</b>.<br>
+• Files come from file inputs or drag and drop.<br>
+• File objects have name, size, type and lastModified.<br>
+• Reading happens in the browser, not on the server.<br><br>
+
+<h3>Key Points</h3>
+• <b>input.files</b> is a list of File objects.<br>
+• <b>FileReader</b> reads text, data URLs or buffers.<br>
+• <b>file.text()</b> and <b>file.arrayBuffer()</b> return promises.<br>
+• <b>URL.createObjectURL</b> makes a temporary link.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>file api</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  button, input { font: inherit; padding: 6px 10px; }
+  pre { background: #0f172a; color: #e2e8f0; padding: .75rem; border-radius: 8px; white-space: pre-wrap; }
+</style>
+</head>
+<body>
+<input type="file" id="f" accept=".txt"> <pre id="o">Choose a text file</pre>
+<script>
+  f.onchange = async () => { const file = f.files[0]; if (file) o.textContent = file.name + ' (' + file.size + ' bytes)\\n\\n' + (await file.text()).slice(0, 200); };
+</script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Validate type and size before reading.<br>
+• Show previews with object URLs and revoke them after use.<br>
+• Read large files in slices with <b>file.slice</b>.<br>
+• Use drag and drop for easier selection.<br><br>
+
+<h3>Common Mistakes</h3>
+• Trusting the file type reported by the browser.<br>
+• Reading huge files fully into memory.<br>
+• Forgetting revokeObjectURL, which leaks memory.<br>
+• No error handling.<br><br>
+
+<h3>Try It Yourself</h3>
+• Read a chosen text file and show its first lines, preview a selected image and check the file size before reading.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>csv preview</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  button, input { font: inherit; padding: 6px 10px; }
+  pre { background: #0f172a; color: #e2e8f0; padding: .75rem; border-radius: 8px; white-space: pre-wrap; }
+</style>
+</head>
+<body>
+<input type="file" id="f" accept=".csv"> <table id="t" border="1" cellpadding="4"></table>
+<script>
+  f.onchange = async () => { const rows = (await f.files[0].text()).trim().split('\\n').slice(0, 5);
+    t.innerHTML = rows.map(r => '<tr>' + r.split(',').map(c => '<td>' + c.replace(/</g, '&lt;') + '</td>').join('') + '</tr>').join(''); };
+</script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• CSV import tools, image upload previews and text editors use it.<br>
+• Client-side processing reduces server load.<br>
+• Privacy friendly tools never upload the file.<br>
+• Limits protect browser memory.<br><br>
+
+<h3>Best Practices</h3>
+• Check size and type.<br>
+• Process in chunks.<br>
+• Release object URLs.<br>
+• Handle errors with messages.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> Why call URL.revokeObjectURL after using an object URL?<br>
+• <b>A:</b> The browser keeps the file data in memory as long as the URL exists, so revoking it frees that memory when you no longer need it.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>preview</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  button, input { font: inherit; padding: 6px 10px; }
+  pre { background: #0f172a; color: #e2e8f0; padding: .75rem; border-radius: 8px; white-space: pre-wrap; }
+</style>
+</head>
+<body>
+<input type="file" id="f" accept="image/*"><br><img id="i" alt="Preview" width="120" hidden>
+<script>f.onchange = () => { const u = URL.createObjectURL(f.files[0]); i.src = u; i.hidden = false; i.onload = () => URL.revokeObjectURL(u); };</script>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-apis-drag-and-drop-browser-api',
                             name: 'Drag and Drop Browser API',
                             beginner: [
                                 {
-                                    content: `<h3>Drag and Drop Browser API</h3>
-&bull; Part of the HTML Browser APIs section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• The <b>Drag and Drop API</b> lets users <b>move elements or drop files</b> onto targets.<br>
+• Items become draggable with the <b>draggable</b> attribute.<br>
+• Events track the whole movement.<br>
+• It works with the mouse in most browsers.<br><br>
+
+<h3>Key Points</h3>
+• Source events: <b>dragstart</b> and <b>dragend</b>.<br>
+• Target events: <b>dragenter</b>, <b>dragover</b>, <b>dragleave</b> and <b>drop</b>.<br>
+• Call <b>preventDefault()</b> on dragover to allow drops.<br>
+• Data travels in <b>event.dataTransfer</b>.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>dnd</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  button, input { font: inherit; padding: 6px 10px; }
+  pre { background: #0f172a; color: #e2e8f0; padding: .75rem; border-radius: 8px; white-space: pre-wrap; }
+  .box { width: 120px; height: 60px; border: 2px dashed #94a3b8; display: inline-block; vertical-align: top; margin-right: 10px; padding: 4px; }
+  .card { background: #fed7aa; padding: 6px; cursor: grab; }
+</style>
+</head>
+<body>
+<div class="box" id="a"><div class="card" id="c" draggable="true">Drag me</div></div>
+<div class="box" id="b">Drop here</div>
+<script>
+  c.ondragstart = e => e.dataTransfer.setData('text/plain', c.id);
+  [a, b].forEach(z => { z.ondragover = e => e.preventDefault(); z.ondrop = e => { e.preventDefault(); z.append(document.getElementById(e.dataTransfer.getData('text/plain'))); }; });
+</script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Highlight the target on dragenter and remove on dragleave.<br>
+• Use <b>effectAllowed</b> and <b>dropEffect</b> for cursors.<br>
+• Use <b>setDragImage</b> to customise the preview.<br>
+• Read dropped files from <b>dataTransfer.files</b>.<br><br>
+
+<h3>Common Mistakes</h3>
+• Forgetting preventDefault on dragover.<br>
+• No touch support, since it does not work on many phones.<br>
+• No keyboard alternative.<br>
+• Moving DOM nodes without updating data state.<br><br>
+
+<h3>Try It Yourself</h3>
+• Build a two-box drag and drop, a sortable list and a file drop area that lists dropped file names.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>sortable list</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  button, input { font: inherit; padding: 6px 10px; }
+  pre { background: #0f172a; color: #e2e8f0; padding: .75rem; border-radius: 8px; white-space: pre-wrap; }
+  li { padding: 6px; border: 1px solid #cbd5e1; margin: 2px 0; background: #fff; cursor: grab; }
+</style>
+</head>
+<body>
+<ul id="l"><li draggable="true">One</li><li draggable="true">Two</li><li draggable="true">Three</li></ul>
+<script>
+  let d;
+  l.ondragstart = e => d = e.target;
+  l.ondragover = e => { e.preventDefault(); const t = e.target.closest('li'); if (t && t !== d) l.insertBefore(d, t.getBoundingClientRect().top + t.offsetHeight / 2 > e.clientY ? t : t.nextSibling); };
+</script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Kanban boards and file uploaders use it.<br>
+• Touch support often needs pointer events or a library.<br>
+• Accessible alternatives include move up and down buttons.<br>
+• Libraries such as SortableJS cover many cases.<br><br>
+
+<h3>Best Practices</h3>
+• Offer keyboard controls.<br>
+• Show drop feedback.<br>
+• Keep data and DOM in sync.<br>
+• Test on touch devices.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> Why does a drop target need a dragover handler?<br>
+• <b>A:</b> Calling preventDefault in dragover tells the browser the element accepts drops. Without it the drop event never fires.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>file drop</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  button, input { font: inherit; padding: 6px 10px; }
+  pre { background: #0f172a; color: #e2e8f0; padding: .75rem; border-radius: 8px; white-space: pre-wrap; }
+  #z { border: 2px dashed #94a3b8; padding: 24px; text-align: center; }
+</style>
+</head>
+<body>
+<div id="z">Drop files here</div><ul id="l"></ul>
+<script>
+  z.ondragover = e => e.preventDefault();
+  z.ondrop = e => { e.preventDefault(); l.innerHTML = [...e.dataTransfer.files].map(f => '<li>' + f.name + '</li>').join(''); };
+</script>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-apis-fullscreen-api',
                             name: 'Fullscreen API',
                             beginner: [
                                 {
-                                    content: `<h3>Fullscreen API</h3>
-&bull; Part of the HTML Browser APIs section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• The <b>Fullscreen API</b> shows an element <b>across the whole screen</b>.<br>
+• It is used for videos, games and presentations.<br>
+• It must be triggered by a user action.<br>
+• The user can leave with the Escape key.<br><br>
+
+<h3>Key Points</h3>
+• <b>element.requestFullscreen()</b> enters fullscreen and returns a promise.<br>
+• <b>document.exitFullscreen()</b> leaves it.<br>
+• <b>document.fullscreenElement</b> shows the current element.<br>
+• The <b>fullscreenchange</b> event reports changes.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>fullscreen</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  button, input { font: inherit; padding: 6px 10px; }
+  pre { background: #0f172a; color: #e2e8f0; padding: .75rem; border-radius: 8px; white-space: pre-wrap; }
+  #box { background: #fed7aa; padding: 1rem; }
+</style>
+</head>
+<body>
+<div id="box"><h3>Fullscreen me</h3><p>Content that can fill the screen.</p></div>
+<button id="b">Toggle fullscreen</button>
+<script>
+  b.onclick = () => document.fullscreenElement ? document.exitFullscreen() : box.requestFullscreen().catch(e => alert('Blocked: ' + e.message));
+</script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Style fullscreen with the <b>:fullscreen</b> pseudo-class.<br>
+• Handle errors from the promise.<br>
+• Update button labels on fullscreenchange.<br>
+• Use <b>navigationUI</b> options where supported.<br><br>
+
+<h3>Common Mistakes</h3>
+• Calling without a click.<br>
+• Iframes without allow="fullscreen".<br>
+• Expecting iPhone Safari to support it for any element.<br>
+• Not handling Escape exits.<br><br>
+
+<h3>Try It Yourself</h3>
+• Create a presentation box with a fullscreen toggle button, a :fullscreen style and a label that updates on fullscreenchange.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>css and event</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  button, input { font: inherit; padding: 6px 10px; }
+  pre { background: #0f172a; color: #e2e8f0; padding: .75rem; border-radius: 8px; white-space: pre-wrap; }
+  #box { background: #bfdbfe; padding: 1rem; } #box:fullscreen { background: #1e293b; color: #fff; display: grid; place-items: center; }
+</style>
+</head>
+<body>
+<div id="box">Normal view</div><button onclick="box.requestFullscreen()">Enter</button> <span id="o"></span>
+<script>document.onfullscreenchange = () => o.textContent = document.fullscreenElement ? 'fullscreen' : 'normal';</script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Video players, slide decks and games provide a fullscreen button.<br>
+• Custom video players fullscreen their container to keep controls.<br>
+• Kiosks use it for dashboards.<br>
+• Browsers show a message when entering.<br><br>
+
+<h3>Best Practices</h3>
+• Fullscreen a container, not the bare video, when custom controls are used.<br>
+• Keep an exit button visible.<br>
+• Respond to change events.<br>
+• Test on mobile.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> Why can requestFullscreen only run from a user gesture?<br>
+• <b>A:</b> To stop pages from taking over the screen unexpectedly, which could be used to mimic other interfaces or annoy users.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>exit label</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  button, input { font: inherit; padding: 6px 10px; }
+  pre { background: #0f172a; color: #e2e8f0; padding: .75rem; border-radius: 8px; white-space: pre-wrap; }
+</style>
+</head>
+<body>
+<button id="b">Go fullscreen</button>
+<script>
+  b.onclick = () => document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen();
+  document.onfullscreenchange = () => b.textContent = document.fullscreenElement ? 'Exit fullscreen' : 'Go fullscreen';
+</script>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-apis-web-components-apis',
                             name: 'Web Components APIs',
                             beginner: [
                                 {
-                                    content: `<h3>Web Components APIs</h3>
-&bull; Part of the HTML Browser APIs section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• <b>Web Components APIs</b> are the browser features used to build <b>reusable custom elements</b>.<br>
+• They are Custom Elements, Shadow DOM, templates and slots.<br>
+• They work without any framework.<br>
+• Components are used like normal HTML tags.<br><br>
+
+<h3>Key Points</h3>
+• <b>customElements.define</b> registers a tag.<br>
+• <b>attachShadow</b> creates an encapsulated tree.<br>
+• <b>template</b> and <b>slot</b> provide structure.<br>
+• Lifecycle callbacks react to attach, detach and attribute changes.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>web component</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  button, input { font: inherit; padding: 6px 10px; }
+  pre { background: #0f172a; color: #e2e8f0; padding: .75rem; border-radius: 8px; white-space: pre-wrap; }
+</style>
+</head>
+<body>
+<user-badge name="Asha" role="Instructor"></user-badge>
+<script>
+  class UserBadge extends HTMLElement {
+    connectedCallback() {
+      const r = this.attachShadow({ mode: 'open' });
+      r.innerHTML = '<style>div{display:inline-block;padding:6px 12px;border-radius:999px;background:#fed7aa;font-family:sans-serif}</style><div><b></b> &middot; <span></span></div>';
+      r.querySelector('b').textContent = this.getAttribute('name'); r.querySelector('span').textContent = this.getAttribute('role');
+    }
+  }
+  customElements.define('user-badge', UserBadge);
+</script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Observe attributes with <b>observedAttributes</b> to update the view.<br>
+• Expose styling hooks through CSS custom properties and ::part.<br>
+• Dispatch CustomEvents to talk to the page.<br>
+• Frameworks can use web components as normal elements.<br><br>
+
+<h3>Common Mistakes</h3>
+• Heavy work in the constructor.<br>
+• Forgetting to clean listeners in disconnectedCallback.<br>
+• Naming without a hyphen.<br>
+• Poor accessibility inside shadow DOM.<br><br>
+
+<h3>Try It Yourself</h3>
+• Create a user-badge component with a shadow root, make a counter that reacts to an attribute change and dispatch a custom event from a button.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>reactive attribute</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  button, input { font: inherit; padding: 6px 10px; }
+  pre { background: #0f172a; color: #e2e8f0; padding: .75rem; border-radius: 8px; white-space: pre-wrap; }
+</style>
+</head>
+<body>
+<count-up value="3"></count-up> <button onclick="document.querySelector('count-up').setAttribute('value', Math.floor(Math.random()*100))">Random</button>
+<script>
+  customElements.define('count-up', class extends HTMLElement {
+    static observedAttributes = ['value'];
+    attributeChangedCallback() { this.textContent = 'Value: ' + this.getAttribute('value'); }
+  });
+</script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Design systems ship components as custom elements.<br>
+• Libraries such as Lit simplify authoring.<br>
+• Micro frontends embed widgets.<br>
+• Browser support is universal today.<br><br>
+
+<h3>Best Practices</h3>
+• Keep a small public API.<br>
+• Document attributes and events.<br>
+• Provide accessibility.<br>
+• Test in several frameworks.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> Which four features make up web components?<br>
+• <b>A:</b> Custom elements, shadow DOM, HTML templates and slots, which together allow encapsulated, reusable tags.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>event</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  button, input { font: inherit; padding: 6px 10px; }
+  pre { background: #0f172a; color: #e2e8f0; padding: .75rem; border-radius: 8px; white-space: pre-wrap; }
+</style>
+</head>
+<body>
+<click-me></click-me><p id="o"></p>
+<script>
+  customElements.define('click-me', class extends HTMLElement {
+    connectedCallback() { const bt = document.createElement('button'); bt.textContent = 'Click'; bt.onclick = () => this.dispatchEvent(new CustomEvent('picked', { bubbles: true, detail: 42 })); this.append(bt); }
+  });
+  document.addEventListener('picked', e => o.textContent = 'Picked ' + e.detail);
+</script>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         }

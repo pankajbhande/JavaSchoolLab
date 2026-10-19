@@ -596,7 +596,7 @@ export default function CourseWorkspace() {
         </div>
       )}
 
-      <div className="flex flex-1 overflow-hidden">
+      <div className="flex flex-1 min-h-0 overflow-hidden overflow-clip">
         {!showDashboard && isDesktop && !focusMode && sidebarEl}
 
         {/* The skip link targets this. min-w-0 stops a wide code block or table from

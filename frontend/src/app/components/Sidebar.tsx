@@ -84,7 +84,7 @@ export function Sidebar({
       initial={false}
       animate={{ width: isMinimized ? 60 : 300 }}
       transition={{ duration: 0.3 }}
-      className="relative bg-gradient-to-bl from-orange-100/90 via-amber-50 to-orange-50 dark:from-gray-900 dark:via-orange-950/25 dark:to-gray-900 border-r border-orange-200/70 dark:border-orange-900/40 overflow-hidden h-[calc(100vh-80px)] flex flex-col"
+      className="relative bg-gradient-to-bl from-orange-100/90 via-amber-50 to-orange-50 dark:from-gray-900 dark:via-orange-950/25 dark:to-gray-900 border-r border-orange-200/70 dark:border-orange-900/40 overflow-hidden h-[calc(100vh-80px)] max-h-full flex flex-col"
     >
       {/* Decorative premium glow accents — purely visual, sits behind all content */}
       <div className="pointer-events-none absolute -top-16 -left-16 w-56 h-56 rounded-full bg-orange-300/30 dark:bg-orange-600/10 blur-3xl" />

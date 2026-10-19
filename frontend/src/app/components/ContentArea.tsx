@@ -15,6 +15,7 @@ import { useDataset } from '../hooks/useDataset';
 import type { QuizBank } from '../data/quiz/types';
 import { TopicToolbar } from './TopicToolbar';
 import { withJavaPackage } from '../lib/javaPackage';
+import { looksLikeHtml, formatHtml, highlightHtml } from '../lib/htmlCode';
 import { ReadingControls } from './shell/ReadingControls';
 import { useReadingPrefs } from '../hooks/useReadingPrefs';
 import { FONT_SCALES } from '../lib/readingPrefs';
@@ -42,9 +43,6 @@ interface ContentAreaProps {
   /** Optional mount point rendered directly below the lesson notes, above Previous/Next. */
   extraBelowNotes?: React.ReactNode;
 }
-
-// HTML/CSS lessons share this button; their samples are web pages, not Java.
-const looksLikeHtml = (code: string) => /^\s*(<!doctype\s+html|<html[\s>]|<(head|body|style|div|p|h[1-6]|a|ul|ol|table|form|img|span|button)[\s>])/i.test(code);
 
 const handleAction = (code: string) => {
   if (looksLikeHtml(code)) {
@@ -704,7 +702,8 @@ export function ContentArea({
               {content.codeExamples && content.codeExamples.length > 0 && (
                 <div className="space-y-4">
                   {content.codeExamples.map((rawCode, codeIdx) => {
-                    const code = withJavaPackage(formatCode(rawCode), course.id, topic.id);
+                    const isHtml = looksLikeHtml(rawCode);
+                    const code = isHtml ? formatHtml(rawCode) : withJavaPackage(formatCode(rawCode), course.id, topic.id);
                     const explanation = content.codeExplanations?.[codeIdx];
                     const explanationKey = `${idx}-${codeIdx}`;
                     const isExplanationOpen = openExplanations.has(explanationKey);
@@ -762,7 +761,7 @@ export function ContentArea({
                       </div>
 
                       <pre className="bg-[#1e1e2e] text-gray-100 p-5 rounded-lg overflow-x-auto border border-gray-700/50 shadow-lg font-mono text-[13px] leading-6">
-                        <code dangerouslySetInnerHTML={{ __html: highlightJava(code) }} />
+                        <code dangerouslySetInnerHTML={{ __html: isHtml ? highlightHtml(code) : highlightJava(code) }} />
                       </pre>
                       </div>
 

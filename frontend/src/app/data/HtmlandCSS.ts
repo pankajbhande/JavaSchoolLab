@@ -4755,6 +4755,41 @@ Line two    extra spaces removed</div>
                         {
                             id: 'html-text-paragraph-p',
                             name: 'Paragraph p',
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Articles, product descriptions and help text are all sequences of paragraphs.<br>
+• Each paragraph should carry <b>one idea</b>. Short paragraphs are easier to scan on a phone.<br><br>
+
+<h3>Spacing Without Hacks</h3>
+• Control the gap between paragraphs with <b>margin</b> on the p element.<br>
+• Use <b>p + p</b> to indent or space only the paragraphs that follow another paragraph.<br>
+• Never use empty paragraphs or &amp;nbsp; to push content down.<br><br>
+
+<h3>Common Mistakes</h3>
+• Putting block elements such as lists inside a p. The browser closes the paragraph early.<br>
+• Using br to fake paragraphs, which removes the structure assistive technology relies on.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>Paragraph rhythm</title>
+<style>
+  article { max-width: 60ch; font-family: Georgia, serif; line-height: 1.7; }
+  p { margin: 0; }
+  p + p { margin-top: 1em; }      /* gap only BETWEEN paragraphs */
+  p:first-of-type::first-letter { font-size: 2.2em; float: left; padding-right: 6px; }
+</style></head>
+<body>
+<article>
+  <p>Good typography starts with a comfortable line length and line height.</p>
+  <p>Spacing between paragraphs comes from CSS, never from empty elements.</p>
+  <p>The first letter of the opening paragraph is styled with a pseudo-element.</p>
+</article>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
                             beginner: [
                                 {
                                     content: `<h3>The &lt;p&gt; Tag</h3>
@@ -4849,6 +4884,39 @@ Line two    extra spaces removed</div>
                         {
                             id: 'html-text-line-break-br',
                             name: 'Line Break br',
+                            expert: [
+                                {
+                                    content: `<h3>Where br Belongs</h3>
+• Lines that are <b>part of the content</b>: poems, song lyrics and postal addresses.<br>
+• A forced break inside a short label or table cell where wrapping would look wrong.<br><br>
+
+<h3>Where It Does Not</h3>
+• Spacing between blocks. Use paragraphs and margin instead.<br>
+• Separating form fields. Wrap each field in a div or use CSS grid or flex.<br>
+• Layout in general. Stacked br tags are fragile and read badly with a screen reader.<br><br>
+
+<h3>Useful Detail</h3>
+• br is a <b>void element</b>, so it has no closing tag. Both <b>&lt;br&gt;</b> and <b>&lt;br /&gt;</b> are valid.<br>
+• The CSS <b>white-space: pre-line</b> keeps line breaks from the source text without any br tags.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>When to use br</title>
+<style>
+  .lyrics { white-space: pre-line; }   /* keeps source line breaks */
+</style></head>
+<body>
+<!-- Good: the line break is part of the content -->
+<p>JavaSchoolLab<br>12 Tech Park Road<br>Pune 411001</p>
+
+<!-- Same result for stored text, no br tags needed -->
+<p class="lyrics">Twinkle, twinkle, little star
+How I wonder what you are</p>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
                             beginner: [
                                 {
                                     content: `<h3>The &lt;br&gt; Tag</h3>
@@ -4946,6 +5014,38 @@ India - 411001</p>
                         {
                             id: 'html-text-horizontal-rule-hr',
                             name: 'Horizontal Rule hr',
+                            expert: [
+                                {
+                                    content: `<h3>Meaning, Not Decoration</h3>
+• In HTML5 the hr element means a <b>thematic break</b> between topics, such as a scene change in a story.<br>
+• If the line is only decoration, a CSS border on the neighbouring element is usually the better choice.<br><br>
+
+<h3>Styling It</h3>
+• By default hr draws an inset 3D line. Reset <b>border</b> and <b>height</b> to take full control.<br>
+• Use <b>border-top</b> only, with your own colour, so it matches the theme in light and dark mode.<br><br>
+
+<h3>Common Mistakes</h3>
+• Using several hr tags to add vertical space.<br>
+• Relying on the deprecated width, size and color attributes instead of CSS.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>Styled hr</title>
+<style>
+  hr { border: 0; height: 1px; margin: 2rem 0;
+       background: linear-gradient(90deg, transparent, #ea580c, transparent); }
+</style></head>
+<body>
+<h2>Part One</h2>
+<p>The story begins in a small town.</p>
+<hr>
+<h2>Part Two</h2>
+<p>Years later, everything had changed.</p>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
                             beginner: [
                                 {
                                     content: `<h3>The &lt;hr&gt; Tag</h3>
@@ -5041,6 +5141,39 @@ India - 411001</p>
                         {
                             id: 'html-text-preformatted-text-pre',
                             name: 'Preformatted Text pre',
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Showing source code, terminal output, log lines and ASCII diagrams where spaces and line breaks matter.<br>
+• Pair it with <b>code</b> for programs: <b>&lt;pre&gt;&lt;code&gt;...&lt;/code&gt;&lt;/pre&gt;</b>.<br><br>
+
+<h3>Characters You Must Escape</h3>
+• Inside pre, a literal <b>&lt;</b> must be written as <b>&amp;lt;</b>, or the browser reads it as a tag.<br>
+• Write <b>&amp;amp;</b> for an ampersand.<br><br>
+
+<h3>Handling Long Lines</h3>
+• By default pre never wraps, so wide lines create a horizontal scrollbar.<br>
+• Add <b>overflow-x: auto</b> on the element to scroll inside the box rather than the whole page.<br>
+• Use <b>white-space: pre-wrap</b> if you prefer wrapping that still keeps the indentation.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>pre blocks</title>
+<style>
+  pre { background: #1e1e2e; color: #e5e7eb; padding: 1rem; border-radius: 8px;
+        overflow-x: auto; tab-size: 4; }
+</style></head>
+<body>
+<pre><code>public class Hello {
+    public static void main(String[] args) {
+        System.out.println("a &lt; b");
+    }
+}</code></pre>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
                             beginner: [
                                 {
                                     content: `<h3>The &lt;pre&gt; Tag</h3>
@@ -5142,6 +5275,39 @@ Normal paragraph:      spacing    is KEPT.
                         {
                             id: 'html-text-blockquote',
                             name: 'Blockquote',
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Pull quotes in articles, testimonials on a landing page and quoted replies in a forum.<br>
+• The text inside is a quotation from <b>another source</b>. Your own emphasis does not belong in a blockquote.<br><br>
+
+<h3>Attributing the Source</h3>
+• Add the <b>cite</b> attribute with a URL for machines. It is not shown to readers.<br>
+• For visible credit, wrap the quote and a <b>figcaption</b> inside a <b>figure</b> element.<br><br>
+
+<h3>Common Mistakes</h3>
+• Using blockquote just to indent text. Use CSS margin or padding instead.<br>
+• Forgetting that blockquote holds <b>block content</b>, so put the text in a p inside it.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>Quote with credit</title>
+<style>
+  blockquote { margin: 0; padding-left: 1rem; border-left: 4px solid #ea580c; font-style: italic; }
+  figcaption { margin-top: .5rem; font-size: .9rem; color: #6b7280; }
+</style></head>
+<body>
+<figure>
+  <blockquote cite="https://example.com/interview">
+    <p>Simplicity is the ultimate sophistication.</p>
+  </blockquote>
+  <figcaption>&mdash; <cite>A Famous Designer</cite>, interview</figcaption>
+</figure>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
                             beginner: [
                                 {
                                     content: `<h3>The &lt;blockquote&gt; Tag</h3>
@@ -5238,6 +5404,35 @@ Normal paragraph:      spacing    is KEPT.
                         {
                             id: 'html-text-short-quotation-q',
                             name: 'Short Quotation q',
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• A short phrase quoted inside a sentence, such as a customer saying the course was <q>clear and practical</q>.<br>
+• For anything longer than a line or two, use <b>blockquote</b>.<br><br>
+
+<h3>Quote Marks Are Automatic</h3>
+• Browsers add the correct quotation marks for the page language set by <b>lang</b>.<br>
+• Never type the quote characters yourself, or you will get doubled marks.<br>
+• Nested q elements switch to single quotes automatically.<br><br>
+
+<h3>Customising</h3>
+• Change marks with the CSS <b>quotes</b> property, for example <b>quotes: "\\201C" "\\201D";</b>.<br>
+• Style with a colour or italics through a normal CSS rule.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>q element</title>
+<style>
+  q { color: #92400e; }
+  q { quotes: "\\201C" "\\201D" "\\2018" "\\2019"; }
+</style></head>
+<body>
+<p>Our reviewer said <q cite="https://example.com/review">the lessons are <q>short and focused</q>, which keeps me going</q>.</p>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
                             beginner: [
                                 {
                                     content: `<h3>The &lt;q&gt; Tag</h3>
@@ -5320,6 +5515,34 @@ Normal paragraph:      spacing    is KEPT.
                         {
                             id: 'html-text-abbreviation-abbr',
                             name: 'Abbreviation abbr',
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Define an acronym the first time it appears in a page: <b>HTML</b>, <b>CSS</b>, <b>JVM</b>.<br>
+• The title text appears as a tooltip on hover and is read by many assistive tools.<br><br>
+
+<h3>Good Habits</h3>
+• Mark up the <b>first</b> use only. Repeating the tooltip on every occurrence is noise.<br>
+• Keep the title to the full expansion, for example <b>Cascading Style Sheets</b>.<br>
+• Touch screens have no hover, so also spell it out in the text where it matters.<br><br>
+
+<h3>Styling</h3>
+• Browsers draw a dotted underline. Keep it so readers know the term is explained, or restyle with <b>text-decoration</b>.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>abbr</title>
+<style>
+  abbr[title] { text-decoration: underline dotted; cursor: help; }
+</style></head>
+<body>
+<p>Learn <abbr title="HyperText Markup Language">HTML</abbr> first, then style it with
+   <abbr title="Cascading Style Sheets">CSS</abbr>.</p>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
                             beginner: [
                                 {
                                     content: `<h3>The &lt;abbr&gt; Tag</h3>
@@ -5405,6 +5628,40 @@ Normal paragraph:      spacing    is KEPT.
                         {
                             id: 'html-text-address',
                             name: 'Address',
+                            expert: [
+                                {
+                                    content: `<h3>What It Really Means</h3>
+• address gives <b>contact information for the nearest article or the whole page</b>, such as the author or the company.<br>
+• It is not for any postal address. A shop location inside a paragraph is just text.<br><br>
+
+<h3>Typical Structure</h3>
+• Place it inside a footer or an article.<br>
+• Use <b>br</b> or separate lines for each address line.<br>
+• Link a phone number with <b>tel:</b> and an email with <b>mailto:</b>.<br><br>
+
+<h3>Common Mistakes</h3>
+• Putting a long block of unrelated content inside address.<br>
+• Forgetting that browsers render it in italics. Reset with <b>font-style: normal</b> when you do not want that.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>address</title>
+<style>
+  address { font-style: normal; line-height: 1.6; }
+</style></head>
+<body>
+<footer>
+  <address>
+    Written by <a href="mailto:team@example.com">The JavaSchoolLab Team</a><br>
+    12 Tech Park Road, Pune<br>
+    <a href="tel:+912012345678">+91 20 1234 5678</a>
+  </address>
+</footer>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
                             beginner: [
                                 {
                                     content: `<h3>The &lt;address&gt; Tag</h3>
@@ -5494,6 +5751,35 @@ Normal paragraph:      spacing    is KEPT.
                         {
                             id: 'html-text-cite',
                             name: 'Cite',
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• The <b>title of a creative work</b>: a book, film, paper, song or a web page you are referring to.<br>
+• The usual pairing is a blockquote with a cite in its caption.<br><br>
+
+<h3>A Common Confusion</h3>
+• The <b>cite element</b> holds the work title, shown in italics.<br>
+• The <b>cite attribute</b> on blockquote and q holds a URL and is invisible.<br>
+• A person&apos;s name is not strictly the cite element&apos;s job. Use it for the work.<br><br>
+
+<h3>Styling</h3>
+• Italics are the default. Keep them, since readers expect titles to look that way.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>cite</title></head>
+<body>
+<p>I recommend <cite>Effective Java</cite> for every Java developer.</p>
+
+<blockquote cite="https://example.com/clean-code">
+  <p>Code is read much more often than it is written.</p>
+</blockquote>
+<p>&mdash; from <cite>Clean Code</cite></p>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
                             beginner: [
                                 {
                                     content: `<h3>The &lt;cite&gt; Tag</h3>
@@ -5560,6 +5846,35 @@ Normal paragraph:      spacing    is KEPT.
                         {
                             id: 'html-text-code',
                             name: 'Code',
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Inline names of tags, methods and keywords inside a sentence: the <b>forEach</b> method or the <b>div</b> element.<br>
+• For multi-line code, wrap it as <b>pre</b> plus <b>code</b>.<br><br>
+
+<h3>Making Code Readable</h3>
+• Use a monospace font through CSS. The browser default is already monospace, but set <b>font-family</b> to a stack you control.<br>
+• Add a subtle background and padding so it stands out from body text.<br>
+• Do not use code for text that merely looks technical. It should be real code or a literal value.<br><br>
+
+<h3>Escaping</h3>
+• Write <b>&amp;lt;</b> for the less-than character, or the browser will try to read a tag.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>code</title>
+<style>
+  code { font-family: Consolas, "Courier New", monospace; background: #f3f4f6;
+         padding: 2px 6px; border-radius: 4px; color: #be185d; }
+</style></head>
+<body>
+<p>Call <code>list.forEach(System.out::println)</code> to print each item, and write
+   <code>&lt;div&gt;</code> to create a block.</p>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
                             beginner: [
                                 {
                                     content: `<h3>The &lt;code&gt; Tag</h3>
@@ -5650,6 +5965,35 @@ Normal paragraph:      spacing    is KEPT.
                         {
                             id: 'html-text-kbd',
                             name: 'Kbd',
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Show the keys a reader should press: <b>Ctrl + S</b> to save or <b>Ctrl + Shift + P</b> for a command palette.<br>
+• Great for shortcut tables in documentation and tutorials.<br><br>
+
+<h3>Nesting for Combinations</h3>
+• Wrap each key in its own kbd and join them with a plus sign. This lets you style every key as a keycap.<br>
+• Nesting kbd inside kbd is also valid and means a combination.<br><br>
+
+<h3>Do Not Confuse</h3>
+• <b>kbd</b> is what the user types. <b>samp</b> is what the computer prints. <b>code</b> is program source.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>kbd keycaps</title>
+<style>
+  kbd { font-family: Consolas, monospace; font-size: .85em; padding: 2px 7px;
+        background: #f9fafb; border: 1px solid #d1d5db; border-bottom-width: 3px;
+        border-radius: 5px; box-shadow: 0 1px 0 #fff inset; }
+</style></head>
+<body>
+<p>Press <kbd>Ctrl</kbd> + <kbd>S</kbd> to save, or <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>P</kbd>
+   to open the command palette.</p>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
                             beginner: [
                                 {
                                     content: `<h3>The &lt;kbd&gt; Tag</h3>
@@ -5732,6 +6076,36 @@ Normal paragraph:      spacing    is KEPT.
                         {
                             id: 'html-text-samp',
                             name: 'Samp',
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Sample output from a program: console messages, error text and results of a command.<br>
+• Typical in tutorials: show what the learner types with kbd, then what appears with samp.<br><br>
+
+<h3>Putting It Together</h3>
+• Use <b>pre</b> with <b>samp</b> for multi-line output so the line breaks stay intact.<br>
+• Keep the output exact. If the real program prints three lines, the sample should too.<br><br>
+
+<h3>Common Mistakes</h3>
+• Using samp for input the user types. That is kbd.<br>
+• Dropping the monospace look. Output looks wrong in a proportional font.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>samp</title>
+<style>
+  pre.console { background: #0f172a; color: #a7f3d0; padding: 1rem; border-radius: 8px; }
+</style></head>
+<body>
+<p>Run <kbd>java Hello</kbd> and you will see:</p>
+<pre class="console"><samp>Hello, JavaSchoolLab!
+Done in 0.12s</samp></pre>
+<p>If the file is missing, Java prints <samp>Error: Could not find or load main class Hello</samp>.</p>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
                             beginner: [
                                 {
                                     content: `<h3>The &lt;samp&gt; Tag</h3>
@@ -5812,6 +6186,34 @@ built in 17.69s</samp></pre>
                         {
                             id: 'html-text-var',
                             name: 'Var',
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Variables in a formula or a code explanation: the area is <b>w &times; h</b>, where each letter is a var.<br>
+• Documentation for APIs uses it for placeholders such as <b>/users/{id}</b>.<br><br>
+
+<h3>Styling</h3>
+• Browsers show italics. Keep this for maths-style text.<br>
+• Combine it with <b>code</b> or <b>math</b> markup when the surrounding text is code.<br><br>
+
+<h3>Common Mistakes</h3>
+• Using var for emphasis. Use <b>em</b> for stress.<br>
+• Mixing it with the JavaScript keyword var. The HTML element has nothing to do with it.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>var</title>
+<style>
+  var { color: #1d4ed8; font-family: "Times New Roman", serif; }
+</style></head>
+<body>
+<p>The area of a rectangle is <var>w</var> &times; <var>h</var>, where <var>w</var> is the width and
+   <var>h</var> is the height.</p>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
                             beginner: [
                                 {
                                     content: `<h3>The &lt;var&gt; Tag</h3>
@@ -5890,6 +6292,35 @@ built in 17.69s</samp></pre>
                         {
                             id: 'html-text-mark',
                             name: 'Mark',
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Highlight the term a visitor searched for in a results page.<br>
+• Draw attention to a key phrase in a quotation, <b>because it is relevant now</b> and not because it is generally important.<br><br>
+
+<h3>mark or strong?</h3>
+• <b>strong</b> says the text is important in its own right.<br>
+• <b>mark</b> says the text is relevant in the current context, such as a search match.<br><br>
+
+<h3>Styling and Accessibility</h3>
+• The default yellow background is a good starting point. Keep enough contrast with the text colour.<br>
+• Do not rely on colour alone to communicate meaning.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>mark</title>
+<style>
+  mark { background: #fde68a; color: #1f2937; padding: 0 3px; border-radius: 3px; }
+</style></head>
+<body>
+<h3>Search results for "flexbox"</h3>
+<p>Use <mark>flexbox</mark> to align items in one dimension.</p>
+<p>The <mark>flexbox</mark> layout model replaced many float hacks.</p>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
                             beginner: [
                                 {
                                     content: `<h3>The &lt;mark&gt; Tag</h3>
@@ -5979,6 +6410,34 @@ built in 17.69s</samp></pre>
                         {
                             id: 'html-text-small',
                             name: 'Small',
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Side comments and fine print: copyright lines, legal notes, licences and disclaimers.<br>
+• Price footnotes such as <b>*inclusive of taxes</b>.<br><br>
+
+<h3>What It Is Not</h3>
+• Not a way to make any text smaller. Use <b>font-size</b> in CSS for pure appearance.<br>
+• Not for important warnings. Small text is harder to read.<br><br>
+
+<h3>Readability</h3>
+• Keep small text above about 12px, with good contrast.<br>
+• Avoid wrapping whole paragraphs in small.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>small</title></head>
+<body>
+<p>Course price: <strong>Rs. 999</strong> <small>(inclusive of all taxes)</small></p>
+
+<footer>
+  <small>&copy; 2026 JavaSchoolLab. All rights reserved.</small>
+</footer>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
                             beginner: [
                                 {
                                     content: `<h3>The &lt;small&gt; Tag</h3>
@@ -6062,6 +6521,35 @@ built in 17.69s</samp></pre>
                         {
                             id: 'html-text-strong',
                             name: 'Strong',
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• A warning that must not be missed: <b>Do not share your password</b>.<br>
+• A key term the reader needs to remember in a lesson.<br><br>
+
+<h3>Semantics Matter</h3>
+• strong means <b>strong importance</b>, and screen readers can announce it differently.<br>
+• Nested strong tags raise the level of importance.<br>
+• For bold appearance with no extra meaning, use CSS <b>font-weight</b> or the b element.<br><br>
+
+<h3>Common Mistakes</h3>
+• Making whole paragraphs strong, which makes nothing stand out.<br>
+• Using it to style headings. Use a heading element.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>strong</title>
+<style>
+  .warning strong { color: #b91c1c; }
+</style></head>
+<body>
+<p class="warning"><strong>Warning:</strong> never share your password, even with
+   <strong>support staff</strong>.</p>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
                             beginner: [
                                 {
                                     content: `<h3>The &lt;strong&gt; Tag</h3>
@@ -6137,6 +6625,31 @@ built in 17.69s</samp></pre>
                         {
                             id: 'html-text-bold-b',
                             name: 'Bold b',
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Product names in a review, or the first words of a paragraph styled as a lead-in.<br>
+• Keywords in a summary where the bold has no extra importance.<br><br>
+
+<h3>b or strong?</h3>
+• <b>b</b> draws attention without adding importance.<br>
+• <b>strong</b> marks real importance.<br>
+• When unsure, ask whether a screen reader should stress it. If yes, use strong.<br><br>
+
+<h3>Better Alternatives</h3>
+• A CSS class such as <b>.lead-in</b> gives you full control and keeps the HTML meaningful.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>b element</title></head>
+<body>
+<p><b>Spring Boot</b> makes it easy to build production-ready services, while
+   <b>Hibernate</b> handles database mapping.</p>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
                             beginner: [
                                 {
                                     content: `<h3>The &lt;b&gt; Tag</h3>
@@ -6217,6 +6730,35 @@ built in 17.69s</samp></pre>
                         {
                             id: 'html-text-emphasis-em',
                             name: 'Emphasis em',
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Stress that changes the meaning of a sentence: <b>I</b> did not say that, versus I did not <b>say</b> that.<br>
+• Emphasis on a word the reader should read with a different tone.<br><br>
+
+<h3>Nesting</h3>
+• Nested em elements add more emphasis, but use that rarely.<br><br>
+
+<h3>em or i?</h3>
+• <b>em</b> is about <b>stress emphasis</b>.<br>
+• <b>i</b> is about an alternative voice, such as a foreign term, thought or ship name.<br>
+• Both look italic by default, but they mean different things.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>em</title>
+<style>
+  em { color: #7c3aed; }
+</style></head>
+<body>
+<p>I did not say <em>that</em>.</p>
+<p>I did not <em>say</em> that.</p>
+<p>Cats are <em>cute</em>. Dogs are <em>really</em> cute.</p>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
                             beginner: [
                                 {
                                     content: `<h3>The &lt;em&gt; Tag</h3>
@@ -6290,6 +6832,31 @@ built in 17.69s</samp></pre>
                         {
                             id: 'html-text-italic-i',
                             name: 'Italic i',
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Foreign words and technical terms: the Latin phrase <i>in situ</i>.<br>
+• Thoughts of a character in fiction and titles of ships.<br>
+• Icon fonts, where an empty i is a common (though debated) hook.<br><br>
+
+<h3>Do Not Use It For</h3>
+• Stress emphasis, which belongs to <b>em</b>.<br>
+• Titles of works, which belong to <b>cite</b>.<br><br>
+
+<h3>Accessibility Note</h3>
+• An empty i used as an icon should be hidden from assistive technology with <b>aria-hidden="true"</b>, and the button needs real text.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>i element</title></head>
+<body>
+<p>The bug was fixed <i lang="la">in situ</i>, without restarting the server.</p>
+<p><i>This will never work</i>, she thought.</p>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
                             beginner: [
                                 {
                                     content: `<h3>The &lt;i&gt; Tag</h3>
@@ -6373,6 +6940,32 @@ built in 17.69s</samp></pre>
                         {
                             id: 'html-text-underline-u',
                             name: 'Underline u',
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Mark text with an <b>unarticulated annotation</b>, such as a misspelled word flagged by a spell checker.<br>
+• Chinese proper name marks.<br><br>
+
+<h3>The Big Warning</h3>
+• Readers associate underline with <b>links</b>. Underlined plain text looks clickable and confuses people.<br>
+• For a simple style change, use <b>text-decoration</b> in CSS instead.<br><br>
+
+<h3>Styling</h3>
+• Use <b>text-decoration-style: wavy</b> and a colour to mimic a spelling error mark.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>u element</title>
+<style>
+  u.spell { text-decoration: underline wavy #dc2626; }
+</style></head>
+<body>
+<p>This sentance has a <u class="spell">mispelled</u> word.</p>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
                             beginner: [
                                 {
                                     content: `<h3>The &lt;u&gt; Tag</h3>
@@ -6466,6 +7059,34 @@ built in 17.69s</samp></pre>
                         {
                             id: 'html-text-strikethrough-s',
                             name: 'Strikethrough s',
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Old prices on a sale: <s>Rs. 1999</s> Rs. 999.<br>
+• A list item that is no longer accurate or relevant, such as a sold-out size.<br><br>
+
+<h3>s or del?</h3>
+• <b>s</b> shows content that is no longer correct or relevant.<br>
+• <b>del</b> shows content that was <b>removed from a document</b>, usually in an edit history.<br><br>
+
+<h3>Accessibility</h3>
+• Screen readers often ignore the strike. Add text such as <b>was</b> or visually hidden labels for important prices.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>s element</title>
+<style>
+  .price s { color: #9ca3af; margin-right: 6px; }
+  .price strong { color: #15803d; }
+</style></head>
+<body>
+<p class="price"><s>Rs. 1999</s> <strong>Rs. 999</strong></p>
+<p><s>Size M</s> sold out</p>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
                             beginner: [
                                 {
                                     content: `<h3>The &lt;s&gt; Tag</h3>
@@ -6552,6 +7173,35 @@ built in 17.69s</samp></pre>
                         {
                             id: 'html-text-deleted-text-del',
                             name: 'Deleted Text del',
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Show a revision: text that was removed from a document, usually together with <b>ins</b> for what replaced it.<br>
+• Change logs, legal drafts and edited articles.<br><br>
+
+<h3>Attributes</h3>
+• <b>cite</b> points to a page that explains the change.<br>
+• <b>datetime</b> records when the deletion was made in a machine readable format.<br><br>
+
+<h3>Common Mistakes</h3>
+• Using del for a price that was reduced. That is s.<br>
+• Forgetting to keep a visual difference. Browsers draw a line through the text, so do not turn that off.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>del</title>
+<style>
+  del { color: #b91c1c; }
+</style></head>
+<body>
+<p>The meeting is on
+  <del datetime="2026-10-01" cite="https://example.com/changes">Monday</del>
+  <ins datetime="2026-10-01">Tuesday</ins> at 10 AM.</p>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
                             beginner: [
                                 {
                                     content: `<h3>The &lt;del&gt; Tag</h3>
@@ -6641,6 +7291,34 @@ built in 17.69s</samp></pre>
                         {
                             id: 'html-text-inserted-text-ins',
                             name: 'Inserted Text ins',
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Show text added during an edit, shown beside the <b>del</b> text it replaced.<br>
+• Document history views, contract markups and wiki changes.<br><br>
+
+<h3>Attributes</h3>
+• <b>datetime</b> gives the date of the insertion.<br>
+• <b>cite</b> links to an explanation.<br><br>
+
+<h3>Styling</h3>
+• Browsers underline ins by default. Add a soft green background so insertions are easy to find.<br>
+• Because both ins and del are inline, wrap whole blocks of changes in a block element when needed.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>ins</title>
+<style>
+  ins { background: #dcfce7; text-decoration: none; padding: 0 2px; }
+  del { background: #fee2e2; }
+</style></head>
+<body>
+<p>The course covers <del>HTML4</del> <ins datetime="2026-10-19">HTML5</ins> and CSS.</p>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
                             beginner: [
                                 {
                                     content: `<h3>The &lt;ins&gt; Tag</h3>
@@ -6729,6 +7407,33 @@ built in 17.69s</samp></pre>
                         {
                             id: 'html-text-subscript-sub',
                             name: 'Subscript sub',
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Chemical formulas: H<sub>2</sub>O and CO<sub>2</sub>.<br>
+• Mathematical indices such as x<sub>1</sub> and x<sub>2</sub>.<br>
+• Footnote markers when the style requires lowered text.<br><br>
+
+<h3>Layout Tip</h3>
+• sub and sup can change line spacing and make a line taller. Set <b>line-height: 0</b> on them to keep the lines even.<br><br>
+
+<h3>When Not to Use</h3>
+• Do not use sub just to push text lower for design. Use CSS <b>vertical-align</b> for that.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>sub</title>
+<style>
+  sub, sup { line-height: 0; }
+</style></head>
+<body>
+<p>Water is H<sub>2</sub>O and carbon dioxide is CO<sub>2</sub>.</p>
+<p>The sequence is x<sub>1</sub>, x<sub>2</sub>, x<sub>3</sub>.</p>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
                             beginner: [
                                 {
                                     content: `<h3>The &lt;sub&gt; Tag</h3>
@@ -6814,6 +7519,36 @@ built in 17.69s</samp></pre>
                         {
                             id: 'html-text-superscript-sup',
                             name: 'Superscript sup',
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Powers and exponents: x<sup>2</sup> and 10<sup>6</sup>.<br>
+• Ordinal suffixes: 1<sup>st</sup>, 2<sup>nd</sup>.<br>
+• Footnote references that link to a note at the bottom.<br><br>
+
+<h3>Footnotes Done Right</h3>
+• Wrap the number in a link that points to the note id, and give the note a link back.<br>
+• Screen reader users then jump to and from the footnote easily.<br><br>
+
+<h3>Tip</h3>
+• Set <b>line-height: 0</b> on sup so it does not stretch the line.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>sup</title>
+<style>
+  sup { line-height: 0; }
+</style></head>
+<body>
+<p>The area is r<sup>2</sup> times pi.</p>
+<p>He finished 1<sup>st</sup> in the contest.<sup><a href="#note1" id="ref1">[1]</a></sup></p>
+<hr>
+<p id="note1">1. Results announced on 19 October. <a href="#ref1">Back</a></p>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
                             beginner: [
                                 {
                                     content: `<h3>The &lt;sup&gt; Tag</h3>
@@ -6908,6 +7643,34 @@ built in 17.69s</samp></pre>
                         {
                             id: 'html-text-bidirectional-isolate-bdi',
                             name: 'Bidirectional Isolate bdi',
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Lists of <b>user generated names</b> where some may be written right-to-left, such as Arabic or Hebrew.<br>
+• Search results, comments and leaderboards.<br><br>
+
+<h3>The Problem It Solves</h3>
+• Without isolation, right-to-left text can reorder the punctuation and numbers next to it, producing a confusing line.<br>
+• bdi isolates the name, so the surrounding text stays in order.<br><br>
+
+<h3>Compare</h3>
+• <b>bdi</b> lets the browser <b>detect</b> the direction.<br>
+• <b>bdo</b> forces a direction you choose.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>bdi</title></head>
+<body>
+<ul>
+  <li>User <bdi>Alice</bdi>: 12 points</li>
+  <li>User <bdi>إيان</bdi>: 7 points</li>
+  <li>User <bdi>Bob</bdi>: 5 points</li>
+</ul>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
                             beginner: [
                                 {
                                     content: `<h3>The &lt;bdi&gt; Tag</h3>
@@ -7002,6 +7765,31 @@ built in 17.69s</samp></pre>
                         {
                             id: 'html-text-bidirectional-override-bdo',
                             name: 'Bidirectional Override bdo',
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Force a direction when the text is a code or a label that must read in a fixed order.<br>
+• Demos and tests for right-to-left layouts.<br><br>
+
+<h3>How It Works</h3>
+• The required <b>dir</b> attribute is <b>ltr</b> or <b>rtl</b>.<br>
+• It overrides the default Unicode bidirectional algorithm for the text inside.<br><br>
+
+<h3>Handle with Care</h3>
+• Reversed real text is hard to read. Use it sparingly, and never for body content.<br>
+• For user supplied text, prefer <b>bdi</b> so the browser decides.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>bdo</title></head>
+<body>
+<p>Normal: JavaSchoolLab</p>
+<p>Forced right to left: <bdo dir="rtl">JavaSchoolLab</bdo></p>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
                             beginner: [
                                 {
                                     content: `<h3>The &lt;bdo&gt; Tag</h3>
@@ -7093,6 +7881,36 @@ built in 17.69s</samp></pre>
                         {
                             id: 'html-text-word-break-opportunity-wbr',
                             name: 'Word Break Opportunity wbr',
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Long URLs, file paths and identifiers inside narrow columns or table cells.<br>
+• Mobile layouts where a long word would force sideways scrolling.<br><br>
+
+<h3>How It Works</h3>
+• wbr marks a place where the browser <b>may</b> break the line if it needs to.<br>
+• It adds no visible character and does not force a break, unlike br.<br><br>
+
+<h3>CSS Alternatives</h3>
+• <b>overflow-wrap: anywhere</b> breaks long strings automatically with no markup.<br>
+• <b>hyphens: auto</b> adds hyphens in natural language text.<br>
+• Use wbr when you want control over <b>where</b> the break happens.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>wbr</title>
+<style>
+  .narrow { width: 180px; border: 1px dashed #9ca3af; padding: 6px; }
+</style></head>
+<body>
+<div class="narrow">
+  https://example.com/<wbr>courses/<wbr>html-and-css/<wbr>text-elements
+</div>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
                             beginner: [
                                 {
                                     content: `<h3>The &lt;wbr&gt; Tag</h3>

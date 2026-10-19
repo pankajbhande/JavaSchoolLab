@@ -29,6 +29,9 @@ spring:
     # Baseline at 0 so every migration is considered; they are all re-runnable, so nothing is lost.
     baseline-on-migrate: true
     baseline-version: 0
+    # A migration that was applied once and later removed from the code (V7, a 1000 minimum for the visitor counter) must not stop the app
+    # from starting on a database that already ran it.
+    ignore-migration-patterns: "*:missing"
   cache:
     type: ${CACHE_TYPE:caffeine}                 # "redis" in production (see application-prod.yml); "none" disables caching
     caffeine:

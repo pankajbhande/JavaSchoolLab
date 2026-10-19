@@ -61,6 +61,8 @@ const stripTags = (html: string) =>
   html.replace(/<[^>]+>/g, ' ')
     .replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>')
     .replace(/\s+/g, ' ')
+    // A tag becomes a space, so "<code>a</code>, <code>b</code>" would read "a , b": close the gap before punctuation.
+    .replace(/\s+([,;:!?)\]])/g, '$1')
     .trim();
 
 /** Trim list glyphs and trailing punctuation that make a term read as prose. */
@@ -238,8 +240,9 @@ export function conceptKey(term: string): string {
 }
 
 /**
- * True when the mark at `i` ends a sentence. A period between two digits is a decimal -
- * "Java 1.0 with the slogan" must not split into a detail that opens "0 with the slogan".
+ * True when the mark at `i` ends a sentence. A period with no space after it belongs to code or a number:
+ * "Java 1.0 with the slogan" must not split into a detail that opens "0 with the slogan", and
+ * "f.andThen(g)" must not leave a detail that is just "f".
  */
 const LEAD = /^[-:\s\u2013\u2014)\],;.]+/;
 /** The dash or colon that separates a label from its explanation. */
@@ -249,7 +252,10 @@ function isSentenceBreak(plain: string, i: number): boolean {
   const ch = plain[i];
   if (ch !== '.' && ch !== '?' && ch !== '!') return false;
   if (ch !== '.') return true;
-  return !(/[0-9]/.test(plain[i - 1] || '') && /[0-9]/.test(plain[i + 1] || ''));
+  // A full stop inside code or a name is not the end of a sentence: "f.andThen(g)", "java.util.function", "Java 1.0". A real one is
+  // followed by a space (the tags around a sentence become spaces), a closing mark, or the end of the text.
+  const next = plain[i + 1];
+  return next === undefined || /[\s)"'\]]/.test(next);
 }
 
 /** Index just past the last sentence break at or before `at`. */

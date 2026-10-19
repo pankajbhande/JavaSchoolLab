@@ -187,3 +187,39 @@ describe('the sentence a keypoint quotes', () => {
     expect(d).toBe('Statement The break statement exits a loop');
   });
 });
+
+describe('a keypoint whose explanation contains code', () => {
+  const detailFor = (html: string, term: string) => {
+    const hit = extractKeyTerms(topic('Sample Topic', html)).find(k => k.term === term);
+    return hit ? hit.detail : undefined;
+  };
+
+  it('keeps method calls whole instead of stopping at the dot after the object', () => {
+    const d = detailFor(
+      '<ul><li><b>Compose behavior</b>: <code>f.andThen(g)</code>, <code>f.compose(g)</code>, <code>p.and(q)</code>, <code>p.negate()</code>.</li></ul>',
+      'Compose behavior',
+    );
+    expect(d).toBe('f.andThen(g), f.compose(g), p.and(q), p.negate()');
+  });
+
+  it('keeps a package name whole', () => {
+    const d = detailFor('<p><b>Built-ins</b> in <code>java.util.function</code>: <code>Function</code> and <code>Predicate</code>.</p>', 'Built-ins');
+    expect(d).toContain('java.util.function');
+    expect(d).not.toBe('in java');
+  });
+
+  it('still ends a sentence at a real full stop, even straight before a tag', () => {
+    const d = detailFor('<p><b>Stack</b> is last-in first-out.<br>Queue is first-in first-out. It differs.</p>', 'Stack');
+    expect(d).toBe('Stack is last-in first-out');
+  });
+
+  it('closes the gap a tag leaves before a comma', () => {
+    const d = detailFor('<p><b>Specializations</b> avoid boxing: <code>IntPredicate</code>, <code>ToIntFunction</code>, <code>IntBinaryOperator</code>.</p>', 'Specializations');
+    expect(d).toBe('Specializations avoid boxing: IntPredicate, ToIntFunction, IntBinaryOperator');
+  });
+
+  it('still ends at a full stop that follows a code span', () => {
+    const d = detailFor('<p>Use <b>Stream</b> with <code>map()</code>. Then call <code>collect()</code>.</p>', 'Stream');
+    expect(d).toBe('Use Stream with map()');
+  });
+});

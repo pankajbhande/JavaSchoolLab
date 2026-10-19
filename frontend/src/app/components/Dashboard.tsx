@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { motion, MotionConfig, useMotionValue, useTransform, useInView, animate } from 'motion/react';
 import { ImageWithFallback } from './figma/ImageWithFallback';
 import { useVisitorCount } from '../hooks/useVisitorCount';
+import { odometer } from '../lib/odometer';
 import { Avatar } from './Avatar';
 import { Link } from 'react-router-dom';
 import { useAchievements } from '../hooks/useAchievements';
@@ -444,11 +445,11 @@ const cardVariants = {
 };
 
 // Counts up from 0 to `value` once it scrolls into view.
-function AnimatedCounter({ value, suffix = '' }: { value: number; suffix?: string }) {
+function AnimatedCounter({ value, suffix = '', format }: { value: number; suffix?: string; format?: (n: number) => string }) {
   const ref = useRef<HTMLSpanElement>(null);
   const motionValue = useMotionValue(0);
   const isInView = useInView(ref, { once: true, margin: '-80px' });
-  const display = useTransform(motionValue, (latest) => `${Math.round(latest).toLocaleString()}${suffix}`);
+  const display = useTransform(motionValue, (latest) => (format ? format(latest) : `${Math.round(latest).toLocaleString()}${suffix}`));
 
   useEffect(() => {
     if (!isInView) return;
@@ -751,7 +752,7 @@ export function Dashboard({ onCourseSelect, searchQuery = '' }: DashboardProps) 
               <div className="h-9 w-20 mx-auto mb-2 rounded-md bg-purple-100 dark:bg-purple-900/30 animate-pulse" />
             ) : (
               <div className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-fuchsia-500 bg-clip-text text-transparent mb-2">
-                <AnimatedCounter value={visitorCount} />
+                <AnimatedCounter value={visitorCount} format={odometer} />
               </div>
             )}
             <div className="text-gray-600 dark:text-gray-300 text-sm font-medium">Total Visitors</div>

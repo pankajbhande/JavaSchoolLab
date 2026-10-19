@@ -6,6 +6,7 @@ import { questionsForTopic } from '../lib/topicQuestions';
 import { allStudyPacks, type StudyPack } from '../data/studyPacks';
 import { useDataset } from '../hooks/useDataset';
 import { useVisitorCount } from '../hooks/useVisitorCount';
+import { odometer } from '../lib/odometer';
 import { motion, AnimatePresence, useReducedMotion } from 'motion/react';
 import { AdSlot } from './ads/AdSlot';
 import { AD_SLOTS } from './ads/adsense';
@@ -361,7 +362,7 @@ export function RightSidebar({ course, topic, topicName, isMinimized, onToggleMi
                     <Users className="w-6 h-6 mx-auto mb-2 text-orange-500" />
                     <p className="text-[10px] text-gray-500 dark:text-gray-400 uppercase font-semibold tracking-wider">Total Visitors</p>
                     <p className="text-2xl font-bold text-orange-600 dark:text-orange-400 mt-1 tabular-nums">
-                      {animatedVisitorCount.toLocaleString('en-IN')}+
+                      {odometer(animatedVisitorCount)}
                     </p>
                   </motion.div>
 

@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HTML Viewer</title>
+<style>
+  :root {
+    color-scheme: dark;
+    --bg: #1e1e1e;
+    --bg-panel: #252526;
+    --bg-titlebar: #323233;
+    --border: #3c3c3c;
+    --text: #d4d4d4;
+    --text-dim: #8a8a8a;
+    --accent: #0e9f6e;
+    --accent-hover: #0d8a5f;
+    --blue: #007acc;
+    --gutter-text: #6e7681;
+    --page-bg: #12121a;
+    --shadow: 0 20px 50px -20px rgba(0,0,0,0.6);
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0; height: 100%;
+    background: var(--page-bg);
+    background-image:
+      radial-gradient(circle at 12% 8%, rgba(234,88,12,0.14), transparent 42%),
+      radial-gradient(circle at 88% 92%, rgba(245,158,11,0.13), transparent 45%);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  .page { max-width: 1500px; margin: 0 auto; padding: 28px 24px 40px; min-height: 100%; }
+  .app-title { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+  .logo {
+    width: 38px; height: 38px; border-radius: 10px;
+    background: linear-gradient(135deg, #f97316, #e34c26);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 15px; color: #fff;
+    box-shadow: 0 4px 14px rgba(227,76,38,0.45);
+  }
+  h1 { margin: 0; font-size: 20px; font-weight: 700; color: #f4f4f5; }
+  .subtitle { margin: 2px 0 0; font-size: 12.5px; color: var(--text-dim); }
+
+  .workspace { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  @media (min-width: 901px) {
+    .workspace { height: calc(100vh - 130px); min-height: 480px; }
+    .panel { min-height: 0; }
+  }
+  @media (max-width: 900px) {
+    .workspace { grid-template-columns: 1fr; }
+    .page { padding: 18px 14px 28px; }
+    .editor-wrap { height: 380px; }
+    .preview-stage { height: 420px; }
+  }
+  .workspace.fullscreen { grid-template-columns: 1fr; }
+  .workspace.fullscreen .panel.editor { display: none; }
+
+  .panel {
+    background: var(--bg-panel); border: 1px solid var(--border); border-radius: 12px;
+    overflow: hidden; box-shadow: var(--shadow); display: flex; flex-direction: column;
+  }
+  .titlebar {
+    display: flex; align-items: center; gap: 12px; padding: 10px 14px;
+    background: var(--bg-titlebar); border-bottom: 1px solid var(--border);
+  }
+  .titlebar .dots { display: flex; gap: 7px; }
+  .titlebar .dots i { width: 12px; height: 12px; border-radius: 50%; display: block; }
+  .titlebar .dots i:nth-child(1) { background: #ff5f56; }
+  .titlebar .dots i:nth-child(2) { background: #ffbd2e; }
+  .titlebar .dots i:nth-child(3) { background: #27c93f; }
+  .titlebar .name { margin-left: auto; font: 12px Consolas, "Courier New", monospace; color: var(--text-dim); }
+
+  .toolbar {
+    display: flex; align-items: center; gap: 8px; padding: 10px 14px; flex-wrap: wrap;
+    background: var(--bg-panel); border-bottom: 1px solid var(--border);
+  }
+  .toolbar .spacer { flex: 1; }
+  button {
+    font: inherit; font-size: 13px; font-weight: 600; color: var(--text); cursor: pointer;
+    background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 8px;
+    padding: 8px 14px; display: inline-flex; align-items: center; gap: 6px;
+  }
+  button:hover { background: rgba(255,255,255,0.1); }
+  button.run { background: var(--accent); border-color: var(--accent); color: #fff; }
+  button.run:hover { background: var(--accent-hover); }
+  button kbd {
+    font: 11px Consolas, monospace; background: rgba(0,0,0,0.25); border-radius: 4px; padding: 1px 5px;
+  }
+  button.device { padding: 8px 10px; }
+  button.device.active { background: var(--blue); border-color: var(--blue); color: #fff; }
+  button svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+  .editor-wrap { flex: 1; display: flex; min-height: 0; background: var(--bg); }
+  .gutter {
+    padding: 14px 10px 14px 14px; text-align: right; color: var(--gutter-text); user-select: none;
+    font: 13px/21px Consolas, "Courier New", monospace; overflow: hidden; border-right: 1px solid var(--border);
+    white-space: pre; min-width: 46px;
+  }
+  textarea {
+    flex: 1; min-width: 0; resize: none; border: 0; outline: 0; padding: 14px; background: transparent; color: var(--text);
+    font: 13px/21px Consolas, "Courier New", monospace; tab-size: 2; white-space: pre; overflow: auto;
+  }
+  .statusbar {
+    display: flex; justify-content: space-between; padding: 7px 14px; font: 11.5px Consolas, monospace;
+    color: var(--text-dim); background: var(--bg-titlebar); border-top: 1px solid var(--border);
+  }
+
+  .preview-stage {
+    flex: 1; min-height: 0; overflow: auto; display: flex; justify-content: center; padding: 14px;
+    background: #2b2b2e;
+  }
+  .preview-frame {
+    width: 100%; height: 100%; border: 0; background: #fff; border-radius: 4px;
+    transition: width 0.2s ease; max-width: 100%;
+  }
+  .preview-frame.tablet { width: 768px; }
+  .preview-frame.phone { width: 375px; }
+  .width-label { font: 12px Consolas, monospace; color: var(--text-dim); }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="app-title">
+    <div class="logo">&lt;/&gt;</div>
+    <div>
+      <h1>HTML Viewer</h1>
+      <p class="subtitle">Edit HTML and CSS and see the rendered page live. Test phone, tablet and desktop widths.</p>
+    </div>
+  </div>
+
+  <div class="workspace" id="workspace">
+    <section class="panel editor">
+      <div class="titlebar"><div class="dots"><i></i><i></i><i></i></div><span class="name">index.html</span></div>
+      <div class="toolbar">
+        <button class="run" id="run" title="Render (Ctrl+Enter)">&#9654; Run <kbd>Ctrl&#8629;</kbd></button>
+        <button id="copy">Copy</button>
+        <button id="format" title="Re-indent the markup">Format</button>
+        <button id="reset">Reset</button>
+        <span class="spacer"></span>
+        <button id="clear" title="Empty the editor">Clear</button>
+      </div>
+      <div class="editor-wrap">
+        <div class="gutter" id="gutter">1</div>
+        <textarea id="code" spellcheck="false" autocapitalize="off" autocomplete="off"></textarea>
+      </div>
+      <div class="statusbar"><span>UTF-8 &nbsp; HTML</span><span id="count">0 characters</span></div>
+    </section>
+
+    <section class="panel">
+      <div class="titlebar"><div class="dots"><i></i><i></i><i></i></div><span class="name">Live preview</span></div>
+      <div class="toolbar">
+        <span class="width-label" id="widthLabel">Desktop</span>
+        <span class="spacer"></span>
+        <button class="device" data-mode="phone" title="Phone (375px)">
+          <svg viewBox="0 0 24 24"><rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 18h2"/></svg></button>
+        <button class="device" data-mode="tablet" title="Tablet (768px)">
+          <svg viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M11 18h2"/></svg></button>
+        <button class="device active" data-mode="desktop" title="Desktop (full width)">
+          <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></button>
+        <button id="expand" title="Hide the editor">
+          <svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></button>
+        <button id="popout" title="Open the preview in its own tab">
+          <svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3"/></svg></button>
+      </div>
+      <div class="preview-stage">
+        <iframe class="preview-frame" id="frame" title="Preview" sandbox="allow-scripts allow-forms allow-popups allow-modals"></iframe>
+      </div>
+    </section>
+  </div>
+</div>
+
+<script>
+(function () {
+  var KEY = "html_try_code";
+  var DEFAULT = "<!DOCTYPE html>\n<html>\n<head>\n  <title>Hello</title>\n</head>\n<body>\n  <h1>Hello, HTML!</h1>\n  <p>Edit this code and press Run.</p>\n</body>\n</html>\n";
+  var code = document.getElementById("code");
+  var gutter = document.getElementById("gutter");
+  var frame = document.getElementById("frame");
+  var count = document.getElementById("count");
+  var workspace = document.getElementById("workspace");
+  var widthLabel = document.getElementById("widthLabel");
+  var timer;
+
+  function load() { try { return localStorage.getItem(KEY); } catch (e) { return null; } }
+  function save(v) { try { localStorage.setItem(KEY, v); } catch (e) {} }
+
+  function lines() {
+    var n = code.value.split("\n").length, out = "";
+    for (var i = 1; i <= n; i++) out += i + (i < n ? "\n" : "");
+    gutter.textContent = out;
+    gutter.scrollTop = code.scrollTop;
+    count.textContent = code.value.length + " characters";
+  }
+  function render() { frame.srcdoc = code.value; }
+  function changed() { save(code.value); lines(); clearTimeout(timer); timer = setTimeout(render, 300); }
+
+  // Samples are indented for the lesson page; strip the common leading indent so the editor starts flush left.
+  function dedent(s) {
+    var rows = s.replace(/\r\n?/g, "\n").split("\n"), min = Infinity;
+    rows.slice(1).forEach(function (r) { if (r.trim()) min = Math.min(min, r.match(/^\s*/)[0].length); });
+    if (!isFinite(min) || min === 0) return s;
+    return rows.map(function (r, i) { return i === 0 ? r.trimStart() : r.slice(Math.min(min, r.match(/^\s*/)[0].length)); }).join("\n");
+  }
+
+  var saved = load();
+  code.value = saved ? dedent(saved) : DEFAULT;
+  lines(); render();
+
+  code.addEventListener("input", changed);
+  code.addEventListener("scroll", function () { gutter.scrollTop = code.scrollTop; });
+  code.addEventListener("keydown", function (e) {
+    if (e.key === "Tab") {
+      e.preventDefault();
+      var s = code.selectionStart;
+      code.setRangeText("  ", s, code.selectionEnd, "end");
+      changed();
+    } else if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
+      e.preventDefault(); render();
+    }
+  });
+
+  document.getElementById("run").onclick = render;
+  document.getElementById("copy").onclick = function () {
+    var b = this;
+    (navigator.clipboard ? navigator.clipboard.writeText(code.value) : Promise.reject()).catch(function () {
+      code.select(); document.execCommand("copy");
+    }).then(function () { b.textContent = "Copied"; setTimeout(function () { b.textContent = "Copy"; }, 1200); });
+  };
+  document.getElementById("reset").onclick = function () { code.value = DEFAULT; changed(); render(); };
+  document.getElementById("clear").onclick = function () { code.value = ""; changed(); render(); code.focus(); };
+  document.getElementById("format").onclick = function () {
+    var depth = 0, voids = /^(meta|link|br|hr|img|input|!doctype)/i;
+    code.value = code.value.replace(/>\s*</g, ">\n<").split("\n").map(function (l) {
+      l = l.trim();
+      if (/^<\//.test(l)) depth = Math.max(0, depth - 1);
+      var out = "  ".repeat(depth) + l;
+      var open = l.match(/^<([a-z!][^\s>]*)/i);
+      if (open && !voids.test(open[1]) && !/<\//.test(l) && !/\/>$/.test(l)) depth++;
+      return out;
+    }).join("\n");
+    changed(); render();
+  };
+
+  var labels = { phone: "Phone · 375px", tablet: "Tablet · 768px", desktop: "Desktop" };
+  Array.prototype.forEach.call(document.querySelectorAll(".device"), function (b) {
+    b.onclick = function () {
+      Array.prototype.forEach.call(document.querySelectorAll(".device"), function (o) { o.classList.toggle("active", o === b); });
+      frame.className = "preview-frame " + (b.dataset.mode === "desktop" ? "" : b.dataset.mode);
+      widthLabel.textContent = labels[b.dataset.mode];
+    };
+  });
+  document.getElementById("expand").onclick = function () { workspace.classList.toggle("fullscreen"); };
+  document.getElementById("popout").onclick = function () {
+    window.open(URL.createObjectURL(new Blob([code.value], { type: "text/html" })), "_blank");
+  };
+})();
+</script>
+</body>
+</html>

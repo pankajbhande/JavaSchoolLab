@@ -48,9 +48,8 @@ const looksLikeHtml = (code: string) => /^\s*(<!doctype\s+html|<html[\s>]|<(head
 
 const handleAction = (code: string) => {
   if (looksLikeHtml(code)) {
-    const url = URL.createObjectURL(new Blob([code], { type: "text/html" }));
-    window.open(url, "_blank");
-    setTimeout(() => URL.revokeObjectURL(url), 60_000);
+    localStorage.setItem("html_try_code", code);
+    window.open("/html-viewer.html", "_blank");   // served from public/, like the Java compiler
     return;
   }
   localStorage.setItem("java_try_code", code);

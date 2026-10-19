@@ -17,6 +17,17 @@ app.jwt.secret=put-a-random-string-of-at-least-32-characters-here
 # Returns the one-time code in the API response and prints it in the console, so you can sign up without email.
 app.otp.dev-echo=true
 
+# --- Redis (optional) --------------------------------------------------------------------------------------------
+# true = rate limits and one-time codes live in Redis, and the leaderboard is cached there (needs a Redis server):
+#   docker run -d --name jsl-redis -p 6379:6379 redis:7-alpine
+# Left false, everything works without Redis (limits and cache stay in this app's memory, codes in MySQL).
+app.redis.enabled=false
+
+# --- Topic search with OpenSearch (optional) ---------------------------------------------------------------------
+# Server-side full-text search. Without it the browser searches by itself. Needs a single-node OpenSearch with security off:
+#   docker run -d --name jsl-search -p 9200:9200 -e discovery.type=single-node -e DISABLE_SECURITY_PLUGIN=true -e DISABLE_INSTALL_DEMO_CONFIG=true opensearchproject/opensearch:2.17.1
+app.search.url=
+
 # --- Continue with Google (optional) ---------------------------------------------------------------------------------
 # Google Cloud Console > APIs & Services > Credentials > Create credentials > OAuth client ID > "Web application".
 # Add http://localhost:3001 (and http://localhost:5173 for the Vite dev server) under "Authorized JavaScript origins",

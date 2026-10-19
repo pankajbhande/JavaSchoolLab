@@ -36,12 +36,15 @@ Sign-up, sign-in and one-time codes are **email only**; mobile numbers are rejec
 **Continue with Google** is optional: set `app.google.client-id` (local) or `GOOGLE_CLIENT_ID` (production) to an OAuth "Web application"
 client id from Google Cloud Console and the button appears on the login form. Leave it empty and the button stays hidden.
 
+**Redis and OpenSearch** are optional. `docker/docker-compose.yml` starts both (shared rate limits, expiring sign-up codes, leaderboard cache, and
+server-side topic search at `/api/search`). In STS they are off by default; see `docs/backend.md` ("Redis and OpenSearch") to switch them on.
+
 ## Everyday commands
 
 | What | Where | Command |
 |---|---|---|
 | Run the API | repository root | `mvn spring-boot:run` |
-| Backend tests (131, H2) | repository root | `mvn test` |
+| Backend tests (134, H2) | repository root | `mvn test` |
 | One jar with the site inside | repository root | `mvn -Pwith-site -DskipTests package`, then `java -jar target/javaschoollab-server-0.1.0.jar` |
 | React dev server | `frontend/` | `npm install`, then `npm run dev` (needs the backend on :3001) |
 | Front-end tests and type check | `frontend/` | `npm test`, `npm run typecheck` |

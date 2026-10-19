@@ -18,3 +18,6 @@ src/app/data/courseStats.ts linguist-generated=true
 
 # The course content dwarfs the application code; keep language stats honest.
 src/app/data/** linguist-documentation=true
+
+# Shell scripts run inside Linux containers: always LF
+*.sh text eol=lf

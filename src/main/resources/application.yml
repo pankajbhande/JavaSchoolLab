@@ -29,11 +29,29 @@ spring:
     # Baseline at 0 so every migration is considered; they are all re-runnable, so nothing is lost.
     baseline-on-migrate: true
     baseline-version: 0
+  cache:
+    type: ${CACHE_TYPE:caffeine}                 # "redis" in production (see application-prod.yml); "none" disables caching
+    caffeine:
+      spec: expireAfterWrite=60s
+    redis:
+      time-to-live: 60s
+      key-prefix: "jsl:cache:"
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+      timeout: 1s
+      connect-timeout: 1s
   web:
     resources:
       static-locations: classpath:/static/   # the built React site, when packaged with -Pwith-site
 
 app:
+  redis:
+    enabled: ${REDIS_ENABLED:false}     # true = rate limits and one-time codes live in Redis (needs a Redis server)
+  search:
+    url: ${SEARCH_URL:}                 # OpenSearch address, e.g. http://localhost:9200; empty = server-side search is off
   rate-limit:
     verify-per-minute: ${VERIFY_RATE_LIMIT:60}          # public certificate verification, per client address
     profile-per-minute: ${PROFILE_RATE_LIMIT:60}        # public learner profile pages

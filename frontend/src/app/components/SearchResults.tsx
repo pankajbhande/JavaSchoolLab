@@ -3,6 +3,7 @@ import { motion } from 'motion/react';
 import { Search, Loader2, FileText } from 'lucide-react';
 import type { Course } from '../data/types';
 import { ensureIndex, searchContent, SearchHit } from '../services/contentSearch';
+import { searchServer } from '../services/searchApi';
 
 interface SearchResultsProps {
   courses: Course[];
@@ -37,13 +38,19 @@ export function SearchResults({ courses, query, onSelectTopic }: SearchResultsPr
 
   useEffect(() => {
     let cancelled = false;
+    const ctrl = new AbortController();
     setIndexing(true);
-    ensureIndex(courses).then(entries => {
+    // Prefer the server (OpenSearch): no course download, ranked results. If it is off or not ready, search in the page as before.
+    searchServer(query, ctrl.signal).then(serverHits => {
       if (cancelled) return;
-      setIndexing(false);
-      setHits(searchContent(entries, query));
-    });
-    return () => { cancelled = true; };
+      if (serverHits) { setIndexing(false); setHits(serverHits); return; }
+      return ensureIndex(courses).then(entries => {
+        if (cancelled) return;
+        setIndexing(false);
+        setHits(searchContent(entries, query));
+      });
+    }).catch(() => {});
+    return () => { cancelled = true; ctrl.abort(); };
   }, [courses, query]);
 
   return (

@@ -29,6 +29,7 @@ public class SecurityConfig {
             "/api/certificates/verify/**",           // what the QR code on a certificate opens
             "/api/profiles/**",                       // public learner profile pages (opt-in, see PublicProfileController)
             "/api/content/**",                        // course content JSON, public like the site itself
+            "/api/search/**",                         // topic search (needs no login; rate limited)
     };
 
     @Bean

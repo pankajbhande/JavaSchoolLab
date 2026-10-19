@@ -25,13 +25,13 @@ public class OtpService {
     private static final SecureRandom RANDOM = new SecureRandom();
     static final int EXPIRES_MINUTES = 5;
 
-    private final OtpRepository otps;
+    private final OtpStore otps;
     private final UserService users;
     private final MailService mail;
     private final boolean devEcho;
     private final boolean production;
 
-    public OtpService(OtpRepository otps, UserService users, MailService mail, AppProperties props, Environment env) {
+    public OtpService(OtpStore otps, UserService users, MailService mail, AppProperties props, Environment env) {
         this.otps = otps;
         this.users = users;
         this.mail = mail;

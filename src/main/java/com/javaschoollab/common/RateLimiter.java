@@ -1,47 +1,14 @@
 package com.javaschoollab.common;
 
-import java.time.Clock;
-import java.time.Duration;
 import java.util.OptionalLong;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * A small fixed-window limiter per client address. Verification is public, so without a limit anyone could
- * hammer it; this keeps casual abuse out without adding a dependency. Same behaviour as the Node limiter.
+ * Per-client request limit for routes that need no login (certificate verification, public profiles). Without a limit anyone
+ * could hammer them. {@link InMemoryRateLimiter} counts inside this app; {@link RedisRateLimiter} counts in Redis so the limit
+ * is shared by every app server and survives a restart. {@link RateLimiters} picks one.
  */
-public final class RateLimiter {
-
-    private static final class Window {
-        final long start;
-        int count;
-
-        Window(long start) {
-            this.start = start;
-            this.count = 1;
-        }
-    }
-
-    private final long windowMs;
-    private final int max;
-    private final Clock clock;
-    private final ConcurrentHashMap<String, Window> hits = new ConcurrentHashMap<>();
-
-    public RateLimiter(Duration window, int max, Clock clock) {
-        this.windowMs = window.toMillis();
-        this.max = max;
-        this.clock = clock;
-    }
+public interface RateLimiter {
 
     /** Empty when the request may go ahead; otherwise how many seconds the client should wait. */
-    public OptionalLong check(String clientKey) {
-        long now = clock.millis();
-        long[] retryAfter = {-1};
-        hits.compute(clientKey, (k, w) -> {
-            if (w == null || now - w.start >= windowMs) return new Window(now);
-            if (++w.count > max) retryAfter[0] = (long) Math.ceil((w.start + windowMs - now) / 1000.0);
-            return w;
-        });
-        if (hits.size() > 5000) hits.entrySet().removeIf(e -> now - e.getValue().start >= windowMs);   // keep memory bounded
-        return retryAfter[0] >= 0 ? OptionalLong.of(retryAfter[0]) : OptionalLong.empty();
-    }
+    OptionalLong check(String clientKey);
 }

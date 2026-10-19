@@ -28,17 +28,18 @@ class ArchitectureTest {
     private static final String BASE = "com.javaschoollab";
 
     /** The service packages and the other services each one is allowed to use (always through that service's *Service class). */
-    private static final Map<String, Set<String>> ALLOWED = Map.of(
-            "user", Set.of(),
-            "auth", Set.of("user"),
-            "quiz", Set.of(),
-            "progress", Set.of("quiz"),
-            "leaderboard", Set.of("progress"),
-            "notes", Set.of(),
-            "certificate", Set.of("quiz"),
-            "profile", Set.of("user", "certificate", "progress", "quiz"),
-            "content", Set.of(),
-            "visitor", Set.of());
+    private static final Map<String, Set<String>> ALLOWED = Map.ofEntries(
+            Map.entry("user", Set.of()),
+            Map.entry("auth", Set.of("user")),
+            Map.entry("quiz", Set.of()),
+            Map.entry("progress", Set.of("quiz")),
+            Map.entry("leaderboard", Set.of("progress")),
+            Map.entry("notes", Set.of()),
+            Map.entry("certificate", Set.of("quiz")),
+            Map.entry("profile", Set.of("user", "certificate", "progress", "quiz")),
+            Map.entry("content", Set.of()),
+            Map.entry("search", Set.of("content")),
+            Map.entry("visitor", Set.of()));
 
     private static final Set<String> INFRASTRUCTURE = Set.of("common", "config", "security", "web");
 

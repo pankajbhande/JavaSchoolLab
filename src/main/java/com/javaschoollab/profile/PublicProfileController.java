@@ -2,6 +2,7 @@ package com.javaschoollab.profile;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.javaschoollab.common.RateLimiter;
+import com.javaschoollab.common.RateLimiters;
 import com.javaschoollab.config.AppProperties;
 import com.javaschoollab.security.AuthUser;
 import jakarta.servlet.http.HttpServletRequest;
@@ -34,10 +35,10 @@ public class PublicProfileController {
     private final RateLimiter profileLimiter;
     private final RateLimiter handleLimiter;
 
-    public PublicProfileController(PublicProfileService profiles, AppProperties props) {
+    public PublicProfileController(PublicProfileService profiles, AppProperties props, RateLimiters limiters) {
         this.profiles = profiles;
-        this.profileLimiter = new RateLimiter(Duration.ofMinutes(1), props.rateLimit().profilePerMinute(), Clock.systemUTC());
-        this.handleLimiter = new RateLimiter(Duration.ofMinutes(1), props.rateLimit().handleCheckPerMinute(), Clock.systemUTC());
+        this.profileLimiter = limiters.perMinute("profile", props.rateLimit().profilePerMinute());
+        this.handleLimiter = limiters.perMinute("handle", props.rateLimit().handleCheckPerMinute());
     }
 
     /** GET /api/profiles/{handle}: one body for "no such handle" and "not published", so it can't reveal which handles exist. */

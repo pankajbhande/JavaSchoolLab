@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 
 /** One-time codes. Times are compared as parameters (not MySQL NOW()), so the rules are explicit and testable. */
 @Repository
-public class OtpRepository {
+class OtpRepository implements OtpStore {
 
     private final JdbcTemplate jdbc;
 
@@ -17,12 +17,13 @@ public class OtpRepository {
         this.jdbc = jdbc;
     }
 
-    /** A new code replaces any earlier unused one for the same identifier. */
+    @Override
     public void invalidateUnused(String identifier, String identifierType) {
         jdbc.update("UPDATE otp_codes SET is_used = TRUE WHERE identifier = ? AND identifier_type = ? AND is_used = FALSE",
                 identifier, identifierType);
     }
 
+    @Override
     public long insert(String identifier, String identifierType, String otp, String purpose, LocalDateTime expiresAt) {
         var keys = new GeneratedKeyHolder();
         jdbc.update(con -> {
@@ -39,7 +40,7 @@ public class OtpRepository {
         return keys.getKey().longValue();
     }
 
-    /** A code that is correct, not yet used and not expired: what "verify" accepts. */
+    @Override
     public Optional<Long> findUnused(String identifier, String identifierType, String otp, String purpose, LocalDateTime now) {
         return jdbc.queryForList(
                 "SELECT id FROM otp_codes WHERE identifier = ? AND identifier_type = ? AND otp_code = ? AND purpose = ? "
@@ -47,7 +48,7 @@ public class OtpRepository {
                 Long.class, identifier, identifierType, otp, purpose, now).stream().findFirst();
     }
 
-    /** A code that verify already accepted and that register/login may now spend (valid up to 10 minutes past expiry, as in Node). */
+    @Override
     public Optional<Long> findVerified(String identifier, String identifierType, String otp, String purpose, LocalDateTime now) {
         return jdbc.queryForList(
                 "SELECT id FROM otp_codes WHERE identifier = ? AND identifier_type = ? AND otp_code = ? AND purpose = ? "
@@ -55,10 +56,12 @@ public class OtpRepository {
                 Long.class, identifier, identifierType, otp, purpose, now.minusMinutes(10)).stream().findFirst();
     }
 
+    @Override
     public void markUsed(long id) {
         jdbc.update("UPDATE otp_codes SET is_used = TRUE WHERE id = ?", id);
     }
 
+    @Override
     public void delete(long id) {
         jdbc.update("DELETE FROM otp_codes WHERE id = ?", id);
     }

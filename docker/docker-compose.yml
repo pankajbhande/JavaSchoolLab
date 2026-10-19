@@ -9,7 +9,8 @@
 # The mysql-init scripts are deliberately NOT mounted: Spring runs Flyway migrations on startup
 # (baseline-on-migrate), creating the tables on an empty volume and adopting an existing one without
 # touching its data. Running 000_base_schema.sql first would only create tables outside Flyway's history.
-# The db_data volume keeps users and progress across redeploys; do not run "down -v".
+# The database lives in the EXTERNAL volume javaschoollab_db_data, outside this compose project: rebuilding or redeploying the app,
+# "docker compose down" and even "down -v" never delete it. Create it once on a new server:  docker volume create javaschoollab_db_data
 name: javaschoollab
 
 services:
@@ -31,6 +32,43 @@ services:
       start_period: 30s
     networks: [backend]
 
+  # Redis: rate limits shared by every app server, one-time codes that expire by themselves, and a 60-second cache for the
+  # leaderboard. Nothing is persisted (--save ""): it can be wiped at any time without losing user data. Not published to the host.
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: ["redis-server", "--save", "", "--appendonly", "no", "--maxmemory", "128mb", "--maxmemory-policy", "volatile-lru"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    networks: [backend]
+
+  # OpenSearch: full-text search over every topic (GET /api/search). The index is rebuilt from the course content whenever the
+  # content changes, so the volume only saves a re-index after a restart. Security is off because it is reachable only from the
+  # app on the private "backend" network (no published port). Needs about 1 GB of memory; on a Linux host run once:
+  #   sudo sysctl -w vm.max_map_count=262144      (make it permanent in /etc/sysctl.conf)
+  opensearch:
+    image: opensearchproject/opensearch:2.17.1
+    restart: unless-stopped
+    environment:
+      discovery.type: single-node
+      DISABLE_SECURITY_PLUGIN: "true"
+      DISABLE_INSTALL_DEMO_CONFIG: "true"
+      OPENSEARCH_JAVA_OPTS: "-Xms512m -Xmx512m"
+    ulimits:
+      nofile: { soft: 65536, hard: 65536 }
+    volumes:
+      - opensearch_data:/usr/share/opensearch/data
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:9200/_cluster/health >/dev/null || exit 1"]
+      interval: 20s
+      timeout: 5s
+      retries: 10
+      start_period: 60s
+    networks: [backend]
+
   app:
     build:
       context: ..
@@ -43,8 +81,15 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      redis:
+        condition: service_healthy
     environment:
       SPRING_PROFILES_ACTIVE: prod
+      REDIS_ENABLED: "true"
+      REDIS_HOST: redis
+      CACHE_TYPE: redis
+      # Search starts in the background and the app does not wait for it: until the index is ready the browser uses its own search.
+      SEARCH_URL: http://opensearch:9200
       PORT: 3001
       SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/${DB_NAME:-javaschoollab}?createDatabaseIfNotExist=true&useUnicode=true&characterEncoding=utf8&serverTimezone=UTC
       SPRING_DATASOURCE_USERNAME: ${DB_USER:-jsl}
@@ -69,8 +114,31 @@ services:
       - "${WEB_PORT:-8080}:3001"
     networks: [backend]
 
+  # Daily dump of the database to ../backups (kept BACKUP_KEEP_DAYS days). Restore steps: docs/backend.md, "Backups".
+  backup:
+    image: mysql:8.4
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    entrypoint: ["/bin/sh", "/backup.sh"]
+    environment:
+      DB_HOST: db
+      DB_NAME: ${DB_NAME:-javaschoollab}
+      DB_USER: root
+      MYSQL_PWD: ${DB_ROOT_PASSWORD:?set DB_ROOT_PASSWORD in .env}
+      BACKUP_EVERY_HOURS: ${BACKUP_EVERY_HOURS:-24}
+      BACKUP_KEEP_DAYS: ${BACKUP_KEEP_DAYS:-14}
+    volumes:
+      - ./backup.sh:/backup.sh:ro
+      - ../backups:/backups
+    networks: [backend]
+
 volumes:
+  opensearch_data:
   db_data:
+    external: true
+    name: javaschoollab_db_data
 
 networks:
   backend:

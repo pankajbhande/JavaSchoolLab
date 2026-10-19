@@ -9,10 +9,15 @@ export function registerServiceWorker(): void {
     return;
   }
 
+  // Reload when a NEW version takes over, but never on a first visit: the very first install also fires "controllerchange", and
+  // reloading then made the page load twice, so a new visitor counted as two visits on the visitor counter.
+  const hadController = !!navigator.serviceWorker.controller;
   let reloading = false;
   navigator.serviceWorker.addEventListener("controllerchange", () => {
-    if (reloading) return;
+    if (!hadController || reloading) return;
     reloading = true;
+    // This reload is an update, not a new visit: tell the visitor counter not to count it.
+    try { sessionStorage.setItem("jsl_no_count", "1"); } catch { /* private mode: at worst one extra count */ }
     window.location.reload();
   });
 

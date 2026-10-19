@@ -3,6 +3,7 @@
 # "Could not resolve placeholder", instead of running half-configured.
 #
 # Required environment variables: DB_HOST, DB_NAME, DB_USER, DB_PASSWORD, JWT_SECRET (32+ chars), CORS_ORIGIN
+# Redis (REDIS_ENABLED=true, REDIS_HOST, REDIS_PORT, REDIS_PASSWORD) and OpenSearch (SEARCH_URL) are optional; docker-compose.yml turns both on.
 # Optional: GOOGLE_CLIENT_ID (turns on "Continue with Google"), DB_PORT, PORT, SMTP_* (without SMTP the sign-up code cannot be delivered, and production never echoes it)
 
 server:
@@ -13,6 +14,8 @@ server:
     include-binding-errors: never
 
 spring:
+  cache:
+    type: ${CACHE_TYPE:redis}
   datasource:
     url: jdbc:mysql://${DB_HOST}:${DB_PORT:3306}/${DB_NAME}?useUnicode=true&characterEncoding=utf8&connectionTimeZone=UTC
     username: ${DB_USER}

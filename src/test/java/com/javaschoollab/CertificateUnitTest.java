@@ -3,7 +3,7 @@ package com.javaschoollab;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.javaschoollab.certificate.CertificateUid;
-import com.javaschoollab.common.RateLimiter;
+import com.javaschoollab.common.InMemoryRateLimiter;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
@@ -55,7 +55,7 @@ class CertificateUnitTest {
 
     @Test
     void rateLimiterLetsRequestsThroughUpToTheLimitThenAsksToWait() {
-        var limiter = new RateLimiter(Duration.ofMinutes(1), 3, new TestClock());
+        var limiter = new InMemoryRateLimiter(Duration.ofMinutes(1), 3, new TestClock());
         for (int i = 0; i < 3; i++) assertThat(limiter.check("1.1.1.1")).isEmpty();
         var blocked = limiter.check("1.1.1.1");
         assertThat(blocked).isPresent();
@@ -64,7 +64,7 @@ class CertificateUnitTest {
 
     @Test
     void rateLimiterCountsEachClientSeparately() {
-        var limiter = new RateLimiter(Duration.ofMinutes(1), 1, new TestClock());
+        var limiter = new InMemoryRateLimiter(Duration.ofMinutes(1), 1, new TestClock());
         assertThat(limiter.check("a")).isEmpty();
         assertThat(limiter.check("b")).isEmpty();
         assertThat(limiter.check("a")).isPresent();
@@ -73,7 +73,7 @@ class CertificateUnitTest {
     @Test
     void rateLimiterStartsAFreshWindowAfterTheOldOneExpires() {
         var clock = new TestClock();
-        var limiter = new RateLimiter(Duration.ofMinutes(1), 1, clock);
+        var limiter = new InMemoryRateLimiter(Duration.ofMinutes(1), 1, clock);
         assertThat(limiter.check("a")).isEmpty();
         assertThat(limiter.check("a")).isPresent();
         clock.advance(Duration.ofSeconds(61));

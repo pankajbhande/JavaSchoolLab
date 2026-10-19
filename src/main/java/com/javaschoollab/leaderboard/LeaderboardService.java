@@ -1,8 +1,6 @@
 package com.javaschoollab.leaderboard;
 
-import com.javaschoollab.progress.ProgressService;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import org.springframework.stereotype.Service;
 
@@ -15,26 +13,20 @@ public class LeaderboardService {
 
     private static final int TOP = 20;
 
-    private final LeaderboardRepository repo;
-    private final ProgressService progress;
+    private final LeaderboardScores scores;
 
-    public LeaderboardService(LeaderboardRepository repo, ProgressService progress) {
-        this.repo = repo;
-        this.progress = progress;
+    LeaderboardService(LeaderboardScores scores) {
+        this.scores = scores;
     }
 
     /** Everyone with some XP, plus the viewer even at zero, best first (ties by account age). */
     public Leaderboard leaderboard(long viewerId) {
-        record Scored(long id, String name, int xp, int modulesPassed) {}
-        List<Scored> sorted = repo.activityCounts().stream()
-                .map(e -> new Scored(e.id(), shortName(e.fullName()),
-                        progress.computeXp(e.topics(), e.modulesPassed(), e.studyDays()), e.modulesPassed()))
+        List<ScoredLearner> sorted = scores.all().stream()          // cached for a minute, already best first
                 .filter(r -> r.xp() > 0 || r.id() == viewerId)
-                .sorted(Comparator.comparingInt(Scored::xp).reversed().thenComparingLong(Scored::id))
                 .toList();
         List<RankedLearner> ranked = new ArrayList<>();
         for (int i = 0; i < sorted.size(); i++) {
-            Scored s = sorted.get(i);
+            ScoredLearner s = sorted.get(i);
             ranked.add(new RankedLearner(i + 1, s.id(), s.name(), s.xp(), s.modulesPassed()));
         }
         RankedLearner me = ranked.stream().filter(r -> r.id() == viewerId).findFirst().orElse(null);

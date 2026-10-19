@@ -146,7 +146,7 @@ They are public, send a strong `ETag` and `Cache-Control: no-cache`, so a client
 
 ## Tests
 
-`mvn test` runs 131 tests (including the 7 architecture rules): validation rules, Node-token and bcrypt compatibility, the streak/XP/review maths
+`mvn test` runs 134 tests (including the 7 architecture rules): validation rules, Node-token and bcrypt compatibility, the streak/XP/review maths
 (the same cases as the original Node server's `progress.test.js`), and the whole flow against the real Spring context: sign-in
 (OTP, register, password and OTP login, change password, 401/403 rules), progress (topics, import, study time clamps,
 summary, weekly goal, quiz grading, review queue), profile and avatar checks, bookmarks and notes, certificate issuing and public verification, public profiles (opt-in, privacy, handle rules and ownership), the leaderboard, the 429 limits, the visitor counter, the course content API (every course checked against its manifest hash and counts), and site hosting with the React-route fallback. The tests use H2 in MySQL mode; the
@@ -163,9 +163,60 @@ A throwaway MySQL is enough: `docker run -d --rm -e MYSQL_ROOT_PASSWORD=... -p 3
 `DB_PORT=3307`. Last run: fresh database migrated by Flyway (6 migrations), a database built by the old Node `migrate.js` adopted by
 Flyway without touching its data, and 54/54 smoke checks.
 
+## Redis and OpenSearch (both optional)
+
+The site works with neither. In Docker both are started by `docker/docker-compose.yml`; from STS they are off until you start them.
+
+**Redis** (`app.redis.enabled` / `REDIS_ENABLED=true`, `REDIS_HOST`, `REDIS_PORT`)
+- *Rate limits* for the public routes (certificate verification, public profiles, handle check, search) are counted in Redis, so they are shared by every
+  app server and survive a restart. If Redis cannot be reached the app counts in its own memory instead and keeps working.
+- *One-time codes* (sign-up and login) live in Redis with an expiry instead of the `otp_codes` table. If Redis is down while it is on, sending a code answers
+  503 "try again" rather than failing silently.
+- *Leaderboard cache*: everyone's XP is worked out once a minute (`CACHE_TYPE=redis`; in memory with the same 60-second limit when Redis is off).
+- Not cached on purpose: course JSON (already held in memory with an ETag, 22 MB would only add a network hop) and public profiles (a learner who
+  un-publishes must disappear at once). Redis holds nothing that cannot be lost: no persistence, and user data stays in MySQL.
+- Local: `docker run -d --name jsl-redis -p 6379:6379 redis:7-alpine`, then `app.redis.enabled=true` in `application.properties`.
+
+**OpenSearch** (`app.search.url` / `SEARCH_URL`, for example `http://localhost:9200`)
+- `GET /api/search?q=hashmap%20collision&course=java&limit=30` searches every topic's title, module and lesson text (all words must match, titles rank first)
+  and returns the topic with a snippet. `GET /api/search/status` says whether it is ready.
+- The index is built **in the background** after start-up from the course content and rebuilt only when the content changes (it stores the content hash),
+  so the site is never held up. Until it is ready, and whenever OpenSearch is off, the API answers 503 and the browser searches by itself as before.
+- On a Linux server run once `sudo sysctl -w vm.max_map_count=262144` (OpenSearch requires it) and allow about 1 GB of memory for the container.
+- Neither Redis nor OpenSearch publishes a port to the host in Docker: only the app can reach them.
+
+## The database is separate from the code
+
+Users, progress, certificates and notes live in MySQL, never in the application files. A new version of the code replaces only the app
+container (or the jar); the database is untouched:
+
+- **Data location:** the Docker volume `javaschoollab_db_data`. It is declared `external` in `docker/docker-compose.yml`, so it belongs to Docker,
+  not to the compose project: `docker compose up --build`, `down` and even `down -v` leave it alone. On a brand-new server create it once with
+  `docker volume create javaschoollab_db_data`. Only `docker volume rm javaschoollab_db_data` deletes the data.
+- **Schema changes** come only from new Flyway files in `src/main/resources/db/migration` (`V8__...`, `V9__...`). They run once at start-up, in order,
+  and keep existing rows. **Never edit a migration that has already run**: Flyway stops the app if its checksum changes. Add a new file instead.
+- **Secrets and connection settings** (password, JWT secret) come from `docker/.env` or `application.properties`, both git-ignored, so a code
+  update never overwrites them.
+- **Backups** (next section) are the safety net if the server or the volume itself is lost.
+
+## Backups
+
+Users, progress and certificates live only in MySQL, so back it up.
+
+- **Server (Docker):** the `backup` service in `docker/docker-compose.yml` writes a gzipped `mysqldump` to `backups/` (next to `docker/`) every
+  `BACKUP_EVERY_HOURS` (default 24) and deletes backups older than `BACKUP_KEEP_DAYS` (default 14). A failed dump never replaces or removes
+  a good backup. **Copy `backups/` off the server regularly** (another disk or cloud storage): a backup on the same machine does not survive losing it.
+- **Local MySQL (STS):** `powershell -ExecutionPolicy Bypass -File scripts\backup-local.ps1` backs up the database named in `application.properties`.
+  Run it before risky changes, or schedule it with Windows Task Scheduler (daily).
+- **Restore (Docker):** stop the app, then run
+  `gunzip -c backups/javaschoollab-<date>.sql.gz | docker compose exec -T db sh -c 'mysql -uroot -p"$MYSQL_ROOT_PASSWORD" javaschoollab'`
+  and start the app again.
+- **Restore (local):** `scripts\backup-local.ps1 -Restore` loads the newest backup into the database in `application.properties`, replacing its contents.
+- `backups/` is git-ignored: the files contain user data and password hashes, so never commit or share them.
+
 ## Deploying
 
 1. Run `mvn test`, then `node scripts/smoke.mjs` against **your own** MySQL.
 2. Keep the same `JWT_SECRET` the site already uses, so nobody is logged out.
 3. `cd docker && docker compose up -d --build` runs the app and MySQL. It reuses the `db_data` volume, so users and progress stay
-   (Flyway adopts the existing tables without changing data). Never run `docker compose down -v`: that deletes the volume.
+   (Flyway adopts the existing tables without changing data). The volume is external, so `down -v` cannot delete it.

@@ -12,6 +12,9 @@
 Thumbs.db
 *.log
 
+# Database backups contain user data: never commit them
+backups/
+
 # Spring Boot / Maven
 target/
 .idea/

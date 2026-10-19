@@ -1,4 +1,10 @@
-import { useState, useRef, useEffect } from 'react';
+import { useEffect, useId, useMemo, useState } from 'react';
+import { CalendarDays, ChevronDown } from 'lucide-react';
+import { ageOn, clampDob, daysInMonth, formatYmd, parseYmd, todayYmd, type Ymd } from '../lib/dob';
+
+// Date-of-birth picker: three native dropdowns (Month / Day / Year) with a live "you are N years old" line.
+// Native selects give the right mobile picker, full keyboard and screen-reader support, and nothing to mis-scroll.
+// The old name is kept so callers do not change. Dates after today cannot be chosen.
 
 interface ScrollDatePickerProps {
   value: string;
@@ -7,147 +13,77 @@ interface ScrollDatePickerProps {
   maxYear?: number;
 }
 
-const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-const ITEM_H = 38;
+const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
-function Column({ items, selected, onSelect, label }: {
-  items: string[];
-  selected: number;
-  onSelect: (i: number) => void;
-  label: string;
-}) {
-  const ref = useRef<HTMLDivElement>(null);
-  const settling = useRef(false);
+const SELECT =
+  'w-full appearance-none h-12 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 ' +
+  'text-gray-900 dark:text-white text-[15px] font-medium pl-3.5 pr-9 cursor-pointer shadow-sm ' +
+  'hover:border-orange-400 dark:hover:border-orange-500 transition-colors ' +
+  'focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:border-orange-500 outline-none';
 
-  // Scroll to selected on mount & when selected changes externally
-  useEffect(() => {
-    if (ref.current && !settling.current) {
-      ref.current.scrollTop = selected * ITEM_H;
-    }
-  }, [selected]);
-
-  const snapToNearest = () => {
-    if (!ref.current) return;
-    const top = ref.current.scrollTop;
-    const idx = Math.round(top / ITEM_H);
-    const clamped = Math.max(0, Math.min(idx, items.length - 1));
-    settling.current = true;
-    ref.current.scrollTo({ top: clamped * ITEM_H, behavior: 'smooth' });
-    onSelect(clamped);
-    setTimeout(() => { settling.current = false; }, 200);
-  };
-
-  // Use a timeout to detect scroll-end
-  const timer = useRef<ReturnType<typeof setTimeout>>();
-  const handleScroll = () => {
-    if (timer.current) clearTimeout(timer.current);
-    timer.current = setTimeout(snapToNearest, 120);
-  };
-
-  const move = (delta: number) => {
-    const next = Math.max(0, Math.min(selected + delta, items.length - 1));
-    onSelect(next);
-    ref.current?.scrollTo({ top: next * ITEM_H, behavior: 'smooth' });
-  };
-
+function Field({ label, htmlFor, className = '', children }: { label: string; htmlFor: string; className?: string; children: React.ReactNode }) {
   return (
-    <div className="flex-1 flex flex-col items-center min-w-0">
-      <span className="text-[9px] text-gray-400 mb-1 font-semibold uppercase tracking-wider">{label}</span>
-      <div className="relative w-full" style={{ height: ITEM_H * 5 }}>
-        {/* Center highlight — sits behind the list text (z-0) so the selected value stays visible */}
-        <div className="absolute left-1 right-1 rounded-lg bg-orange-100 dark:bg-orange-900/30 border-2 border-orange-400 dark:border-orange-500 pointer-events-none z-0"
-          style={{ top: ITEM_H * 2, height: ITEM_H }} />
-
-        <div
-          ref={ref}
-          onScroll={handleScroll}
-          role="listbox"
-          aria-label={label}
-          tabIndex={0}
-          onKeyDown={(e) => {
-            if (e.key === 'ArrowUp') { e.preventDefault(); move(-1); }
-            else if (e.key === 'ArrowDown') { e.preventDefault(); move(1); }
-          }}
-          className="relative z-10 h-full overflow-y-scroll scrollbar-hide focus:outline-none focus-visible:ring-2 focus-visible:ring-orange-400 rounded-lg"
-          style={{ scrollBehavior: 'auto' }}
-        >
-          {/* Top spacer (2 items) */}
-          <div style={{ height: ITEM_H * 2 }} />
-
-          {items.map((item, i) => {
-            const distance = Math.abs(i - selected);
-            const isSelected = i === selected;
-            return (
-              <div
-                key={`${item}-${i}`}
-                role="option"
-                aria-selected={isSelected}
-                onClick={() => move(i - selected)}
-                className={`flex items-center justify-center cursor-pointer select-none transition-all duration-150 ${
-                  isSelected
-                    ? 'text-orange-600 dark:text-orange-400 font-bold'
-                    : 'text-gray-400 dark:text-gray-500'
-                }`}
-                style={{
-                  height: ITEM_H,
-                  fontSize: isSelected ? '16px' : '13px',
-                  opacity: isSelected ? 1 : Math.max(0.35, 1 - distance * 0.3),
-                  transform: `scale(${isSelected ? 1 : Math.max(0.85, 1 - distance * 0.06)})`,
-                }}
-              >
-                {item}
-              </div>
-            );
-          })}
-
-          {/* Bottom spacer (2 items) */}
-          <div style={{ height: ITEM_H * 2 }} />
-        </div>
-
-        {/* Top/bottom fade — above the list but doesn't reach the center row */}
-        <div className="absolute top-0 left-0 right-0 h-[76px] bg-gradient-to-b from-white dark:from-gray-800 via-white/80 dark:via-gray-800/80 to-transparent z-20 pointer-events-none" />
-        <div className="absolute bottom-0 left-0 right-0 h-[76px] bg-gradient-to-t from-white dark:from-gray-800 via-white/80 dark:via-gray-800/80 to-transparent z-20 pointer-events-none" />
+    <div className={className}>
+      <label htmlFor={htmlFor} className="block text-[11px] font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">
+        {label}
+      </label>
+      <div className="relative">
+        {children}
+        <ChevronDown aria-hidden="true" className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 dark:text-gray-400" />
       </div>
     </div>
   );
 }
 
 export function ScrollDatePicker({ value, onChange, minYear = 1930, maxYear }: ScrollDatePickerProps) {
-  const max = maxYear || new Date().getFullYear();
-  const years = Array.from({ length: max - minYear + 1 }, (_, i) => String(minYear + i));
+  const id = useId();
+  const today = useMemo(() => todayYmd(), []);
+  const lastYear = Math.min(maxYear ?? today.y, today.y);
 
-  const parsed = value ? new Date(value + 'T00:00:00') : new Date(2000, 0, 1);
-  const [month, setMonth] = useState(parsed.getMonth());
-  const [day, setDay] = useState(parsed.getDate() - 1);
-  const [yearIdx, setYearIdx] = useState(Math.max(0, years.indexOf(String(parsed.getFullYear()))));
+  const [dob, setDob] = useState<Ymd>(() => clampDob(parseYmd(value) ?? { y: 2000, m: 1, d: 1 }, today));
 
-  const year = parseInt(years[yearIdx] || '2000');
-  const daysInMonth = new Date(year, month + 1, 0).getDate();
-  const days = Array.from({ length: daysInMonth }, (_, i) => String(i + 1).padStart(2, '0'));
+  const set = (patch: Partial<Ymd>) => setDob(prev => clampDob({ ...prev, ...patch }, today));
 
-  // Clamp day if month/year changes
-  const clampedDay = Math.min(day, daysInMonth - 1);
+  // Tell the parent the (always valid) date, on mount and after every change.
+  useEffect(() => { onChange(formatYmd(dob)); }, [dob]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  useEffect(() => {
-    if (day !== clampedDay) setDay(clampedDay);
-    const m = String(month + 1).padStart(2, '0');
-    const d = String(clampedDay + 1).padStart(2, '0');
-    onChange(`${year}-${m}-${d}`);
-  }, [month, clampedDay, yearIdx]);
+  const years = useMemo(() => Array.from({ length: lastYear - minYear + 1 }, (_, i) => lastYear - i), [lastYear, minYear]);
+  const monthCount = dob.y === today.y ? today.m : 12;
+  const dayCount = dob.y === today.y && dob.m === today.m ? today.d : daysInMonth(dob.y, dob.m);
+  const age = ageOn(dob, today);
 
   return (
-    <div className="bg-gray-50 dark:bg-gray-700/50 rounded-xl border border-gray-200 dark:border-gray-600 p-2">
-      <div className="flex gap-1">
-        <Column items={MONTHS} selected={month} onSelect={setMonth} label="Month" />
-        <Column items={days} selected={clampedDay} onSelect={setDay} label="Day" />
-        <Column items={years} selected={yearIdx} onSelect={setYearIdx} label="Year" />
+    <div role="group" aria-label="Date of birth" className="rounded-2xl border border-gray-200 dark:border-gray-600 bg-gray-50/70 dark:bg-gray-700/40 p-3.5">
+      <div className="grid grid-cols-[1.6fr_1fr_1.2fr] gap-2.5">
+        <Field label="Month" htmlFor={`${id}-m`}>
+          <select id={`${id}-m`} className={SELECT} value={dob.m} onChange={e => set({ m: Number(e.target.value) })}>
+            {MONTHS.slice(0, monthCount).map((name, i) => <option key={name} value={i + 1}>{name}</option>)}
+          </select>
+        </Field>
+        <Field label="Day" htmlFor={`${id}-d`}>
+          <select id={`${id}-d`} className={SELECT} value={dob.d} onChange={e => set({ d: Number(e.target.value) })}>
+            {Array.from({ length: dayCount }, (_, i) => <option key={i + 1} value={i + 1}>{String(i + 1).padStart(2, '0')}</option>)}
+          </select>
+        </Field>
+        <Field label="Year" htmlFor={`${id}-y`}>
+          <select id={`${id}-y`} className={SELECT} value={dob.y} onChange={e => set({ y: Number(e.target.value) })}>
+            {years.map(y => <option key={y} value={y}>{y}</option>)}
+          </select>
+        </Field>
       </div>
-      <div className="text-center mt-2 pt-2 border-t border-gray-200 dark:border-gray-600">
-        <span className="text-xs text-gray-500 dark:text-gray-400">
-          Selected: <span className="font-semibold text-orange-600 dark:text-orange-400">
-            {MONTHS[month]} {String(clampedDay + 1).padStart(2, '0')}, {year}
-          </span>
+
+      <div className="mt-3 flex items-center gap-2.5 rounded-xl bg-white dark:bg-gray-800 border border-orange-200 dark:border-orange-900/50 px-3.5 py-2.5" aria-live="polite">
+        <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-orange-100 dark:bg-orange-900/40 text-orange-600 dark:text-orange-400 shrink-0">
+          <CalendarDays aria-hidden="true" className="w-4 h-4" />
         </span>
+        <div className="min-w-0 leading-tight">
+          <div className="text-sm font-semibold text-gray-900 dark:text-white truncate">
+            {dob.d} {MONTHS[dob.m - 1]} {dob.y}
+          </div>
+          <div className="text-xs text-gray-600 dark:text-gray-400">
+            {age === 0 ? 'Born this year' : `${age} ${age === 1 ? 'year' : 'years'} old`}
+          </div>
+        </div>
       </div>
     </div>
   );

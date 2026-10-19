@@ -1,4 +1,6 @@
 spring:
+  cache:
+    type: none            # tests change data between calls, so nothing may be served from a cache
   datasource:
     url: jdbc:h2:mem:jsl;MODE=MySQL;DB_CLOSE_DELAY=-1
     username: sa

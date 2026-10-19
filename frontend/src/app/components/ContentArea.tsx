@@ -487,7 +487,8 @@ export function ContentArea({
               </div>
 
               <div className="flex items-center gap-2.5 shrink-0 ml-auto">
-                {onVoiceChange && (
+                {/* While Robo Guru speaks only the Stop button is offered: the voice cannot change mid-sentence. */}
+                {onVoiceChange && !isSpeaking && (
                   <div className="hidden md:flex items-center bg-white dark:bg-gray-800 rounded-lg p-1 border border-orange-200 dark:border-orange-800/50">
                     <button
                       onClick={() => onVoiceChange('female')}

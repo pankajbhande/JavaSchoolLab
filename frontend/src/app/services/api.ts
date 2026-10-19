@@ -213,7 +213,10 @@ export async function incrementVisitor(): Promise<{ count: number }> {
 let visitPromise: Promise<{ count: number }> | null = null;
 export function registerVisit(): Promise<{ count: number }> {
   if (!visitPromise) {
-    visitPromise = incrementVisitor().catch(async (err) => {
+    // A reload the app triggered itself (installing an update) is not a new visit.
+    let skip = false;
+    try { skip = sessionStorage.getItem("jsl_no_count") === "1"; sessionStorage.removeItem("jsl_no_count"); } catch { /* ignore */ }
+    visitPromise = (skip ? getVisitorCount() : incrementVisitor()).catch(async (err) => {
       // Server unreachable: show the current number, and still count nothing twice.
       try { return await getVisitorCount(); } catch { throw err; }
     });

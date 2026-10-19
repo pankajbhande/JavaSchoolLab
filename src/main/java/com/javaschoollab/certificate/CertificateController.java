@@ -2,6 +2,7 @@ package com.javaschoollab.certificate;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.javaschoollab.common.RateLimiter;
+import com.javaschoollab.common.RateLimiters;
 import com.javaschoollab.config.AppProperties;
 import com.javaschoollab.security.AuthUser;
 import jakarta.servlet.http.HttpServletRequest;
@@ -34,9 +35,9 @@ public class CertificateController {
     private final CertificateService certificates;
     private final RateLimiter verifyLimiter;
 
-    public CertificateController(CertificateService certificates, AppProperties props) {
+    public CertificateController(CertificateService certificates, AppProperties props, RateLimiters limiters) {
         this.certificates = certificates;
-        this.verifyLimiter = new RateLimiter(Duration.ofMinutes(1), props.rateLimit().verifyPerMinute(), Clock.systemUTC());
+        this.verifyLimiter = limiters.perMinute("verify", props.rateLimit().verifyPerMinute());
     }
 
     @PostMapping

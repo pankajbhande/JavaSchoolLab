@@ -1,4 +1,4 @@
-import { Volume2, VolumeX, Search, Moon, Sun, LogIn, LogOut, User, Bot } from 'lucide-react';
+import { Search, Moon, Sun, LogIn, LogOut, User, Bot } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import logo from '../../assets/logo1.jpg';
@@ -160,78 +160,7 @@ export function Header({ onToggleSpeech, isSpeaking, onSearch, showSearch = true
               )}
             </div>
 
-            {/* Voice Gender Selection. Hidden on phones: it pushed the header to a third
-                wrapped row, and the reading pane carries its own voice picker anyway. */}
-            <div className="hidden 2xl:flex items-center h-11 bg-white/15 ring-1 ring-white/25 backdrop-blur-md rounded-xl p-1">
-              <button
-                onClick={() => onVoiceChange('female')}
-                className={`px-3 py-1 rounded-lg text-sm transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white ${voiceGender === 'female'
-                  ? 'bg-white text-orange-600 font-semibold'
-                  : 'text-white hover:bg-white/10'
-                  }`}
-                title="Female Voice"
-                aria-label="Female Voice"
-              >
-                Female
-              </button>
-              <button
-                onClick={() => onVoiceChange('male')}
-                className={`px-3 py-1 rounded-lg text-sm transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white ${voiceGender === 'male'
-                  ? 'bg-white text-orange-600 font-semibold'
-                  : 'text-white hover:bg-white/10'
-                  }`}
-                title="Male Voice"
-                aria-label="Male Voice"
-              >
-                Male
-              </button>
-            </div>
-
-            {/* Indian Robo Voice */}
-            <div className="relative flex items-center">
-              {isSpeaking && (
-                <motion.div
-                  initial={{ opacity: 0, x: 10, scale: 0.8 }}
-                  animate={{ opacity: 1, x: 0, scale: 1 }}
-                  exit={{ opacity: 0 }}
-                  className="absolute right-full mr-2 flex items-center gap-1.5 bg-white rounded-full pl-1 pr-3 py-1 shadow-lg whitespace-nowrap"
-                >
-                  <div className="relative w-7 h-7 rounded-full bg-gradient-to-br from-orange-500 via-white to-green-600 flex items-center justify-center shrink-0 border-2 border-orange-500">
-                    <Bot className="w-4 h-4 text-gray-700" />
-                    <motion.span
-                      animate={{ scale: [1, 1.3, 1], opacity: [0.6, 0.15, 0.6] }}
-                      transition={{ duration: 0.9, repeat: Infinity, ease: 'easeInOut' }}
-                      className="absolute inset-0 rounded-full bg-orange-400"
-                    />
-                  </div>
-                  <span className="text-[11px] font-semibold text-orange-600">Robo Guru speaking…</span>
-                  <div className="flex items-end gap-[2px] h-3">
-                    {[0, 1, 2].map(i => (
-                      <motion.span
-                        key={i}
-                        animate={{ height: ['30%', '100%', '30%'] }}
-                        transition={{ duration: 0.6, repeat: Infinity, delay: i * 0.15, ease: 'easeInOut' }}
-                        className="w-[3px] bg-green-600 rounded-full"
-                      />
-                    ))}
-                  </div>
-                </motion.div>
-              )}
-
-              <motion.button
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-                onClick={onToggleSpeech}
-                className={`${headerIconBtn} ${isSpeaking
-                  ? '!bg-white text-orange-600 animate-pulse'
-                  : ''
-                  }`}
-                title={isSpeaking ? 'Stop Robo Voice' : 'Listen with Indian Robo Voice'}
-                aria-label={isSpeaking ? 'Stop Robo Voice' : 'Listen with Indian Robo Voice'}
-              >
-                {isSpeaking ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
-              </motion.button>
-            </div>
+            {/* Robo Guru (speak / stop, voice choice and the speaking state) lives in the reading pane, not in this bar. */}
 
             <motion.button
               whileHover={{ scale: 1.1 }}

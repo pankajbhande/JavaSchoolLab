@@ -9,7 +9,7 @@ import { trackSearch } from '../services/analytics';
 interface SearchResultsProps {
   courses: Course[];
   query: string;
-  onSelectTopic: (topicId: string) => void;
+  onSelectTopic: (topicId: string, term?: string) => void;
 }
 
 /** Wraps each occurrence of any query word in a mark, case-insensitively. */
@@ -94,7 +94,7 @@ export function SearchResults({ courses, query, onSelectTopic }: SearchResultsPr
               key={hit.courseId + '/' + hit.topicId}
               initial={{ opacity: 0, y: 6 }}
               animate={{ opacity: 1, y: 0 }}
-              onClick={() => onSelectTopic(hit.topicId)}
+              onClick={() => onSelectTopic(hit.topicId, query)}
               className="w-full text-left rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-4 hover:border-orange-400 dark:hover:border-orange-500 hover:shadow-md transition-all focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600"
             >
               <div className="text-[11px] uppercase tracking-wider text-orange-700 dark:text-orange-300 font-semibold mb-1">

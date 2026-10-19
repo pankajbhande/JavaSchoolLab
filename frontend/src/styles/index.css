@@ -11,3 +11,6 @@
 @keyframes digital-led { 0%, 100% { opacity: 1; box-shadow: 0 0 8px 2px rgba(103,232,249,.9); } 50% { opacity: .35; box-shadow: 0 0 2px 0 rgba(103,232,249,.4); } }
 .digital-led { animation: digital-led 2s ease-in-out infinite; }
 @media (prefers-reduced-motion: reduce) { .digital-led { animation: none; } }
+
+/* The passage a lesson-text search result landed on (see lib/findInPage.ts). */
+::highlight(jsl-find) { background-color: #fde047; color: #111827; }

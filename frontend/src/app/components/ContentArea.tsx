@@ -1,3 +1,4 @@
+import { clearFindHighlight, highlightInPage } from '../lib/findInPage';
 import { useState, useRef, useEffect } from 'react';
 import type { Course, Topic, ContentBlock } from '../data/types';
 import { Copy, Check, Award, Image as ImageIcon, Layers, Code, ChevronRight, ChevronDown, Bot, Volume2, VolumeX, Clock, Lightbulb } from 'lucide-react';
@@ -23,6 +24,8 @@ interface ContentAreaProps {
   contentRef: React.RefObject<HTMLDivElement>;
   topRef?: React.RefObject<HTMLDivElement>;
   onTopicSelect?: (topicId: string) => void;
+  /** Words to find in this topic: set when a lesson-text search result opened it. */
+  findText?: string;
   onPrevTopic: () => void;
   onNextTopic: () => void;
   hasPrev: boolean;
@@ -290,8 +293,19 @@ export function ContentArea({
   focusMode = false,
   onToggleFocus,
   extraBelowNotes,
+  findText = '',
 }: ContentAreaProps) {
   const [reading, setReading] = useReadingPrefs();
+
+  // Land on the point: scroll to the passage that matched the search and highlight the words, until the reader moves to another topic.
+  useEffect(() => {
+    if (!findText || !topic) { clearFindHighlight(); return; }
+    const t = window.setTimeout(() => {
+      const el = contentRef.current ? highlightInPage(contentRef.current, findText) : null;
+      el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 300);
+    return () => { window.clearTimeout(t); clearFindHighlight(); };
+  }, [findText, topic?.id]);   // eslint-disable-line react-hooks/exhaustive-deps
 
   // Esc leaves focus mode (unless a dialog or popover is open and wants the key first).
   useEffect(() => {

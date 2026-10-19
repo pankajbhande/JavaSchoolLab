@@ -22,6 +22,7 @@ import { useFocusTrap } from './hooks/useFocusTrap';
 import { useDocumentMeta, toDescription } from './hooks/useDocumentMeta';
 import { PanelLeft, PanelRight, X, Search } from 'lucide-react';
 import { courseStats } from './data/courseStats';
+import { courseIndex } from './data/courseIndex';
 import { buildSpeechScript, prosody } from './lib/speechScript';
 import { pickVoice as pickVoiceFor } from './lib/voicePicker';
 import { toast } from 'sonner';
@@ -96,6 +97,9 @@ export default function CourseWorkspace() {
   });
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  // The words to find and highlight in the topic that a lesson-text search result opened.
+  const [findText, setFindText] = useState('');
+  const [findTopic, setFindTopic] = useState<string | null>(null);
   // Content for the open course; every course once the reader searches lesson text.
   const catalog = useCourses(selectedCourseId, searchQuery.trim().length >= 2);
   const [voiceGender, setVoiceGender] = useState<'male' | 'female'>('female');
@@ -361,6 +365,9 @@ export default function CourseWorkspace() {
   };
 
   const handleModuleSelect = (cId: string, moduleId: string) => {
+    // Land on the module itself: open its first topic, so the page, the address and the sidebar all show that module.
+    const first = courseIndex.find(c => c.id === cId)?.subTopics.find(m => m.id === moduleId)?.topics[0]?.id;
+    if (first) { handleTopicSelect(first); return; }
     setSelectedCourseId(cId);
     setSelectedSubTopicId(moduleId);
     setSelectedTopicId(null);
@@ -395,7 +402,9 @@ export default function CourseWorkspace() {
     return () => window.removeEventListener('keydown', onKey);
   }, [mobileDrawer]);
 
-  const handleTopicSelect = (topicId: string) => {
+  const handleTopicSelect = (topicId: string, term?: string) => {
+    setFindText(term ?? '');
+    setFindTopic(term ? topicId : null);
     let parentCourseId: string | null = null;
     let parentSubTopicId: string | null = null;
     for (const course of skeletonCourses) {
@@ -602,7 +611,7 @@ export default function CourseWorkspace() {
             <SearchResults
               courses={catalog.courses}
               query={searchQuery}
-              onSelectTopic={(topicId) => { setSearchQuery(''); handleTopicSelect(topicId); }}
+              onSelectTopic={(topicId, term) => { setSearchQuery(''); handleTopicSelect(topicId, term); }}
             />
           ) : (
             <LoadingPane label="Preparing search across all courses…" error={catalog.error} onRetry={catalog.retry} />
@@ -615,7 +624,8 @@ export default function CourseWorkspace() {
             topic={selectedTopic}
             contentRef={contentRef}
             topRef={topRef}
-            onTopicSelect={handleTopicSelect}
+            onTopicSelect={(id) => handleTopicSelect(id)}
+            findText={selectedTopicId !== null && selectedTopicId === findTopic ? findText : ''}   // only for the topic the search opened
             onPrevTopic={handlePrevTopic}
             onNextTopic={handleNextTopic}
             hasPrev={currentTopicIndex > 0}
@@ -679,7 +689,7 @@ export default function CourseWorkspace() {
         actions={paletteActions}
         onSelectCourse={handleCourseSelect}
         onSelectModule={handleModuleSelect}
-        onSelectTopic={(id) => { setSearchQuery(''); handleTopicSelect(id); }}
+        onSelectTopic={(id, term) => { setSearchQuery(''); handleTopicSelect(id, term); }}
       />
       <ShortcutsSheet
         open={helpOpen}

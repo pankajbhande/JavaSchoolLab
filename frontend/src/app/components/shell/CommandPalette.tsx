@@ -34,7 +34,8 @@ interface Props {
   onClose: () => void;
   onSelectCourse: (courseId: string) => void;
   onSelectModule: (courseId: string, moduleId: string) => void;
-  onSelectTopic: (topicId: string) => void;
+  /** `term` is given when the result came from lesson text: the topic then opens at the passage that matched. */
+  onSelectTopic: (topicId: string, term?: string) => void;
   /** Quick actions (Dashboard, Flashcards, ...). */
   actions?: PaletteAction[];
 }
@@ -128,7 +129,7 @@ function PaletteInner({ onClose, onSelectCourse, onSelectModule, onSelectTopic, 
     if (it.kind === 'action') it.run?.();
     else if (it.kind === 'course') onSelectCourse(it.courseId);
     else if (it.kind === 'module' && it.moduleId) onSelectModule(it.courseId, it.moduleId);
-    else if (it.topicId) onSelectTopic(it.topicId);
+    else if (it.topicId) onSelectTopic(it.topicId, it.section === 'In lessons' ? query.trim() : undefined);
   };
 
   const onKeyDown = (e: React.KeyboardEvent) => {

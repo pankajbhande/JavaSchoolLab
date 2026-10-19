@@ -1,6 +1,7 @@
 
 import { useState, useEffect, lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route, useNavigate, useParams, useSearchParams, useLocation, Navigate } from 'react-router-dom';
+import { trackPageView } from './services/analytics';
 import { ErrorBoundary } from './components/study/ErrorBoundary';
 import { Header } from './components/Header';
 import { Dashboard } from './components/Dashboard';
@@ -24,6 +25,7 @@ const ProfilePage = lazy(() => import('./pages/ProfilePage'));
 const FlashcardsPage = lazy(() => import('./pages/FlashcardsPage'));
 const InterviewPracticePage = lazy(() => import('./pages/InterviewPracticePage'));
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
+const AdminAnalyticsPage = lazy(() => import('./pages/AdminAnalyticsPage'));
 
 // Starts the same dynamic import ahead of the click. The browser and the module cache
 // dedupe it, so the later lazy() resolves instantly instead of the student waiting on a
@@ -237,6 +239,8 @@ export default function App() {
 // The boundary resets when the path changes so navigating away recovers.
 function AppRoutes() {
   const { pathname } = useLocation();
+  // One anonymous page view per route change (the admin page itself is not counted).
+  useEffect(() => { if (!pathname.startsWith('/admin')) trackPageView(pathname); }, [pathname]);
   return (
     <ErrorBoundary resetKey={pathname}>
             <Routes>
@@ -247,6 +251,7 @@ function AppRoutes() {
               <Route path="/dashboard" element={<DashboardPage />} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/account" element={<AccountRoute />} />
+              <Route path="/admin" element={<Suspense fallback={<WorkspaceFallback />}><AdminAnalyticsPage /></Suspense>} />
               <Route path="/signup" element={<SignupPage />} />
               <Route path="/verify" element={<Suspense fallback={<WorkspaceFallback />}><VerifyCertificate /></Suspense>} />
               <Route path="/verify/:uid" element={<Suspense fallback={<WorkspaceFallback />}><VerifyCertificate /></Suspense>} />

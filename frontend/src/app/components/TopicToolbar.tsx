@@ -3,6 +3,7 @@ import { Bookmark, StickyNote, X, Lock } from 'lucide-react';
 import { toast } from 'sonner';
 import { useAuth } from '../context/AuthContext';
 import { LoginModal } from './LoginModal';
+import { ShareButton } from './ShareButton';
 import {
   TopicRef, fetchBookmarks, addBookmark, removeBookmark, fetchNotes, saveNote,
 } from '../services/api';
@@ -14,7 +15,7 @@ const btn =
  * Bookmark + private-note controls for the open topic. Both live behind the account, so a
  * guest gets a prompt to sign in instead of a silent no-op.
  */
-export function TopicToolbar({ topicRef }: { topicRef: TopicRef }) {
+export function TopicToolbar({ topicRef, courseName }: { topicRef: TopicRef; courseName: string }) {
   const { isLoggedIn } = useAuth();
   const [bookmarked, setBookmarked] = useState(false);
   const [note, setNote] = useState('');
@@ -85,6 +86,7 @@ export function TopicToolbar({ topicRef }: { topicRef: TopicRef }) {
 
   return (
     <>
+      <ShareButton topicName={topicRef.topicName} courseName={courseName} />
       <button
         onClick={toggleBookmark}
         className={btn}

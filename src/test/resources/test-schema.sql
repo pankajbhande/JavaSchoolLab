@@ -110,3 +110,14 @@ CREATE TABLE IF NOT EXISTS user_profiles (
   updated_at         TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   CONSTRAINT uniq_profile_handle UNIQUE (handle)
 );
+
+CREATE TABLE IF NOT EXISTS analytics_events (
+  id          BIGINT AUTO_INCREMENT PRIMARY KEY,
+  event_type  VARCHAR(30)  NOT NULL,
+  session_id  VARCHAR(64)  NULL,
+  user_id     INT          NULL,
+  path        VARCHAR(255) NULL,
+  detail      VARCHAR(160) NULL,
+  result_count INT         NULL,
+  created_at  TIMESTAMP    DEFAULT CURRENT_TIMESTAMP
+);

@@ -98,6 +98,8 @@ services:
       CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:8080}
       # Needed behind a proxy / load balancer so rate limits see real visitor addresses.
       FORWARD_HEADERS_STRATEGY: native
+      # Who may open /admin (analytics). Comma-separated emails.
+      ADMIN_EMAILS: ${ADMIN_EMAILS:-}
       # Email OTP delivery (Hostinger SMTP). Leave SMTP_HOST empty to disable.
       SMTP_HOST: ${SMTP_HOST:-}
       SMTP_PORT: ${SMTP_PORT:-465}

@@ -17,6 +17,10 @@ app.jwt.secret=put-a-random-string-of-at-least-32-characters-here
 # Returns the one-time code in the API response and prints it in the console, so you can sign up without email.
 app.otp.dev-echo=true
 
+# --- Admin dashboard ---------------------------------------------------------------------------------------------
+# Emails (comma-separated) of the people who may open /admin, the analytics dashboard. They sign in normally with that email.
+app.admin.emails=
+
 # --- Redis (optional) --------------------------------------------------------------------------------------------
 # true = rate limits and one-time codes live in Redis, and the leaderboard is cached there (needs a Redis server):
 #   docker run -d --name jsl-redis -p 6379:6379 redis:7-alpine

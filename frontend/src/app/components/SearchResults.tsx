@@ -4,6 +4,7 @@ import { Search, Loader2, FileText } from 'lucide-react';
 import type { Course } from '../data/types';
 import { ensureIndex, searchContent, SearchHit } from '../services/contentSearch';
 import { searchServer } from '../services/searchApi';
+import { trackSearch } from '../services/analytics';
 
 interface SearchResultsProps {
   courses: Course[];
@@ -43,11 +44,13 @@ export function SearchResults({ courses, query, onSelectTopic }: SearchResultsPr
     // Prefer the server (OpenSearch): no course download, ranked results. If it is off or not ready, search in the page as before.
     searchServer(query, ctrl.signal).then(serverHits => {
       if (cancelled) return;
-      if (serverHits) { setIndexing(false); setHits(serverHits); return; }
+      if (serverHits) { setIndexing(false); setHits(serverHits); trackSearch(query, serverHits.length); return; }
       return ensureIndex(courses).then(entries => {
         if (cancelled) return;
         setIndexing(false);
-        setHits(searchContent(entries, query));
+        const found = searchContent(entries, query);
+        setHits(found);
+        trackSearch(query, found.length);
       });
     }).catch(() => {});
     return () => { cancelled = true; ctrl.abort(); };

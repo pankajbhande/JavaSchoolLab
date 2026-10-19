@@ -7,6 +7,7 @@ import org.springframework.cache.annotation.CachingConfigurer;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.interceptor.CacheErrorHandler;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 /**
  * Turns on caching (@Cacheable) and makes a cache failure harmless: if Redis is down, or an old cached value cannot be read
@@ -14,6 +15,7 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 @EnableCaching
+@EnableScheduling   // the daily clean-up of old analytics events
 public class CacheConfig implements CachingConfigurer {
 
     private static final Logger log = LoggerFactory.getLogger(CacheConfig.class);

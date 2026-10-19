@@ -39,12 +39,16 @@ client id from Google Cloud Console and the button appears on the login form. Le
 **Redis and OpenSearch** are optional. `docker/docker-compose.yml` starts both (shared rate limits, expiring sign-up codes, leaderboard cache, and
 server-side topic search at `/api/search`). In STS they are off by default; see `docs/backend.md` ("Redis and OpenSearch") to switch them on.
 
+**Sharing:** every topic has a Share button (WhatsApp, Telegram, LinkedIn, X, Facebook, email, copy link) and shared links preview as the topic.
+
+**Analytics:** sign in with an admin email (`ADMIN_EMAILS` / `app.admin.emails`) and open `/admin` for visits, sign-ups, searches and a funnel; see `docs/backend.md`.
+
 ## Everyday commands
 
 | What | Where | Command |
 |---|---|---|
 | Run the API | repository root | `mvn spring-boot:run` |
-| Backend tests (134, H2) | repository root | `mvn test` |
+| Backend tests (147, H2) | repository root | `mvn test` |
 | One jar with the site inside | repository root | `mvn -Pwith-site -DskipTests package`, then `java -jar target/javaschoollab-server-0.1.0.jar` |
 | React dev server | `frontend/` | `npm install`, then `npm run dev` (needs the backend on :3001) |
 | Front-end tests and type check | `frontend/` | `npm test`, `npm run typecheck` |

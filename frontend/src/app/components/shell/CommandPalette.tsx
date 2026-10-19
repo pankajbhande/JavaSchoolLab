@@ -6,6 +6,7 @@ import { flattenIndex, searchNames, queryTerms, highlightParts, type NameEntry }
 import { getRecents } from '../../lib/recentTopics';
 import { loadAllCourses } from '../../data/courseLoader';
 import { ensureIndex, searchContent, type SearchHit } from '../../services/contentSearch';
+import { trackSearch } from '../../services/analytics';
 
 const ENTRIES: NameEntry[] = flattenIndex(courseIndex);
 const TOPIC_BY_ID = new Map<string, NameEntry>();
@@ -72,7 +73,7 @@ function PaletteInner({ onClose, onSelectCourse, onSelectModule, onSelectTopic, 
     setSearching(true);
     loadAllCourses()
       .then(ensureIndex)
-      .then(entries => { if (!cancelled) { setContent(searchContent(entries, debounced, 12)); setSearching(false); } })
+      .then(entries => { if (!cancelled) { const found = searchContent(entries, debounced, 12); setContent(found); setSearching(false); trackSearch(debounced, found.length); } })
       .catch(() => { if (!cancelled) { setContent([]); setSearching(false); } });
     return () => { cancelled = true; };
   }, [debounced]);

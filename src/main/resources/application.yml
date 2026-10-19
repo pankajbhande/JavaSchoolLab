@@ -48,6 +48,8 @@ spring:
       static-locations: classpath:/static/   # the built React site, when packaged with -Pwith-site
 
 app:
+  admin:
+    emails: ${ADMIN_EMAILS:}             # comma-separated emails allowed to open /admin (the analytics dashboard); empty = nobody
   redis:
     enabled: ${REDIS_ENABLED:false}     # true = rate limits and one-time codes live in Redis (needs a Redis server)
   search:

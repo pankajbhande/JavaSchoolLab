@@ -538,6 +538,7 @@ export function ContentArea({
         <div className="mt-1 mb-3 flex flex-wrap items-center justify-end gap-2 sm:float-right sm:ml-3 sm:mb-0 sm:flex-nowrap">
           <ReadingControls prefs={reading} onChange={setReading} focusMode={focusMode} onToggleFocus={onToggleFocus} />
           <TopicToolbar
+            courseName={course.name}
             topicRef={{
               courseId: course.id,
               moduleId: course.subTopics.find(st => st.topics.some(t => t.id === topic.id))?.id ?? course.id,

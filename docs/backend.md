@@ -146,7 +146,7 @@ They are public, send a strong `ETag` and `Cache-Control: no-cache`, so a client
 
 ## Tests
 
-`mvn test` runs 134 tests (including the 7 architecture rules): validation rules, Node-token and bcrypt compatibility, the streak/XP/review maths
+`mvn test` runs 147 tests (including the 7 architecture rules): validation rules, Node-token and bcrypt compatibility, the streak/XP/review maths
 (the same cases as the original Node server's `progress.test.js`), and the whole flow against the real Spring context: sign-in
 (OTP, register, password and OTP login, change password, 401/403 rules), progress (topics, import, study time clamps,
 summary, weekly goal, quiz grading, review queue), profile and avatar checks, bookmarks and notes, certificate issuing and public verification, public profiles (opt-in, privacy, handle rules and ownership), the leaderboard, the 429 limits, the visitor counter, the course content API (every course checked against its manifest hash and counts), and site hosting with the React-route fallback. The tests use H2 in MySQL mode; the
@@ -162,6 +162,32 @@ The script in `scripts/` (Node 18+, no install) checks a running server over rea
 A throwaway MySQL is enough: `docker run -d --rm -e MYSQL_ROOT_PASSWORD=... -p 3307:3306 mysql:8.4`, then start the app with
 `DB_PORT=3307`. Last run: fresh database migrated by Flyway (6 migrations), a database built by the old Node `migrate.js` adopted by
 Flyway without touching its data, and 54/54 smoke checks.
+
+## Sharing a topic
+
+Every topic page has a **Share** button. On a phone it opens the system share sheet; on a computer a menu offers WhatsApp, Telegram, LinkedIn, X, Facebook,
+email and Copy link. The link is the topic's own address (no query string), so a friend lands on the same lesson.
+
+- **Link previews:** WhatsApp, Telegram and LinkedIn read the HTML and do not run React, so `/course/{course}/{module}/{topic}` (and the two-part form)
+  is answered by the `share` package with the real `index.html` carrying that topic's title and description in the page title and the Open Graph / Twitter
+  tags. An unknown topic gets the normal page. The preview picture is still the site picture (`/og-image.png`).
+- **Tracking:** each share is recorded as an anonymous `share` event (topic path and channel only); the dashboard shows total shares, the most shared topics
+  and which channels people use.
+
+## Analytics dashboard (/admin)
+
+Open `/admin` while signed in with an **admin email** to see how the site is doing: visits, sessions, sign-ups, searches, quiz attempts, certificates and
+topics studied, a visitor-to-certificate funnel, daily charts, the most visited pages, the most studied courses, what people search for, and
+**searches that found nothing** (lessons your visitors want and do not find: your next content to write).
+
+- **Who is admin:** the emails in `ADMIN_EMAILS` (Docker, `docker/.env`) or `app.admin.emails` (`application.properties`), comma-separated. Empty means nobody.
+  The check is on the server (`GET /api/admin/analytics` answers 403 to anyone else), not just in the page.
+- **What is recorded:** the browser reports a page view (path only, query string and fragment cut off) and a search (the words, lowercased, and how many
+  topics matched) to `POST /api/analytics/event`, into the `analytics_events` table. A search is recorded once the query stops changing, not on every keystroke.
+  Sign-ups, quizzes, certificates and topic progress are read from the tables that already hold them.
+- **Privacy:** no cookies, no IP address, no user agent. The session id is a random value kept in the browser tab (`sessionStorage`). The signed-in user id is
+  attached only when the learner is signed in. Browsers that send "Do Not Track" are not tracked. Events older than 400 days are deleted every night.
+- **Not counted:** the admin page itself, and any event with an unknown type (the server only accepts page views and searches).
 
 ## Redis and OpenSearch (both optional)
 

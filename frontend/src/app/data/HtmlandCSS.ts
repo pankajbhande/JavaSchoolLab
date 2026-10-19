@@ -19387,194 +19387,1901 @@ A: It changes the base for every relative URL, including fragment links, which c
                         ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-tables-table-element',
                             name: 'Table Element',
                             beginner: [
                                 {
-                                    content: `<h3>Table Element</h3>
-&bull; Part of the HTML Tables section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• The <b>table</b> element displays data in <b>rows and columns</b>.<br>
+• It is meant for tabular data such as schedules, prices and results, not for page layout.<br>
+• A table is built from rows (tr) that contain cells (th and td).<br>
+• Browsers draw no borders by default, so you add them with CSS.<br><br>
+
+<h3>Key Points</h3>
+• The minimum structure is table, tr and td.<br>
+• Rows run left to right and columns are formed by the cells in each row.<br>
+• Every row should have the same number of cells unless you use colspan or rowspan.<br>
+• Text inside a table follows the normal inline rules of its cell.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>Simple table</title>
+<style>
+  table { border-collapse: collapse; font-family: sans-serif; }
+  th, td { border: 1px solid #cbd5e1; padding: 8px 12px; text-align: left; }
+  th { background: #f1f5f9; }
+</style>
+</head>
+<body>
+<table>
+  <tr><th>Course</th><th>Level</th></tr>
+  <tr><td>Core Java</td><td>Beginner</td></tr>
+  <tr><td>Spring Boot</td><td>Intermediate</td></tr>
+</table>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Use <b>border-collapse: collapse</b> so adjacent borders merge into one line.<br>
+• Set the width with CSS, for example <b>width: 100%</b>, and let columns share the space.<br>
+• Style rows with <b>tr:nth-child(even)</b> to create zebra stripes.<br>
+• Wrap wide tables in a div with <b>overflow-x: auto</b> so phones can scroll sideways.<br><br>
+
+<h3>Common Mistakes</h3>
+• Using tables for page layout. CSS grid and flexbox are the proper tools.<br>
+• Leaving out th cells, which loses the meaning of each column for assistive tools.<br>
+• Using the old border, cellpadding and width attributes instead of CSS.<br>
+• Rows with different cell counts that break the grid.<br><br>
+
+<h3>Try It Yourself</h3>
+• Build a table of three courses with columns for name, hours and level. Add zebra stripes with CSS and then wrap it so it scrolls sideways on a narrow screen.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>Zebra table</title>
+<style>
+  table { border-collapse: collapse; font-family: sans-serif; }
+  th, td { border: 1px solid #cbd5e1; padding: 8px 12px; text-align: left; }
+  th { background: #f1f5f9; }
+  tr:nth-child(even) td { background: #f8fafc; }
+  .wrap { overflow-x: auto; }
+</style>
+</head>
+<body>
+<div class="wrap">
+<table>
+  <tr><th>Topic</th><th>Lessons</th><th>Hours</th></tr>
+  <tr><td>HTML</td><td>120</td><td>12</td></tr>
+  <tr><td>CSS</td><td>140</td><td>15</td></tr>
+  <tr><td>Java</td><td>200</td><td>30</td></tr>
+</table>
+</div>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Pricing comparisons, timetables and report pages all rely on tables.<br>
+• Data from an API is often turned into table rows with JavaScript.<br>
+• Email clients still use tables for layout, which is an exception to the rule.<br>
+• Accessible data tables help screen reader users move cell by cell.<br><br>
+
+<h3>Best Practices</h3>
+• Use a table only when the data has more than one dimension.<br>
+• Add a caption and header cells to every data table.<br>
+• Keep cells short, and move long content to a link or a details element.<br>
+• Test with the keyboard and a screen reader on important tables.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> When should you use a table instead of a list?<br>
+• <b>A:</b> Use a table when each item has several attributes that readers want to compare across rows and columns. Use a list for one-dimensional sequences.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>Responsive table</title>
+<style>
+  table { border-collapse: collapse; font-family: sans-serif; }
+  th, td { border: 1px solid #cbd5e1; padding: 8px 12px; text-align: left; }
+  th { background: #f1f5f9; }
+  @media (max-width: 500px) { td, th { padding: 4px 6px; font-size: 14px; } }
+</style>
+</head>
+<body>
+<table>
+  <caption>Course overview</caption>
+  <thead><tr><th scope="col">Course</th><th scope="col">Hours</th></tr></thead>
+  <tbody><tr><td>HTML</td><td>12</td></tr></tbody>
+</table>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-tables-caption',
                             name: 'Caption',
                             beginner: [
                                 {
-                                    content: `<h3>Caption</h3>
-&bull; Part of the HTML Tables section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• The <b>caption</b> element gives a table a visible <b>title</b>.<br>
+• It must be the first child of the table element.<br>
+• Screen readers announce it when the user reaches the table.<br>
+• It is the proper way to label a table, instead of a paragraph above it.<br><br>
+
+<h3>Key Points</h3>
+• Write a short, clear description such as "Monthly sales, 2026".<br>
+• By default the caption appears above the table, centred.<br>
+• Move it below with the CSS <b>caption-side: bottom</b>.<br>
+• Only one caption is allowed per table.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>caption</title>
+<style>
+  table { border-collapse: collapse; font-family: sans-serif; }
+  th, td { border: 1px solid #cbd5e1; padding: 8px 12px; text-align: left; }
+  th { background: #f1f5f9; }
+  caption { font-weight: bold; padding: 6px; }
+</style>
+</head>
+<body>
+<table>
+  <caption>Course schedule</caption>
+  <tr><th>Day</th><th>Topic</th></tr>
+  <tr><td>Monday</td><td>HTML</td></tr>
+  <tr><td>Tuesday</td><td>CSS</td></tr>
+</table>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Style the caption like any block: font size, colour, alignment and padding.<br>
+• <b>text-align</b> controls its horizontal position within the table width.<br>
+• When the table sits in a figure, you may use figcaption instead for a caption that covers more than the table.<br>
+• Combine it with aria-describedby to point to a longer description.<br><br>
+
+<h3>Common Mistakes</h3>
+• Placing a heading above the table instead of a caption, which hides the link between them.<br>
+• Putting the caption after the rows, where it is invalid.<br>
+• Writing a caption that repeats the page heading word for word.<br>
+• Hiding the caption with display none, which also hides it from screen readers.<br><br>
+
+<h3>Try It Yourself</h3>
+• Add a caption to a table and move it to the bottom with CSS. Then write a second table with a hidden caption and check that a screen reader still announces it.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>caption bottom</title>
+<style>
+  table { border-collapse: collapse; font-family: sans-serif; }
+  th, td { border: 1px solid #cbd5e1; padding: 8px 12px; text-align: left; }
+  th { background: #f1f5f9; }
+  caption { caption-side: bottom; font-style: italic; color: #475569; }
+</style>
+</head>
+<body>
+<table>
+  <caption>Source: JavaSchoolLab, 2026</caption>
+  <tr><th>Month</th><th>Learners</th></tr>
+  <tr><td>Sep</td><td>1200</td></tr>
+  <tr><td>Oct</td><td>1800</td></tr>
+</table>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Data tables in reports use a caption for the title and a note below for the source.<br>
+• A visually hidden caption is possible through a CSS utility that keeps it available to screen readers.<br>
+• Search engines can use captions to understand what the table shows.<br>
+• Long tables with captions are easier to find in a screen reader list of tables.<br><br>
+
+<h3>Best Practices</h3>
+• Keep captions under one short sentence.<br>
+• Use the same wording style across your site.<br>
+• Leave extra explanation to a paragraph referenced with aria-describedby.<br>
+• Make sure the caption makes sense out of context.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> Why use caption instead of a heading above the table?<br>
+• <b>A:</b> The caption is programmatically linked to its table, so assistive technology announces it as the accessible name of the table. A heading is just nearby text.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>described table</title>
+<style>
+  table { border-collapse: collapse; font-family: sans-serif; }
+  th, td { border: 1px solid #cbd5e1; padding: 8px 12px; text-align: left; }
+  th { background: #f1f5f9; }
+</style>
+</head>
+<body>
+<p id="note">Learners are counted at the end of each month.</p>
+<table aria-describedby="note">
+  <caption>Monthly learners</caption>
+  <tr><th>Month</th><th>Learners</th></tr>
+  <tr><td>Sep</td><td>1200</td></tr>
+</table>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-tables-table-head-thead',
                             name: 'Table Head thead',
                             beginner: [
                                 {
-                                    content: `<h3>Table Head thead</h3>
-&bull; Part of the HTML Tables section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• The <b>thead</b> element groups the <b>header rows</b> of a table.<br>
+• It sits at the top, before tbody, and contains one or more tr elements of th cells.<br>
+• It tells browsers and tools which rows are headings and not data.<br>
+• It is optional but strongly recommended.<br><br>
+
+<h3>Key Points</h3>
+• When a long table prints across pages, browsers repeat the thead on every page.<br>
+• It can be styled as a group, for example with a coloured background.<br>
+• It helps assistive technology identify the column headers.<br>
+• With JavaScript you can sort only the tbody rows and leave the thead alone.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>thead</title>
+<style>
+  table { border-collapse: collapse; font-family: sans-serif; }
+  th, td { border: 1px solid #cbd5e1; padding: 8px 12px; text-align: left; }
+  th { background: #f1f5f9; }
+  thead th { background: #1e293b; color: #fff; }
+</style>
+</head>
+<body>
+<table>
+  <thead>
+    <tr><th>Name</th><th>Score</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Asha</td><td>92</td></tr>
+    <tr><td>Ravi</td><td>85</td></tr>
+  </tbody>
+</table>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Make the header stick while scrolling with <b>position: sticky; top: 0</b> on the th cells.<br>
+• Use several rows in thead for grouped headings, combined with colspan.<br>
+• Keep the thead in the source above tbody, even though tfoot can come later.<br>
+• Do not place td cells in the thead unless they truly are headings.<br><br>
+
+<h3>Common Mistakes</h3>
+• Putting header rows in tbody, so print and accessibility features do not treat them as headers.<br>
+• Adding more than one thead to a table. Only one is allowed.<br>
+• Forgetting that sticky headers need a scrolling container with a set height.<br>
+• Styling the thead but not the th cells inside it, which may be overridden.<br><br>
+
+<h3>Try It Yourself</h3>
+• Make a table with a thead of dark cells and six body rows inside a 140px tall scrolling box. Make the header cells sticky and scroll to check that they stay visible.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>sticky header</title>
+<style>
+  table { border-collapse: collapse; font-family: sans-serif; }
+  th, td { border: 1px solid #cbd5e1; padding: 8px 12px; text-align: left; }
+  th { background: #f1f5f9; }
+  .box { max-height: 140px; overflow: auto; }
+  thead th { position: sticky; top: 0; }
+</style>
+</head>
+<body>
+<div class="box">
+<table>
+  <thead><tr><th>#</th><th>Lesson</th></tr></thead>
+  <tbody>
+    <tr><td>1</td><td>Intro</td></tr><tr><td>2</td><td>Tags</td></tr>
+    <tr><td>3</td><td>Lists</td></tr><tr><td>4</td><td>Tables</td></tr>
+    <tr><td>5</td><td>Forms</td></tr><tr><td>6</td><td>Media</td></tr>
+  </tbody>
+</table>
+</div>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Data grids and dashboards use sticky heads so labels stay visible in long lists.<br>
+• Reports printed from the browser rely on repeated headers across pages.<br>
+• Sortable tables attach click handlers to the th cells in the thead.<br>
+• Grouped column headings use two header rows in one thead.<br><br>
+
+<h3>Best Practices</h3>
+• Always include a thead in data tables.<br>
+• Use scope attributes on header cells as well.<br>
+• Limit the header to one or two rows for readability.<br>
+• Give the header cells a clear contrast against the body rows.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> What does thead do for printing?<br>
+• <b>A:</b> When a table spans several printed pages, browsers repeat the thead at the top of each page, so readers always see the column names.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>two header rows</title>
+<style>
+  table { border-collapse: collapse; font-family: sans-serif; }
+  th, td { border: 1px solid #cbd5e1; padding: 8px 12px; text-align: left; }
+  th { background: #f1f5f9; }
+</style>
+</head>
+<body>
+<table>
+  <thead>
+    <tr><th rowspan="2">Name</th><th colspan="2">Marks</th></tr>
+    <tr><th>Theory</th><th>Practical</th></tr>
+  </thead>
+  <tbody><tr><td>Asha</td><td>45</td><td>48</td></tr></tbody>
+</table>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-tables-table-body-tbody',
                             name: 'Table Body tbody',
                             beginner: [
                                 {
-                                    content: `<h3>Table Body tbody</h3>
-&bull; Part of the HTML Tables section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• The <b>tbody</b> element groups the <b>main data rows</b> of a table.<br>
+• It comes after thead and before tfoot.<br>
+• If you leave it out, the browser creates one for you automatically.<br>
+• A table can contain several tbody elements to separate groups of rows.<br><br>
+
+<h3>Key Points</h3>
+• It makes the structure explicit: head, body and foot.<br>
+• You can style the whole group, for example with a background colour.<br>
+• JavaScript targets it when adding or removing rows, using tbody.append(row).<br>
+• It does not change the display of the table by itself.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>tbody</title>
+<style>
+  table { border-collapse: collapse; font-family: sans-serif; }
+  th, td { border: 1px solid #cbd5e1; padding: 8px 12px; text-align: left; }
+  th { background: #f1f5f9; }
+</style>
+</head>
+<body>
+<table>
+  <thead><tr><th>Item</th><th>Price</th></tr></thead>
+  <tbody>
+    <tr><td>Notebook</td><td>50</td></tr>
+    <tr><td>Pen</td><td>10</td></tr>
+  </tbody>
+</table>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Use several tbody elements to group related rows, such as one per category.<br>
+• Add a border above each group with <b>tbody + tbody</b>.<br>
+• Because browsers insert tbody automatically, the selector <b>table &gt; tr</b> never matches. Use <b>table tr</b> or <b>tbody tr</b>.<br>
+• Create new rows with insertRow() on the tbody.<br><br>
+
+<h3>Common Mistakes</h3>
+• Expecting <b>table &gt; tr</b> in CSS to select rows. The auto-created tbody sits in between.<br>
+• Putting a tr directly inside table in the DOM with createElement and wondering about the layout.<br>
+• Using more than one tbody just for styling with no meaning.<br>
+• Appending rows to the table instead of the tbody in scripts.<br><br>
+
+<h3>Try It Yourself</h3>
+• Create a table with two tbody groups, each starting with a heading row. Add a thicker border between groups and a button that appends a new row to the first group.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>grouped bodies</title>
+<style>
+  table { border-collapse: collapse; font-family: sans-serif; }
+  th, td { border: 1px solid #cbd5e1; padding: 8px 12px; text-align: left; }
+  th { background: #f1f5f9; }
+  tbody + tbody { border-top: 3px solid #94a3b8; }
+  tbody th { background: #e2e8f0; }
+</style>
+</head>
+<body>
+<table>
+  <tbody>
+    <tr><th colspan="2">Fruits</th></tr>
+    <tr><td>Apple</td><td>120</td></tr>
+  </tbody>
+  <tbody>
+    <tr><th colspan="2">Vegetables</th></tr>
+    <tr><td>Carrot</td><td>40</td></tr>
+  </tbody>
+</table>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Dynamic tables add rows to the tbody as data arrives from an API.<br>
+• Grouped bodies are used for financial statements and category lists.<br>
+• Row virtualisation libraries manage only the tbody contents.<br>
+• Sorting and filtering scripts reorder the rows inside tbody.<br><br>
+
+<h3>Best Practices</h3>
+• Always write tbody explicitly so your markup matches the DOM.<br>
+• Use one tbody for simple tables and several for grouped data.<br>
+• Keep scripts targeting tbody and not table.<br>
+• Avoid heavy markup inside cells for large tables.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> Why does the selector table > tr not match rows in the browser?<br>
+• <b>A:</b> The HTML parser inserts a tbody between table and tr automatically, so tr is a child of tbody, not of table.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>add a row</title>
+<style>
+  table { border-collapse: collapse; font-family: sans-serif; }
+  th, td { border: 1px solid #cbd5e1; padding: 8px 12px; text-align: left; }
+  th { background: #f1f5f9; }
+</style>
+</head>
+<body>
+<table><tbody id="rows"><tr><td>Existing row</td></tr></tbody></table>
+<button onclick="const r = rows.insertRow(); r.insertCell().textContent = 'New row ' + rows.rows.length;">Add row</button>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-tables-table-foot-tfoot',
                             name: 'Table Foot tfoot',
                             beginner: [
                                 {
-                                    content: `<h3>Table Foot tfoot</h3>
-&bull; Part of the HTML Tables section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• The <b>tfoot</b> element groups the <b>summary rows</b> at the bottom of a table.<br>
+• It is typically used for totals, averages or notes.<br>
+• It may be written before or after tbody in the source, but it always displays at the bottom.<br>
+• There can be only one tfoot per table.<br><br>
+
+<h3>Key Points</h3>
+• It holds tr rows with td or th cells like the other sections.<br>
+• It helps browsers repeat the footer on printed pages.<br>
+• You can style it with a top border and a bold font.<br>
+• Assistive technology can tell that these cells summarise the data above.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>tfoot</title>
+<style>
+  table { border-collapse: collapse; font-family: sans-serif; }
+  th, td { border: 1px solid #cbd5e1; padding: 8px 12px; text-align: left; }
+  th { background: #f1f5f9; }
+  tfoot td { font-weight: bold; background: #fef3c7; }
+</style>
+</head>
+<body>
+<table>
+  <thead><tr><th>Item</th><th>Price</th></tr></thead>
+  <tbody>
+    <tr><td>Notebook</td><td>50</td></tr>
+    <tr><td>Pen</td><td>10</td></tr>
+  </tbody>
+  <tfoot><tr><td>Total</td><td>60</td></tr></tfoot>
+</table>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Right-align number columns, including the totals, so digits line up.<br>
+• Use colspan to let the label cell span the leading columns.<br>
+• Compute totals with JavaScript and write them into the tfoot cells.<br>
+• Use a double top border to show a total line like an invoice.<br><br>
+
+<h3>Common Mistakes</h3>
+• Placing tfoot inside tbody, which is invalid.<br>
+• Using more than one tfoot in a single table.<br>
+• Making the totals manually and forgetting to update them.<br>
+• Using the footer for notes that are not part of the data.<br><br>
+
+<h3>Try It Yourself</h3>
+• Build a small invoice with three items and a tfoot total. Right-align the numbers and add a double border above the total row.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>invoice</title>
+<style>
+  table { border-collapse: collapse; font-family: sans-serif; }
+  th, td { border: 1px solid #cbd5e1; padding: 8px 12px; text-align: left; }
+  th { background: #f1f5f9; }
+  td.num, th.num { text-align: right; }
+  tfoot td { border-top: 3px double #334155; font-weight: bold; }
+</style>
+</head>
+<body>
+<table>
+  <thead><tr><th>Item</th><th class="num">Qty</th><th class="num">Amount</th></tr></thead>
+  <tbody>
+    <tr><td>Course pass</td><td class="num">2</td><td class="num">1998</td></tr>
+    <tr><td>Workbook</td><td class="num">1</td><td class="num">250</td></tr>
+  </tbody>
+  <tfoot><tr><td colspan="2">Total</td><td class="num">2248</td></tr></tfoot>
+</table>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Invoices, shopping carts and financial reports use tfoot for totals.<br>
+• Dashboards place column averages or counts there.<br>
+• Printed reports repeat it on each page when needed.<br>
+• Totals can be computed on the server or with a short script.<br><br>
+
+<h3>Best Practices</h3>
+• Format numbers consistently with the same decimals.<br>
+• Align totals with the numbers they sum.<br>
+• Add an accessible label such as Total in the first cell.<br>
+• Keep the footer to one or two rows.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> Where does tfoot appear if you write it before tbody?<br>
+• <b>A:</b> It still renders at the bottom of the table. HTML5 allows either position in the source, and browsers always place it last.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>sum with script</title>
+<style>
+  table { border-collapse: collapse; font-family: sans-serif; }
+  th, td { border: 1px solid #cbd5e1; padding: 8px 12px; text-align: left; }
+  th { background: #f1f5f9; }
+  td.num { text-align: right; }
+</style>
+</head>
+<body>
+<table>
+  <tbody id="b"><tr><td>A</td><td class="num">10</td></tr><tr><td>B</td><td class="num">25</td></tr></tbody>
+  <tfoot><tr><td>Total</td><td class="num" id="t"></td></tr></tfoot>
+</table>
+<script>
+  t.textContent = [...b.querySelectorAll('.num')].reduce((s, c) => s + Number(c.textContent), 0);
+</script>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-tables-table-row-tr',
                             name: 'Table Row tr',
                             beginner: [
                                 {
-                                    content: `<h3>Table Row tr</h3>
-&bull; Part of the HTML Tables section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• The <b>tr</b> element defines one <b>row</b> of a table.<br>
+• Its children are th and td cells, laid out from left to right.<br>
+• Rows can sit inside thead, tbody, tfoot or directly in the table.<br>
+• The row is the main unit you style, add and remove.<br><br>
+
+<h3>Key Points</h3>
+• All rows should end up with the same number of columns.<br>
+• Cells created by colspan count for several columns.<br>
+• Rows have no width of their own; the cells decide it.<br>
+• tr supports background, border and height styling.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>tr</title>
+<style>
+  table { border-collapse: collapse; font-family: sans-serif; }
+  th, td { border: 1px solid #cbd5e1; padding: 8px 12px; text-align: left; }
+  th { background: #f1f5f9; }
+</style>
+</head>
+<body>
+<table>
+  <tr><th>Name</th><th>City</th></tr>
+  <tr><td>Asha</td><td>Pune</td></tr>
+  <tr><td>Ravi</td><td>Mumbai</td></tr>
+</table>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Use <b>tr:hover</b> to highlight the row under the pointer.<br>
+• Use <b>tr:nth-child(odd)</b> for stripes and <b>tr:last-child</b> for the final row.<br>
+• Row height can be set with the CSS <b>height</b> property, which acts as a minimum.<br>
+• Use data attributes such as <b>data-id</b> on the row to connect it to a record.<br><br>
+
+<h3>Common Mistakes</h3>
+• Trying to set the width on tr. Set it on the cells or columns instead.<br>
+• Placing text directly inside a tr without a cell.<br>
+• Using margin on rows. It has no effect in a table.<br>
+• Forgetting to close rows, which can swallow the next row.<br><br>
+
+<h3>Try It Yourself</h3>
+• Create a table with five rows. Highlight the row under the mouse, stripe even rows and toggle a selected state when a row is clicked.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>row hover</title>
+<style>
+  table { border-collapse: collapse; font-family: sans-serif; }
+  th, td { border: 1px solid #cbd5e1; padding: 8px 12px; text-align: left; }
+  th { background: #f1f5f9; }
+  tbody tr:hover { background: #fff7ed; }
+  tbody tr:nth-child(even) { background: #f8fafc; }
+</style>
+</head>
+<body>
+<table>
+  <thead><tr><th>Name</th><th>City</th></tr></thead>
+  <tbody>
+    <tr><td>Asha</td><td>Pune</td></tr>
+    <tr><td>Ravi</td><td>Mumbai</td></tr>
+    <tr><td>Meena</td><td>Delhi</td></tr>
+  </tbody>
+</table>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Clickable rows open a detail page and need keyboard access through a link in one cell.<br>
+• Selected rows are marked with a class or aria-selected attribute.<br>
+• Row actions such as edit and delete live in the last cell.<br>
+• Rows are the unit that scripts sort, filter and paginate.<br><br>
+
+<h3>Best Practices</h3>
+• Make the whole row clickable with a link inside, not with an onclick on tr alone.<br>
+• Use aria-selected for selectable grids.<br>
+• Keep row heights consistent for readability.<br>
+• Avoid very long rows. Move extra data to a detail view.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> What can you not style on a tr element?<br>
+• <b>A:</b> Margin and padding have no effect on rows. Spacing is controlled with the cells, or with border-spacing on the table when borders are separate.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>row click</title>
+<style>
+  table { border-collapse: collapse; font-family: sans-serif; }
+  th, td { border: 1px solid #cbd5e1; padding: 8px 12px; text-align: left; }
+  th { background: #f1f5f9; }
+  tr.sel { background: #dbeafe; }
+</style>
+</head>
+<body>
+<table><tbody id="t">
+  <tr><td>Java</td></tr><tr><td>HTML</td></tr><tr><td>CSS</td></tr>
+</tbody></table>
+<script>
+  t.addEventListener('click', e => { e.target.closest('tr').classList.toggle('sel'); });
+</script>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-tables-table-header-cell-th',
                             name: 'Table Header Cell th',
                             beginner: [
                                 {
-                                    content: `<h3>Table Header Cell th</h3>
-&bull; Part of the HTML Tables section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• The <b>th</b> element defines a <b>header cell</b> for a column or row.<br>
+• Browsers show its text bold and centred by default.<br>
+• Screen readers use it to announce the heading before each data cell.<br>
+• It can appear in thead, tbody and tfoot.<br><br>
+
+<h3>Key Points</h3>
+• Use <b>scope="col"</b> for a column header and <b>scope="row"</b> for a row header.<br>
+• A th is a real cell, so colspan and rowspan work on it.<br>
+• Do not use td with bold styling in place of th.<br>
+• Row headers help in tables where the first column names each row.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>th</title>
+<style>
+  table { border-collapse: collapse; font-family: sans-serif; }
+  th, td { border: 1px solid #cbd5e1; padding: 8px 12px; text-align: left; }
+  th { background: #f1f5f9; }
+</style>
+</head>
+<body>
+<table>
+  <tr><th scope="col">Name</th><th scope="col">Age</th></tr>
+  <tr><td>Asha</td><td>21</td></tr>
+</table>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Use <b>th scope="row"</b> in the first cell of each row for a two-way table.<br>
+• Use the <b>abbr</b> attribute to give a short version of long headings for screen readers.<br>
+• The <b>headers</b> attribute links a data cell to specific header ids in complex tables.<br>
+• Align header text with its data: numbers to the right, text to the left.<br><br>
+
+<h3>Common Mistakes</h3>
+• Making headers with td and CSS, so assistive tools see no headers.<br>
+• Leaving the first cell of a table empty without a hidden label.<br>
+• Forgetting scope in tables with headers on both axes.<br>
+• Assuming bold centred text is the only effect. The semantic role matters most.<br><br>
+
+<h3>Try It Yourself</h3>
+• Make a weekly timetable with column headers for days and row headers for subjects. Use scope on every header and give the empty corner cell a hidden label.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>row and column headers</title>
+<style>
+  table { border-collapse: collapse; font-family: sans-serif; }
+  th, td { border: 1px solid #cbd5e1; padding: 8px 12px; text-align: left; }
+  th { background: #f1f5f9; }
+  tbody th { background: #f8fafc; }
+</style>
+</head>
+<body>
+<table>
+  <thead><tr><td></td><th scope="col">Mon</th><th scope="col">Tue</th></tr></thead>
+  <tbody>
+    <tr><th scope="row">HTML</th><td>2h</td><td>1h</td></tr>
+    <tr><th scope="row">CSS</th><td>1h</td><td>3h</td></tr>
+  </tbody>
+</table>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Timetables and comparison charts need both row and column headers.<br>
+• Screen readers read "HTML, Monday, 2h" when the headers are marked up well.<br>
+• Sortable tables put buttons inside th cells.<br>
+• Sticky first columns use th scope="row" cells.<br><br>
+
+<h3>Best Practices</h3>
+• Every data table needs header cells.<br>
+• Add a visually hidden label for an empty corner cell.<br>
+• Keep headings short and unique.<br>
+• Use aria-sort on sortable headers.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> What does the scope attribute on th do?<br>
+• <b>A:</b> It states whether the header applies to a column, a row or groups of them, so screen readers announce the right header for each data cell.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>sortable header</title>
+<style>
+  table { border-collapse: collapse; font-family: sans-serif; }
+  th, td { border: 1px solid #cbd5e1; padding: 8px 12px; text-align: left; }
+  th { background: #f1f5f9; }
+  th button { all: unset; cursor: pointer; font-weight: bold; }
+</style>
+</head>
+<body>
+<table>
+  <thead><tr><th scope="col" aria-sort="none"><button>Name</button></th><th scope="col">Score</th></tr></thead>
+  <tbody><tr><td>Asha</td><td>92</td></tr></tbody>
+</table>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-tables-table-data-cell-td',
                             name: 'Table Data Cell td',
                             beginner: [
                                 {
-                                    content: `<h3>Table Data Cell td</h3>
-&bull; Part of the HTML Tables section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• The <b>td</b> element defines a <b>data cell</b> inside a row.<br>
+• It holds the actual values: text, numbers, links, images or other content.<br>
+• The browser aligns it left by default, with a small padding.<br>
+• Cells in one column share the same width automatically.<br><br>
+
+<h3>Key Points</h3>
+• A td can contain any flow content, such as lists and buttons.<br>
+• Use colspan and rowspan to let a cell cover several columns or rows.<br>
+• The vertical alignment is middle by default and can be changed with CSS.<br>
+• The closing tag is optional but you should always write it.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>td</title>
+<style>
+  table { border-collapse: collapse; font-family: sans-serif; }
+  th, td { border: 1px solid #cbd5e1; padding: 8px 12px; text-align: left; }
+  th { background: #f1f5f9; }
+</style>
+</head>
+<body>
+<table>
+  <tr><th>Item</th><th>Price</th></tr>
+  <tr><td>Notebook</td><td>50</td></tr>
+  <tr><td><a href="#">Pen set</a></td><td>10</td></tr>
+</table>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Use <b>text-align: right</b> on numeric cells so digits align.<br>
+• Use <b>vertical-align: top</b> when cells hold multiple lines of text.<br>
+• Use <b>white-space: nowrap</b> to keep short values like dates on one line.<br>
+• Use <b>text-overflow: ellipsis</b> with a max-width for very long text.<br><br>
+
+<h3>Common Mistakes</h3>
+• Putting block layouts inside cells, creating tables within tables.<br>
+• Setting widths on every cell instead of the column or table.<br>
+• Leaving cells empty without meaning. Use a dash or a visually hidden note.<br>
+• Mixing units in one column, which confuses readers.<br><br>
+
+<h3>Try It Yourself</h3>
+• Create a table with a numeric column that is right aligned with tabular figures, and a long text cell that is cut with an ellipsis and shows the full text as a tooltip.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>numeric cells</title>
+<style>
+  table { border-collapse: collapse; font-family: sans-serif; }
+  th, td { border: 1px solid #cbd5e1; padding: 8px 12px; text-align: left; }
+  th { background: #f1f5f9; }
+  td.n { text-align: right; font-variant-numeric: tabular-nums; }
+</style>
+</head>
+<body>
+<table>
+  <tr><th>Item</th><th>Amount</th></tr>
+  <tr><td>Fees</td><td class="n">1,250.00</td></tr>
+  <tr><td>Books</td><td class="n">98.50</td></tr>
+</table>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Cells often hold buttons, badges and avatars in dashboards.<br>
+• Data bound tables write td content from JSON with textContent to stay safe.<br>
+• Truncated text in cells shows its full value in a title attribute.<br>
+• Tabular numbers keep columns of figures aligned.<br><br>
+
+<h3>Best Practices</h3>
+• Always escape or set text safely when filling cells from user data.<br>
+• Use consistent alignment per column.<br>
+• Keep the content of each cell short.<br>
+• Add a header cell for each column that holds data.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> What is the difference between th and td?<br>
+• <b>A:</b> th is a header cell that describes a column or row, and td is a data cell. The distinction gives assistive technology the structure of the table.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>truncate</title>
+<style>
+  table { border-collapse: collapse; font-family: sans-serif; }
+  th, td { border: 1px solid #cbd5e1; padding: 8px 12px; text-align: left; }
+  th { background: #f1f5f9; }
+  td.long { max-width: 160px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+</style>
+</head>
+<body>
+<table>
+  <tr><th>Title</th></tr>
+  <tr><td class="long" title="Introduction to semantic HTML elements and accessibility">Introduction to semantic HTML elements and accessibility</td></tr>
+</table>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-tables-rowspan-attribute',
                             name: 'rowspan Attribute',
                             beginner: [
                                 {
-                                    content: `<h3>rowspan Attribute</h3>
-&bull; Part of the HTML Tables section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• The <b>rowspan</b> attribute makes a cell <b>stretch down across several rows</b>.<br>
+• The value is the number of rows the cell covers.<br>
+• It applies to td and th elements.<br>
+• The rows below must leave out the cells that are now covered.<br><br>
+
+<h3>Key Points</h3>
+• <b>rowspan="2"</b> covers the current row and the next one.<br>
+• The covered cell positions are skipped in the rows below.<br>
+• Use it for merged labels, such as a category that spans its items.<br>
+• A value of 0 once meant the rest of the section, but is no longer supported widely.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>rowspan</title>
+<style>
+  table { border-collapse: collapse; font-family: sans-serif; }
+  th, td { border: 1px solid #cbd5e1; padding: 8px 12px; text-align: left; }
+  th { background: #f1f5f9; }
+</style>
+</head>
+<body>
+<table>
+  <tr><th>Group</th><th>Item</th></tr>
+  <tr><td rowspan="2">Fruits</td><td>Apple</td></tr>
+  <tr><td>Banana</td></tr>
+  <tr><td>Vegetable</td><td>Carrot</td></tr>
+</table>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Count the columns carefully in each row after a span so the grid stays aligned.<br>
+• Combine rowspan and colspan for complex headers.<br>
+• Use vertical-align to centre the spanning cell content.<br>
+• Test the table in different browsers, since overlapping spans are handled differently.<br><br>
+
+<h3>Common Mistakes</h3>
+• Adding the covered cell anyway, which pushes the row one column too wide.<br>
+• Spanning past the end of the row group, such as beyond thead.<br>
+• Using rowspan to create visual layouts rather than data relationships.<br>
+• Overusing spans, which makes the table hard for screen readers to follow.<br><br>
+
+<h3>Try It Yourself</h3>
+• Make a table of regions and cities where the region cell spans two rows. Then build a small timetable where one lesson lasts two periods using rowspan.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>span header</title>
+<style>
+  table { border-collapse: collapse; font-family: sans-serif; }
+  th, td { border: 1px solid #cbd5e1; padding: 8px 12px; text-align: left; }
+  th { background: #f1f5f9; }
+  td[rowspan] { vertical-align: middle; background: #f1f5f9; font-weight: bold; }
+</style>
+</head>
+<body>
+<table>
+  <thead><tr><th>Region</th><th>City</th><th>Sales</th></tr></thead>
+  <tbody>
+    <tr><td rowspan="2">West</td><td>Pune</td><td>120</td></tr>
+    <tr><td>Mumbai</td><td>200</td></tr>
+    <tr><td rowspan="2">North</td><td>Delhi</td><td>180</td></tr>
+    <tr><td>Jaipur</td><td>90</td></tr>
+  </tbody>
+</table>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Timetables use rowspan for lessons that last two periods.<br>
+• Reports group rows by category in the first column.<br>
+• Spanning cells must be tested for accessibility with a screen reader.<br>
+• Spans should not cross thead, tbody and tfoot boundaries.<br><br>
+
+<h3>Best Practices</h3>
+• Keep spans simple and small.<br>
+• Prefer separate nested tables or grouped tbody elements for complex data.<br>
+• Use th with scope rowgroup where it fits.<br>
+• Review the table in a browser outline view to make sure every row has the right cells.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> If a cell has rowspan=2, what must you do in the next row?<br>
+• <b>A:</b> Omit one cell from it, because the spanning cell already occupies that column position in the next row.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>timetable</title>
+<style>
+  table { border-collapse: collapse; font-family: sans-serif; }
+  th, td { border: 1px solid #cbd5e1; padding: 8px 12px; text-align: left; }
+  th { background: #f1f5f9; }
+  td.lab { background: #dcfce7; }
+</style>
+</head>
+<body>
+<table>
+  <tr><th>Time</th><th>Mon</th><th>Tue</th></tr>
+  <tr><td>9:00</td><td rowspan="2" class="lab">Java Lab (2h)</td><td>HTML</td></tr>
+  <tr><td>10:00</td><td>CSS</td></tr>
+</table>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-tables-colspan-attribute',
                             name: 'colspan Attribute',
                             beginner: [
                                 {
-                                    content: `<h3>colspan Attribute</h3>
-&bull; Part of the HTML Tables section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• The <b>colspan</b> attribute makes a cell <b>stretch across several columns</b>.<br>
+• The value is the number of columns the cell covers.<br>
+• It works on td and th.<br>
+• The row then needs fewer cells to complete the grid.<br><br>
+
+<h3>Key Points</h3>
+• <b>colspan="2"</b> merges the current column with the next one.<br>
+• A row with a colspan cell has fewer cell elements than the others.<br>
+• It is typical for group headings and total labels.<br>
+• Use it with rowspan to build multi-level headers.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>colspan</title>
+<style>
+  table { border-collapse: collapse; font-family: sans-serif; }
+  th, td { border: 1px solid #cbd5e1; padding: 8px 12px; text-align: left; }
+  th { background: #f1f5f9; }
+</style>
+</head>
+<body>
+<table>
+  <tr><th colspan="2">Contact</th></tr>
+  <tr><td>Email</td><td>team@example.com</td></tr>
+  <tr><td>Phone</td><td>+91 20 1234 5678</td></tr>
+</table>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Use colspan on header cells to group columns, such as "Marks" over "Theory" and "Practical".<br>
+• Add <b>scope="colgroup"</b> to the spanning header to tell assistive tools what it covers.<br>
+• Centre spanning headings with text-align to show they cover several columns.<br>
+• Make sure the total of spans plus other cells matches in every row.<br><br>
+
+<h3>Common Mistakes</h3>
+• Using too many cells in a row after a span, which adds extra columns.<br>
+• Spanning over columns that hold unrelated data.<br>
+• Using colspan to centre content, where CSS alignment is better.<br>
+• Forgetting to update spans when you add a column.<br><br>
+
+<h3>Try It Yourself</h3>
+• Create a marks table with a Marks heading that spans Theory and Practical columns. Add a footer row whose label cell spans two columns.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>grouped headers</title>
+<style>
+  table { border-collapse: collapse; font-family: sans-serif; }
+  th, td { border: 1px solid #cbd5e1; padding: 8px 12px; text-align: left; }
+  th { background: #f1f5f9; }
+  th[colspan] { text-align: center; background: #e2e8f0; }
+</style>
+</head>
+<body>
+<table>
+  <thead>
+    <tr><th rowspan="2">Name</th><th colspan="2" scope="colgroup">Marks</th></tr>
+    <tr><th scope="col">Theory</th><th scope="col">Practical</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Asha</td><td>45</td><td>48</td></tr>
+    <tr><td>Ravi</td><td>40</td><td>42</td></tr>
+  </tbody>
+</table>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Grouped column headings are standard in financial and exam reports.<br>
+• Footers use colspan for a long label next to a total.<br>
+• Calendars use spans for events across several days.<br>
+• Data export tools generate colspan for merged headings.<br><br>
+
+<h3>Best Practices</h3>
+• Keep the grid regular where possible, since merged cells make sorting hard.<br>
+• Test with a screen reader to confirm headers are announced.<br>
+• Use colgroup and col for styling whole columns instead of repeating classes.<br>
+• Document the column structure for future editors.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> How do you build a two-level column heading?<br>
+• <b>A:</b> Use a colspan header cell on the first row for the group and a second row of normal headers beneath it, adding rowspan to the cells that have no sub-headings.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>footer label</title>
+<style>
+  table { border-collapse: collapse; font-family: sans-serif; }
+  th, td { border: 1px solid #cbd5e1; padding: 8px 12px; text-align: left; }
+  th { background: #f1f5f9; }
+  td.r { text-align: right; }
+</style>
+</head>
+<body>
+<table>
+  <tr><th>Item</th><th>Qty</th><th>Price</th></tr>
+  <tr><td>Book</td><td>2</td><td class="r">500</td></tr>
+  <tr><td colspan="2"><b>Total</b></td><td class="r"><b>500</b></td></tr>
+</table>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-tables-table-headers',
                             name: 'Table Headers',
                             beginner: [
                                 {
-                                    content: `<h3>Table Headers</h3>
-&bull; Part of the HTML Tables section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• <b>Table headers</b> label the columns and rows so that each data cell has meaning.<br>
+• They are marked with th elements, not with styled td cells.<br>
+• Good headers let readers and assistive tools understand a table at a glance.<br>
+• Simple tables need only column headers; others need row headers as well.<br><br>
+
+<h3>Key Points</h3>
+• Use <b>scope="col"</b> and <b>scope="row"</b> on header cells.<br>
+• The <b>headers</b> attribute connects a data cell to header ids in irregular tables.<br>
+• The <b>id</b> of each th is referenced from the td headers list.<br>
+• Keep header text short and unique.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>headers</title>
+<style>
+  table { border-collapse: collapse; font-family: sans-serif; }
+  th, td { border: 1px solid #cbd5e1; padding: 8px 12px; text-align: left; }
+  th { background: #f1f5f9; }
+</style>
+</head>
+<body>
+<table>
+  <thead><tr><th scope="col">Course</th><th scope="col">Hours</th></tr></thead>
+  <tbody><tr><td>HTML</td><td>12</td></tr></tbody>
+</table>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Use the id and headers pair when a table has multi-level headings that scope cannot express.<br>
+• Screen readers read the full path, such as "Marks, Theory, 45".<br>
+• Test with NVDA or VoiceOver to verify that the right headers are spoken.<br>
+• Hide an empty corner cell label with a visually hidden span.<br><br>
+
+<h3>Common Mistakes</h3>
+• Using only visual styling to show headers.<br>
+• Giving two headers the same text, which makes reading ambiguous.<br>
+• Using headers ids that do not exist.<br>
+• Using headers on simple tables where scope is enough.<br><br>
+
+<h3>Try It Yourself</h3>
+• Build a marks table with a two-level header and add scope to a simple version. Then use id and headers to link each data cell in the complex one.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>headers attribute</title>
+<style>
+  table { border-collapse: collapse; font-family: sans-serif; }
+  th, td { border: 1px solid #cbd5e1; padding: 8px 12px; text-align: left; }
+  th { background: #f1f5f9; }
+</style>
+</head>
+<body>
+<table>
+  <tr><th id="n" rowspan="2">Name</th><th id="m" colspan="2">Marks</th></tr>
+  <tr><th id="t" headers="m">Theory</th><th id="p" headers="m">Practical</th></tr>
+  <tr><td headers="n">Asha</td><td headers="m t">45</td><td headers="m p">48</td></tr>
+</table>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Government and finance sites publish complex tables with headers ids for accessibility.<br>
+• Automated checkers flag tables that lack header cells.<br>
+• Mobile layouts that turn rows into cards must keep the header relationship, for example with data-label.<br>
+• Good headers also help search engines pick tables for snippets.<br><br>
+
+<h3>Best Practices</h3>
+• Prefer simple tables that need only scope.<br>
+• Split very complex tables into several smaller tables.<br>
+• Run an accessibility checker on every data table.<br>
+• Keep the header row visible when scrolling.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> When do you need the headers attribute instead of scope?<br>
+• <b>A:</b> When a table has irregular or multi-level headings that scope cannot describe, so each data cell lists the ids of its headers explicitly.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>card layout labels</title>
+<style>
+  table { border-collapse: collapse; font-family: sans-serif; }
+  th, td { border: 1px solid #cbd5e1; padding: 8px 12px; text-align: left; }
+  th { background: #f1f5f9; }
+  @media (max-width: 500px) { td::before { content: attr(data-label) ": "; font-weight: bold; } }
+</style>
+</head>
+<body>
+<table>
+  <tr><th>Course</th><th>Hours</th></tr>
+  <tr><td data-label="Course">HTML</td><td data-label="Hours">12</td></tr>
+</table>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-tables-accessible-tables',
                             name: 'Accessible Tables',
                             beginner: [
                                 {
-                                    content: `<h3>Accessible Tables</h3>
-&bull; Part of the HTML Tables section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• An <b>accessible table</b> can be understood and used by people with screen readers and keyboards.<br>
+• It relies on proper structure: caption, thead, th and scope.<br>
+• Good structure also helps everyone else, including search engines.<br>
+• Accessibility is built with markup, not with styling.<br><br>
+
+<h3>Key Points</h3>
+• Add a <b>caption</b> that names the table.<br>
+• Use <b>th</b> with <b>scope</b> for every header.<br>
+• Group rows with thead, tbody and tfoot.<br>
+• Avoid merged cells unless they are really needed.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>accessible</title>
+<style>
+  table { border-collapse: collapse; font-family: sans-serif; }
+  th, td { border: 1px solid #cbd5e1; padding: 8px 12px; text-align: left; }
+  th { background: #f1f5f9; }
+</style>
+</head>
+<body>
+<table>
+  <caption>Course hours per week</caption>
+  <thead><tr><th scope="col">Course</th><th scope="col">Hours</th></tr></thead>
+  <tbody><tr><th scope="row">HTML</th><td>3</td></tr></tbody>
+</table>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Use aria-describedby to connect a longer explanation to the table.<br>
+• Make wide tables keyboard scrollable by adding tabindex="0" and a label to the scroll container.<br>
+• Ensure enough colour contrast between text and row stripes.<br>
+• Do not remove header semantics when restyling tables as cards on small screens.<br><br>
+
+<h3>Common Mistakes</h3>
+• Using display: block on table parts without restoring roles, which removes table semantics in some browsers.<br>
+• Relying on colour alone to show status, such as red and green.<br>
+• Leaving empty header cells with no label.<br>
+• Creating layout tables that screen readers announce as data tables.<br><br>
+
+<h3>Try It Yourself</h3>
+• Take a table of your own and add a caption, scope on every header, and a status column that shows text as well as colour. Test it with the keyboard only.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>scrollable region</title>
+<style>
+  table { border-collapse: collapse; font-family: sans-serif; }
+  th, td { border: 1px solid #cbd5e1; padding: 8px 12px; text-align: left; }
+  th { background: #f1f5f9; }
+  .scroll { overflow-x: auto; max-width: 320px; }
+</style>
+</head>
+<body>
+<div class="scroll" tabindex="0" role="region" aria-label="Fees table, scrollable">
+<table>
+  <caption>Fees by course</caption>
+  <tr><th scope="col">Course</th><th scope="col">Q1</th><th scope="col">Q2</th><th scope="col">Q3</th><th scope="col">Q4</th></tr>
+  <tr><th scope="row">Java</th><td>1000</td><td>1000</td><td>1200</td><td>1200</td></tr>
+</table>
+</div>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Public service sites must meet WCAG rules, so their tables are tested carefully.<br>
+• Responsive designs keep table roles when stacking cells on phones.<br>
+• Status columns combine colour with text such as Passed or Failed.<br>
+• Large datasets use ARIA grid patterns only when they need editing behaviour.<br><br>
+
+<h3>Best Practices</h3>
+• Test with a screen reader and the keyboard.<br>
+• Keep tables simple and single purpose.<br>
+• Prefer text status over colour-only status.<br>
+• Document the table structure in your design system.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> What makes a table accessible at minimum?<br>
+• <b>A:</b> A caption, header cells with scope, sensible grouping with thead and tbody, and no layout use. Together these let screen readers announce each cell with its headers.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>status text</title>
+<style>
+  table { border-collapse: collapse; font-family: sans-serif; }
+  th, td { border: 1px solid #cbd5e1; padding: 8px 12px; text-align: left; }
+  th { background: #f1f5f9; }
+  .ok { color: #166534; font-weight: bold; }
+  .bad { color: #991b1b; font-weight: bold; }
+</style>
+</head>
+<body>
+<table>
+  <caption>Test results</caption>
+  <tr><th scope="col">Suite</th><th scope="col">Status</th></tr>
+  <tr><td>Unit</td><td class="ok">&#10003; Passed</td></tr>
+  <tr><td>UI</td><td class="bad">&#10007; Failed</td></tr>
+</table>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-tables-table-scope',
                             name: 'Table Scope',
                             beginner: [
                                 {
-                                    content: `<h3>Table Scope</h3>
-&bull; Part of the HTML Tables section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• The <b>scope</b> attribute on a th cell says <b>which cells the header applies to</b>.<br>
+• The values are col, row, colgroup and rowgroup.<br>
+• Screen readers use it to read the right header with each data cell.<br>
+• It is simple, fast to add and the first tool for accessible tables.<br><br>
+
+<h3>Key Points</h3>
+• <b>scope="col"</b> marks a column header.<br>
+• <b>scope="row"</b> marks a row header.<br>
+• <b>colgroup</b> and <b>rowgroup</b> apply to grouped headings that span several columns or rows.<br>
+• It is only valid on th elements.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>scope</title>
+<style>
+  table { border-collapse: collapse; font-family: sans-serif; }
+  th, td { border: 1px solid #cbd5e1; padding: 8px 12px; text-align: left; }
+  th { background: #f1f5f9; }
+</style>
+</head>
+<body>
+<table>
+  <tr><td></td><th scope="col">Q1</th><th scope="col">Q2</th></tr>
+  <tr><th scope="row">Sales</th><td>10</td><td>14</td></tr>
+  <tr><th scope="row">Costs</th><td>6</td><td>8</td></tr>
+</table>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Use scope on every th in a table that has headers on both axes.<br>
+• Use <b>colgroup</b> for a heading that spans two columns through colspan.<br>
+• Use <b>rowgroup</b> for a row heading that spans several rows through rowspan.<br>
+• Modern browsers can often guess scope, but explicit markup is more reliable.<br><br>
+
+<h3>Common Mistakes</h3>
+• Putting scope on td cells, where it is obsolete.<br>
+• Using scope on very irregular tables where headers ids are better.<br>
+• Using the wrong value, such as col for a row header.<br>
+• Forgetting scope in the first column that acts as a header.<br><br>
+
+<h3>Try It Yourself</h3>
+• Write a table with headers on both axes and mark each header with the correct scope. Then add a grouped heading that spans two columns and use colgroup.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>colgroup scope</title>
+<style>
+  table { border-collapse: collapse; font-family: sans-serif; }
+  th, td { border: 1px solid #cbd5e1; padding: 8px 12px; text-align: left; }
+  th { background: #f1f5f9; }
+</style>
+</head>
+<body>
+<table>
+  <thead>
+    <tr><td></td><th colspan="2" scope="colgroup">2026</th></tr>
+    <tr><td></td><th scope="col">H1</th><th scope="col">H2</th></tr>
+  </thead>
+  <tbody><tr><th scope="row">Revenue</th><td>40</td><td>55</td></tr></tbody>
+</table>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Government and education sites apply scope everywhere because auditors check for it.<br>
+• Content management systems add it automatically when editors mark a header row.<br>
+• Automated tests flag th cells that lack scope in complex tables.<br>
+• Design systems include scope in their table components.<br><br>
+
+<h3>Best Practices</h3>
+• Make scope a part of your table component.<br>
+• Test with a screen reader that supports table navigation.<br>
+• Keep header text short so it is pleasant to hear repeatedly.<br>
+• Use headers ids only when scope cannot describe the structure.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> What are the possible values of scope?<br>
+• <b>A:</b> col, row, colgroup and rowgroup. The first two cover simple headers, and the group values cover headers spanning several columns or rows.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>rowgroup scope</title>
+<style>
+  table { border-collapse: collapse; font-family: sans-serif; }
+  th, td { border: 1px solid #cbd5e1; padding: 8px 12px; text-align: left; }
+  th { background: #f1f5f9; }
+</style>
+</head>
+<body>
+<table>
+  <tbody>
+    <tr><th scope="rowgroup" rowspan="2">West</th><td>Pune</td><td>120</td></tr>
+    <tr><td>Mumbai</td><td>200</td></tr>
+  </tbody>
+</table>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-tables-column-groups',
                             name: 'Column Groups',
                             beginner: [
                                 {
-                                    content: `<h3>Column Groups</h3>
-&bull; Part of the HTML Tables section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• <b>Column groups</b> let you apply styles or attributes to whole <b>columns</b> of a table.<br>
+• They are made with colgroup and col elements placed at the start of the table.<br>
+• Without them, you would style every cell of a column by hand.<br>
+• They describe columns, while rows are described by tr.<br><br>
+
+<h3>Key Points</h3>
+• colgroup goes right after caption and before thead or tr.<br>
+• Each col inside stands for one column, or several with the span attribute.<br>
+• Only a few properties work on columns: background, border, width and visibility.<br>
+• Cells in a column inherit those styles.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>column groups</title>
+<style>
+  table { border-collapse: collapse; font-family: sans-serif; }
+  th, td { border: 1px solid #cbd5e1; padding: 8px 12px; text-align: left; }
+  th { background: #f1f5f9; }
+</style>
+</head>
+<body>
+<table>
+  <colgroup>
+    <col style="background:#f1f5f9">
+    <col span="2" style="background:#ecfeff">
+  </colgroup>
+  <tr><th>Name</th><th>Math</th><th>Science</th></tr>
+  <tr><td>Asha</td><td>90</td><td>88</td></tr>
+</table>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Set a column width with <b>col { width: 120px }</b> in table-layout fixed tables.<br>
+• Highlight the sorted column by changing the class on its col element.<br>
+• Use <b>visibility: collapse</b> to hide a column in some browsers.<br>
+• Use several colgroups to separate logical sections of columns.<br><br>
+
+<h3>Common Mistakes</h3>
+• Expecting padding or colour of text to work on col. Only a few properties apply.<br>
+• Placing colgroup after the rows.<br>
+• Mixing the span attribute and individual col elements wrongly.<br>
+• Leaving a column out, so styles land on the wrong one.<br><br>
+
+<h3>Try It Yourself</h3>
+• Make a three column table with fixed widths set through col elements and a shaded middle column. Then toggle a highlight class on a col with a button.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>fixed widths</title>
+<style>
+  table { border-collapse: collapse; font-family: sans-serif; }
+  th, td { border: 1px solid #cbd5e1; padding: 8px 12px; text-align: left; }
+  th { background: #f1f5f9; }
+  table { table-layout: fixed; width: 100%; }
+</style>
+</head>
+<body>
+<table>
+  <colgroup><col style="width:50%"><col style="width:25%"><col style="width:25%"></colgroup>
+  <tr><th>Title</th><th>Hours</th><th>Level</th></tr>
+  <tr><td>Introduction to Java</td><td>10</td><td>Basic</td></tr>
+</table>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Data grids set column widths through colgroup for faster rendering with table-layout fixed.<br>
+• Financial tables shade the total column.<br>
+• Print stylesheets hide optional columns.<br>
+• Scripts toggle a class on col to highlight a column on hover.<br><br>
+
+<h3>Best Practices</h3>
+• Use col for width and background only.<br>
+• Keep the number of col elements in step with the columns.<br>
+• Prefer CSS classes on cells when you need text styles.<br>
+• Document which columns are fixed width.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> Why would you use colgroup instead of styling each td?<br>
+• <b>A:</b> One col rule styles an entire column in a single place, which is shorter, faster and easier to change than adding a class to every cell.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>highlight column</title>
+<style>
+  table { border-collapse: collapse; font-family: sans-serif; }
+  th, td { border: 1px solid #cbd5e1; padding: 8px 12px; text-align: left; }
+  th { background: #f1f5f9; }
+  col.hl { background: #fef9c3; }
+</style>
+</head>
+<body>
+<table>
+  <colgroup><col><col class="hl"><col></colgroup>
+  <tr><th>A</th><th>B (highlighted)</th><th>C</th></tr>
+  <tr><td>1</td><td>2</td><td>3</td></tr>
+</table>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-tables-colgroup-element',
                             name: 'Colgroup Element',
                             beginner: [
                                 {
-                                    content: `<h3>Colgroup Element</h3>
-&bull; Part of the HTML Tables section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• The <b>colgroup</b> element groups one or more <b>col</b> elements that describe columns.<br>
+• It must be a child of table, placed before the table rows.<br>
+• It can also use the span attribute when it has no col children.<br>
+• It affects only the columns, not the cell content.<br><br>
+
+<h3>Key Points</h3>
+• The <b>span</b> attribute sets how many columns the group covers.<br>
+• Use several colgroup elements to label different parts of the table.<br>
+• A group is a convenient hook for a background across the columns.<br>
+• It must come after caption if one exists.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>colgroup</title>
+<style>
+  table { border-collapse: collapse; font-family: sans-serif; }
+  th, td { border: 1px solid #cbd5e1; padding: 8px 12px; text-align: left; }
+  th { background: #f1f5f9; }
+</style>
+</head>
+<body>
+<table>
+  <colgroup span="2" style="background:#f1f5f9"></colgroup>
+  <colgroup style="background:#fef3c7"></colgroup>
+  <tr><th>Name</th><th>City</th><th>Score</th></tr>
+  <tr><td>Asha</td><td>Pune</td><td>92</td></tr>
+</table>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Use a colgroup for each logical block, such as identity columns and result columns.<br>
+• Give each group a class to style it from your stylesheet.<br>
+• Combine with a thicker border on the first cell of each group.<br>
+• Remember that a group with span cannot also hold col children.<br><br>
+
+<h3>Common Mistakes</h3>
+• Putting colgroup inside thead or tbody.<br>
+• Setting span and also adding col elements in the same group.<br>
+• Writing colgroup after tr rows, which is invalid.<br>
+• Expecting border styles on colgroup to render in every browser.<br><br>
+
+<h3>Try It Yourself</h3>
+• Create a table with two colgroups: one for the first two columns and one for the last two. Shade each group in a different colour.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>grouped columns</title>
+<style>
+  table { border-collapse: collapse; font-family: sans-serif; }
+  th, td { border: 1px solid #cbd5e1; padding: 8px 12px; text-align: left; }
+  th { background: #f1f5f9; }
+  .id { background: #eff6ff; }
+  .res { background: #f0fdf4; }
+</style>
+</head>
+<body>
+<table>
+  <colgroup class="id"><col><col></colgroup>
+  <colgroup class="res"><col><col></colgroup>
+  <tr><th>Name</th><th>City</th><th>Math</th><th>Science</th></tr>
+  <tr><td>Asha</td><td>Pune</td><td>90</td><td>88</td></tr>
+</table>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Statements with many columns use groups to show related columns together.<br>
+• Spreadsheet-like pages keep the first group fixed while scrolling.<br>
+• Printing styles collapse unneeded groups.<br>
+• Scripts highlight a whole group when the pointer enters it.<br><br>
+
+<h3>Best Practices</h3>
+• Group columns only when it adds clarity.<br>
+• Add a matching colspan header cell above each group.<br>
+• Keep the HTML valid by following the order of table children.<br>
+• Check results in more than one browser.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> What is the correct position of colgroup in a table?<br>
+• <b>A:</b> Directly inside table, after an optional caption and before thead, tbody, tfoot or tr elements.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>span only</title>
+<style>
+  table { border-collapse: collapse; font-family: sans-serif; }
+  th, td { border: 1px solid #cbd5e1; padding: 8px 12px; text-align: left; }
+  th { background: #f1f5f9; }
+</style>
+</head>
+<body>
+<table>
+  <colgroup span="1" style="width:40%"></colgroup>
+  <colgroup span="2" style="width:30%"></colgroup>
+  <tr><th>Title</th><th>Hours</th><th>Level</th></tr>
+  <tr><td>Java Basics</td><td>12</td><td>Basic</td></tr>
+</table>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-tables-col-element',
                             name: 'Col Element',
                             beginner: [
                                 {
-                                    content: `<h3>Col Element</h3>
-&bull; Part of the HTML Tables section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• The <b>col</b> element represents <b>one column</b> inside a colgroup.<br>
+• It is a void element and has no closing tag.<br>
+• It can carry a class, width or background that applies to every cell in that column.<br>
+• The span attribute lets one col stand for several columns.<br><br>
+
+<h3>Key Points</h3>
+• It must be inside a colgroup, not directly in the table.<br>
+• It has no content, only styling and span.<br>
+• A few CSS properties apply: width, background, border and visibility.<br>
+• Cells with colspan are affected by every column they cover.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>col</title>
+<style>
+  table { border-collapse: collapse; font-family: sans-serif; }
+  th, td { border: 1px solid #cbd5e1; padding: 8px 12px; text-align: left; }
+  th { background: #f1f5f9; }
+</style>
+</head>
+<body>
+<table>
+  <colgroup>
+    <col style="width:200px">
+    <col style="background:#ecfeff">
+  </colgroup>
+  <tr><th>Course</th><th>Hours</th></tr>
+  <tr><td>Core Java</td><td>30</td></tr>
+</table>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Set alignment on the cells, for example with td:nth-child(2), because text-align on a col has no effect.<br>
+• Use width on col together with table-layout fixed for predictable layouts.<br>
+• Add a class with a background to mark an active or sorted column.<br>
+• Use span to apply the same width to several equal columns.<br><br>
+
+<h3>Common Mistakes</h3>
+• Expecting font or text alignment rules on col to work. Browsers ignore them.<br>
+• Giving col a closing tag or children.<br>
+• Leaving out col elements for some columns, so rules apply to the wrong ones.<br>
+• Using margins or padding on col.<br><br>
+
+<h3>Try It Yourself</h3>
+• Make a table whose first column is 200px wide and whose last column is shaded using col. Then try text-align on the col and notice it has no effect.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>equal columns</title>
+<style>
+  table { border-collapse: collapse; font-family: sans-serif; }
+  th, td { border: 1px solid #cbd5e1; padding: 8px 12px; text-align: left; }
+  th { background: #f1f5f9; }
+  table { table-layout: fixed; width: 100%; }
+</style>
+</head>
+<body>
+<table>
+  <colgroup><col span="3" style="width:33%"></colgroup>
+  <tr><th>A</th><th>B</th><th>C</th></tr>
+  <tr><td>1</td><td>2</td><td>3</td></tr>
+</table>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Sortable tables change a class on the col of the active column.<br>
+• Reports set column widths with col for exact print layouts.<br>
+• Responsive tables hide a col on small screens together with matching cells.<br>
+• Export tools write col widths from spreadsheet column widths.<br><br>
+
+<h3>Best Practices</h3>
+• Keep col rules small and purposeful.<br>
+• Align text through cell rules such as td:nth-child.<br>
+• Check that the count of col elements matches the columns.<br>
+• Prefer CSS classes for anything col cannot style.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> Why can you not centre text with a col rule?<br>
+• <b>A:</b> Browsers apply only background, border, width and visibility from col to cells. Text properties are inherited from the cells, so you must style td and th.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>sorted column</title>
+<style>
+  table { border-collapse: collapse; font-family: sans-serif; }
+  th, td { border: 1px solid #cbd5e1; padding: 8px 12px; text-align: left; }
+  th { background: #f1f5f9; }
+  col.sorted { background: #fef9c3; }
+</style>
+</head>
+<body>
+<table>
+  <colgroup><col><col class="sorted"></colgroup>
+  <tr><th>Name</th><th>Score &#9650;</th></tr>
+  <tr><td>Asha</td><td>92</td></tr>
+  <tr><td>Ravi</td><td>85</td></tr>
+</table>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         }

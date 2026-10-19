@@ -7,7 +7,6 @@ import { useProgress } from '../context/ProgressContext';
 import { fetchReviewQueue, ReviewItem } from '../services/api';
 import { TOTAL_TOPICS } from '../data/courseStats';
 import { slugify } from '../lib/slug';
-import { StudyActivity } from './StudyActivity';
 import { StreakBanner } from './StreakBanner';
 
 function formatDuration(totalSeconds: number) {
@@ -144,15 +143,6 @@ export function ProgressPanel() {
           </div>
         )}
       </div>
-
-      <details className="mt-4 group rounded-xl border border-gray-200 dark:border-gray-700">
-        <summary className="cursor-pointer select-none list-none px-4 py-3 text-sm font-semibold text-gray-800 dark:text-gray-100 flex items-center justify-between focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 rounded-xl">
-          Study activity and weekly goal
-          <span aria-hidden="true" className="text-xs font-medium text-orange-700 dark:text-orange-300 group-open:hidden">Show</span>
-          <span aria-hidden="true" className="text-xs font-medium text-orange-700 dark:text-orange-300 hidden group-open:inline">Hide</span>
-        </summary>
-        <div className="px-3 pb-3"><StudyActivity /></div>
-      </details>
     </motion.section>
   );
 }

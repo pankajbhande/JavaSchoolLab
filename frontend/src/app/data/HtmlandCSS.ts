@@ -22737,602 +22737,5537 @@ cf.addEventListener("submit", function (e) {
                             ],
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-forms-autocomplete-attribute',
                             name: 'autocomplete Attribute',
                             beginner: [
                                 {
-                                    content: `<h3>autocomplete Attribute</h3>
-&bull; Part of the HTML Forms section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• The <b>autocomplete</b> attribute tells the browser whether and how it may <b>fill in a field automatically</b>.<br>
+• It can be set on a form or on single inputs.<br>
+• The value on is the default and off asks the browser not to suggest values.<br>
+• Specific tokens such as email or postal-code say what the field holds.<br><br>
+
+<h3>Key Points</h3>
+• Tokens include <b>name</b>, <b>email</b>, <b>tel</b>, <b>street-address</b>, <b>postal-code</b> and <b>cc-number</b>.<br>
+• Password fields use <b>current-password</b> or <b>new-password</b>.<br>
+• One-time codes use <b>one-time-code</b> so phones can paste an SMS code.<br>
+• Correct tokens save users a lot of typing on mobile.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>autocomplete</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<form>
+  <label for="n">Full name</label>
+  <input id="n" name="name" autocomplete="name">
+  <label for="e">Email</label>
+  <input id="e" name="email" type="email" autocomplete="email">
+</form>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Use <b>autocomplete="new-password"</b> on sign-up so password managers offer to generate one.<br>
+• Use <b>autocomplete="current-password"</b> on login forms.<br>
+• Prefix a token with a group such as shipping or billing to separate address blocks.<br>
+• Set autocomplete="off" only for sensitive or one-off fields such as a search of private data.<br><br>
+
+<h3>Common Mistakes</h3>
+• Using off everywhere, which blocks password managers and annoys users.<br>
+• Using wrong tokens, so the browser fills the wrong data.<br>
+• Forgetting the name or id of the field, which browsers also use to guess.<br>
+• Expecting autocomplete="off" to be honoured by every browser on login fields.<br><br>
+
+<h3>Try It Yourself</h3>
+• Make a sign-up form with name, email, new-password and postal-code fields using the correct tokens, then try it with your browser saved data.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>address tokens</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<form>
+  <label for="a">Shipping address</label>
+  <input id="a" name="ship" autocomplete="shipping street-address">
+  <label for="z">Postal code</label>
+  <input id="z" name="zip" autocomplete="shipping postal-code">
+  <label for="c">One-time code</label>
+  <input id="c" name="otp" inputmode="numeric" autocomplete="one-time-code">
+</form>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Checkout forms rely on correct tokens to complete in seconds on mobile.<br>
+• Sign-in pages use current-password and username so managers fill both fields.<br>
+• Accessibility guidelines (WCAG 1.3.5) require suitable autocomplete values for personal data fields.<br>
+• Banks use one-time-code to read SMS codes automatically on supported phones.<br><br>
+
+<h3>Best Practices</h3>
+• Use the standard tokens from the HTML specification.<br>
+• Test forms with a password manager and a phone.<br>
+• Do not disable autocomplete unless there is a real reason.<br>
+• Keep field names meaningful as a second hint.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> Why is autocomplete important for accessibility?<br>
+• <b>A:</b> It helps people with motor or cognitive difficulties by letting the browser fill in personal data, and WCAG requires correct tokens for fields that collect it.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>signup</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<form>
+  <label for="u">Email</label>
+  <input id="u" type="email" name="username" autocomplete="username">
+  <label for="p">Choose a password</label>
+  <input id="p" type="password" name="password" autocomplete="new-password">
+</form>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-forms-input-element',
                             name: 'Input Element',
                             beginner: [
                                 {
-                                    content: `<h3>Input Element</h3>
-&bull; Part of the HTML Forms section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• The <b>input</b> element creates an <b>interactive field</b> where the user enters data.<br>
+• It is a void element, so it has no closing tag.<br>
+• The <b>type</b> attribute chooses what kind of control appears.<br>
+• The default type is text.<br><br>
+
+<h3>Key Points</h3>
+• Important attributes: <b>name</b>, <b>value</b>, <b>type</b>, <b>id</b> and <b>placeholder</b>.<br>
+• <b>name</b> is the key sent to the server with the value.<br>
+• Pair every input with a label for accessibility.<br>
+• More than twenty types exist, from text to colour and file.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>input</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<form>
+  <label for="q">Your name</label>
+  <input id="q" name="name" type="text" value="Asha">
+  <button>Send</button>
+</form>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Browsers validate types such as email, url and number on submit.<br>
+• Use <b>required</b>, <b>min</b>, <b>max</b> and <b>pattern</b> to add rules without JavaScript.<br>
+• Read values in script with <b>input.value</b> and listen to the <b>input</b> event for live changes.<br>
+• Unsupported types fall back to text, so the form still works.<br><br>
+
+<h3>Common Mistakes</h3>
+• Forgetting the name attribute, so the value is not submitted.<br>
+• Using the placeholder as the only label.<br>
+• Setting the type after the page has loaded and expecting all browsers to react.<br>
+• Using a text input where a more specific type would give a better mobile keyboard.<br><br>
+
+<h3>Try It Yourself</h3>
+• Create a form with a text, email and number input, each with a label. Submit it and look at the query string to see how the names become keys.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>live input</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<label for="t">Type something</label>
+<input id="t" name="t">
+<p>You typed: <b id="out"></b></p>
+<script>t.addEventListener('input', () => out.textContent = t.value);</script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Search boxes, login forms and filters are all built from input elements.<br>
+• Frameworks wrap input in controlled components that keep value and state in sync.<br>
+• Mobile keyboards change with type and inputmode, which improves speed.<br>
+• Custom styled inputs must keep focus outlines and labels.<br><br>
+
+<h3>Best Practices</h3>
+• Choose the most specific type available.<br>
+• Always connect a label, using for and id.<br>
+• Validate on the server as well as in the browser.<br>
+• Keep names unique and consistent with your backend.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> Which attribute decides what data is sent for an input?<br>
+• <b>A:</b> The name attribute is the key and the current value is the data, so a field without a name is never submitted.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>types</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<form>
+  <input type="email" name="e" placeholder="Email">
+  <input type="number" name="n" min="1" max="10" placeholder="1-10">
+  <input type="date" name="d">
+  <input type="color" name="c" value="#ea580c">
+</form>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-forms-text-input',
                             name: 'Text Input',
                             beginner: [
                                 {
-                                    content: `<h3>Text Input</h3>
-&bull; Part of the HTML Forms section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• <b>type="text"</b> creates a <b>single line text field</b>.<br>
+• It is the default type, used for names, titles and short answers.<br>
+• The browser removes line breaks from what the user pastes.<br>
+• The value is always a string.<br><br>
+
+<h3>Key Points</h3>
+• Use <b>placeholder</b> for a short hint, never as the only label.<br>
+• Use <b>maxlength</b> and <b>minlength</b> to limit the length.<br>
+• Use <b>size</b> for a rough visible width, or CSS width for exact control.<br>
+• Add <b>readonly</b> or <b>disabled</b> to stop editing.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>text input</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<label for="n">First name</label>
+<input type="text" id="n" name="first" placeholder="e.g. Asha" maxlength="30">
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• <b>pattern</b> applies a regular expression, for example letters only.<br>
+• Use <b>autocomplete</b> tokens such as given-name to help the browser.<br>
+• <b>spellcheck="false"</b> suits usernames and codes.<br>
+• <b>inputmode</b> changes the mobile keyboard without changing validation.<br><br>
+
+<h3>Common Mistakes</h3>
+• Using type text for numbers, emails or dates, which loses validation and keyboards.<br>
+• Using only a placeholder instead of a label.<br>
+• Trimming the value only on the client. Trim on the server too.<br>
+• Setting maxlength too small for real names.<br><br>
+
+<h3>Try It Yourself</h3>
+• Build a username field that accepts three to twelve letters or digits, shows the rules in a title and displays remaining characters as you type.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>pattern</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<form>
+  <label for="u">Username (letters and digits, 3-12)</label>
+  <input id="u" name="u" pattern="[A-Za-z0-9]{3,12}" title="3 to 12 letters or digits" required>
+  <button>Check</button>
+</form>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Usernames, titles and search terms rely on text inputs.<br>
+• Counters show remaining characters with a small script.<br>
+• Names should allow spaces, accents and long values.<br>
+• Frameworks use controlled text inputs with value and onChange.<br><br>
+
+<h3>Best Practices</h3>
+• Be generous with lengths and characters for names.<br>
+• Show the rules near the field, not only in an error.<br>
+• Do not block paste on text fields.<br>
+• Test with long and non-English text.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> Why is the placeholder not a replacement for a label?<br>
+• <b>A:</b> It disappears as soon as the user types, has low contrast and is not reliably announced by screen readers. A label stays visible and is linked to the field.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>counter</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<label for="b">Bio</label>
+<input id="b" maxlength="40">
+<small><span id="c">40</span> left</small>
+<script>b.oninput = () => c.textContent = 40 - b.value.length;</script>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-forms-password-input',
                             name: 'Password Input',
                             beginner: [
                                 {
-                                    content: `<h3>Password Input</h3>
-&bull; Part of the HTML Forms section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• <b>type="password"</b> hides what the user types behind dots or bullets.<br>
+• It protects against people looking over a shoulder.<br>
+• It does not encrypt anything. The value is still sent as plain text unless you use HTTPS.<br>
+• Browsers and password managers recognise it and offer to save or fill it.<br><br>
+
+<h3>Key Points</h3>
+• Use <b>autocomplete="current-password"</b> on login forms.<br>
+• Use <b>autocomplete="new-password"</b> on sign-up and change forms.<br>
+• Add <b>minlength</b> to enforce a minimum size.<br>
+• Never put a real password in a value attribute.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>password</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<form>
+  <label for="p">Password</label>
+  <input type="password" id="p" name="password" minlength="8" autocomplete="current-password" required>
+</form>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• A show-password toggle switches the type between password and text with a button.<br>
+• Allow paste so users can use password managers.<br>
+• Show requirements next to the field and update them as the user types.<br>
+• Always send forms with passwords over HTTPS and use POST.<br><br>
+
+<h3>Common Mistakes</h3>
+• Blocking paste, which pushes users to weak passwords.<br>
+• Setting autocomplete off, which breaks managers.<br>
+• Limiting passwords to a short maximum length or a narrow set of symbols.<br>
+• Sending passwords with GET, which exposes them in URLs and logs.<br><br>
+
+<h3>Try It Yourself</h3>
+• Create a sign-up password field with a show and hide button and a live rule that turns green after eight characters.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>toggle</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<label for="p">Password</label>
+<input type="password" id="p" autocomplete="new-password">
+<button type="button" id="b" aria-pressed="false">Show</button>
+<script>
+  b.onclick = () => {
+    const show = p.type === 'password';
+    p.type = show ? 'text' : 'password';
+    b.textContent = show ? 'Hide' : 'Show';
+    b.setAttribute('aria-pressed', show);
+  };
+</script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Every login and sign-up page has a password field.<br>
+• Strength meters guide users but must not replace server checks.<br>
+• Two-factor flows add a one-time-code field after the password.<br>
+• Security audits check that passwords never appear in URLs or logs.<br><br>
+
+<h3>Best Practices</h3>
+• Hash passwords on the server with a modern algorithm.<br>
+• Prefer long passphrases to complex rules.<br>
+• Support password managers and passkeys.<br>
+• Rate limit login attempts.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> Does type="password" make the form secure?<br>
+• <b>A:</b> No. It only masks the characters on screen. Security depends on HTTPS, a POST request, server-side hashing and rate limiting.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>rules</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<label for="p">New password</label>
+<input type="password" id="p" minlength="8" autocomplete="new-password">
+<ul><li id="r1">At least 8 characters</li></ul>
+<script>p.oninput = () => r1.style.color = p.value.length >= 8 ? 'green' : 'crimson';</script>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-forms-email-input',
                             name: 'Email Input',
                             beginner: [
                                 {
-                                    content: `<h3>Email Input</h3>
-&bull; Part of the HTML Forms section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• <b>type="email"</b> is a field for an <b>email address</b>.<br>
+• The browser checks the value has a simple address shape such as name@domain.<br>
+• Mobile keyboards show the @ and dot keys.<br>
+• With <b>multiple</b> it accepts a comma separated list.<br><br>
+
+<h3>Key Points</h3>
+• Validation happens when the form is submitted.<br>
+• The check is loose: a@b passes, because it is a valid local address.<br>
+• Whitespace around the value is trimmed automatically.<br>
+• Use <b>required</b> to make it mandatory.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>email</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<form>
+  <label for="e">Email</label>
+  <input type="email" id="e" name="email" placeholder="you@example.com" required>
+  <button>Subscribe</button>
+</form>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Add <b>pattern</b> for a stricter rule, such as a company domain.<br>
+• Use <b>autocomplete="email"</b> to let the browser fill it in.<br>
+• Use <b>:invalid</b> and <b>:valid</b> in CSS to style the state.<br>
+• Read <b>input.validity.typeMismatch</b> for custom messages.<br><br>
+
+<h3>Common Mistakes</h3>
+• Relying only on browser validation. The server must verify the address too, ideally with a confirmation mail.<br>
+• Writing complicated regular expressions that reject real addresses.<br>
+• Showing errors before the user has finished typing.<br>
+• Using type text, which lacks validation and the right keyboard.<br><br>
+
+<h3>Try It Yourself</h3>
+• Create an email field that is required, styles itself red while invalid and shows a custom error message in your own words.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>multiple</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+  input:invalid { border-color: crimson; }
+</style>
+</head>
+<body>
+<form>
+  <label for="m">Invite friends (comma separated)</label>
+  <input type="email" id="m" multiple placeholder="a@x.com, b@y.com">
+  <button>Invite</button>
+</form>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Newsletter sign-ups, logins and contact forms all use it.<br>
+• Verification links prove the address belongs to the user.<br>
+• Typos in domains are caught with suggestions such as gmial.com to gmail.com.<br>
+• Privacy rules require consent and a way to unsubscribe.<br><br>
+
+<h3>Best Practices</h3>
+• Be lenient in the browser and strict on the server through verification.<br>
+• Normalise to lowercase before comparing.<br>
+• Show a clear error text next to the field.<br>
+• Never expose other people addresses in the markup.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> Is browser email validation enough?<br>
+• <b>A:</b> No. It only checks the shape. The server must validate again, and a confirmation email is the only reliable proof that the address works.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>custom message</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<form>
+  <input type="email" id="e" required>
+  <button>Go</button>
+</form>
+<script>
+  e.oninvalid = () => e.setCustomValidity('Please enter a valid email like name@example.com');
+  e.oninput = () => e.setCustomValidity('');
+</script>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-forms-number-input',
                             name: 'Number Input',
                             beginner: [
                                 {
-                                    content: `<h3>Number Input</h3>
-&bull; Part of the HTML Forms section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• <b>type="number"</b> is a field for <b>numeric values</b>.<br>
+• It shows small up and down arrows (spinners) in most browsers.<br>
+• Mobile devices show a numeric keyboard.<br>
+• The value is still a string in JavaScript, so convert it with Number().<br><br>
+
+<h3>Key Points</h3>
+• <b>min</b> and <b>max</b> set the allowed range.<br>
+• <b>step</b> sets the increment, such as 1, 0.5 or any.<br>
+• The default step is 1, so decimals fail validation unless you set step.<br>
+• Scrolling the mouse wheel over a focused number field can change it by accident.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>number</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<label for="q">Quantity (1-10)</label>
+<input type="number" id="q" name="qty" min="1" max="10" step="1" value="1">
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Use <b>step="0.01"</b> for prices and <b>step="any"</b> for free decimals.<br>
+• Use <b>inputmode="numeric"</b> with a text input for codes such as PINs.<br>
+• Check <b>valueAsNumber</b> for a real number or NaN.<br>
+• Style the spinners away with CSS when they clutter the design.<br><br>
+
+<h3>Common Mistakes</h3>
+• Using type number for phone numbers, card numbers or ZIP codes, which can lose leading zeros.<br>
+• Forgetting step for decimals so 2.5 is rejected.<br>
+• Expecting max to prevent typing a larger number. It only fails validation.<br>
+• Allowing the wheel to change values silently.<br><br>
+
+<h3>Try It Yourself</h3>
+• Create a quantity field limited to 1-10, a price field with two decimals and a PIN field that uses a numeric keyboard but keeps leading zeros.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>price</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<label for="p">Price (Rs.)</label>
+<input type="number" id="p" min="0" step="0.01" value="99.50">
+<p>Doubled: <b id="o"></b></p>
+<script>p.oninput = () => o.textContent = (p.valueAsNumber * 2).toFixed(2);</script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Shopping carts use number inputs for quantity.<br>
+• Forms for ages, heights and scores set tight ranges.<br>
+• For PINs and codes, text with inputmode numeric is the better choice.<br>
+• Locale differences, such as decimal commas, are handled by the browser.<br><br>
+
+<h3>Best Practices</h3>
+• Pick number only for values you calculate with.<br>
+• Always provide min and max where they make sense.<br>
+• Show the unit next to the field.<br>
+• Validate the range on the server too.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> Why not use type number for a phone number?<br>
+• <b>A:</b> Phone numbers are identifiers, not quantities. They may contain a plus sign, spaces or leading zeros that number inputs would drop or reject.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>pin</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<label for="pin">PIN code</label>
+<input id="pin" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" autocomplete="postal-code">
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-forms-telephone-input',
                             name: 'Telephone Input',
                             beginner: [
                                 {
-                                    content: `<h3>Telephone Input</h3>
-&bull; Part of the HTML Forms section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• <b>type="tel"</b> is a field for a <b>telephone number</b>.<br>
+• Phones show a dial pad keyboard.<br>
+• The browser does not validate the format, because numbers differ across countries.<br>
+• The value is plain text.<br><br>
+
+<h3>Key Points</h3>
+• Use <b>pattern</b> to apply your own format rules.<br>
+• Use <b>autocomplete="tel"</b> so browsers fill in the saved number.<br>
+• Spaces, plus signs and dashes are allowed.<br>
+• A tel: link in the page makes numbers tappable.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>tel</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<label for="t">Mobile number</label>
+<input type="tel" id="t" name="phone" autocomplete="tel" placeholder="+91 98765 43210">
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Use a pattern for an expected country format such as ten digits.<br>
+• Show an example in the placeholder or the hint.<br>
+• Clean the value on the server by removing spaces and dashes.<br>
+• Consider a country selector with a library for international numbers.<br><br>
+
+<h3>Common Mistakes</h3>
+• Applying a strict pattern that rejects valid international numbers.<br>
+• Using type number, which removes the plus sign and leading zeros.<br>
+• Not telling users which format you expect.<br>
+• Storing numbers with formatting in the database.<br><br>
+
+<h3>Try It Yourself</h3>
+• Create a mobile number field that expects ten digits starting with 6-9, shows its rule on hover and has a tel link next to it.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>pattern</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<form>
+  <label for="p">Indian mobile</label>
+  <input type="tel" id="p" pattern="[6-9][0-9]{9}" maxlength="10" title="10 digit mobile starting with 6-9" required>
+  <button>Save</button>
+</form>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Checkout and contact forms ask for phones with a clear format hint.<br>
+• OTP flows verify the number by sending an SMS.<br>
+• International sites store numbers in E.164 format such as +919876543210.<br>
+• Support pages link numbers with tel: so mobile users can call in one tap.<br><br>
+
+<h3>Best Practices</h3>
+• Be forgiving about spaces and dashes.<br>
+• Validate on the server with a phone library.<br>
+• Verify ownership with a one-time code.<br>
+• Protect numbers like any personal data.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> Why is tel better than number for phone numbers?<br>
+• <b>A:</b> It gives a dial pad but does not treat the value as a quantity, so plus signs, spaces and leading zeros are kept.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>call link</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<p>Call us: <a href="tel:+912012345678">+91 20 1234 5678</a></p>
+<input type="tel" autocomplete="tel" aria-label="Phone">
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-forms-url-input',
                             name: 'URL Input',
                             beginner: [
                                 {
-                                    content: `<h3>URL Input</h3>
-&bull; Part of the HTML Forms section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• <b>type="url"</b> is a field for a <b>web address</b>.<br>
+• The browser checks that the value starts with a valid scheme such as https://.<br>
+• Mobile keyboards show keys such as slash and dot.<br>
+• It helps users enter links correctly.<br><br>
+
+<h3>Key Points</h3>
+• The scheme is required, so example.com alone fails but https://example.com passes.<br>
+• Use <b>placeholder</b> to show the expected format.<br>
+• Use <b>pattern</b> to restrict to https if needed.<br>
+• Combine with required to make it mandatory.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>url</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<label for="w">Website</label>
+<input type="url" id="w" name="site" placeholder="https://example.com">
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Use <b>list</b> with a datalist to suggest common addresses.<br>
+• Use <b>autocomplete="url"</b> for the saved address.<br>
+• Check <b>validity.typeMismatch</b> in scripts for custom messages.<br>
+• Add the https:// prefix automatically on blur if the user leaves it out.<br><br>
+
+<h3>Common Mistakes</h3>
+• Expecting example.com to pass validation. The scheme is required.<br>
+• Accepting any URL without checking, which allows javascript: links when rendered.<br>
+• Showing a user-supplied URL as a link without rel noopener.<br>
+• Using type text and losing the keyboard help.<br><br>
+
+<h3>Try It Yourself</h3>
+• Create a website field that requires https and automatically adds https:// when the user leaves it out.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>https only</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<label for="w">Secure site</label>
+<input type="url" id="w" pattern="https://.*" title="Must start with https://" placeholder="https://example.com">
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Profile pages store links to portfolios and social accounts.<br>
+• Link shorteners and bookmark tools take a URL as input.<br>
+• Servers validate the scheme and block dangerous ones.<br>
+• Preview cards fetch the URL title and image.<br><br>
+
+<h3>Best Practices</h3>
+• Allow only http and https on the server.<br>
+• Add rel="noopener noreferrer" to user links.<br>
+• Offer to fix a missing scheme automatically.<br>
+• Do not follow links server side without checks.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> Why must user-supplied URLs be validated on the server?<br>
+• <b>A:</b> Schemes such as javascript: can run code when rendered as a link, so the server should accept only http and https.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>auto prefix</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<label for="w">Website</label>
+<input type="url" id="w" placeholder="https://example.com">
+<script>w.onblur = () => { if (w.value && !/^https?:\\/\\//.test(w.value)) w.value = 'https://' + w.value; };</script>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-forms-search-input',
                             name: 'Search Input',
                             beginner: [
                                 {
-                                    content: `<h3>Search Input</h3>
-&bull; Part of the HTML Forms section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• <b>type="search"</b> is a field intended for <b>search queries</b>.<br>
+• It behaves like text but is styled by the platform as a search box.<br>
+• Many browsers add a clear (x) button when text is entered.<br>
+• Mobile keyboards often show a Search key.<br><br>
+
+<h3>Key Points</h3>
+• Place it inside a form with role="search" or a search element.<br>
+• Use <b>name="q"</b> by convention.<br>
+• Add <b>enterkeyhint="search"</b> to label the keyboard return key.<br>
+• The <b>incremental</b> event is non-standard and should be avoided.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>search</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<form role="search" action="/search">
+  <label for="q">Search lessons</label>
+  <input type="search" id="q" name="q" placeholder="e.g. flexbox">
+  <button>Search</button>
+</form>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Use the <b>search</b> event or the input event to filter results as the user types.<br>
+• Debounce requests so you do not call the server on every key.<br>
+• Reset the native look with <b>appearance: none</b> if you want a custom style.<br>
+• Pair it with a datalist for suggestions.<br><br>
+
+<h3>Common Mistakes</h3>
+• Triggering a request for each keystroke without debounce.<br>
+• Removing the visible label and leaving no accessible name.<br>
+• Styling away the clear button without offering another way to clear.<br>
+• Forgetting a submit option for users who press Enter.<br><br>
+
+<h3>Try It Yourself</h3>
+• Build a filter box that hides non-matching list items as you type, with a label for screen readers and a 300 ms debounce.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>live filter</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<input type="search" id="q" placeholder="Filter" aria-label="Filter courses">
+<ul id="l"><li>HTML</li><li>CSS</li><li>Java</li><li>Spring</li></ul>
+<script>
+  q.oninput = () => [...l.children].forEach(li =>
+    li.hidden = !li.textContent.toLowerCase().includes(q.value.toLowerCase()));
+</script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Site-wide search boxes, documentation filters and command palettes use it.<br>
+• Search engines index results pages when they have clean URLs.<br>
+• Analytics track top queries to improve content.<br>
+• Accessible search needs a landmark and a label.<br><br>
+
+<h3>Best Practices</h3>
+• Wrap the form in role="search" or the search element.<br>
+• Debounce live search by 200 to 300 ms.<br>
+• Show a clear no-results message.<br>
+• Keep the query in the URL so results can be shared.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> What is the benefit of type search over type text?<br>
+• <b>A:</b> It gives the browser and assistive technology a hint that this is a search field, adds a native clear button and tunes the mobile keyboard.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>debounce</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<input type="search" id="q" aria-label="Search">
+<p id="o"></p>
+<script>
+  let t;
+  q.oninput = () => { clearTimeout(t); t = setTimeout(() => o.textContent = 'Searching for: ' + q.value, 300); };
+</script>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-forms-date-input',
                             name: 'Date Input',
                             beginner: [
                                 {
-                                    content: `<h3>Date Input</h3>
-&bull; Part of the HTML Forms section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• <b>type="date"</b> shows a <b>date picker</b> for choosing a day, month and year.<br>
+• The value is always in the format <b>YYYY-MM-DD</b>, whatever the display language is.<br>
+• The browser shows the format of the user locale.<br>
+• Mobile devices show a native wheel or calendar.<br><br>
+
+<h3>Key Points</h3>
+• Use <b>min</b> and <b>max</b> to limit the dates.<br>
+• Use <b>step</b> in days to skip dates, such as 7 for weekly.<br>
+• The value is an empty string when nothing is chosen.<br>
+• Use valueAsDate or valueAsNumber to work with the value in script.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>date</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<label for="d">Date of birth</label>
+<input type="date" id="d" name="dob" min="1950-01-01" max="2026-12-31">
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Set today as the minimum with a short script, for bookings.<br>
+• Use <b>autocomplete="bday"</b> for birthdates.<br>
+• Convert the value to a Date with <b>new Date(value)</b> but beware of time zones.<br>
+• Provide a text fallback for browsers with no picker.<br><br>
+
+<h3>Common Mistakes</h3>
+• Sending the displayed locale format to the server instead of the value format.<br>
+• Parsing the value with Date in a way that shifts the day because of time zones.<br>
+• Using a date input to collect only a month or year.<br>
+• Not setting min for bookings, which allows the past.<br><br>
+
+<h3>Try It Yourself</h3>
+• Make a booking form with check-in and check-out dates where the earliest check-in is today and check-out cannot be before check-in.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>min today</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<label for="d">Check-in</label>
+<input type="date" id="d">
+<script>d.min = new Date().toISOString().slice(0, 10);</script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Booking forms, birthdays and deadlines use date inputs.<br>
+• Server code receives the ISO date format directly.<br>
+• Calendar libraries are used when a custom look or range selection is needed.<br>
+• Accessibility is good in native pickers across platforms.<br><br>
+
+<h3>Best Practices</h3>
+• Store dates as ISO strings in the database.<br>
+• Handle time zones deliberately.<br>
+• Show examples of the expected format for text fallbacks.<br>
+• Test the picker in several browsers.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> In which format does a date input send its value?<br>
+• <b>A:</b> Always as YYYY-MM-DD, regardless of how the browser displays the date for the user locale.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>range</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<label for="a">From</label><input type="date" id="a">
+<label for="b">To</label><input type="date" id="b">
+<script>a.onchange = () => b.min = a.value;</script>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-forms-time-input',
                             name: 'Time Input',
                             beginner: [
                                 {
-                                    content: `<h3>Time Input</h3>
-&bull; Part of the HTML Forms section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• <b>type="time"</b> shows a <b>time picker</b> for hours and minutes.<br>
+• The value uses a 24-hour format <b>HH:MM</b>, such as 14:30.<br>
+• The browser may display it as AM or PM based on locale.<br>
+• It does not include a date or time zone.<br><br>
+
+<h3>Key Points</h3>
+• <b>min</b> and <b>max</b> set the allowed times.<br>
+• <b>step</b> is in seconds. 900 allows only quarter-hour values.<br>
+• A step below 60 adds a seconds field.<br>
+• The value is an empty string when blank.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>time</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<label for="t">Meeting time</label>
+<input type="time" id="t" name="time" min="09:00" max="18:00" step="900" value="10:00">
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Use time together with a date input for a full appointment.<br>
+• Use <b>datetime-local</b> when you need both in one control.<br>
+• Convert to minutes with a small script to compare times.<br>
+• Use step to prevent odd minute values.<br><br>
+
+<h3>Common Mistakes</h3>
+• Expecting the picker to enforce min and max while scrolling. It validates on submit.<br>
+• Forgetting that no time zone is stored.<br>
+• Parsing the value as a number.<br>
+• Ignoring that 12-hour display can confuse test writers.<br><br>
+
+<h3>Try It Yourself</h3>
+• Create start and end time fields in 15 minute steps between 9:00 and 18:00 and show the length of the meeting in minutes.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>duration</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<label for="s">Start</label><input type="time" id="s" value="09:00">
+<label for="e">End</label><input type="time" id="e" value="10:30">
+<p>Minutes: <b id="m">90</b></p>
+<script>
+  const mins = v => v.split(':').reduce((h, m) => h * 60 + +m);
+  const calc = () => m.textContent = mins(e.value) - mins(s.value);
+  s.oninput = e.oninput = calc;
+</script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Opening hours editors, alarms and schedules use time inputs.<br>
+• Backends store time as text such as 14:30 or as minutes since midnight.<br>
+• Global apps combine it with a separate time zone selector.<br>
+• A native picker is accessible and quick on mobile.<br><br>
+
+<h3>Best Practices</h3>
+• Send the value as given and add the time zone yourself.<br>
+• Offer reasonable steps such as 15 minutes.<br>
+• Validate ranges on the server.<br>
+• Label fields with AM or PM expectations when needed.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> Does a time input store a time zone?<br>
+• <b>A:</b> No. It holds only hours and minutes as local clock time, so your application must add a time zone if one matters.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>range</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<label for="t">Pick a slot (9-5, every 30 min)</label>
+<input type="time" id="t" min="09:00" max="17:00" step="1800">
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-forms-datetime-local-input',
                             name: 'Datetime-local Input',
                             beginner: [
                                 {
-                                    content: `<h3>Datetime-local Input</h3>
-&bull; Part of the HTML Forms section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• <b>type="datetime-local"</b> lets the user pick a <b>date and a time together</b>.<br>
+• The value is formatted as <b>YYYY-MM-DDTHH:MM</b>.<br>
+• It has no time zone, so it means local time.<br>
+• It replaces the old datetime type, which was removed.<br><br>
+
+<h3>Key Points</h3>
+• <b>min</b> and <b>max</b> accept the same format.<br>
+• <b>step</b> is in seconds.<br>
+• Use valueAsNumber for a timestamp in milliseconds treated as UTC.<br>
+• The picker adapts to the platform.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>datetime-local</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<label for="w">Appointment</label>
+<input type="datetime-local" id="w" name="when" value="2026-11-01T10:30">
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Convert to a Date with <b>new Date(value)</b>, which treats it as local time.<br>
+• Send the user time zone separately when the server needs a global instant.<br>
+• Format display values with <b>toLocaleString</b>.<br>
+• Use min to block past slots.<br><br>
+
+<h3>Common Mistakes</h3>
+• Saving the raw value as UTC. It is local time without an offset.<br>
+• Forgetting the T separator when setting values from script.<br>
+• Assuming every browser shows seconds.<br>
+• Using separate date and time fields when one control would do.<br><br>
+
+<h3>Try It Yourself</h3>
+• Make an appointment picker that blocks past times and prints the chosen moment in a full readable format below the field.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>min now</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<label for="w">When</label>
+<input type="datetime-local" id="w">
+<script>
+  const n = new Date(); n.setMinutes(n.getMinutes() - n.getTimezoneOffset());
+  w.min = n.toISOString().slice(0, 16);
+</script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Scheduling tools, reminders and event forms use it.<br>
+• APIs combine the value with the user time zone to create a UTC timestamp.<br>
+• Calendars show events in the viewer local time.<br>
+• Testing across time zones prevents off-by-hours bugs.<br><br>
+
+<h3>Best Practices</h3>
+• Be explicit about time zones in the user interface.<br>
+• Store UTC on the server.<br>
+• Show the chosen time back in a readable format.<br>
+• Guard against daylight saving gaps.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> Why is a datetime-local value not safe to store directly?<br>
+• <b>A:</b> It carries no time zone offset, so the same string means different instants for different users. Convert it to UTC with the correct zone first.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>show back</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<input type="datetime-local" id="w" value="2026-11-01T10:30">
+<p id="o"></p>
+<script>
+  const show = () => o.textContent = new Date(w.value).toLocaleString('en-IN', { dateStyle: 'full', timeStyle: 'short' });
+  w.oninput = show; show();
+</script>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-forms-month-input',
                             name: 'Month Input',
                             beginner: [
                                 {
-                                    content: `<h3>Month Input</h3>
-&bull; Part of the HTML Forms section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• <b>type="month"</b> lets the user pick a <b>month and a year</b>.<br>
+• The value is formatted as <b>YYYY-MM</b>.<br>
+• Support is good in Chrome, Edge and Safari on mobile, but desktop Firefox shows a text box.<br>
+• It is useful for credit card expiry and reporting periods.<br><br>
+
+<h3>Key Points</h3>
+• <b>min</b> and <b>max</b> use the same format.<br>
+• Use <b>step</b> in months to skip values.<br>
+• The value is blank when nothing is chosen.<br>
+• valueAsNumber returns months since 1970.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>month</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<label for="m">Card expiry</label>
+<input type="month" id="m" name="expiry" min="2026-11" max="2036-12">
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Provide a pattern and placeholder as a fallback for browsers without a picker.<br>
+• Split into two selects for maximum compatibility if needed.<br>
+• Use <b>autocomplete="cc-exp"</b> for card expiry.<br>
+• Parse the value with split("-") rather than Date to avoid time zone shifts.<br><br>
+
+<h3>Common Mistakes</h3>
+• Relying on the picker in browsers that show plain text.<br>
+• Parsing with Date and getting the previous month in some time zones.<br>
+• Allowing past expiry dates.<br>
+• Using it for full dates, where date is better.<br><br>
+
+<h3>Try It Yourself</h3>
+• Create a card-expiry field that cannot be earlier than the current month and shows the chosen year and month separately.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>fallback</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<label for="m">Month</label>
+<input type="month" id="m" pattern="[0-9]{4}-[0-9]{2}" placeholder="2026-11">
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Billing reports, subscription starts and payslip pages use months.<br>
+• Credit card forms may prefer two selects for compatibility.<br>
+• APIs often take the year and month as separate numbers.<br>
+• Charts group data by month using the same format.<br><br>
+
+<h3>Best Practices</h3>
+• Always include a text fallback hint.<br>
+• Validate the format on the server.<br>
+• Keep month names localised in the display only.<br>
+• Avoid time zone conversions for month values.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> What is the value format of a month input?<br>
+• <b>A:</b> YYYY-MM, for example 2026-11, no matter how the control is displayed.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>split value</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<input type="month" id="m" value="2026-11">
+<p id="o"></p>
+<script>
+  const show = () => { const [y, mo] = m.value.split('-'); o.textContent = 'Year ' + y + ', month ' + mo; };
+  m.oninput = show; show();
+</script>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-forms-week-input',
                             name: 'Week Input',
                             beginner: [
                                 {
-                                    content: `<h3>Week Input</h3>
-&bull; Part of the HTML Forms section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• <b>type="week"</b> lets the user pick a <b>week of a year</b>.<br>
+• The value is formatted as <b>YYYY-Www</b>, such as 2026-W44.<br>
+• Weeks follow the ISO 8601 rule, where week 1 contains the first Thursday.<br>
+• Support is limited to some desktop browsers.<br><br>
+
+<h3>Key Points</h3>
+• <b>min</b> and <b>max</b> use the same format.<br>
+• The picker shows a calendar with week numbers.<br>
+• Safari on desktop and Firefox may show a plain text box.<br>
+• The value is blank when nothing is chosen.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>week</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<label for="w">Choose a week</label>
+<input type="week" id="w" name="week" value="2026-W44">
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Convert a week to dates by finding the Monday of that ISO week.<br>
+• Offer a text fallback with a pattern such as <b>[0-9]{4}-W[0-9]{2}</b>.<br>
+• Use it for timesheets and weekly planners.<br>
+• Store the value as text and compute dates on the server.<br><br>
+
+<h3>Common Mistakes</h3>
+• Assuming every browser supports a picker.<br>
+• Using calendar weeks that start on Sunday while ISO weeks start on Monday.<br>
+• Mixing the week year and the calendar year around New Year.<br>
+• Parsing it with new Date, which fails.<br><br>
+
+<h3>Try It Yourself</h3>
+• Create a week picker that prints the Monday date of the selected week and includes a pattern fallback.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>monday</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<input type="week" id="w" value="2026-W44">
+<p id="o"></p>
+<script>
+  function monday(v) {
+    const [y, wk] = v.split('-W').map(Number);
+    const d = new Date(Date.UTC(y, 0, 4));
+    d.setUTCDate(d.getUTCDate() - ((d.getUTCDay() + 6) % 7) + (wk - 1) * 7);
+    return d.toISOString().slice(0, 10);
+  }
+  const show = () => o.textContent = 'Week starts on ' + monday(w.value);
+  w.oninput = show; show();
+</script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Timesheets, school timetables and sprint planners work in weeks.<br>
+• ISO week numbers are common in European business systems.<br>
+• Libraries handle week calculations reliably.<br>
+• Reporting APIs often accept the week as text.<br><br>
+
+<h3>Best Practices</h3>
+• Use a library for week arithmetic.<br>
+• Show the date range of the week next to the value.<br>
+• Include a fallback for browsers without support.<br>
+• Be careful around the turn of the year.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> What does the value 2026-W44 mean?<br>
+• <b>A:</b> The 44th ISO week of 2026, where weeks start on Monday and week 1 is the one containing the first Thursday of the year.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>fallback</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<input type="week" pattern="[0-9]{4}-W[0-9]{2}" placeholder="2026-W44" aria-label="Week">
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-forms-color-input',
                             name: 'Color Input',
                             beginner: [
                                 {
-                                    content: `<h3>Color Input</h3>
-&bull; Part of the HTML Forms section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• <b>type="color"</b> shows a <b>colour picker</b>.<br>
+• The value is a seven character hex string such as <b>#ea580c</b>.<br>
+• The default colour is black (#000000).<br>
+• It has no alpha channel, so transparency is not possible.<br><br>
+
+<h3>Key Points</h3>
+• Use the <b>value</b> attribute to set a starting colour.<br>
+• Listen to the <b>input</b> event for live changes and <b>change</b> for the final choice.<br>
+• The value is always lowercase hex.<br>
+• It works well on desktop and mobile browsers.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>color</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<label for="c">Pick a colour</label>
+<input type="color" id="c" name="theme" value="#ea580c">
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Apply the colour to the page with <b>style.setProperty("--accent", value)</b>.<br>
+• Save the choice in localStorage to remember it.<br>
+• Show the hex value next to the control for copy and paste.<br>
+• Provide a datalist of preset colours.<br><br>
+
+<h3>Common Mistakes</h3>
+• Expecting rgba or alpha values. Use a separate range input for opacity.<br>
+• Using text inputs for colours, which accept invalid values.<br>
+• Forgetting to give users a label for the control.<br>
+• Choosing colours without contrast checking.<br><br>
+
+<h3>Try It Yourself</h3>
+• Build a theme picker that changes a heading colour live and saves the chosen colour in localStorage so it is restored on reload.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>theme</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+  body { --accent: #ea580c; }
+  h2 { color: var(--accent); }
+</style>
+</head>
+<body>
+<h2>Theme preview</h2>
+<input type="color" id="c" value="#ea580c" aria-label="Accent colour">
+<script>c.oninput = () => document.body.style.setProperty('--accent', c.value);</script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Theme builders and drawing tools use colour inputs.<br>
+• Dashboards let users choose chart colours.<br>
+• Design tools convert the hex value to HSL for adjustment.<br>
+• Accessibility checks compare text and background contrast.<br><br>
+
+<h3>Best Practices</h3>
+• Check contrast after the user picks a colour.<br>
+• Store and send hex values consistently.<br>
+• Offer preset swatches for quick choices.<br>
+• Do not rely on colour alone to convey meaning.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> Does a colour input support transparency?<br>
+• <b>A:</b> No. It returns an opaque hex value, so use an extra range input and combine it into rgba yourself if you need alpha.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>presets</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<input type="color" id="c" list="p" value="#2563eb">
+<datalist id="p"><option>#ea580c</option><option>#2563eb</option><option>#16a34a</option></datalist>
+<p id="o" style="padding:8px">Sample text</p>
+<script>c.oninput = () => o.style.background = c.value;</script>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-forms-file-input',
                             name: 'File Input',
                             beginner: [
                                 {
-                                    content: `<h3>File Input</h3>
-&bull; Part of the HTML Forms section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• <b>type="file"</b> lets users <b>choose files</b> from their device.<br>
+• The browser shows a button and the selected file name.<br>
+• For the form to upload the file, it needs <b>method="post"</b> and <b>enctype="multipart/form-data"</b>.<br>
+• The value shown in script is a fake path for privacy.<br><br>
+
+<h3>Key Points</h3>
+• <b>accept</b> limits file types, such as image/* or .pdf.<br>
+• <b>multiple</b> allows choosing several files.<br>
+• <b>capture</b> opens the camera on mobile devices.<br>
+• Files are available through <b>input.files</b> as a FileList.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>file</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<form method="post" enctype="multipart/form-data">
+  <label for="f">Upload a photo</label>
+  <input type="file" id="f" name="photo" accept="image/*">
+  <button>Upload</button>
+</form>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Read file name, size and type from <b>files[0]</b>.<br>
+• Check the size in script before uploading.<br>
+• Preview images with <b>URL.createObjectURL</b>.<br>
+• Drag and drop zones can wrap a file input for a better experience.<br><br>
+
+<h3>Common Mistakes</h3>
+• Forgetting enctype multipart/form-data, so only the file name is sent.<br>
+• Trusting the accept attribute. Always check type and size on the server.<br>
+• Uploading huge files with no limit.<br>
+• Trying to set the value from script, which is not allowed.<br><br>
+
+<h3>Try It Yourself</h3>
+• Create an image uploader that shows the file name, size and a thumbnail, and refuses files larger than 2 MB with a message.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>preview</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<input type="file" id="f" accept="image/*">
+<p id="i"></p><img id="p" alt="Preview" width="160" hidden>
+<script>
+  f.onchange = () => {
+    const file = f.files[0]; if (!file) return;
+    i.textContent = file.name + ' (' + Math.round(file.size / 1024) + ' KB)';
+    p.src = URL.createObjectURL(file); p.hidden = false;
+  };
+</script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Profile pictures, documents and CSV imports use file inputs.<br>
+• Large uploads use chunking or direct-to-storage signed URLs.<br>
+• Servers scan files and reject unsafe types.<br>
+• Accessible dropzones keep the real input for keyboard users.<br><br>
+
+<h3>Best Practices</h3>
+• Validate type, size and content on the server.<br>
+• Show progress and clear errors.<br>
+• Limit the size in the client for quick feedback.<br>
+• Never serve uploaded files from the same origin without care.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> Why is accept not enough to secure uploads?<br>
+• <b>A:</b> It is only a hint for the file chooser. A user can bypass it, so the server must verify the real type, size and content of every file.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>multiple</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<input type="file" id="f" multiple>
+<ul id="l"></ul>
+<script>f.onchange = () => l.innerHTML = [...f.files].map(x => '<li>' + x.name + '</li>').join('');</script>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-forms-hidden-input',
                             name: 'Hidden Input',
                             beginner: [
                                 {
-                                    content: `<h3>Hidden Input</h3>
-&bull; Part of the HTML Forms section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• <b>type="hidden"</b> stores a value in the form that the user <b>does not see</b>.<br>
+• The value is submitted with the form like any other field.<br>
+• It takes no space on the page and cannot be focused.<br>
+• It is commonly used for ids and tokens.<br><br>
+
+<h3>Key Points</h3>
+• It needs a <b>name</b> and a <b>value</b>.<br>
+• The value is visible in the page source, so it is not secret.<br>
+• Script can read and change it.<br>
+• It is ignored by validation.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>hidden</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<form method="post" action="/update">
+  <input type="hidden" name="id" value="42">
+  <label for="t">Title</label>
+  <input id="t" name="title" value="Intro">
+  <button>Save</button>
+</form>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Use it for the record id in an edit form, or an anti-CSRF token.<br>
+• Update it with script when state changes, for example the current step.<br>
+• Do not store prices or permissions in hidden fields, because users can edit them.<br>
+• The server must re-check every hidden value.<br><br>
+
+<h3>Common Mistakes</h3>
+• Trusting hidden values such as price or role. Users can change them in the browser tools.<br>
+• Putting secrets in hidden fields.<br>
+• Hiding something that should be visible, such as an important choice.<br>
+• Forgetting that autofill ignores hidden fields.<br><br>
+
+<h3>Try It Yourself</h3>
+• Make a two-step form where a hidden field carries the step number and print the submitted data on the page using FormData.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>edit values</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<form id="f">
+  <input type="hidden" name="step" id="s" value="1">
+  <button type="button" onclick="s.value = +s.value + 1; out.textContent = new URLSearchParams(new FormData(f))">Next step</button>
+</form>
+<p id="out"></p>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Multi-step wizards carry earlier answers in hidden fields.<br>
+• Frameworks add CSRF tokens as hidden inputs automatically.<br>
+• Return URLs after login are passed through a hidden field.<br>
+• Security testers try editing hidden values to find flaws.<br><br>
+
+<h3>Best Practices</h3>
+• Treat hidden values as user input.<br>
+• Generate tokens on the server and verify them.<br>
+• Keep sensitive state on the server in the session.<br>
+• Name fields clearly for debugging.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> Is a hidden input safe for storing a price?<br>
+• <b>A:</b> No. Anyone can edit it in the browser tools, so the server must recompute the price from its own data.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>csrf</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<form method="post">
+  <input type="hidden" name="_csrf" value="a1b2c3-token-from-server">
+  <button>Delete</button>
+</form>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-forms-range-input',
                             name: 'Range Input',
                             beginner: [
                                 {
-                                    content: `<h3>Range Input</h3>
-&bull; Part of the HTML Forms section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• <b>type="range"</b> shows a <b>slider</b> for picking a number in a range.<br>
+• It is best when the exact value is not important, such as volume or brightness.<br>
+• The default range is 0 to 100 with a step of 1.<br>
+• The value is a string like other inputs.<br><br>
+
+<h3>Key Points</h3>
+• Set <b>min</b>, <b>max</b>, <b>step</b> and <b>value</b>.<br>
+• There is no built-in label for the current value, so add an output element.<br>
+• Keyboard arrows move the handle one step.<br>
+• Tick marks can be added with a datalist.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>range</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<label for="v">Volume</label>
+<input type="range" id="v" min="0" max="100" value="40">
+<output id="o">40</output>
+<script>v.oninput = () => o.textContent = v.value;</script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Use the <b>output</b> element with the for attribute to show the value.<br>
+• Style the track and thumb with vendor pseudo-elements.<br>
+• Add a datalist with <b>list</b> for labelled steps.<br>
+• Provide a number input beside the slider for precision.<br><br>
+
+<h3>Common Mistakes</h3>
+• Using a slider where exact entry is needed, such as a price.<br>
+• Not showing the current value.<br>
+• Making the thumb too small for touch.<br>
+• Forgetting accessible names and units.<br><br>
+
+<h3>Try It Yourself</h3>
+• Build an opacity control with a range input, a live output and a number input that stays in sync with the slider.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>ticks</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<label for="r">Rating</label>
+<input type="range" id="r" min="1" max="5" step="1" list="t" value="3">
+<datalist id="t"><option value="1" label="1"><option value="3" label="3"><option value="5" label="5"></datalist>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Audio and video players use sliders for volume and seek.<br>
+• Filters in shops use two range inputs for a price span.<br>
+• Image editors adjust brightness and contrast.<br>
+• Accessible sliders need clear labels and value text.<br><br>
+
+<h3>Best Practices</h3>
+• Show the value and unit next to the slider.<br>
+• Keep a keyboard friendly step size.<br>
+• Use aria-valuetext for friendly values such as 3 stars.<br>
+• Combine with a number field for precise input.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> Why add an output element next to a range input?<br>
+• <b>A:</b> A slider shows only the handle position, not the number. An output element displays the current value so users know exactly what they chose.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>with number</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<input type="range" id="r" min="0" max="100" value="25" aria-label="Opacity">
+<input type="number" id="n" min="0" max="100" value="25" aria-label="Opacity value">
+<script>r.oninput = () => n.value = r.value; n.oninput = () => r.value = n.value;</script>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-forms-checkbox',
                             name: 'Checkbox',
                             beginner: [
                                 {
-                                    content: `<h3>Checkbox</h3>
-&bull; Part of the HTML Forms section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• <b>type="checkbox"</b> is a <b>box that can be ticked or cleared</b>.<br>
+• Several checkboxes with the same name form a group where many can be chosen.<br>
+• A checked box submits its value. An unchecked box submits nothing.<br>
+• The default value sent is the text on.<br><br>
+
+<h3>Key Points</h3>
+• Add <b>checked</b> to start ticked.<br>
+• Use a <b>value</b> for each box to say what it stands for.<br>
+• Always connect a <b>label</b> so the text is clickable.<br>
+• The <b>indeterminate</b> state is set by script for mixed groups.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>checkbox</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<form>
+  <label><input type="checkbox" name="topic" value="html" checked> HTML</label>
+  <label><input type="checkbox" name="topic" value="css"> CSS</label>
+  <label><input type="checkbox" name="topic" value="js"> JavaScript</label>
+  <button>Save</button>
+</form>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Read the state with <b>input.checked</b> in script.<br>
+• Use <b>required</b> for a single box such as "I accept the terms".<br>
+• Use <b>:checked</b> in CSS to style the label or reveal content.<br>
+• Group boxes in a fieldset with a legend.<br><br>
+
+<h3>Common Mistakes</h3>
+• Expecting an unchecked box to send false. It sends nothing.<br>
+• Using small clickable areas without labels.<br>
+• Using a checkbox when only one choice is allowed, which needs radio buttons.<br>
+• Using a checkbox for an immediate action, where a switch with role is clearer.<br><br>
+
+<h3>Try It Yourself</h3>
+• Build a topic selector with three checkboxes and a select-all box that shows an indeterminate state when only some are ticked.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>select all</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<label><input type="checkbox" id="all"> Select all</label>
+<div id="g"><label><input type="checkbox"> A</label> <label><input type="checkbox"> B</label> <label><input type="checkbox"> C</label></div>
+<script>all.onchange = () => g.querySelectorAll('input').forEach(c => c.checked = all.checked);</script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Terms and consent boxes, filters and to-do lists use checkboxes.<br>
+• Bulk actions in tables use a header checkbox for select all.<br>
+• Server code receives repeated names as a list.<br>
+• Custom checkboxes must keep keyboard and screen reader behaviour.<br><br>
+
+<h3>Best Practices</h3>
+• Use a fieldset and legend for groups.<br>
+• Make the label text clear and short.<br>
+• Do not pre-tick consent boxes.<br>
+• Keep a large click target.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> What does the server receive for an unchecked checkbox?<br>
+• <b>A:</b> Nothing at all. Only checked boxes are submitted, so the server should treat a missing name as false.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>indeterminate</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<label><input type="checkbox" id="p"> Parent</label>
+<label><input type="checkbox" class="k"> One</label>
+<label><input type="checkbox" class="k"> Two</label>
+<script>
+  const ks = [...document.querySelectorAll('.k')];
+  ks.forEach(k => k.onchange = () => {
+    const n = ks.filter(x => x.checked).length;
+    p.checked = n === ks.length; p.indeterminate = n > 0 && n < ks.length;
+  });
+</script>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-forms-radio-button',
                             name: 'Radio Button',
                             beginner: [
                                 {
-                                    content: `<h3>Radio Button</h3>
-&bull; Part of the HTML Forms section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• <b>type="radio"</b> is a round button for choosing <b>exactly one option</b> from a group.<br>
+• Radio buttons share the same <b>name</b> to form the group.<br>
+• Selecting one clears the others.<br>
+• The selected button submits its value.<br><br>
+
+<h3>Key Points</h3>
+• Give every button in a group the same name and different values.<br>
+• Add <b>checked</b> to one to set a default.<br>
+• Use <b>required</b> to force a choice.<br>
+• Arrow keys move between the options in a group.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>radio</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<form>
+  <fieldset>
+    <legend>Level</legend>
+    <label><input type="radio" name="level" value="basic" checked> Basic</label>
+    <label><input type="radio" name="level" value="pro"> Pro</label>
+  </fieldset>
+</form>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Wrap the group in a fieldset with a legend, which screen readers announce.<br>
+• Read the choice with <b>form.level.value</b> or querySelector(":checked").<br>
+• Use the <b>:checked + label</b> selector for card style options.<br>
+• Keep options to about seven or fewer. Use a select for longer lists.<br><br>
+
+<h3>Common Mistakes</h3>
+• Using different names, so several options can be selected.<br>
+• Having no default when a choice is required, which leaves the user stuck.<br>
+• Using radio buttons for a single yes or no choice. A checkbox is simpler.<br>
+• Hiding the real input without keeping it accessible.<br><br>
+
+<h3>Try It Yourself</h3>
+• Create a plan chooser using radio buttons styled as cards that stay keyboard accessible, and display the chosen value below.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>card options</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+  input { position: absolute; opacity: 0; }
+  label.card { display: inline-block; padding: 10px 16px; border: 2px solid #cbd5e1; border-radius: 8px; margin-right: 8px; }
+  input:checked + label.card { border-color: #ea580c; background: #fff7ed; }
+  input:focus-visible + label.card { outline: 2px solid #2563eb; }
+</style>
+</head>
+<body>
+<input type="radio" name="p" id="a" value="free" checked><label class="card" for="a">Free</label>
+<input type="radio" name="p" id="b" value="pro"><label class="card" for="b">Pro</label>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Payment method, shipping option and survey questions use radio groups.<br>
+• Frameworks bind the selected value to a single variable.<br>
+• Wizards store the choice in state and show different steps.<br>
+• Visual cards improve touch targets but must stay keyboard accessible.<br><br>
+
+<h3>Best Practices</h3>
+• Always provide a legend for the group.<br>
+• Preselect the most common safe option.<br>
+• Make the whole label clickable.<br>
+• Test arrow key navigation.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> How do radio buttons know they belong to the same group?<br>
+• <b>A:</b> They share the same name attribute within the same form. The browser then allows only one of them to be selected.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>read value</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<form id="f">
+  <label><input type="radio" name="size" value="S"> S</label>
+  <label><input type="radio" name="size" value="M" checked> M</label>
+  <label><input type="radio" name="size" value="L"> L</label>
+</form>
+<p id="o"></p>
+<script>f.onchange = () => o.textContent = 'Chosen: ' + f.size.value; f.onchange();</script>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-forms-submit-button',
                             name: 'Submit Button',
                             beginner: [
                                 {
-                                    content: `<h3>Submit Button</h3>
-&bull; Part of the HTML Forms section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• <b>type="submit"</b> is a button that <b>sends the form</b> to the server.<br>
+• It can be written as an input element or as a button element.<br>
+• It is the default type for a button inside a form.<br>
+• Pressing Enter in most text fields triggers it too.<br><br>
+
+<h3>Key Points</h3>
+• For input, the <b>value</b> is the label. For button, the content is the label.<br>
+• <b>formaction</b>, <b>formmethod</b> and <b>formtarget</b> override the form settings for that button.<br>
+• <b>formnovalidate</b> skips validation, for example for a Save draft button.<br>
+• The name and value of the clicked button are sent too.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>submit</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<form action="/subscribe" method="post">
+  <label for="e">Email</label>
+  <input id="e" name="email" type="email" required>
+  <button type="submit">Subscribe</button>
+</form>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Listen to the <b>submit</b> event on the form, not click on the button.<br>
+• Call <b>preventDefault()</b> to handle the form with fetch.<br>
+• Disable the button during sending to prevent double submissions.<br>
+• Use <b>form.requestSubmit()</b> to submit with validation from script.<br><br>
+
+<h3>Common Mistakes</h3>
+• Handling click instead of submit, so Enter does not work.<br>
+• Putting a button without type inside a form and submitting by accident.<br>
+• Using a generic label like Submit instead of Subscribe or Save.<br>
+• Not showing feedback after sending.<br><br>
+
+<h3>Try It Yourself</h3>
+• Create a form that validates on submit, sends data with fetch, disables the button while waiting and shows a success message afterwards.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>fetch submit</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<form id="f">
+  <input name="q" required placeholder="Query">
+  <button id="b">Send</button>
+</form>
+<p id="o"></p>
+<script>
+  f.addEventListener('submit', async e => {
+    e.preventDefault(); b.disabled = true;
+    o.textContent = 'Sending ' + new URLSearchParams(new FormData(f)) + ' ...';
+    await new Promise(r => setTimeout(r, 600));
+    o.textContent = 'Sent!'; b.disabled = false;
+  });
+</script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Every form ends with a submit button that names the action.<br>
+• Single page apps intercept the event and call an API.<br>
+• Several submit buttons can save a draft or publish.<br>
+• Double click prevention is a common bug fix.<br><br>
+
+<h3>Best Practices</h3>
+• Use clear verbs on the button.<br>
+• Give feedback and handle errors.<br>
+• Validate on the server as well.<br>
+• Keep the primary action visually obvious.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> Why listen to the submit event instead of the click on the button?<br>
+• <b>A:</b> The form can also be submitted by pressing Enter in a field, which fires submit but not a click on the button.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>two buttons</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<form action="/save" method="post">
+  <input name="title" required>
+  <button name="act" value="publish">Publish</button>
+  <button name="act" value="draft" formnovalidate>Save draft</button>
+</form>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-forms-reset-button',
                             name: 'Reset Button',
                             beginner: [
                                 {
-                                    content: `<h3>Reset Button</h3>
-&bull; Part of the HTML Forms section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• <b>type="reset"</b> is a button that <b>restores all fields to their initial values</b>.<br>
+• It does not send anything to the server.<br>
+• The defaults are the values written in the HTML, not empty fields.<br>
+• It fires a reset event on the form.<br><br>
+
+<h3>Key Points</h3>
+• It is written as <b>&lt;button type="reset"&gt;</b> or an input with type reset.<br>
+• It clears typed text and restores checked and selected states.<br>
+• It affects only the form that contains it.<br>
+• There is no confirmation dialog.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>reset</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<form>
+  <input name="n" value="Asha">
+  <input name="c" value="Pune">
+  <button type="submit">Save</button>
+  <button type="reset">Reset</button>
+</form>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Listen to the <b>reset</b> event to clear custom state such as error messages or previews.<br>
+• Use <b>form.reset()</b> in script.<br>
+• Place the button away from the submit button to avoid accidents.<br>
+• Confirm before resetting long forms.<br><br>
+
+<h3>Common Mistakes</h3>
+• Placing reset next to submit, so users clear the form by mistake.<br>
+• Expecting it to empty all fields. It restores the defaults.<br>
+• Forgetting to clear dynamically added content.<br>
+• Using it in short forms where it adds clutter.<br><br>
+
+<h3>Try It Yourself</h3>
+• Create a filter form with a reset button that restores defaults and shows a message in a reset event handler.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>reset event</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<form id="f">
+  <input name="n" value="Asha"> <button type="reset">Reset</button>
+</form>
+<p id="o"></p>
+<script>f.addEventListener('reset', () => o.textContent = 'Form reset at ' + new Date().toLocaleTimeString());</script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Search filters often have a Clear filters link that resets the form.<br>
+• Long data entry forms rarely include reset because it is risky.<br>
+• Custom widgets listen to reset to restore their state.<br>
+• Single page apps reset state after a successful submit.<br><br>
+
+<h3>Best Practices</h3>
+• Use reset only when it helps users.<br>
+• Do not style it like the primary button.<br>
+• Give feedback or undo for destructive resets.<br>
+• Keep default values meaningful.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> Does a reset button empty the fields?<br>
+• <b>A:</b> Not necessarily. It restores each field to the value written in the HTML, so a field with a default value goes back to that value rather than becoming empty.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>confirm</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<form id="f"><input name="n" value="Draft text"><button type="reset">Reset</button></form>
+<script>f.addEventListener('reset', e => { if (!confirm('Discard changes?')) e.preventDefault(); });</script>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-forms-button-element',
                             name: 'Button Element',
                             beginner: [
                                 {
-                                    content: `<h3>Button Element</h3>
-&bull; Part of the HTML Forms section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• The <b>button</b> element creates a <b>clickable button</b>.<br>
+• Unlike input type button, it can contain text, icons and other elements.<br>
+• Inside a form its default type is submit.<br>
+• Its type can be submit, reset or button.<br><br>
+
+<h3>Key Points</h3>
+• Use <b>type="button"</b> for buttons that do not submit.<br>
+• Use <b>disabled</b> to turn it off.<br>
+• Use <b>name</b> and <b>value</b> to tell the server which button was used.<br>
+• It can be styled freely with CSS.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>button</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<button type="button" onclick="alert('Clicked!')">Click me</button>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Add text or an icon with an aria-label when the button has only an icon.<br>
+• Use <b>aria-pressed</b> for toggle buttons and <b>aria-expanded</b> for disclosure buttons.<br>
+• Use <b>:hover</b>, <b>:active</b> and <b>:focus-visible</b> for feedback.<br>
+• Use a link, not a button, for navigation.<br><br>
+
+<h3>Common Mistakes</h3>
+• Using a div as a button, which loses keyboard and screen reader support.<br>
+• Leaving off type inside a form and submitting it by accident.<br>
+• Removing the focus outline without a replacement.<br>
+• Using a button for a link to another page.<br><br>
+
+<h3>Try It Yourself</h3>
+• Create a toggle button that switches aria-pressed and updates its text, then add an icon-only close button with an accessible name.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>toggle</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+  button[aria-pressed="true"] { background: #ea580c; color: #fff; }
+</style>
+</head>
+<body>
+<button type="button" aria-pressed="false" id="b">Dark mode: off</button>
+<script>
+  b.onclick = () => {
+    const on = b.getAttribute('aria-pressed') !== 'true';
+    b.setAttribute('aria-pressed', on);
+    b.textContent = 'Dark mode: ' + (on ? 'on' : 'off');
+  };
+</script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Menus, tabs, accordions and dialogs are all opened with buttons.<br>
+• Design systems wrap button with variants such as primary and danger.<br>
+• Icon buttons need accessible names.<br>
+• Loading buttons show a spinner and block repeat clicks.<br><br>
+
+<h3>Best Practices</h3>
+• Use the right element: button for actions, a for navigation.<br>
+• Give every button a clear accessible name.<br>
+• Make the touch target at least 44 by 44 pixels.<br>
+• Keep focus styles visible.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> Why use a button instead of a clickable div?<br>
+• <b>A:</b> A button is focusable, works with Enter and Space, has the right role for screen readers and needs no extra code. A div needs all of that added manually.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>icon button</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<button type="button" aria-label="Close" style="width:44px;height:44px">&times;</button>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-forms-label-element',
                             name: 'Label Element',
                             beginner: [
                                 {
-                                    content: `<h3>Label Element</h3>
-&bull; Part of the HTML Forms section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• The <b>label</b> element gives a form control a <b>visible, clickable name</b>.<br>
+• Clicking the label focuses or toggles its control.<br>
+• Screen readers announce the label when the control gets focus.<br>
+• It is the most important accessibility feature of forms.<br><br>
+
+<h3>Key Points</h3>
+• Connect them with <b>for</b> on the label and a matching <b>id</b> on the control.<br>
+• Or wrap the control inside the label, with no id needed.<br>
+• One control can have several labels.<br>
+• A label increases the click area, which helps touch users.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>label</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<label for="e">Email address</label>
+<input id="e" type="email">
+
+<label><input type="checkbox"> I agree to the terms</label>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Place labels above fields on small screens for readability.<br>
+• Use <b>aria-label</b> only when a visible label is truly not possible.<br>
+• Combine with hint text through <b>aria-describedby</b>.<br>
+• Mark required fields in the label text, not only with a star.<br><br>
+
+<h3>Common Mistakes</h3>
+• Using placeholders instead of labels.<br>
+• Using a for value that does not match any id.<br>
+• Duplicate ids, which break the link.<br>
+• Hiding labels with display none, which hides them from screen readers.<br><br>
+
+<h3>Try It Yourself</h3>
+• Make a small form where each field has a label connected by for and id, a hint linked with aria-describedby and a checkbox wrapped inside its label.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>hint</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+  .hint { color: #64748b; font-size: 13px; }
+</style>
+</head>
+<body>
+<label for="p">Password</label>
+<input id="p" type="password" aria-describedby="h">
+<div id="h" class="hint">At least 8 characters.</div>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Accessibility audits first check that every control has a label.<br>
+• Floating label designs must still keep a real label element.<br>
+• Inline label and checkbox groups make tap targets larger.<br>
+• Forms in design systems wrap label, input and error into one component.<br><br>
+
+<h3>Best Practices</h3>
+• Always use a visible label.<br>
+• Keep label text short and descriptive.<br>
+• Place the error message near the field and reference it with aria-describedby.<br>
+• Use visually hidden labels only when the context is clear.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> What are the two ways to connect a label to a control?<br>
+• <b>A:</b> Use the for attribute matching the control id, or place the control inside the label element. Both let clicks and screen readers link them.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>hidden label</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+</style>
+</head>
+<body>
+<label for="s" class="sr">Search</label>
+<input id="s" type="search" placeholder="Search...">
+<button>Go</button>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-forms-textarea',
                             name: 'Textarea',
                             beginner: [
                                 {
-                                    content: `<h3>Textarea</h3>
-&bull; Part of the HTML Forms section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• The <b>textarea</b> element is a <b>multi-line text field</b>.<br>
+• It is used for comments, messages and descriptions.<br>
+• Its initial content goes between the tags, not in a value attribute.<br>
+• Line breaks typed by the user are kept.<br><br>
+
+<h3>Key Points</h3>
+• Use <b>rows</b> and <b>cols</b> for a starting size, or set size with CSS.<br>
+• Use <b>maxlength</b> and <b>minlength</b> to control the length.<br>
+• Use <b>placeholder</b>, <b>required</b> and <b>readonly</b> like other fields.<br>
+• Users can resize it unless you set <b>resize: none</b>.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>textarea</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<label for="m">Message</label>
+<textarea id="m" name="message" rows="4" cols="40" placeholder="Write here..."></textarea>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Add a live counter showing remaining characters.<br>
+• Use <b>wrap="hard"</b> with cols to submit hard line breaks.<br>
+• Auto-grow the field by setting its height from scrollHeight.<br>
+• Use <b>spellcheck</b> and <b>autocapitalize</b> to control hints.<br><br>
+
+<h3>Common Mistakes</h3>
+• Using a value attribute. The text must go between the tags.<br>
+• Leaving extra whitespace between the tags, which becomes content.<br>
+• Removing resizing without a replacement.<br>
+• Not limiting size on the server.<br><br>
+
+<h3>Try It Yourself</h3>
+• Create a message box with a 200 character limit, a live counter and automatic height growth as the user types.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>auto grow</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+  textarea { width: 300px; overflow: hidden; resize: none; }
+</style>
+</head>
+<body>
+<textarea id="m" rows="2" aria-label="Notes"></textarea>
+<script>m.oninput = () => { m.style.height = 'auto'; m.style.height = m.scrollHeight + 'px'; };</script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Comment boxes, reviews and support forms use textareas.<br>
+• Markdown editors build previews next to the textarea.<br>
+• Mentions and hashtags are added through scripts.<br>
+• Server code must escape the text before showing it in HTML.<br><br>
+
+<h3>Best Practices</h3>
+• Escape user text when displaying it.<br>
+• Offer a character counter near limits.<br>
+• Set a sensible minimum height.<br>
+• Preserve line breaks with white-space: pre-wrap when showing the text.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> How do you set initial text in a textarea?<br>
+• <b>A:</b> Put the text between the opening and closing tags. A textarea has no value attribute in HTML, though its value property works in script.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>counter</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<textarea id="m" maxlength="120" rows="3" aria-label="Bio"></textarea>
+<small><span id="c">120</span> characters left</small>
+<script>m.oninput = () => c.textContent = 120 - m.value.length;</script>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-forms-select-element',
                             name: 'Select Element',
                             beginner: [
                                 {
-                                    content: `<h3>Select Element</h3>
-&bull; Part of the HTML Forms section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• The <b>select</b> element creates a <b>drop-down list</b> of options.<br>
+• Each choice is an <b>option</b> element inside it.<br>
+• The user picks one option, or several with the multiple attribute.<br>
+• Its value is the value of the chosen option.<br><br>
+
+<h3>Key Points</h3>
+• Use <b>name</b> so the choice is submitted.<br>
+• Use <b>required</b> with an empty first option to force a choice.<br>
+• <b>multiple</b> turns it into a list box, and <b>size</b> sets the visible rows.<br>
+• Group options with <b>optgroup</b>.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>select</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<label for="c">Country</label>
+<select id="c" name="country">
+  <option value="in">India</option>
+  <option value="us">United States</option>
+  <option value="uk">United Kingdom</option>
+</select>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Read the choice with <b>select.value</b> and the label with <b>select.selectedOptions[0].text</b>.<br>
+• Use the <b>change</b> event to react when the user picks another option.<br>
+• A disabled placeholder option such as "Choose..." guides the user.<br>
+• Fill options from data with a short script.<br><br>
+
+<h3>Common Mistakes</h3>
+• Using a select for two options, where radio buttons are easier.<br>
+• Forgetting values, so the visible text is sent instead.<br>
+• Making long lists with no search, such as a thousand cities.<br>
+• Styling selects heavily, which can break keyboard use on some platforms.<br><br>
+
+<h3>Try It Yourself</h3>
+• Build two linked drop-downs, category and item, where the second list is refilled from an object when the first one changes.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>placeholder</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<label for="s">Course</label>
+<select id="s" required>
+  <option value="" disabled selected>Choose a course</option>
+  <option value="java">Java</option>
+  <option value="html">HTML</option>
+</select>
+<p id="o"></p>
+<script>s.onchange = () => o.textContent = 'You chose ' + s.selectedOptions[0].text;</script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Country, state and category pickers use selects.<br>
+• Linked dropdowns update the second list when the first changes.<br>
+• For long lists, searchable comboboxes replace the native select.<br>
+• Mobile browsers show native pickers that are quick to use.<br><br>
+
+<h3>Best Practices</h3>
+• Provide a label and an empty first option when a choice is required.<br>
+• Sort options in a way that makes sense.<br>
+• Keep native behaviour unless you must change it.<br>
+• Use datalist or a combobox pattern for very long lists.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> How is the value of a select determined?<br>
+• <b>A:</b> It is the value attribute of the selected option, or the option text when no value attribute exists.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>dependent</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<select id="a"><option>Fruits</option><option>Vegetables</option></select>
+<select id="b"></select>
+<script>
+  const data = { Fruits: ['Apple', 'Banana'], Vegetables: ['Carrot', 'Peas'] };
+  const fill = () => b.innerHTML = data[a.value].map(x => '<option>' + x + '</option>').join('');
+  a.onchange = fill; fill();
+</script>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-forms-option-element',
                             name: 'Option Element',
                             beginner: [
                                 {
-                                    content: `<h3>Option Element</h3>
-&bull; Part of the HTML Forms section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• The <b>option</b> element defines <b>one choice</b> inside a select, optgroup or datalist.<br>
+• The text between the tags is shown to the user.<br>
+• The <b>value</b> attribute is what gets submitted.<br>
+• If value is missing, the text is used.<br><br>
+
+<h3>Key Points</h3>
+• <b>selected</b> marks the default choice.<br>
+• <b>disabled</b> makes a choice visible but not selectable.<br>
+• <b>label</b> can shorten what is displayed in some browsers.<br>
+• It cannot contain other elements, only text.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>option</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<select name="size">
+  <option value="s">Small</option>
+  <option value="m" selected>Medium</option>
+  <option value="l">Large</option>
+  <option value="xl" disabled>Extra large (sold out)</option>
+</select>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Create options in script with <b>new Option(text, value)</b>.<br>
+• Add them with <b>select.add()</b> or append.<br>
+• Read <b>option.selected</b> and <b>option.index</b> in loops.<br>
+• Use <b>hidden</b> to remove an option from the list without deleting it.<br><br>
+
+<h3>Common Mistakes</h3>
+• Writing markup inside an option. Browsers show only text.<br>
+• Using values with spaces and expecting the server to trim them.<br>
+• Having two options selected in a single select.<br>
+• Leaving out values, so display text becomes data.<br><br>
+
+<h3>Try It Yourself</h3>
+• Fill a select from an array using new Option, mark one choice as default and disable one that is unavailable.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>create options</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<select id="s"></select>
+<script>
+  ['Java', 'Spring', 'HTML'].forEach((t, i) => s.add(new Option(t, 'v' + i)));
+  s.onchange = () => document.title = s.value;
+</script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Dynamic option lists are filled from APIs after the page loads.<br>
+• Disabled options show out-of-stock sizes without hiding them.<br>
+• Labels can show a short code while the dropdown shows the full name.<br>
+• Frameworks map arrays to options with keys.<br><br>
+
+<h3>Best Practices</h3>
+• Always set explicit values.<br>
+• Use a clear default and mark it with selected.<br>
+• Avoid very long option text.<br>
+• Keep values stable even if labels change.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> What does an option send if it has no value attribute?<br>
+• <b>A:</b> Its text content, trimmed. That is why explicit values are safer, because translating or renaming the label would change the data.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>disabled option</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<select><option>Pick a plan</option><option>Basic</option><option disabled>Premium (coming soon)</option></select>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-forms-optgroup-element',
                             name: 'Optgroup Element',
                             beginner: [
                                 {
-                                    content: `<h3>Optgroup Element</h3>
-&bull; Part of the HTML Forms section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• The <b>optgroup</b> element <b>groups related options</b> inside a select.<br>
+• The <b>label</b> attribute gives the group a heading.<br>
+• The heading is shown but cannot be chosen.<br>
+• It makes long lists easier to scan.<br><br>
+
+<h3>Key Points</h3>
+• optgroup is a child of select and the parent of option.<br>
+• Adding <b>disabled</b> to the group disables all options in it.<br>
+• Nesting groups inside groups is not allowed.<br>
+• Groups can have different numbers of options.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>optgroup</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<select name="lang">
+  <optgroup label="Backend">
+    <option>Java</option>
+    <option>Python</option>
+  </optgroup>
+  <optgroup label="Frontend">
+    <option>HTML</option>
+    <option>CSS</option>
+  </optgroup>
+</select>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Style the group heading limited by browser support, mostly font weight and colour.<br>
+• Use groups for categories such as continents and countries.<br>
+• Combine with the multiple attribute for a grouped list box.<br>
+• Order groups alphabetically or by usage.<br><br>
+
+<h3>Common Mistakes</h3>
+• Using optgroup with no label, which shows an empty heading.<br>
+• Nesting optgroup elements.<br>
+• Putting options outside groups when some are grouped, which looks confusing.<br>
+• Using it where a simple list would do.<br><br>
+
+<h3>Try It Yourself</h3>
+• Create a timezone picker grouped by continent, with one group disabled to mark regions that are not yet supported.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>multiple grouped</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<select multiple size="6">
+  <optgroup label="Fruits"><option>Apple</option><option>Mango</option></optgroup>
+  <optgroup label="Vegetables"><option>Carrot</option><option>Peas</option></optgroup>
+</select>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Country selectors group by region.<br>
+• Timezone pickers group by area, such as Asia and Europe.<br>
+• Product pickers group by category.<br>
+• Disabling a group greys out a whole unavailable section.<br><br>
+
+<h3>Best Practices</h3>
+• Keep group names short and clear.<br>
+• Do not create groups with only one option.<br>
+• Test the look on mobile, where groups appear in a native picker.<br>
+• Maintain consistent ordering.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> Can you select an optgroup label?<br>
+• <b>A:</b> No. The label is only a heading. Only the option elements inside the group can be chosen.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>disabled group</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<select>
+  <optgroup label="Available"><option>Java</option></optgroup>
+  <optgroup label="Coming soon" disabled><option>Rust</option><option>Go</option></optgroup>
+</select>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-forms-datalist',
                             name: 'Datalist',
                             beginner: [
                                 {
-                                    content: `<h3>Datalist</h3>
-&bull; Part of the HTML Forms section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• The <b>datalist</b> element offers <b>suggestions</b> for a text input.<br>
+• The input connects to it through the <b>list</b> attribute.<br>
+• Unlike select, the user can still type any value.<br>
+• It behaves like a simple combobox.<br><br>
+
+<h3>Key Points</h3>
+• The datalist needs an <b>id</b> and the input uses <b>list="that-id"</b>.<br>
+• Each suggestion is an option with a value.<br>
+• Browsers filter suggestions as you type.<br>
+• It works with text, url, email, number, date and colour inputs.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>datalist</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<label for="b">Browser</label>
+<input id="b" list="browsers" name="browser">
+<datalist id="browsers">
+  <option value="Chrome">
+  <option value="Firefox">
+  <option value="Safari">
+</datalist>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Show a label with the option text while the value is submitted.<br>
+• Fill the list from an API as the user types.<br>
+• Pair with <b>autocomplete="off"</b> if the browser history interferes.<br>
+• Validate the final value on the server, since any text is allowed.<br><br>
+
+<h3>Common Mistakes</h3>
+• Expecting it to restrict input to the list. It does not.<br>
+• Using the same id twice.<br>
+• Forgetting that styling the suggestion popup is limited.<br>
+• Large lists that make the popup slow.<br><br>
+
+<h3>Try It Yourself</h3>
+• Create a city input that suggests five cities from a datalist and uses a pattern to accept only those cities.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>dynamic</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<input id="c" list="cities" placeholder="City">
+<datalist id="cities"></datalist>
+<script>
+  ['Pune', 'Mumbai', 'Delhi', 'Chennai'].forEach(x => cities.append(new Option(x)));
+</script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Search boxes with common queries, city fields and tag inputs use datalist.<br>
+• It needs no JavaScript for simple cases.<br>
+• For rich results with images, a custom combobox is needed.<br>
+• Screen reader support varies between browsers.<br><br>
+
+<h3>Best Practices</h3>
+• Use it for convenience suggestions only.<br>
+• Validate against allowed values on the server if required.<br>
+• Keep the list under a few hundred items.<br>
+• Provide a visible label.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> What is the difference between datalist and select?<br>
+• <b>A:</b> A select forces a choice from the list, while a datalist only suggests values and still allows free text.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>restrict</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<input id="c" list="l" pattern="Pune|Mumbai|Delhi" title="Choose a listed city" required>
+<datalist id="l"><option>Pune</option><option>Mumbai</option><option>Delhi</option></datalist>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-forms-fieldset',
                             name: 'Fieldset',
                             beginner: [
                                 {
-                                    content: `<h3>Fieldset</h3>
-&bull; Part of the HTML Forms section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• The <b>fieldset</b> element <b>groups related form controls</b>.<br>
+• Browsers draw a border around the group.<br>
+• Its first child can be a legend, which names the group.<br>
+• It helps both visual and screen reader users understand the structure.<br><br>
+
+<h3>Key Points</h3>
+• Use it for radio button groups and sets of checkboxes.<br>
+• Add <b>disabled</b> to disable every control inside it at once.<br>
+• The <b>name</b> and <b>form</b> attributes exist but are rarely used.<br>
+• It can be styled like any block.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>fieldset</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<form>
+  <fieldset>
+    <legend>Delivery</legend>
+    <label><input type="radio" name="d" value="home" checked> Home</label>
+    <label><input type="radio" name="d" value="store"> Pickup</label>
+  </fieldset>
+</form>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Reset the default border and padding with CSS for a flat look.<br>
+• Group address fields in a fieldset with the legend Billing address.<br>
+• Disable a whole section while it is not applicable.<br>
+• Use nested fieldsets sparingly.<br><br>
+
+<h3>Common Mistakes</h3>
+• Using it purely for visual boxes. Use a div for that.<br>
+• Forgetting the legend, which loses the accessible name.<br>
+• Nesting too deeply.<br>
+• Expecting display flex to work easily on older browsers.<br><br>
+
+<h3>Try It Yourself</h3>
+• Build a checkout form with a billing fieldset and a shipping fieldset that becomes enabled only when a checkbox is ticked.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>disabled group</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<form>
+  <label><input type="checkbox" id="g"> Ship to a different address</label>
+  <fieldset id="a" disabled>
+    <legend>Shipping address</legend>
+    <input placeholder="Street"> <input placeholder="City">
+  </fieldset>
+</form>
+<script>g.onchange = () => a.disabled = !g.checked;</script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Checkout pages group billing and shipping data.<br>
+• Surveys group questions that belong together.<br>
+• Settings pages group switches by topic.<br>
+• Disabled fieldsets save a lot of script code.<br><br>
+
+<h3>Best Practices</h3>
+• Always pair fieldset with a legend.<br>
+• Use it for radio and checkbox groups.<br>
+• Keep groups small and logical.<br>
+• Restyle it for consistency.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> What happens to inputs inside a disabled fieldset?<br>
+• <b>A:</b> They are all disabled, cannot be focused or edited, and are not submitted with the form.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>flat style</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+  fieldset { border: 0; padding: 0; margin: 16px 0; }
+  legend { font-weight: 700; padding: 0; }
+</style>
+</head>
+<body>
+<fieldset><legend>Preferences</legend><label><input type="checkbox"> Email me</label></fieldset>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-forms-legend',
                             name: 'Legend',
                             beginner: [
                                 {
-                                    content: `<h3>Legend</h3>
-&bull; Part of the HTML Forms section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• The <b>legend</b> element is the <b>caption of a fieldset</b>.<br>
+• It must be the first child of the fieldset.<br>
+• Browsers draw it on the top border line.<br>
+• Screen readers read it before each control in the group.<br><br>
+
+<h3>Key Points</h3>
+• It names the group, such as Payment method.<br>
+• It can contain text and phrasing elements.<br>
+• Only one legend is allowed per fieldset.<br>
+• It is essential for radio button groups.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>legend</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<fieldset>
+  <legend>Choose a payment method</legend>
+  <label><input type="radio" name="p" value="card"> Card</label>
+  <label><input type="radio" name="p" value="upi"> UPI</label>
+</fieldset>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Style it with font, colour and padding.<br>
+• Move it away from the border by setting <b>float: left</b> and <b>width: 100%</b> if you need full control.<br>
+• Use a visually hidden legend if the design shows another heading.<br>
+• Combine with required marks in the text.<br><br>
+
+<h3>Common Mistakes</h3>
+• Placing the legend anywhere but first.<br>
+• Replacing it with a heading, which loses the group link.<br>
+• Hiding it with display none.<br>
+• Writing very long legends.<br><br>
+
+<h3>Try It Yourself</h3>
+• Create a survey question as a fieldset with a legend and three radio options, then visually hide the legend while keeping it available to screen readers.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>custom legend</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+  fieldset { border: 1px solid #cbd5e1; }
+  legend { background: #ea580c; color: #fff; padding: 2px 10px; border-radius: 4px; }
+</style>
+</head>
+<body>
+<fieldset><legend>Level</legend><label><input type="radio" name="l"> Beginner</label><label><input type="radio" name="l"> Advanced</label></fieldset>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Accessibility checks report radio groups without legends.<br>
+• Questionnaires use the question as the legend.<br>
+• Design systems provide a RadioGroup component wrapping fieldset and legend.<br>
+• Consistent legends improve screen reader navigation.<br><br>
+
+<h3>Best Practices</h3>
+• Write the legend as the question or group title.<br>
+• Do not repeat the legend in each option.<br>
+• Keep it short.<br>
+• Hide visually, never remove, when the design requires.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> Why does a radio group need a legend?<br>
+• <b>A:</b> Screen readers announce the legend before each option, so users know what the question is. Without it, the options alone are ambiguous.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>visually hidden</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+</style>
+</head>
+<body>
+<fieldset style="border:0"><legend class="sr">Rating</legend>
+<label><input type="radio" name="r"> Good</label> <label><input type="radio" name="r"> Bad</label></fieldset>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-forms-output-element',
                             name: 'Output Element',
                             beginner: [
                                 {
-                                    content: `<h3>Output Element</h3>
-&bull; Part of the HTML Forms section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• The <b>output</b> element shows the <b>result of a calculation</b> or user action.<br>
+• It is announced politely by screen readers when its content changes.<br>
+• It can be linked to the inputs it depends on with the <b>for</b> attribute.<br>
+• Its name and value can take part in the form.<br><br>
+
+<h3>Key Points</h3>
+• Write the result with <b>output.value</b> or textContent.<br>
+• The <b>for</b> attribute lists the ids of the related inputs.<br>
+• It has an implicit role of status.<br>
+• The <b>oninput</b> handler on the form can update it.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>output</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<form oninput="r.value = Number(a.value) + Number(b.value)">
+  <input type="number" id="a" value="2"> +
+  <input type="number" id="b" value="3"> =
+  <output name="r" for="a b">5</output>
+</form>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Use it for totals, slider values and live previews.<br>
+• Reset restores its default content.<br>
+• Style it like inline text.<br>
+• Pair with a range input to show the current value.<br><br>
+
+<h3>Common Mistakes</h3>
+• Using a span, which loses the live announcement.<br>
+• Forgetting the for attribute.<br>
+• Updating too often, which makes screen readers talk constantly.<br>
+• Using it for important errors, where role alert is better.<br><br>
+
+<h3>Try It Yourself</h3>
+• Build a price estimator with quantity and unit price fields that updates an output element as the user types.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>slider value</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<input type="range" id="v" min="0" max="100" value="30">
+<output for="v" id="o">30</output>%
+<script>v.oninput = () => o.value = v.value;</script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Calculators, price estimators and unit converters rely on output.<br>
+• It marks results clearly for assistive technology.<br>
+• The value can be submitted with the form when named.<br>
+• Frameworks render derived values into output elements.<br><br>
+
+<h3>Best Practices</h3>
+• Keep announcements short.<br>
+• Debounce frequent updates.<br>
+• Include units in the result.<br>
+• Use alerts for errors and output for neutral results.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> What does output give you compared with a span?<br>
+• <b>A:</b> It is linked to its inputs, announced as a live status to screen readers and can be part of the form data.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>estimator</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<form id="f" oninput="t.value = (q.value * p.value).toFixed(2)">
+  Qty <input type="number" id="q" value="2" min="1"> x Price <input type="number" id="p" value="49.5" step="0.01">
+  = <output id="t" name="t" for="q p">99.00</output>
+</form>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-forms-meter',
                             name: 'Meter',
                             beginner: [
                                 {
-                                    content: `<h3>Meter</h3>
-&bull; Part of the HTML Forms section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• The <b>meter</b> element shows a <b>value within a known range</b>, like a gauge.<br>
+• Examples are disk usage, battery level and a score out of ten.<br>
+• It is not for progress of a task. Use progress for that.<br>
+• Browsers draw a coloured bar.<br><br>
+
+<h3>Key Points</h3>
+• <b>value</b>, <b>min</b> and <b>max</b> define the position.<br>
+• <b>low</b> and <b>high</b> define the ranges that change colour.<br>
+• <b>optimum</b> tells which end is good.<br>
+• The text between the tags is a fallback.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>meter</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<label for="d">Disk usage</label>
+<meter id="d" min="0" max="100" value="60">60%</meter>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Browsers colour the bar green, yellow or red based on low, high and optimum.<br>
+• Style it with vendor pseudo-elements.<br>
+• Add an aria-label or a visible label.<br>
+• Update value from script for live gauges.<br><br>
+
+<h3>Common Mistakes</h3>
+• Using meter for progress such as a download. Use progress.<br>
+• Forgetting max when the scale is not 0 to 1.<br>
+• Providing no label.<br>
+• Using colours as the only signal.<br><br>
+
+<h3>Try It Yourself</h3>
+• Create a storage meter with warning zones and a button that increases its value in steps.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>zones</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<meter min="0" max="100" low="30" high="70" optimum="100" value="85">85</meter>
+<meter min="0" max="100" low="30" high="70" optimum="100" value="20">20</meter>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Dashboards show usage and quota with meters.<br>
+• Quiz results show scores.<br>
+• Password strength indicators use them.<br>
+• Printing shows the same bar without scripts.<br><br>
+
+<h3>Best Practices</h3>
+• Add a text value next to the bar.<br>
+• Choose low, high and optimum thoughtfully.<br>
+• Use an accessible name.<br>
+• Do not rely on default colours alone.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> What is the difference between meter and progress?<br>
+• <b>A:</b> meter shows a measurement within a range, while progress shows how far a task has advanced toward completion.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>live</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<meter id="m" min="0" max="100" value="10" aria-label="Battery"></meter>
+<button onclick="m.value = Math.min(100, m.value + 15)">Charge</button>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-forms-progress',
                             name: 'Progress',
                             beginner: [
                                 {
-                                    content: `<h3>Progress</h3>
-&bull; Part of the HTML Forms section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• The <b>progress</b> element shows <b>how much of a task is complete</b>.<br>
+• It displays a bar that fills from left to right.<br>
+• Without a value it shows an indeterminate animation.<br>
+• Use it for downloads, uploads and multi-step forms.<br><br>
+
+<h3>Key Points</h3>
+• <b>value</b> is the amount done and <b>max</b> is the total.<br>
+• The default max is 1.<br>
+• Omit value for an unknown duration.<br>
+• The inner text is shown by very old browsers.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>progress</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<label for="p">Upload</label>
+<progress id="p" max="100" value="45">45%</progress>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Update value from script as the task moves ahead.<br>
+• Style with pseudo-elements such as ::-webkit-progress-value.<br>
+• Add aria-label or associate a label.<br>
+• Show a text percentage beside the bar.<br><br>
+
+<h3>Common Mistakes</h3>
+• Using progress for static values, where meter is better.<br>
+• Forgetting a label.<br>
+• Never reaching 100% on completion.<br>
+• Leaving the indeterminate bar on forever.<br><br>
+
+<h3>Try It Yourself</h3>
+• Make a progress bar that fills to 100% in ten steps and shows the percentage in text beside it.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>simulate</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<progress id="p" max="100" value="0"></progress> <span id="t">0%</span>
+<script>
+  let v = 0; const id = setInterval(() => { v += 10; p.value = v; t.textContent = v + '%'; if (v >= 100) clearInterval(id); }, 300);
+</script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• File uploaders, installers and quizzes show progress.<br>
+• Fetch with streams or XHR upload events drive value.<br>
+• Wizards show the number of finished steps.<br>
+• Skeleton screens replace it for page loading.<br><br>
+
+<h3>Best Practices</h3>
+• Prefer determinate progress when you know the total.<br>
+• Announce completion to screen readers.<br>
+• Do not fake progress.<br>
+• Keep contrast high.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> How does progress behave without a value attribute?<br>
+• <b>A:</b> It becomes indeterminate and shows an animated bar, which means the task is running but the amount done is unknown.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>indeterminate</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<p>Loading...</p><progress aria-label="Loading"></progress>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-forms-form-validation',
                             name: 'Form Validation',
                             beginner: [
                                 {
-                                    content: `<h3>Form Validation</h3>
-&bull; Part of the HTML Forms section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• <b>Form validation</b> checks the data before it is sent.<br>
+• HTML offers built-in rules through attributes such as required, pattern, min and max.<br>
+• The browser blocks submission and shows a message when a rule fails.<br>
+• It improves the experience but does not replace server checks.<br><br>
+
+<h3>Key Points</h3>
+• Rules: <b>required</b>, <b>minlength</b>, <b>maxlength</b>, <b>min</b>, <b>max</b>, <b>pattern</b> and the input type.<br>
+• The pseudo-classes <b>:valid</b> and <b>:invalid</b> style the state.<br>
+• <b>novalidate</b> on the form turns it off.<br>
+• The Constraint Validation API gives script access.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>validation</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+  input:invalid { border-color: crimson; }
+  input:valid { border-color: seagreen; }
+</style>
+</head>
+<body>
+<form>
+  <label for="e">Email</label>
+  <input id="e" type="email" required>
+  <label for="a">Age (18-60)</label>
+  <input id="a" type="number" min="18" max="60" required>
+  <button>Send</button>
+</form>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Use <b>setCustomValidity</b> for custom messages and reset it with an empty string.<br>
+• Check <b>form.checkValidity()</b> or <b>reportValidity()</b> in script.<br>
+• Show your own error text near each field with aria-describedby.<br>
+• Validate again on the server.<br><br>
+
+<h3>Common Mistakes</h3>
+• Relying only on client validation.<br>
+• Showing errors before the user touches the field.<br>
+• Vague messages such as Invalid input.<br>
+• Forgetting to clear custom validity, which keeps the field invalid.<br><br>
+
+<h3>Try It Yourself</h3>
+• Create a sign-up form with required fields, a custom error message area linked with aria-describedby and server-style checks inside a submit handler.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>custom</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<form id="f" novalidate>
+  <input id="u" name="u" required minlength="3">
+  <span id="err" role="alert"></span>
+  <button>Save</button>
+</form>
+<script>
+  f.onsubmit = e => {
+    if (!f.checkValidity()) { e.preventDefault(); err.textContent = u.validationMessage; }
+    else err.textContent = '';
+  };
+</script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Sign-up forms combine HTML rules with live messages.<br>
+• Servers return field errors that scripts show in the same places.<br>
+• Accessible error patterns link messages with aria-describedby and use aria-invalid.<br>
+• Automated tests submit invalid data to check both layers.<br><br>
+
+<h3>Best Practices</h3>
+• Validate on both sides.<br>
+• Explain how to fix the problem.<br>
+• Mark invalid fields with aria-invalid.<br>
+• Move focus to the first error.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> Why must forms be validated on the server too?<br>
+• <b>A:</b> Client rules can be bypassed by editing the page or sending requests directly, so only server validation protects your data.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>aria</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<label for="e">Email</label>
+<input id="e" type="email" aria-describedby="m" aria-invalid="false">
+<div id="m" role="alert"></div>
+<script>
+  e.onblur = () => { const bad = !e.checkValidity(); e.setAttribute('aria-invalid', bad); m.textContent = bad ? 'Enter a valid email.' : ''; };
+</script>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-forms-required-attribute',
                             name: 'required Attribute',
                             beginner: [
                                 {
-                                    content: `<h3>required Attribute</h3>
-&bull; Part of the HTML Forms section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• The <b>required</b> attribute says a field <b>must be filled</b> before the form is sent.<br>
+• It is a boolean attribute: its presence is enough.<br>
+• It works on input, select and textarea.<br>
+• The browser blocks submission and shows a message.<br><br>
+
+<h3>Key Points</h3>
+• For a checkbox it must be ticked.<br>
+• For radio buttons, one in the group must be chosen.<br>
+• For a select, the first option should have an empty value.<br>
+• Whitespace-only text counts as filled.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>required</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<form>
+  <label for="n">Name *</label>
+  <input id="n" name="name" required>
+  <label><input type="checkbox" required> I accept the terms</label>
+  <button>Send</button>
+</form>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Mark required fields visually and in text, not just with colour.<br>
+• Use <b>:required</b> in CSS to style them.<br>
+• Use <b>aria-required</b> only on custom controls, since native required is announced already.<br>
+• Trim values in script when whitespace should not count.<br><br>
+
+<h3>Common Mistakes</h3>
+• Forgetting that a select with a non-empty first option always counts as filled.<br>
+• Marking every field required.<br>
+• Using only a red star with no explanation.<br>
+• Not validating again on the server.<br><br>
+
+<h3>Try It Yourself</h3>
+• Make a form with required text, checkbox and select fields, style required inputs with CSS and explain the red star in a note.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>style</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+  label.req::after { content: " *"; color: crimson; }
+  input:required { border-left: 3px solid #ea580c; }
+</style>
+</head>
+<body>
+<label class="req" for="e">Email</label>
+<input id="e" type="email" required>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Contact and checkout forms mark required fields clearly.<br>
+• Optional fields are labelled optional instead, when most are required.<br>
+• Servers reject empty values with field errors.<br>
+• Screen readers announce required automatically.<br><br>
+
+<h3>Best Practices</h3>
+• Only require what you truly need.<br>
+• Tell users what the star means.<br>
+• Do not remove native required semantics.<br>
+• Show errors next to fields.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> How does required work for a radio group?<br>
+• <b>A:</b> Setting required on any radio button of the group means one of the group must be chosen before submit.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>trim</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<form id="f"><input id="n" required><button>Go</button></form>
+<script>f.onsubmit = e => { n.value = n.value.trim(); if (!n.value) { n.setCustomValidity('Please type something'); } else n.setCustomValidity(''); };</script>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-forms-pattern-attribute',
                             name: 'pattern Attribute',
                             beginner: [
                                 {
-                                    content: `<h3>pattern Attribute</h3>
-&bull; Part of the HTML Forms section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• The <b>pattern</b> attribute checks input against a <b>regular expression</b>.<br>
+• It works on text, search, url, tel, email and password inputs.<br>
+• The whole value must match the pattern.<br>
+• Use <b>title</b> to explain the rule in the error message.<br><br>
+
+<h3>Key Points</h3>
+• Write the pattern without slashes, such as <b>[A-Za-z]{3,}</b>.<br>
+• The pattern is matched as if wrapped in ^(?: and )$.<br>
+• Empty values pass unless required is set.<br>
+• Invalid patterns are ignored by the browser.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>pattern</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<form>
+  <label for="c">Course code (ABC-123)</label>
+  <input id="c" pattern="[A-Z]{3}-[0-9]{3}" title="Three capital letters, a dash and three digits" required>
+  <button>Check</button>
+</form>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Style the field with :invalid and show the title text near it.<br>
+• Test your expression in a regex tester before using it.<br>
+• Use patterns for formats like postal codes and IDs.<br>
+• Do not use patterns for passwords strength rules that need nuance.<br><br>
+
+<h3>Common Mistakes</h3>
+• Writing slashes or flags in the attribute.<br>
+• Making patterns so strict that valid input fails, such as names.<br>
+• Forgetting that server validation is still needed.<br>
+• Using unescaped special characters like a dash inside a class.<br><br>
+
+<h3>Try It Yourself</h3>
+• Create a course-code field with a pattern, a helpful title and a visible hint, then test valid and invalid values.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>postal code</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<label for="z">PIN code</label>
+<input id="z" pattern="[1-9][0-9]{5}" inputmode="numeric" maxlength="6" title="Six digits, not starting with 0">
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Vehicle numbers, SKUs and ticket codes use patterns.<br>
+• Libraries add friendlier messages on top of pattern.<br>
+• International formats may need a script rather than a single pattern.<br>
+• Accessible hints explain the pattern before an error appears.<br><br>
+
+<h3>Best Practices</h3>
+• Show the format in the label or hint.<br>
+• Keep patterns readable and tested.<br>
+• Accept common variants, such as spaces.<br>
+• Repeat the same rule on the server.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> Does pattern require the whole value to match?<br>
+• <b>A:</b> Yes. The browser treats the pattern as anchored at both ends, so partial matches do not pass.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>hint</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+  small { color: #64748b; }
+</style>
+</head>
+<body>
+<label for="v">Vehicle number</label>
+<input id="v" pattern="[A-Z]{2}[0-9]{2}[A-Z]{1,2}[0-9]{4}" aria-describedby="h" placeholder="MH12AB1234">
+<small id="h">Format: MH12AB1234</small>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-forms-min-attribute',
                             name: 'min Attribute',
                             beginner: [
                                 {
-                                    content: `<h3>min Attribute</h3>
-&bull; Part of the HTML Forms section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• The <b>min</b> attribute sets the <b>smallest allowed value</b> of an input.<br>
+• It works with number, range, date, month, week, time and datetime-local.<br>
+• The browser shows an error when the value is lower.<br>
+• It also limits how far the picker or spinner can go down.<br><br>
+
+<h3>Key Points</h3>
+• The value uses the same format as the input type.<br>
+• For dates it is YYYY-MM-DD.<br>
+• For numbers it is a plain number.<br>
+• It does not stop typing a lower number, only submission.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>min</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<label for="a">Age (at least 18)</label>
+<input id="a" type="number" min="18" required>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Set min from script, such as today for booking dates.<br>
+• Combine with max to form a range.<br>
+• Use <b>validity.rangeUnderflow</b> to detect the error.<br>
+• Update min dynamically when another field changes.<br><br>
+
+<h3>Common Mistakes</h3>
+• Using min with text inputs, where it has no effect.<br>
+• Wrong formats such as 1/1/2026 for dates.<br>
+• Expecting it to block typing.<br>
+• Forgetting the server check.<br><br>
+
+<h3>Try It Yourself</h3>
+• Create a booking form where the check-in minimum is today and the check-out minimum follows the check-in date.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>today</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<label for="d">Delivery date</label>
+<input type="date" id="d">
+<script>d.min = new Date().toISOString().slice(0, 10);</script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Age limits, quantity floors and booking dates use min.<br>
+• Dependent fields adjust min in change handlers.<br>
+• APIs validate with the same limits.<br>
+• Tests cover boundary values such as exactly min.<br><br>
+
+<h3>Best Practices</h3>
+• Keep client and server limits in one shared constant.<br>
+• Explain the limit in text.<br>
+• Test the boundaries.<br>
+• Handle time zones for dates.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> Does min stop the user from typing a smaller number?<br>
+• <b>A:</b> No. It only makes the value invalid at validation time and limits the stepper, so the form cannot be submitted until it is fixed.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>dependent</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<input type="date" id="a"> to <input type="date" id="b">
+<script>a.onchange = () => b.min = a.value;</script>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-forms-max-attribute',
                             name: 'max Attribute',
                             beginner: [
                                 {
-                                    content: `<h3>max Attribute</h3>
-&bull; Part of the HTML Forms section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• The <b>max</b> attribute sets the <b>largest allowed value</b> of an input.<br>
+• It works on the same types as min.<br>
+• The browser rejects higher values at submit time.<br>
+• It also caps the stepper arrows.<br><br>
+
+<h3>Key Points</h3>
+• For numbers it is a plain number, and for dates an ISO date.<br>
+• On a range input, it sets the right end of the slider.<br>
+• The default max of a range is 100.<br>
+• Use it together with min.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>max</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<label for="q">Quantity (max 5)</label>
+<input id="q" type="number" min="1" max="5" value="1">
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Use <b>validity.rangeOverflow</b> to show a custom message.<br>
+• Set max from script when stock changes.<br>
+• Prevent future dates for birthdays by setting max to today.<br>
+• Combine with step to control allowed values.<br><br>
+
+<h3>Common Mistakes</h3>
+• Using max on text fields.<br>
+• Confusing max with maxlength.<br>
+• Forgetting that typing a larger number is still possible.<br>
+• Hard-coding limits that the server does not share.<br><br>
+
+<h3>Try It Yourself</h3>
+• Create a quantity field with a maximum of 5 that shows a friendly message when the value is too high.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>birthday</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<label for="b">Date of birth</label>
+<input type="date" id="b">
+<script>b.max = new Date().toISOString().slice(0, 10);</script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Stock limits, purchase caps and age ranges use max.<br>
+• Inventory pages update max after each change.<br>
+• Tests include values just above the limit.<br>
+• APIs return a clear message when the limit is exceeded.<br><br>
+
+<h3>Best Practices</h3>
+• Show the limit near the field.<br>
+• Handle overflow messages kindly.<br>
+• Keep max in sync with real stock.<br>
+• Validate on the server.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> What is the difference between max and maxlength?<br>
+• <b>A:</b> max limits the numeric or date value, while maxlength limits the number of characters typed in a text field.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>message</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<input type="number" id="q" max="5" value="9">
+<p id="o"></p>
+<script>q.oninput = () => o.textContent = q.validity.rangeOverflow ? 'Only 5 allowed' : '';  q.oninput();</script>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-forms-minlength-attribute',
                             name: 'minlength Attribute',
                             beginner: [
                                 {
-                                    content: `<h3>minlength Attribute</h3>
-&bull; Part of the HTML Forms section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• The <b>minlength</b> attribute sets the <b>minimum number of characters</b> in a text field.<br>
+• It works on text, search, url, tel, email, password and textarea.<br>
+• The browser shows an error if the value is shorter.<br>
+• An empty field is allowed unless it is required.<br><br>
+
+<h3>Key Points</h3>
+• The count is in UTF-16 code units, so some emoji count as two.<br>
+• The error appears when the user has typed something shorter than the limit.<br>
+• Use <b>validity.tooShort</b> to detect it.<br>
+• It does not stop the user from deleting characters.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>minlength</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<label for="p">Password (min 8 characters)</label>
+<input id="p" type="password" minlength="8" required>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Pair with maxlength to bound the size.<br>
+• Show the rule in a hint next to the field.<br>
+• Update the message live as the user types.<br>
+• Use it for usernames and comments that need substance.<br><br>
+
+<h3>Common Mistakes</h3>
+• Setting minlength too high, which blocks real names.<br>
+• Expecting the check to run while typing. It runs on submit.<br>
+• Using it on number fields, where it has no effect.<br>
+• Relying on it alone for security.<br><br>
+
+<h3>Try It Yourself</h3>
+• Create a password field with a minimum of 8 characters and a live hint showing how many characters have been typed.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>live count</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<input id="p" minlength="8" aria-describedby="h">
+<small id="h"></small>
+<script>p.oninput = () => h.textContent = p.value.length + ' / 8 characters minimum';</script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Password rules and review forms use minlength.<br>
+• Servers enforce the same minimum.<br>
+• Strength meters complement it.<br>
+• Accessible hints say the requirement up front.<br><br>
+
+<h3>Best Practices</h3>
+• Tell users the requirement before they fail.<br>
+• Keep minimums reasonable.<br>
+• Validate on the server.<br>
+• Count characters consistently.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> When does the browser check minlength?<br>
+• <b>A:</b> When the form is submitted, and only if the field has some text, because an empty optional field passes unless required is also set.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>review</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<label for="r">Review (at least 20 characters)</label>
+<textarea id="r" minlength="20" required rows="3"></textarea>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-forms-maxlength-attribute',
                             name: 'maxlength Attribute',
                             beginner: [
                                 {
-                                    content: `<h3>maxlength Attribute</h3>
-&bull; Part of the HTML Forms section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• The <b>maxlength</b> attribute sets the <b>maximum number of characters</b> a user can type.<br>
+• The browser stops typing when the limit is reached.<br>
+• It works on text-like inputs and textarea.<br>
+• Pasted text is cut at the limit.<br><br>
+
+<h3>Key Points</h3>
+• Unlike max, it really blocks extra characters.<br>
+• It counts UTF-16 code units.<br>
+• Existing values longer than the limit are not changed.<br>
+• Use <b>validity.tooLong</b> only when script sets the value.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>maxlength</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<label for="t">Title (max 30)</label>
+<input id="t" maxlength="30">
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Show a counter so users see how many characters are left.<br>
+• Match the limit to database column sizes.<br>
+• Allow a little slack for editing, such as showing a warning near the limit.<br>
+• Use it for tweets, SMS-like fields and codes.<br><br>
+
+<h3>Common Mistakes</h3>
+• Setting limits too low for names.<br>
+• Confusing it with max.<br>
+• Cutting pasted text silently with no message.<br>
+• Not enforcing on the server.<br><br>
+
+<h3>Try It Yourself</h3>
+• Create a bio field limited to 100 characters with a live counter and a warning when fewer than 10 characters remain.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>counter</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<textarea id="t" maxlength="100" rows="3" aria-describedby="c"></textarea>
+<div id="c">100 left</div>
+<script>t.oninput = () => c.textContent = (100 - t.value.length) + ' left';</script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Profile bios and titles use character limits.<br>
+• SMS and push notification editors show counts.<br>
+• Databases define matching limits.<br>
+• APIs return errors for oversize data.<br><br>
+
+<h3>Best Practices</h3>
+• Show remaining characters.<br>
+• Choose limits from real needs.<br>
+• Handle line breaks carefully in counts.<br>
+• Repeat the limit on the server.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> Does maxlength stop pasted text from exceeding the limit?<br>
+• <b>A:</b> Yes. Browsers truncate pasted text to the maximum length, so the user should be told when text is cut.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>warning</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<input id="t" maxlength="20">
+<small id="w"></small>
+<script>t.oninput = () => w.textContent = t.value.length >= 18 ? 'Almost at the limit' : '';</script>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-forms-step-attribute',
                             name: 'step Attribute',
                             beginner: [
                                 {
-                                    content: `<h3>step Attribute</h3>
-&bull; Part of the HTML Forms section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• The <b>step</b> attribute sets the <b>increment</b> of a number or date style input.<br>
+• It also defines which values are valid.<br>
+• The default step is 1 for numbers.<br>
+• The special value any allows every number.<br><br>
+
+<h3>Key Points</h3>
+• For a number input, step="0.5" accepts 0, 0.5, 1 and so on.<br>
+• The valid values are counted from min.<br>
+• For time, the unit is seconds and for date it is days.<br>
+• Arrow keys and spinners move by one step.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>step</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<label for="p">Price</label>
+<input id="p" type="number" step="0.01" min="0" value="9.99">
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Use <b>step="any"</b> for free decimals such as measurements.<br>
+• Use <b>stepUp()</b> and <b>stepDown()</b> in script.<br>
+• Set min so steps start from the right base value.<br>
+• For range sliders, step controls how the handle snaps.<br><br>
+
+<h3>Common Mistakes</h3>
+• Forgetting step for decimals, so 2.5 is invalid.<br>
+• Setting min to a value that shifts valid steps.<br>
+• Using step with text inputs.<br>
+• Relying on floating point comparisons in script.<br><br>
+
+<h3>Try It Yourself</h3>
+• Create a price field with step 0.01, a time field in 30 minute steps and a counter with buttons that call stepUp and stepDown.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>quarter hours</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<label for="t">Appointment</label>
+<input id="t" type="time" step="900" min="09:00" max="17:00">
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Currency fields use step 0.01.<br>
+• Time slots use steps in seconds, like 1800 for half-hours.<br>
+• Sliders with ten positions use step 10.<br>
+• Validation messages mention the nearest valid values.<br><br>
+
+<h3>Best Practices</h3>
+• Choose step to match the data.<br>
+• Display units near the field.<br>
+• Test with decimals and negative numbers.<br>
+• Validate on the server.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> What does step="any" mean?<br>
+• <b>A:</b> It disables step validation, so any number with any number of decimals is accepted, while the spinner arrows move by one.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>stepUp</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<input id="n" type="number" step="5" value="0">
+<button onclick="n.stepUp()">+5</button> <button onclick="n.stepDown()">-5</button>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-forms-placeholder-attribute',
                             name: 'placeholder Attribute',
                             beginner: [
                                 {
-                                    content: `<h3>placeholder Attribute</h3>
-&bull; Part of the HTML Forms section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• The <b>placeholder</b> attribute shows a <b>short hint</b> inside an empty field.<br>
+• The text disappears when the user starts typing.<br>
+• It works on text-like inputs and textarea.<br>
+• It is a hint about the expected format, not a label.<br><br>
+
+<h3>Key Points</h3>
+• Use examples such as <b>name@example.com</b>.<br>
+• Style it with the <b>::placeholder</b> pseudo-element.<br>
+• Default colour is grey with low contrast.<br>
+• It is not submitted with the form.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>placeholder</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<label for="e">Email</label>
+<input id="e" type="email" placeholder="you@example.com">
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Keep placeholders short, such as a sample value.<br>
+• Improve contrast with ::placeholder and a darker colour.<br>
+• Use hint text outside the field for important rules.<br>
+• Do not repeat the label word for word.<br><br>
+
+<h3>Common Mistakes</h3>
+• Using the placeholder instead of a label.<br>
+• Putting long instructions inside it.<br>
+• Light grey text that is hard to read.<br>
+• Making users guess the format once the text disappears.<br><br>
+
+<h3>Try It Yourself</h3>
+• Create a form with visible labels and sample-value placeholders, and style the placeholders with higher contrast.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>style</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+  input::placeholder { color: #64748b; font-style: italic; }
+</style>
+</head>
+<body>
+<label for="p">Phone</label>
+<input id="p" type="tel" placeholder="+91 98765 43210">
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Search boxes show example queries as placeholders.<br>
+• Forms show date formats like DD/MM/YYYY.<br>
+• Floating label designs keep a real label too.<br>
+• Accessibility audits flag placeholder-only fields.<br><br>
+
+<h3>Best Practices</h3>
+• Always provide a visible label.<br>
+• Use sample values, not instructions.<br>
+• Meet contrast ratios.<br>
+• Put rules in a hint text with aria-describedby.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> Why is a placeholder a poor replacement for a label?<br>
+• <b>A:</b> It vanishes when typing starts, often has low contrast, and may not be announced by assistive technology as the field name.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>floating</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+  .f { position: relative; margin-top: 18px; }
+  .f label { position: absolute; top: -16px; left: 0; font-size: 12px; margin: 0; }
+</style>
+</head>
+<body>
+<div class="f"><label for="n">Name</label><input id="n" placeholder="Asha Patil"></div>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-forms-readonly-attribute',
                             name: 'readonly Attribute',
                             beginner: [
                                 {
-                                    content: `<h3>readonly Attribute</h3>
-&bull; Part of the HTML Forms section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• The <b>readonly</b> attribute makes a field <b>visible but not editable</b>.<br>
+• The value is still submitted with the form.<br>
+• The field can be focused and its text can be selected.<br>
+• It works on text-like inputs and textarea.<br><br>
+
+<h3>Key Points</h3>
+• It is a boolean attribute.<br>
+• It does not apply to checkboxes, radio buttons, selects or buttons.<br>
+• Readonly fields take part in validation only if they have constraints.<br>
+• Style it with the <b>:read-only</b> pseudo-class.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>readonly</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<label for="i">Order ID</label>
+<input id="i" name="id" value="ORD-1024" readonly>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Use it for generated values such as an id or total price that users copy.<br>
+• Toggle it in script to allow editing after pressing Edit.<br>
+• Do not rely on it for security because users can remove the attribute.<br>
+• Style it differently so it does not look editable.<br><br>
+
+<h3>Common Mistakes</h3>
+• Confusing it with disabled, which blocks submission.<br>
+• Trusting readonly values on the server.<br>
+• Making it look identical to editable fields.<br>
+• Using it on checkboxes and expecting a block.<br><br>
+
+<h3>Try It Yourself</h3>
+• Create a profile field that is readonly until an Edit button toggles it, and style the readonly state with :read-only.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>toggle edit</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+  input:read-only { background: #f1f5f9; }
+</style>
+</head>
+<body>
+<input id="n" value="Asha" readonly>
+<button onclick="n.readOnly = !n.readOnly; this.textContent = n.readOnly ? 'Edit' : 'Lock'">Edit</button>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Profile pages show non-editable fields until the user clicks edit.<br>
+• Receipts and invoices show locked totals.<br>
+• Copy-to-clipboard fields use readonly inputs.<br>
+• Servers recompute readonly values.<br><br>
+
+<h3>Best Practices</h3>
+• Choose readonly when the value should be submitted.<br>
+• Use disabled when it should not.<br>
+• Never trust the submitted value.<br>
+• Make the state visible.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> What is the difference between readonly and disabled?<br>
+• <b>A:</b> A readonly field can be focused and is submitted. A disabled field cannot be focused or edited and is not submitted.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>copy</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<input id="k" value="sk_live_demo_123" readonly>
+<button onclick="navigator.clipboard.writeText(k.value)">Copy</button>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-forms-disabled-attribute',
                             name: 'disabled Attribute',
                             beginner: [
                                 {
-                                    content: `<h3>disabled Attribute</h3>
-&bull; Part of the HTML Forms section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• The <b>disabled</b> attribute <b>turns a control off</b>.<br>
+• The user cannot click, focus or edit it.<br>
+• Its value is not submitted with the form.<br>
+• Browsers show it greyed out.<br><br>
+
+<h3>Key Points</h3>
+• It works on buttons, inputs, selects, textareas and fieldsets.<br>
+• On a fieldset it disables everything inside.<br>
+• It is a boolean attribute.<br>
+• Style it with the <b>:disabled</b> pseudo-class.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>disabled</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<button disabled>Pay now</button>
+<input value="Locked" disabled>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Disable the submit button while a request is running.<br>
+• Enable it only when the form is valid.<br>
+• Explain why a control is disabled near it.<br>
+• Use aria-disabled when the control must stay focusable for a hint.<br><br>
+
+<h3>Common Mistakes</h3>
+• Expecting disabled values to be submitted.<br>
+• Disabling a button with no explanation.<br>
+• Using it for security.<br>
+• Low contrast, so users cannot read the field.<br><br>
+
+<h3>Try It Yourself</h3>
+• Create a form whose submit button stays disabled until all required fields are valid, and disable it again while a fake request runs.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>enable when valid</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<form id="f">
+  <input id="e" type="email" required placeholder="Email">
+  <button id="b" disabled>Subscribe</button>
+</form>
+<script>f.oninput = () => b.disabled = !f.checkValidity();</script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Loading buttons are disabled during requests.<br>
+• Wizards disable the Next button until a step is complete.<br>
+• Fieldsets switch off sections that do not apply.<br>
+• Accessible patterns keep focusable disabled looking buttons with an explanation.<br><br>
+
+<h3>Best Practices</h3>
+• Give a reason for a disabled state.<br>
+• Keep text readable.<br>
+• Avoid disabling submit forever.<br>
+• Use readonly when the value should still be sent.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> Is the value of a disabled input submitted?<br>
+• <b>A:</b> No. Disabled controls are excluded from the form data, so use readonly or a hidden input when the value must be sent.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>loading</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<button id="b">Save</button>
+<script>b.onclick = () => { b.disabled = true; b.textContent = 'Saving...'; setTimeout(() => { b.disabled = false; b.textContent = 'Save'; }, 1200); };</script>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-forms-checked-attribute',
                             name: 'checked Attribute',
                             beginner: [
                                 {
-                                    content: `<h3>checked Attribute</h3>
-&bull; Part of the HTML Forms section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• The <b>checked</b> attribute sets a checkbox or radio button to be <b>selected by default</b>.<br>
+• It is a boolean attribute.<br>
+• The default state is also what reset restores.<br>
+• The current state is available as the checked property.<br><br>
+
+<h3>Key Points</h3>
+• In a radio group only one button should have it.<br>
+• A checked checkbox submits its value.<br>
+• Use <b>:checked</b> in CSS to style it.<br>
+• The attribute and the property can differ after the user clicks.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>checked</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<label><input type="checkbox" name="n" checked> Email me updates</label>
+<label><input type="radio" name="p" value="a" checked> Plan A</label>
+<label><input type="radio" name="p" value="b"> Plan B</label>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Set <b>input.checked = true</b> in script to change the state.<br>
+• Use <b>defaultChecked</b> to read the attribute value.<br>
+• Use :checked with a sibling combinator to reveal content.<br>
+• Pre-tick only options that are safe and expected.<br><br>
+
+<h3>Common Mistakes</h3>
+• Pre-ticking marketing consent boxes, which breaks privacy rules.<br>
+• Expecting setAttribute to change the live state after interaction.<br>
+• Giving several radio buttons the checked attribute.<br>
+• Forgetting a default for required radio groups.<br><br>
+
+<h3>Try It Yourself</h3>
+• Create a settings form where saved options are rendered as checked, a checkbox reveals a text area, and a reset button restores the defaults.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>reveal</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<label><input type="checkbox" id="c"> Add a note</label>
+<textarea id="t" hidden placeholder="Your note"></textarea>
+<script>c.onchange = () => t.hidden = !c.checked;</script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Preferences pages restore saved choices with checked.<br>
+• Server templates render checked from stored data.<br>
+• Frameworks bind checked to state.<br>
+• Tests assert the checked state after clicks.<br><br>
+
+<h3>Best Practices</h3>
+• Use sensible defaults.<br>
+• Never pre-tick consent.<br>
+• Reflect saved data on load.<br>
+• Test reset behaviour.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> What is the difference between the checked attribute and the checked property?<br>
+• <b>A:</b> The attribute sets the default state, while the property reflects the current state after the user interacts with the control.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>css toggle</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+  input:checked + span { font-weight: 700; color: #16a34a; }
+</style>
+</head>
+<body>
+<label><input type="checkbox"><span>Subscribed</span></label>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-forms-selected-attribute',
                             name: 'selected Attribute',
                             beginner: [
                                 {
-                                    content: `<h3>selected Attribute</h3>
-&bull; Part of the HTML Forms section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• The <b>selected</b> attribute marks an <b>option as the default choice</b> in a select.<br>
+• It is a boolean attribute.<br>
+• Without it the first option is selected.<br>
+• In a multiple select, several options can have it.<br><br>
+
+<h3>Key Points</h3>
+• Only one option should have it in a normal select.<br>
+• The state is available through option.selected in script.<br>
+• Use <b>select.value</b> to read the current choice.<br>
+• Reset restores the options marked selected.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>selected</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<select name="lang">
+  <option value="en">English</option>
+  <option value="hi" selected>Hindi</option>
+  <option value="mr">Marathi</option>
+</select>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Set the selected option from saved data on the server or with script.<br>
+• Set <b>select.value = "mr"</b> to choose by value.<br>
+• Use <b>selectedIndex</b> to select by position.<br>
+• Combine disabled and selected for a placeholder option.<br><br>
+
+<h3>Common Mistakes</h3>
+• Putting selected on several options of a single select.<br>
+• Expecting the attribute to update after user changes.<br>
+• Using selected to preselect a risky choice.<br>
+• Forgetting a placeholder when a choice is required.<br><br>
+
+<h3>Try It Yourself</h3>
+• Create an edit form where a select is preselected from a variable, and a second multiple select starts with two options chosen.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>from data</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<select id="s"><option value="en">English</option><option value="hi">Hindi</option><option value="mr">Marathi</option></select>
+<script>s.value = 'mr';</script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Edit forms preselect stored values.<br>
+• Language pickers preselect the browser language.<br>
+• Placeholder options use selected and disabled.<br>
+• Frameworks bind value rather than selected.<br><br>
+
+<h3>Best Practices</h3>
+• Preselect safe defaults.<br>
+• Keep values stable.<br>
+• Use a placeholder for required choices.<br>
+• Test the reset behaviour.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> Which option is selected when none has the selected attribute?<br>
+• <b>A:</b> The first non-disabled option in a single select. A multiple select starts with nothing selected.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>multiple</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<select multiple size="4"><option selected>HTML</option><option>CSS</option><option selected>JS</option><option>Java</option></select>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-forms-form-submission',
                             name: 'Form Submission',
                             beginner: [
                                 {
-                                    content: `<h3>Form Submission</h3>
-&bull; Part of the HTML Forms section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• <b>Form submission</b> sends the form data to a server.<br>
+• It happens when a submit button is clicked or Enter is pressed in a field.<br>
+• The <b>action</b> attribute says where to send it.<br>
+• The <b>method</b> attribute says how, GET or POST.<br><br>
+
+<h3>Key Points</h3>
+• Each field is sent as name=value pairs.<br>
+• Fields without a name, and disabled fields, are not sent.<br>
+• <b>enctype</b> controls the encoding, and multipart is needed for files.<br>
+• The browser navigates to the response unless script intercepts it.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>submission</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<form action="/subscribe" method="post">
+  <label for="e">Email</label>
+  <input id="e" name="email" type="email" required>
+  <button>Subscribe</button>
+</form>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Use fetch and FormData to submit without a page reload.<br>
+• Use <b>target</b> to open the response in another tab.<br>
+• Handle errors from the server and show them near the fields.<br>
+• Prevent double submission by disabling the button.<br><br>
+
+<h3>Common Mistakes</h3>
+• Forgetting name attributes.<br>
+• Using GET for sensitive data.<br>
+• Not handling server validation errors.<br>
+• Breaking Enter-key submission with click handlers.<br><br>
+
+<h3>Try It Yourself</h3>
+• Create a form that submits with fetch and FormData, prints the data as JSON on the page and disables the button while it works.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>FormData</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<form id="f"><input name="a" value="1"><input name="b" value="2"><button>Send</button></form>
+<pre id="o"></pre>
+<script>f.onsubmit = e => { e.preventDefault(); o.textContent = JSON.stringify(Object.fromEntries(new FormData(f)), null, 2); };</script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Classic sites rely on full page form posts.<br>
+• Modern apps send JSON through fetch.<br>
+• File uploads use multipart.<br>
+• Servers redirect after a successful post to avoid duplicates.<br><br>
+
+<h3>Best Practices</h3>
+• Validate on the server.<br>
+• Use HTTPS.<br>
+• Redirect after POST.<br>
+• Show clear success and error states.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> What decides which fields are sent in a form submission?<br>
+• <b>A:</b> Only successful controls: those with a name that are not disabled, and checked or selected for checkboxes, radios and options.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>fetch json</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<form id="f"><input name="name" value="Asha"><button>Save</button></form>
+<script>
+  f.onsubmit = async e => {
+    e.preventDefault();
+    const body = JSON.stringify(Object.fromEntries(new FormData(f)));
+    console.log('would POST', body);
+  };
+</script>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-forms-get-forms',
                             name: 'GET Forms',
                             beginner: [
                                 {
-                                    content: `<h3>GET Forms</h3>
-&bull; Part of the HTML Forms section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• A <b>GET form</b> sends its data in the <b>URL query string</b>.<br>
+• It is the default method when none is set.<br>
+• The URL looks like /search?q=java&level=basic.<br>
+• Reloading or sharing the URL repeats the same request.<br><br>
+
+<h3>Key Points</h3>
+• Use it for searches and filters that are safe to repeat.<br>
+• Data is visible in the address bar and browser history.<br>
+• URLs have length limits, roughly a couple of thousand characters.<br>
+• It should not change data on the server.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>get</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<form action="/search" method="get">
+  <input name="q" placeholder="Search">
+  <select name="level"><option>basic</option><option>advanced</option></select>
+  <button>Search</button>
+</form>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Links to filtered results can be bookmarked and shared.<br>
+• Search engines can crawl GET URLs.<br>
+• Use <b>URLSearchParams</b> to read the values.<br>
+• Encode special characters, which the browser does automatically.<br><br>
+
+<h3>Common Mistakes</h3>
+• Sending passwords or personal data through GET.<br>
+• Using GET for actions that change data.<br>
+• Very long forms that exceed URL limits.<br>
+• Forgetting names, so fields are missing from the URL.<br><br>
+
+<h3>Try It Yourself</h3>
+• Create a search form using GET with a text field and checkboxes and show the resulting query string on the page after submitting.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>read params</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<form method="get"><input name="q" value="java"><button>Go</button></form>
+<p id="o"></p>
+<script>o.textContent = 'Current query: ' + (new URLSearchParams(location.search).get('q') || '(none)');</script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Search pages and product filters use GET.<br>
+• Pagination keeps filters in query parameters.<br>
+• Analytics track search terms from URLs.<br>
+• Caches can store GET responses.<br><br>
+
+<h3>Best Practices</h3>
+• Use GET only for read-only requests.<br>
+• Keep URLs clean and short.<br>
+• Do not put secrets in query strings.<br>
+• Support the back button.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> Why should login forms not use GET?<br>
+• <b>A:</b> GET puts the data in the URL, where it is stored in browser history, server logs and referrer headers, exposing the password.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>filters</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<form method="get" action="">
+  <label><input type="checkbox" name="tag" value="html"> HTML</label>
+  <label><input type="checkbox" name="tag" value="css"> CSS</label>
+  <button>Filter</button>
+</form>
+<p>Query string: <code id="o"></code></p>
+<script>o.textContent = location.search || '(empty)';</script>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-forms-post-forms',
                             name: 'POST Forms',
                             beginner: [
                                 {
-                                    content: `<h3>POST Forms</h3>
-&bull; Part of the HTML Forms section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• A <b>POST form</b> sends its data in the <b>request body</b>.<br>
+• It does not show the data in the URL.<br>
+• It is used when the request creates or changes something.<br>
+• Set it with <b>method="post"</b>.<br><br>
+
+<h3>Key Points</h3>
+• The size is not limited by URL length.<br>
+• Files need <b>enctype="multipart/form-data"</b>.<br>
+• Reloading the result asks the browser to resend, with a warning.<br>
+• The server should redirect after a successful post.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>post</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<form action="/login" method="post">
+  <label for="u">User</label><input id="u" name="user">
+  <label for="p">Password</label><input id="p" name="pass" type="password">
+  <button>Sign in</button>
+</form>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Use HTTPS so the body is encrypted in transit.<br>
+• Add a CSRF token as a hidden field to protect actions.<br>
+• Return a redirect (the Post/Redirect/Get pattern) so refresh does not resend.<br>
+• Send JSON through fetch for API style requests.<br><br>
+
+<h3>Common Mistakes</h3>
+• Assuming POST is secure by itself. It needs HTTPS.<br>
+• Missing CSRF protection.<br>
+• Leaving the response page to be refreshed and resent.<br>
+• Not validating the data on the server.<br><br>
+
+<h3>Try It Yourself</h3>
+• Create a POST form with a hidden CSRF field, a file input with multipart encoding and a fetch version that prints the request method.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>multipart</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<form action="/upload" method="post" enctype="multipart/form-data">
+  <input type="file" name="doc">
+  <input type="hidden" name="_csrf" value="token123">
+  <button>Upload</button>
+</form>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Logins, orders and comments are posted.<br>
+• APIs receive form-encoded or JSON bodies.<br>
+• Rate limits and captchas protect public forms.<br>
+• Servers store the data and redirect to a confirmation page.<br><br>
+
+<h3>Best Practices</h3>
+• Use POST for anything that changes data.<br>
+• Protect with HTTPS and CSRF tokens.<br>
+• Redirect after success.<br>
+• Limit body size on the server.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> What is the Post/Redirect/Get pattern?<br>
+• <b>A:</b> After a successful POST the server answers with a redirect to a GET page, so refreshing does not resend the form and create duplicates.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>fetch post</title>
+<style>
+  body { font-family: sans-serif; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  input, select, textarea, button { font: inherit; padding: 6px 8px; }
+</style>
+</head>
+<body>
+<form id="f"><input name="note" value="hello"><button>Post</button></form>
+<pre id="o"></pre>
+<script>
+  f.onsubmit = e => { e.preventDefault();
+    const req = new Request('https://example.com/api/notes', { method: 'POST', body: new FormData(f) });
+    o.textContent = req.method + ' ' + req.url; };
+</script>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         }

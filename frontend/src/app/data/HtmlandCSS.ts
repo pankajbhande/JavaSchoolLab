@@ -18161,98 +18161,783 @@ A: It changes the base for every relative URL, including fragment links, which c
                         ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-lists-ordered-lists-ol',
                             name: 'Ordered Lists ol',
                             beginner: [
                                 {
-                                    content: `<h3>Ordered Lists ol</h3>
-&bull; Part of the HTML Lists section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>The &lt;ol&gt; Tag</h3>
+• Defines an <b>ordered list</b>: items where the sequence matters, such as steps or rankings.<br>
+• Each entry is an <b>li</b> element. Browsers number them 1, 2, 3 automatically.<br>
+• Reordering the items renumbers them, so you never type the numbers yourself.<br><br>
+
+<h3>When to Choose It</h3>
+• Recipe or installation steps.<br>
+• A top 10 chart or a leaderboard.<br>
+• Anything you would refer to as "step 3" or "item 2".<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>Ordered list</title>
+</head>
+<body>
+<h2>Install Java</h2>
+<ol>
+  <li>Download the JDK installer.</li>
+  <li>Run the installer and accept the licence.</li>
+  <li>Set the JAVA_HOME variable.</li>
+  <li>Run <code>java -version</code> to check.</li>
+</ol>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>Attributes That Change the Numbering</h3>
+• <b>type</b> picks the marker: 1, a, A, i or I.<br>
+• <b>start</b> begins counting from another number, useful when a list continues after a break.<br>
+• <b>reversed</b> counts downward, ideal for a countdown chart.<br>
+• On an li, the <b>value</b> attribute sets that item's number and the rest continue from it.<br><br>
+
+<h3>Common Mistakes</h3>
+• Typing numbers inside the text as well, which gives "1. 1. Download".<br>
+• Using ol only to get indentation. If order is meaningless, use ul.<br><br>
+
+<h3>Try It Yourself</h3>
+• Copy the example into the HTML Viewer, then change the list to start at 5 and make it count backwards. Watch how the numbers change without editing any text.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>ol attributes</title>
+</head>
+<body>
+<h3>Top 3 courses</h3>
+<ol reversed>
+  <li>Spring Boot</li>
+  <li>Core Java</li>
+  <li>HTML and CSS</li>
+</ol>
+
+<h3>Appendix</h3>
+<ol type="A" start="3">
+  <li>Glossary</li>
+  <li>Index</li>
+</ol>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Styling Numbers with CSS</h3>
+• The <b>::marker</b> pseudo-element styles the number itself: colour, size and weight.<br>
+• For custom formats, use <b>list-style-type</b> or CSS counters with <b>counter-reset</b> and <b>counter-increment</b>.<br>
+• Counters let you build "Step 1" labels or nested numbering such as 1.1 and 1.2.<br><br>
+
+<h3>Accessibility</h3>
+• Screen readers announce "list, 4 items" and the position of each item, which only works when you use real ol and li elements.<br>
+• Resetting <b>list-style: none</b> on Safari used to remove list semantics. Add <b>role="list"</b> when you strip the markers on a list that must stay a list.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>Step counters</title>
+<style>
+  ol.steps { counter-reset: step; list-style: none; padding: 0; }
+  ol.steps li { counter-increment: step; margin: .6rem 0; }
+  ol.steps li::before { content: "Step " counter(step) ": "; color: #ea580c; font-weight: 700; }
+  ol li::marker { color: #2563eb; font-weight: 700; }
+</style>
+</head>
+<body>
+<ol class="steps" role="list">
+  <li>Create the project</li>
+  <li>Add the dependency</li>
+  <li>Run the application</li>
+</ol>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-lists-unordered-lists-ul',
                             name: 'Unordered Lists ul',
                             beginner: [
                                 {
-                                    content: `<h3>Unordered Lists ul</h3>
-&bull; Part of the HTML Lists section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>The &lt;ul&gt; Tag</h3>
+• Defines an <b>unordered list</b>: items with no meaningful sequence.<br>
+• Each item is an <b>li</b>, shown with a bullet marker.<br>
+• Swapping the items around does not change the meaning.<br><br>
+
+<h3>Typical Uses</h3>
+• Feature lists and ingredient lists.<br>
+• Navigation menus, which are lists of links.<br>
+• Tags, categories and related articles.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>Unordered list</title>
+</head>
+<body>
+<h2>What you will learn</h2>
+<ul>
+  <li>Variables and data types</li>
+  <li>Loops and conditions</li>
+  <li>Classes and objects</li>
+</ul>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>Changing the Bullet</h3>
+• Use CSS <b>list-style-type</b>: disc, circle, square or none.<br>
+• <b>list-style-image</b> and <b>list-style-position</b> give more control.<br>
+• The old type attribute is obsolete. Style it in CSS.<br><br>
+
+<h3>Common Mistakes</h3>
+• Putting anything but li (or script/template) as a direct child of ul. Text or a div there is invalid.<br>
+• Using ul for layout, such as columns. CSS grid or flex is the proper tool.<br><br>
+
+<h3>Try It Yourself</h3>
+• Build a three item shopping list, then switch the bullets to squares with CSS. Next, remove the bullets completely and add your own tick mark using a pseudo-element.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>Bullet styles</title>
+<style>
+  ul.square { list-style-type: square; }
+  ul.check  { list-style: none; padding-left: 0; }
+  ul.check li::before { content: "\\2713 "; color: #16a34a; }
+</style>
+</head>
+<body>
+<ul class="square"><li>Square bullets</li><li>Easy change</li></ul>
+<ul class="check"><li>Checked item</li><li>Another item</li></ul>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Menus Are Lists</h3>
+• A navigation bar is a list of links, so use <b>nav &gt; ul &gt; li &gt; a</b>. Screen readers announce how many links the menu has.<br>
+• Style the list with flex, remove the bullets, and keep the semantic markup.<br><br>
+
+<h3>Accessibility</h3>
+• When you remove markers with <b>list-style: none</b>, add <b>role="list"</b> so that Safari with VoiceOver still announces a list.<br>
+• Keep link text meaningful, since users can jump through the list of links.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>Navigation list</title>
+<style>
+  nav ul { display: flex; gap: 1rem; list-style: none; margin: 0; padding: 0; }
+  nav a { text-decoration: none; color: #1d4ed8; }
+  nav a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+<nav aria-label="Main">
+  <ul role="list">
+    <li><a href="/">Home</a></li>
+    <li><a href="/courses">Courses</a></li>
+    <li><a href="/contact">Contact</a></li>
+  </ul>
+</nav>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-lists-list-items-li',
                             name: 'List Items li',
                             beginner: [
                                 {
-                                    content: `<h3>List Items li</h3>
-&bull; Part of the HTML Lists section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>The &lt;li&gt; Tag</h3>
+• Defines one <b>list item</b> inside an ol or ul.<br>
+• It is a block-level item that the browser prefixes with a bullet or a number.<br>
+• An li can contain text, links, images and even other lists.<br><br>
+
+<h3>Rules</h3>
+• li must be a direct child of ol, ul or menu.<br>
+• The closing tag may be omitted, but always write it.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>List items</title>
+</head>
+<body>
+<ul>
+  <li>Plain text</li>
+  <li><a href="https://example.com">A link item</a></li>
+  <li><strong>Bold</strong> and <em>emphasised</em> text</li>
+</ul>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>Rich Content in Items</h3>
+• An item can hold several paragraphs, an image or a nested list.<br>
+• Wrap related text in a p inside the li when an item has more than one sentence block.<br><br>
+
+<h3>The value Attribute</h3>
+• Inside an <b>ol</b>, the <b>value</b> attribute sets the number of that item, and later items continue from it.<br>
+• It has no effect inside a ul.<br><br>
+
+<h3>Try It Yourself</h3>
+• Make a list where one item holds a link, one holds bold text and one holds a second paragraph. Then set the value of the third item to 10 inside an ordered list.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>Rich items</title>
+</head>
+<body>
+<ol>
+  <li>
+    <h4>Plan</h4>
+    <p>Write down the requirements first.</p>
+  </li>
+  <li value="10">This item is numbered 10</li>
+  <li>This one is 11</li>
+</ol>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Styling Items</h3>
+• Use <b>li + li</b> to add spacing only between items.<br>
+• Use <b>:nth-child(odd)</b> for zebra striping and <b>:first-child</b> or <b>:last-child</b> for borders.<br>
+• Use <b>display: flex</b> on an li to align an icon and text.<br><br>
+
+<h3>Good Habits</h3>
+• Keep one idea per item so the list scans quickly.<br>
+• Start every item the same way, for example with a verb, for consistency.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>Zebra list</title>
+<style>
+  ul { list-style: none; padding: 0; max-width: 320px; }
+  li { padding: 10px 12px; }
+  li:nth-child(odd) { background: #f3f4f6; }
+  li + li { border-top: 1px solid #e5e7eb; }
+</style>
+</head>
+<body>
+<ul>
+  <li>Read the lesson</li>
+  <li>Run the example</li>
+  <li>Take the quiz</li>
+  <li>Move to the next topic</li>
+</ul>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-lists-description-lists-dl',
                             name: 'Description Lists dl',
                             beginner: [
                                 {
-                                    content: `<h3>Description Lists dl</h3>
-&bull; Part of the HTML Lists section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>The &lt;dl&gt; Tag</h3>
+• Defines a <b>description list</b>: a set of terms, each with a description.<br>
+• It uses <b>dt</b> for the term and <b>dd</b> for the details.<br>
+• Think of a glossary or a list of name and value pairs.<br><br>
+
+<h3>When to Choose It</h3>
+• Glossaries and FAQs.<br>
+• Metadata such as Author, Date and Version.<br>
+• Product specifications.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>Description list</title>
+</head>
+<body>
+<dl>
+  <dt>HTML</dt>
+  <dd>The markup language for web pages.</dd>
+  <dt>CSS</dt>
+  <dd>The language that styles them.</dd>
+</dl>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>Grouping Rules</h3>
+• One term can have <b>several descriptions</b>, and several terms can share one description.<br>
+• You may wrap each dt and dd group in a <b>div</b> to style groups together. This is allowed as a direct child of dl.<br><br>
+
+<h3>Common Mistakes</h3>
+• Using dl for layout with no term and description relationship.<br>
+• Putting dd before any dt.<br><br>
+
+<h3>Try It Yourself</h3>
+• Write a glossary with three terms, and give one of them two descriptions. Then wrap each group in a div and lay the term and description side by side with flexbox.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>Grouped terms</title>
+<style>
+  dl { max-width: 420px; }
+  .row { display: flex; gap: 1rem; padding: 6px 0; border-bottom: 1px solid #e5e7eb; }
+  dt { width: 110px; font-weight: 700; }
+  dd { margin: 0; }
+</style>
+</head>
+<body>
+<dl>
+  <div class="row"><dt>Name</dt><dd>JavaSchoolLab</dd></div>
+  <div class="row"><dt>Level</dt><dd>Beginner</dd><dd>Intermediate</dd></div>
+  <div class="row"><dt>Duration</dt><dd>12 weeks</dd></div>
+</dl>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Patterns</h3>
+• Key and value tables on a settings or account page.<br>
+• Event details such as Date, Venue and Price.<br>
+• API reference pages that list a parameter and its meaning.<br><br>
+
+<h3>Accessibility</h3>
+• Screen readers announce the list and the term and description relationship, so it is better than a table made of divs.<br>
+• Keep terms short and meaningful.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>Event details</title>
+<style>
+  dl.event { display: grid; grid-template-columns: max-content 1fr; gap: 6px 16px; }
+  dl.event dt { color: #6b7280; }
+  dl.event dd { margin: 0; font-weight: 600; }
+</style>
+</head>
+<body>
+<dl class="event">
+  <dt>Date</dt><dd>25 October 2026</dd>
+  <dt>Venue</dt><dd>Pune Tech Park</dd>
+  <dt>Price</dt><dd>Free</dd>
+</dl>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-lists-description-term-dt',
                             name: 'Description Term dt',
                             beginner: [
                                 {
-                                    content: `<h3>Description Term dt</h3>
-&bull; Part of the HTML Lists section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>The &lt;dt&gt; Tag</h3>
+• Defines the <b>term</b> in a description list.<br>
+• It must be a child of dl (or of a div inside dl).<br>
+• It is normally followed by one or more <b>dd</b> elements holding its meaning.<br><br>
+
+<h3>What Goes Inside</h3>
+• Short text such as a word, name or label.<br>
+• Avoid block-level headings or long paragraphs inside dt.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>dt term</title>
+</head>
+<body>
+<dl>
+  <dt>Compiler</dt>
+  <dd>Translates source code into machine code.</dd>
+</dl>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>Several Terms, One Meaning</h3>
+• Place several dt elements in a row when they share a description, such as synonyms.<br>
+• Add the <b>dfn</b> element when this is the place where the term is defined in the text.<br><br>
+
+<h3>Styling</h3>
+• dt is bold by default in some browsers only. Set <b>font-weight</b> yourself.<br>
+• Add a trailing colon with the <b>::after</b> pseudo-element, not in the text.<br><br>
+
+<h3>Try It Yourself</h3>
+• Create a description list where two terms share one description, and add a colon after each term using only CSS. Try linking to a term with a fragment link.<br>
+• Remember: a term is a label, so keep it short and consistent. If the label needs several sentences, it probably belongs in the description instead.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>Synonyms</title>
+<style>
+  dt { font-weight: 700; }
+  dt::after { content: ":"; }
+</style>
+</head>
+<body>
+<dl>
+  <dt>JVM</dt>
+  <dt>Java Virtual Machine</dt>
+  <dd>The engine that runs Java bytecode.</dd>
+</dl>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Good Habits</h3>
+• Keep terms parallel in form: all nouns or all questions in a FAQ.<br>
+• Do not put interactive content such as buttons inside dt unless you are building an accordion, where details and summary is a simpler choice.<br><br>
+
+<h3>Searchability</h3>
+• Terms in a glossary give search engines clear definitions of concepts on the page.<br>
+• Give each term an id so other pages can link straight to it.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>Linkable glossary</title>
+<style>
+  dt:target { background: #fef3c7; }
+</style>
+</head>
+<body>
+<p>See <a href="#term-dom">DOM</a> for details.</p>
+<dl>
+  <dt id="term-dom">DOM</dt>
+  <dd>The tree the browser builds from your HTML.</dd>
+</dl>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-lists-description-details-dd',
                             name: 'Description Details dd',
                             beginner: [
                                 {
-                                    content: `<h3>Description Details dd</h3>
-&bull; Part of the HTML Lists section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>The &lt;dd&gt; Tag</h3>
+• Defines the <b>description</b> or value that goes with a dt term.<br>
+• Browsers indent it, usually about 40px from the left.<br>
+• It can hold text, links, lists and other flow content.<br><br>
+
+<h3>Rules</h3>
+• It must follow a dt inside the dl.<br>
+• A term can have more than one dd.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>dd details</title>
+</head>
+<body>
+<dl>
+  <dt>Coffee</dt>
+  <dd>A hot drink made from roasted beans.</dd>
+  <dd>Often served with milk.</dd>
+</dl>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>Rich Descriptions</h3>
+• A dd may contain paragraphs, lists or images, so it is good for longer explanations.<br>
+• Remove the default indent with <b>margin-left: 0</b> if you want the description aligned with the term.<br><br>
+
+<h3>Common Mistakes</h3>
+• Using dd on its own for indentation.<br>
+• Leaving it empty. If there is no description, the term probably should not be there.<br><br>
+
+<h3>Try It Yourself</h3>
+• Turn a short FAQ into a description list. Put a bulleted list inside one of the answers and remove the default indent from the dd elements.<br>
+• Remember: every description belongs to the term right before it. If you find a dd with no term above it, the structure is broken and a screen reader will confuse its meaning.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>Rich dd</title>
+<style>
+  dd { margin-left: 0; padding-left: 12px; border-left: 3px solid #fdba74; }
+</style>
+</head>
+<body>
+<dl>
+  <dt>Install Java</dt>
+  <dd>
+    <p>Follow these steps:</p>
+    <ul><li>Download JDK</li><li>Run the installer</li></ul>
+  </dd>
+</dl>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>FAQ Pattern</h3>
+• A frequently asked questions page is a natural dl: the question is a dt and the answer is a dd.<br>
+• For collapsible answers, use <b>details</b> and <b>summary</b> inside each group.<br><br>
+
+<h3>Accessibility</h3>
+• Screen readers connect each description to its term, so keep them next to each other in the source.<br>
+• Avoid hiding dd with display none and then showing it with script only, because some users will not see it.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>FAQ list</title>
+<style>
+  dt { font-weight: 700; margin-top: 1rem; }
+  dd { margin: 4px 0 0; color: #374151; }
+</style>
+</head>
+<body>
+<dl>
+  <dt>Is the course free?</dt>
+  <dd>Yes, every lesson is free to read.</dd>
+  <dt>Do I need to install anything?</dt>
+  <dd>No. Examples run in your browser.</dd>
+</dl>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-lists-nested-lists',
                             name: 'Nested Lists',
                             beginner: [
                                 {
-                                    content: `<h3>Nested Lists</h3>
-&bull; Part of the HTML Lists section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What Is Nesting?</h3>
+• A list placed <b>inside an li</b> of another list.<br>
+• It shows a hierarchy: a category with sub-items.<br>
+• Browsers indent the inner list and change the bullet style automatically.<br><br>
+
+<h3>The Golden Rule</h3>
+• The inner list goes <b>inside the li</b>, before its closing tag, and not directly inside the outer ul.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>Nested list</title>
+</head>
+<body>
+<ul>
+  <li>Backend
+    <ul>
+      <li>Java</li>
+      <li>Spring Boot</li>
+    </ul>
+  </li>
+  <li>Frontend
+    <ul>
+      <li>HTML</li>
+      <li>CSS</li>
+    </ul>
+  </li>
+</ul>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>Mixing List Types</h3>
+• Ordered lists can hold unordered lists and the reverse, such as steps with bullet details.<br>
+• Each level can use its own marker through CSS.<br><br>
+
+<h3>Common Mistakes</h3>
+• Placing the nested ul as a direct child of the parent ul. That is invalid.<br>
+• Nesting too deeply. More than three levels is hard to read.<br><br>
+
+<h3>Try It Yourself</h3>
+• Build a menu with two categories and three sub-items each. Mix an ordered outer list with unordered inner lists and give each level a different marker with CSS.<br>
+• Remember: a nested list is part of its parent item, so deleting the item removes the whole branch. Plan the hierarchy first, then write the markup from the outside in.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>Mixed nesting</title>
+<style>
+  ol { list-style-type: decimal; }
+  ol ul { list-style-type: circle; }
+</style>
+</head>
+<body>
+<ol>
+  <li>Prepare
+    <ul><li>Install the JDK</li><li>Install an editor</li></ul>
+  </li>
+  <li>Build
+    <ul><li>Write the code</li><li>Run the tests</li></ul>
+  </li>
+</ol>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Menus and Trees</h3>
+• Dropdown menus and file trees are nested lists with CSS on top.<br>
+• Keep the markup nested so that the structure works with CSS turned off and for screen readers.<br><br>
+
+<h3>Multi-level Numbering</h3>
+• CSS counters can produce 1, 1.1, 1.2, 2 numbering across nested ol elements.<br>
+• This is useful for legal documents and outlines.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>Outline numbering</title>
+<style>
+  ol { counter-reset: item; list-style: none; padding-left: 1.2rem; }
+  li { counter-increment: item; }
+  li::before { content: counters(item, ".") " "; font-weight: 700; color: #ea580c; }
+</style>
+</head>
+<body>
+<ol>
+  <li>Introduction</li>
+  <li>Basics
+    <ol>
+      <li>Tags</li>
+      <li>Attributes</li>
+    </ol>
+  </li>
+  <li>Summary</li>
+</ol>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-lists-list-attributes',
                             name: 'List Attributes',
                             beginner: [
                                 {
-                                    content: `<h3>List Attributes</h3>
-&bull; Part of the HTML Lists section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>Attributes You Can Use</h3>
+• <b>type</b> on ol selects the marker style: 1, a, A, i or I.<br>
+• <b>start</b> on ol sets the first number.<br>
+• <b>reversed</b> on ol counts down.<br>
+• <b>value</b> on li sets one item's number.<br><br>
+
+<h3>Quick Reminder</h3>
+• These attributes change <b>numbering</b> only, so they belong to ol and li.<br>
+• A ul has no attributes of its own for this.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>List attributes</title>
+</head>
+<body>
+<ol type="a">
+  <li>First</li>
+  <li>Second</li>
+</ol>
+
+<ol start="5">
+  <li>Item five</li>
+  <li>Item six</li>
+</ol>
+
+<ol reversed>
+  <li>Third place</li>
+  <li>Second place</li>
+  <li>First place</li>
+</ol>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>HTML Attribute or CSS?</h3>
+• <b>start</b>, <b>reversed</b> and <b>value</b> carry meaning (the actual numbers), so keep them in HTML.<br>
+• <b>type</b> is presentation. Prefer the CSS <b>list-style-type</b> property.<br><br>
+
+<h3>Marker Choices</h3>
+• Roman numerals (i, ii, iii) suit outlines.<br>
+• Letters (a, b, c) suit sub-points.<br>
+• Counting starts at 1 for every marker type.<br><br>
+
+<h3>Try It Yourself</h3>
+• Make three ordered lists: one with lowercase roman numerals, one starting at 7 and one reversed. Then redo the first one using CSS list-style-type instead of the type attribute.<br>
+• Remember: numbers set with start or value are real content, because they appear in print and are read by assistive tools, while a marker style is only decoration.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>CSS marker choice</title>
+<style>
+  ol.roman { list-style-type: lower-roman; }
+  ol.alpha { list-style-type: upper-alpha; }
+</style>
+</head>
+<body>
+<ol class="roman"><li>Intro</li><li>Body</li></ol>
+<ol class="alpha"><li>Option</li><li>Option</li></ol>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Other Useful Properties</h3>
+• <b>list-style-position: inside</b> puts the marker within the item box, so wrapped lines align under it.<br>
+• <b>list-style-image</b> or a <b>::marker</b> rule can show a custom icon.<br>
+• The shorthand <b>list-style</b> sets all three at once.<br><br>
+
+<h3>Continuing a List</h3>
+• To continue numbering after an interruption, use <b>start</b> with the next number, or CSS counters.<br>
+• Keep it as one list when possible, which is better for assistive technology.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>Marker control</title>
+<style>
+  ul.icons { list-style: none; padding-left: 0; }
+  ul.icons li::marker { content: "\\2192  "; color: #ea580c; }
+  ol.inside { list-style-position: inside; }
+</style>
+</head>
+<body>
+<ul class="icons"><li>Arrow marker</li><li>Another item</li></ul>
+<ol class="inside" start="4"><li>Continues from four</li><li>Then five</li></ol>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         }
@@ -23451,290 +24136,2232 @@ Why each step matters:
                 name: 'HTML Advanced',
                 topics: [
                         {
-                            // TODO: authored content pending.
                             id: 'html-advanced-html-metadata',
                             name: 'HTML Metadata',
                             beginner: [
                                 {
-                                    content: `<h3>HTML Metadata</h3>
-&bull; Part of the HTML Advanced section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• Metadata is <b>information about the page</b> rather than content shown in the page.<br>
+• It lives inside the <b>head</b> element and is read by browsers, search engines and social sites.<br>
+• Typical metadata: the title, character encoding, viewport, description and icons.<br><br>
+
+<h3>Key Points</h3>
+• The head holds title, meta, link, style, script and base elements.<br>
+• Nothing in head is rendered directly, except the title in the tab.<br>
+• Put the <b>charset</b> meta first so the browser reads the text correctly.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>JavaSchoolLab - Learn Java</title>
+  <meta name="description" content="Free lessons on Java, Spring Boot and HTML.">
+  <link rel="icon" href="/favicon.ico">
+</head>
+<body>
+  <h1>Metadata lives in the head</h1>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Search results and link previews are built from your metadata, so a good head directly affects traffic.<br>
+• Keep the title under about 60 characters and the description under about 160.<br>
+• Add <b>lang</b> to the html tag so tools know the language of the page.<br><br>
+
+<h3>Common Mistakes</h3>
+• Forgetting the viewport meta, which breaks mobile layouts.<br>
+• Duplicate titles across pages, which makes pages hard to tell apart in search.<br>
+• Placing meta tags in the body, where they are ignored.<br><br>
+
+<h3>Try It Yourself</h3>
+• Open any website, view the page source and list five tags you find in the head. Then add a description and a theme-color to your own page.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Core Java Tutorial | JavaSchoolLab</title>
+  <meta name="description" content="Learn Core Java from variables to streams with runnable examples.">
+  <link rel="canonical" href="https://javaschoollab.com/course/core-java">
+</head>
+<body><h1>Core Java</h1></body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Frameworks such as Next.js and Angular generate head tags per route for SEO and sharing.<br>
+• Teams keep a checklist: title, description, canonical, viewport, icons and social tags.<br><br>
+
+<h3>Best Practices</h3>
+• Keep metadata unique per page and accurate to the content.<br>
+• Test link previews with the social platform debuggers before launch.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> Where does metadata go and why does it matter?<br>
+• <b>A:</b> It goes in the head. Browsers use it for encoding and layout, and search engines and social sites use it to build result snippets and link previews.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Spring Boot Guide | JavaSchoolLab</title>
+  <meta name="description" content="Build REST APIs with Spring Boot step by step.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://javaschoollab.com/course/spring-boot">
+  <meta property="og:title" content="Spring Boot Guide">
+  <meta property="og:image" content="https://javaschoollab.com/og-image.png">
+  <meta name="theme-color" content="#ea580c">
+</head>
+<body><h1>Spring Boot Guide</h1></body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-advanced-meta-element',
                             name: 'Meta Element',
                             beginner: [
                                 {
-                                    content: `<h3>Meta Element</h3>
-&bull; Part of the HTML Advanced section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• The <b>meta</b> element gives the browser a piece of metadata as a name and value pair.<br>
+• It is a <b>void element</b>, so it has no closing tag.<br>
+• It only appears inside head.<br><br>
+
+<h3>Key Points</h3>
+• <b>charset</b> sets the text encoding, almost always UTF-8.<br>
+• <b>name</b> and <b>content</b> pair up: for example name="description".<br>
+• <b>http-equiv</b> mimics an HTTP header, such as a refresh.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="author" content="JavaSchoolLab Team">
+  <meta name="description" content="A short page summary for search results.">
+  <title>meta example</title>
+</head>
+<body><h1>meta tags</h1></body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Common names: description, viewport, robots, author and theme-color.<br>
+• The <b>property</b> attribute is used by Open Graph tags for social sharing.<br>
+• Use <b>name="robots" content="noindex"</b> to keep a page out of search results.<br><br>
+
+<h3>Common Mistakes</h3>
+• Putting charset after other tags. It must appear within the first 1024 bytes.<br>
+• Writing keywords meta tags for SEO. Search engines ignore them.<br>
+• Using http-equiv refresh for redirects, which hurts accessibility. Use a server redirect.<br><br>
+
+<h3>Try It Yourself</h3>
+• Add a description, an author and a robots tag to a page. Change the robots value to noindex and think about which pages of your site should use it.<br>
+• Remember: most meta tags work silently, so verify them with the browser tools or an online checker instead of assuming they are right.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#ea580c">
+  <meta property="og:title" content="Private page">
+  <title>Private</title>
+</head>
+<body><h1>Not for search engines</h1></body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• The theme-color meta tints the browser toolbar on mobile.<br>
+• A noindex robots meta is common on staging and thank-you pages.<br><br>
+
+<h3>Best Practices</h3>
+• Keep the number of meta tags small and meaningful.<br>
+• Use a single viewport tag, never two.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> What is the difference between the name and property attributes on meta?<br>
+• <b>A:</b> name is used by standard metadata such as description and viewport. property is used by Open Graph tags such as og:title.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'">
+  <meta name="color-scheme" content="light dark">
+  <title>Secure page</title>
+</head>
+<body><h1>CSP and color-scheme meta</h1></body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-advanced-viewport-meta',
                             name: 'Viewport Meta',
                             beginner: [
                                 {
-                                    content: `<h3>Viewport Meta</h3>
-&bull; Part of the HTML Advanced section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• The viewport meta tag tells mobile browsers how wide the page should be and how to scale it.<br>
+• Without it, phones pretend to be about 980px wide and shrink the page.<br>
+• It is the first step of every responsive layout.<br><br>
+
+<h3>Key Points</h3>
+• Standard value: <b>width=device-width, initial-scale=1</b>.<br>
+• width=device-width matches the layout width to the screen.<br>
+• initial-scale=1 sets the zoom level on load.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Responsive page</title>
+  <style> body { font-family: sans-serif; padding: 1rem; } </style>
+</head>
+<body>
+  <h1>Hello phone</h1>
+  <p>This text is a readable size on small screens.</p>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Media queries only work properly on phones when this tag is present.<br>
+• Test with the browser device toolbar and on a real phone.<br>
+• viewport-fit=cover helps with notched screens when you use safe-area insets.<br><br>
+
+<h3>Common Mistakes</h3>
+• Adding <b>user-scalable=no</b> or <b>maximum-scale=1</b>, which blocks pinch zoom and harms accessibility.<br>
+• Setting a fixed width such as 600, which breaks other screen sizes.<br>
+• Forgetting the tag on one template and having only that page look tiny.<br><br>
+
+<h3>Try It Yourself</h3>
+• Remove the viewport meta tag from the example, open it in the phone view of your browser tools and compare. Put it back and watch the layout change.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Media query</title>
+  <style>
+    .box { padding: 1rem; background: #fde68a; }
+    @media (min-width: 700px) { .box { background: #bbf7d0; } }
+  </style>
+</head>
+<body>
+  <div class="box">Resize the window: yellow on small, green on wide.</div>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Every modern site includes it in its base layout.<br>
+• Combine it with CSS units such as rem, %, and clamp for fluid design.<br><br>
+
+<h3>Best Practices</h3>
+• Allow zoom so low-vision users can enlarge text.<br>
+• Keep one shared layout template so the tag is never forgotten.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> Why does a site look tiny on a phone without the viewport meta tag?<br>
+• <b>A:</b> Mobile browsers assume a desktop width of about 980 pixels and scale the page down. The viewport tag makes the layout width match the device.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Safe areas</title>
+  <style>
+    body { margin: 0; padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left); }
+    header { background: #ea580c; color: #fff; padding: 1rem; }
+  </style>
+</head>
+<body><header>Respects notches</header></body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-advanced-seo-meta-tags',
                             name: 'SEO Meta Tags',
                             beginner: [
                                 {
-                                    content: `<h3>SEO Meta Tags</h3>
-&bull; Part of the HTML Advanced section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• SEO meta tags help search engines understand and display your page.<br>
+• The key ones are the <b>title</b>, the <b>description</b>, the <b>canonical</b> link and the <b>robots</b> tag.<br>
+• They do not guarantee ranking, but they control how the page looks in results.<br><br>
+
+<h3>Key Points</h3>
+• The title is the clickable headline in search results.<br>
+• The description is the snippet below it. Search engines may rewrite it.<br>
+• canonical points to the preferred URL when the same content has many addresses.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Learn HTML Tables | JavaSchoolLab</title>
+  <meta name="description" content="Build and style HTML tables with clear examples.">
+</head>
+<body><h1>HTML Tables</h1></body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Write a unique title and description for each page and include the main topic naturally.<br>
+• Use <b>robots</b> with noindex for thin pages such as search results or thank-you pages.<br>
+• Use canonical to merge pages that differ only by tracking parameters.<br><br>
+
+<h3>Common Mistakes</h3>
+• Stuffing keywords into the title or description.<br>
+• Using the same description on every page.<br>
+• A canonical that points to a different page by mistake, which removes the page from search.<br><br>
+
+<h3>Try It Yourself</h3>
+• Write a title under 60 characters and a description under 160 for a page of your own. Add a canonical link that points to the clean version of its URL.<br>
+• Remember: titles and descriptions are written for people first. A clear, honest sentence that matches the page content earns more clicks than a list of keywords.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Search results | JavaSchoolLab</title>
+  <meta name="robots" content="noindex, follow">
+  <link rel="canonical" href="https://javaschoollab.com/search">
+</head>
+<body><h1>Search</h1></body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Product and article pages add structured data on top of the basic tags.<br>
+• Multi-language sites add alternate links with hreflang.<br><br>
+
+<h3>Best Practices</h3>
+• Check results in a search console after releases.<br>
+• Keep titles descriptive and descriptions written for humans.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> What does rel="canonical" do?<br>
+• <b>A:</b> It tells search engines which URL is the preferred version when the same content is reachable at several addresses, which avoids duplicate content issues.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Java Course | JavaSchoolLab</title>
+  <link rel="canonical" href="https://javaschoollab.com/en/java">
+  <link rel="alternate" hreflang="en" href="https://javaschoollab.com/en/java">
+  <link rel="alternate" hreflang="hi" href="https://javaschoollab.com/hi/java">
+  <link rel="alternate" hreflang="x-default" href="https://javaschoollab.com/java">
+</head>
+<body><h1>Java</h1></body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-advanced-open-graph-metadata',
                             name: 'Open Graph Metadata',
                             beginner: [
                                 {
-                                    content: `<h3>Open Graph Metadata</h3>
-&bull; Part of the HTML Advanced section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• Open Graph is a set of meta tags that control how your page looks when it is <b>shared</b> on social platforms and chat apps.<br>
+• It was created by Facebook and is now read by LinkedIn, WhatsApp, Slack and others.<br>
+• Tags use the <b>property</b> attribute and start with "og:".<br><br>
+
+<h3>Key Points</h3>
+• The core four: <b>og:title</b>, <b>og:description</b>, <b>og:image</b> and <b>og:url</b>.<br>
+• og:type describes the content, such as website or article.<br>
+• Without them, platforms guess and often choose the wrong image.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Spring Boot Tutorial</title>
+  <meta property="og:title" content="Spring Boot Tutorial">
+  <meta property="og:description" content="Build REST APIs step by step.">
+  <meta property="og:image" content="https://javaschoollab.com/og-image.png">
+  <meta property="og:url" content="https://javaschoollab.com/course/spring-boot">
+</head>
+<body><h1>Spring Boot Tutorial</h1></body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Use an image of about 1200 by 630 pixels for a sharp large preview.<br>
+• Use an absolute image URL, not a relative path.<br>
+• Twitter or X has its own twitter:card tag, and falls back to Open Graph.<br><br>
+
+<h3>Common Mistakes</h3>
+• Using a tiny image that is cropped or ignored.<br>
+• Not updating the tags after a title change, since platforms cache previews.<br>
+• Relative URLs in og:image.<br><br>
+
+<h3>Try It Yourself</h3>
+• Add the four core Open Graph tags to a page and test the link in a social preview debugger. Change the image and see how the preview updates.<br>
+• Remember: platforms cache previews for days, so test before you share widely, and add a version query string to the image when you replace it.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Share card</title>
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="CSS Grid in 10 Minutes">
+  <meta property="og:image" content="https://javaschoollab.com/img/grid.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+</head>
+<body><h1>CSS Grid</h1></body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Every article and course page should generate its own tags from the content data.<br>
+• Shared links get more clicks with a clear title and a branded image.<br><br>
+
+<h3>Best Practices</h3>
+• Test with the platform preview debuggers after publishing.<br>
+• Keep titles under about 60 characters so they are not cut off.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> Which Open Graph tags are essential for a good share preview?<br>
+• <b>A:</b> og:title, og:description, og:image and og:url. The image should be an absolute URL, about 1200 by 630 pixels.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Article card</title>
+  <meta property="og:type" content="article">
+  <meta property="article:published_time" content="2026-10-19">
+  <meta property="article:author" content="JavaSchoolLab Team">
+  <meta property="og:site_name" content="JavaSchoolLab">
+  <meta property="og:locale" content="en_IN">
+</head>
+<body><h1>Article</h1></body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-advanced-favicon',
                             name: 'Favicon',
                             beginner: [
                                 {
-                                    content: `<h3>Favicon</h3>
-&bull; Part of the HTML Advanced section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• A <b>favicon</b> is the small icon shown in the browser tab, bookmarks and history.<br>
+• You add it with a <b>link</b> element in the head.<br>
+• Sites without one show a blank or default icon, which looks unfinished.<br><br>
+
+<h3>Key Points</h3>
+• The classic form is <b>rel="icon" href="/favicon.ico"</b>.<br>
+• Modern browsers also accept PNG and SVG files.<br>
+• Sizes of 32 by 32 and 16 by 16 pixels are the most common.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Favicon demo</title>
+  <link rel="icon" href="/favicon.ico" sizes="32x32">
+</head>
+<body><h1>Look at the tab icon</h1></body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• An SVG icon scales perfectly and can even adapt to dark mode with a media query inside it.<br>
+• Add an <b>apple-touch-icon</b> of 180 by 180 for iPhone home screens.<br>
+• A web app manifest lists larger icons for Android installs.<br><br>
+
+<h3>Common Mistakes</h3>
+• Forgetting that browsers cache favicons for a long time, so changes seem not to apply.<br>
+• Using a detailed logo that is unreadable at 16 pixels.<br>
+• Wrong paths that cause a 404 on every page.<br><br>
+
+<h3>Try It Yourself</h3>
+• Create a simple 32 by 32 icon, link it in the head and reload the tab. Add an SVG version and an apple-touch-icon as well.<br>
+• Remember: icons are tiny, so test the design at 16 pixels, and check it on both light and dark browser themes before you publish it.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Icons</title>
+  <link rel="icon" type="image/svg+xml" href="/icon.svg">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+</head>
+<body><h1>Several icon formats</h1></body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Real sites ship several icon files and a manifest for installable apps.<br>
+• Maskable icons give clean shapes on Android.<br><br>
+
+<h3>Best Practices</h3>
+• Keep the design simple with high contrast.<br>
+• Use a versioned file name when you update the icon.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> How do you provide icons for different devices?<br>
+• <b>A:</b> Use several link tags: an ICO or SVG for browsers, an apple-touch-icon for iOS, and icons listed in a web app manifest for Android.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Installable app</title>
+  <link rel="icon" href="/favicon.ico">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="theme-color" content="#ea580c">
+</head>
+<body><h1>Manifest links the larger icons</h1></body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-advanced-link-element',
                             name: 'Link Element',
                             beginner: [
                                 {
-                                    content: `<h3>Link Element</h3>
-&bull; Part of the HTML Advanced section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• The <b>link</b> element connects the current page to an <b>external resource</b>.<br>
+• It is a void element placed in the head.<br>
+• It is most often used for stylesheets, icons and preloading files.<br><br>
+
+<h3>Key Points</h3>
+• <b>rel</b> says what the relationship is, such as stylesheet or icon.<br>
+• <b>href</b> gives the URL of the resource.<br>
+• Do not confuse it with the <b>a</b> element, which creates clickable links in the body.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>link element</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="icon" href="favicon.ico">
+</head>
+<body><h1>Linked resources</h1></body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• <b>rel="preload"</b> asks the browser to fetch a key file early, with the as attribute naming its type.<br>
+• <b>rel="preconnect"</b> opens a connection to another domain ahead of time.<br>
+• <b>media</b> loads a stylesheet only when a condition matches, such as print.<br><br>
+
+<h3>Common Mistakes</h3>
+• Preloading too many files, which slows the page instead of speeding it up.<br>
+• Forgetting the <b>crossorigin</b> attribute on font preloads, so the file downloads twice.<br>
+• Using a link element for navigation.<br><br>
+
+<h3>Try It Yourself</h3>
+• Add a stylesheet with link, then add a preconnect for a font host. Open the Network panel and compare when the font request starts.<br>
+• Remember: every extra preload competes for bandwidth with the rest of the page. Add one at a time and measure whether first paint really improved.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Preload</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preload" href="/hero.jpg" as="image">
+  <link rel="stylesheet" href="app.css">
+</head>
+<body><h1>Faster first paint</h1></body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Performance tuning of fonts and hero images usually relies on preload and preconnect.<br>
+• Print stylesheets use media="print".<br><br>
+
+<h3>Best Practices</h3>
+• Preload only the few resources that affect first paint.<br>
+• Measure with the browser performance tools before and after.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> What is the difference between preload and preconnect?<br>
+• <b>A:</b> preload fetches a specific file early. preconnect only opens the network connection to another origin so later requests start faster.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Print styles</title>
+  <link rel="stylesheet" href="screen.css" media="screen">
+  <link rel="stylesheet" href="print.css" media="print">
+  <link rel="preload" href="/fonts/inter.woff2" as="font" type="font/woff2" crossorigin>
+</head>
+<body><h1>Different CSS per medium</h1></body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-advanced-base-element',
                             name: 'Base Element',
                             beginner: [
                                 {
-                                    content: `<h3>Base Element</h3>
-&bull; Part of the HTML Advanced section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• The <b>base</b> element sets the <b>default URL and target</b> for all relative links in the page.<br>
+• There can be only one, and it must be inside head.<br>
+• It is a void element.<br><br>
+
+<h3>Key Points</h3>
+• <b>href</b> becomes the starting point for every relative URL.<br>
+• <b>target</b> sets the default window for links, such as _blank.<br>
+• It must appear before any element that uses a relative URL.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <base href="https://javaschoollab.com/course/">
+  <title>base demo</title>
+</head>
+<body>
+  <a href="java">Resolves to /course/java</a>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• It is handy when a page is served from a different path than its assets.<br>
+• Every link, image and script with a relative path is affected, so test carefully.<br>
+• Fragment links like #top also resolve against the base URL.<br><br>
+
+<h3>Common Mistakes</h3>
+• Forgetting that anchors such as #section may now jump to the base page.<br>
+• Adding a second base element. Only the first is used.<br>
+• Setting target="_blank" globally without adding rel="noopener".<br><br>
+
+<h3>Try It Yourself</h3>
+• Add a base element to a page with relative links and see where they point. Remove it again and compare, paying attention to fragment links.<br>
+• Remember: when something odd happens to links or images, check for a base element first. It silently changes the meaning of every relative URL on the page.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <base href="/docs/">
+  <title>base paths</title>
+</head>
+<body>
+  <img src="logo.png" alt="Logo (loads /docs/logo.png)">
+  <a href="intro.html">Intro</a>
+  <a href="#top">Fragment resolves to /docs/#top</a>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Single-page apps with client-side routing often need a base href so deep links load assets correctly.<br>
+• Email templates use it rarely, since many clients strip it.<br><br>
+
+<h3>Best Practices</h3>
+• Prefer root-relative paths such as /css/app.css and avoid base when possible.<br>
+• If you use base, document it for your team.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> What risks come with the base element?<br>
+• <b>A:</b> It changes how every relative URL and fragment link resolves, so links and assets can break unexpectedly. Only one base is allowed and it should come first.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <base href="/app/" target="_blank">
+  <title>base target</title>
+</head>
+<body>
+  <a href="help" rel="noopener">Help (opens in a new tab)</a>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-advanced-script-element',
                             name: 'Script Element',
                             beginner: [
                                 {
-                                    content: `<h3>Script Element</h3>
-&bull; Part of the HTML Advanced section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• The <b>script</b> element adds JavaScript to a page, either inline or from a file.<br>
+• The browser downloads and runs it, and by default stops parsing HTML while it does.<br>
+• It can sit in head or at the end of body.<br><br>
+
+<h3>Key Points</h3>
+• <b>src</b> loads an external file.<br>
+• Inline code goes between the tags.<br>
+• Scripts run in the order they appear unless you use async, defer or type="module".<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>script</title></head>
+<body>
+  <h1 id="msg">Loading...</h1>
+  <script>
+    document.getElementById('msg').textContent = 'Hello from JavaScript!';
+  </script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Place classic scripts at the end of body, or use <b>defer</b> in head, so the page appears first.<br>
+• <b>type="application/json"</b> or <b>ld+json</b> embeds data that the browser does not run.<br>
+• The <b>integrity</b> attribute checks a CDN file against a hash.<br><br>
+
+<h3>Common Mistakes</h3>
+• Blocking scripts in head with no defer, which delays the first paint.<br>
+• Loading libraries from untrusted hosts without integrity checks.<br>
+• Putting the closing script tag in a string without escaping it.<br><br>
+
+<h3>Try It Yourself</h3>
+• Write one inline script that changes a heading. Move it from the head to the end of the body and observe why it only works after the element exists.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>JSON-LD</title>
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "Course", "name": "Core Java", "provider": { "@type": "Organization", "name": "JavaSchoolLab" } }
+  </script>
+</head>
+<body><h1>Structured data is in the head</h1></body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Analytics, chat widgets and ad code are all script tags, and they heavily influence page speed.<br>
+• Structured data for SEO is added as ld+json.<br><br>
+
+<h3>Best Practices</h3>
+• Audit third-party scripts regularly and remove those you do not need.<br>
+• Use a content security policy to limit what scripts can run.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> Why is a blocking script in the head a performance problem?<br>
+• <b>A:</b> The browser stops parsing HTML until the script is downloaded and run, so the page appears later. defer or async avoids that.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>CDN script</title></head>
+<body>
+  <h1>Library with a hash check</h1>
+  <script src="https://cdn.example.com/lib.min.js"
+          integrity="sha384-REPLACE_WITH_REAL_HASH"
+          crossorigin="anonymous" defer></script>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-advanced-noscript-element',
                             name: 'Noscript Element',
                             beginner: [
                                 {
-                                    content: `<h3>Noscript Element</h3>
-&bull; Part of the HTML Advanced section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• <b>noscript</b> holds content shown only when JavaScript is <b>disabled or unavailable</b>.<br>
+• It can be used in head or body.<br>
+• It is a fallback message, not a replacement for a working page.<br><br>
+
+<h3>Key Points</h3>
+• In the body it displays normal markup when scripts are off.<br>
+• In the head it may contain link, style and meta only.<br>
+• Browsers with scripting on ignore it completely.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>noscript</title></head>
+<body>
+  <h1>My App</h1>
+  <noscript>
+    <p>This app works best with JavaScript turned on.</p>
+  </noscript>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Show a short, polite message with how to enable scripting.<br>
+• Provide plain links so key content stays reachable.<br>
+• Tracking pixels are often wrapped in noscript as a fallback.<br><br>
+
+<h3>Common Mistakes</h3>
+• Hiding the whole app behind a vague "Please enable JavaScript" line.<br>
+• Expecting it to run when scripting fails because of a script error. It only reacts to scripting being off.<br>
+• Putting scripts inside noscript.<br><br>
+
+<h3>Try It Yourself</h3>
+• Turn JavaScript off in the browser settings, open your page and check what noscript shows. Improve the message so it explains what to do.<br>
+• Remember: noscript is a safety net, not a design strategy. The best fallback is a page whose main content is already in the HTML when it arrives.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>Fallback links</title></head>
+<body>
+  <div id="menu"></div>
+  <script>document.getElementById('menu').textContent = 'Dynamic menu';</script>
+  <noscript>
+    <ul>
+      <li><a href="/courses">Courses</a></li>
+      <li><a href="/contact">Contact</a></li>
+    </ul>
+  </noscript>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Progressive enhancement means the core content works without scripts, and noscript covers the gaps.<br>
+• Server-rendered pages need noscript far less than client-only apps.<br><br>
+
+<h3>Best Practices</h3>
+• Test your site with scripts off to see what really breaks.<br>
+• Keep important content in the HTML itself.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> When does the browser show noscript content?<br>
+• <b>A:</b> Only when scripting is disabled or unsupported. It does not run when a script fails with an error.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><title>noscript styles</title>
+  <noscript><style>.needs-js { display: none; }</style></noscript>
+</head>
+<body>
+  <button class="needs-js">Interactive button</button>
+  <p>Without scripts the button is hidden.</p>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-advanced-async-scripts',
                             name: 'Async Scripts',
                             beginner: [
                                 {
-                                    content: `<h3>Async Scripts</h3>
-&bull; Part of the HTML Advanced section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• <b>async</b> tells the browser to download a script <b>in parallel</b> and run it as soon as it arrives.<br>
+• Parsing of the HTML pauses only for the moment the script runs.<br>
+• It only applies to scripts with a src attribute.<br><br>
+
+<h3>Key Points</h3>
+• Execution order is <b>not guaranteed</b> between async scripts.<br>
+• Good for independent scripts such as analytics.<br>
+• Syntax: <b>&lt;script async src="a.js"&gt;&lt;/script&gt;</b>.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><title>async</title>
+  <script async src="https://example.com/analytics.js"></script>
+</head>
+<body><h1>The page does not wait for analytics</h1></body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Use async for code that does not depend on the DOM or on other scripts.<br>
+• Combine with defer on other scripts to keep your app code ordered.<br>
+• Check the Network panel waterfall to see the parallel downloads.<br><br>
+
+<h3>Common Mistakes</h3>
+• Using async for scripts that depend on each other, which causes random errors.<br>
+• Expecting the DOM to be ready. It may not be when an async script runs.<br>
+• Adding async to an inline script. It has no effect.<br><br>
+
+<h3>Try It Yourself</h3>
+• Add two async scripts that log a message when they run. Reload several times and notice that the order can change.<br>
+• Remember: async trades order for speed. If one script needs another, or needs the page to be ready, switch to defer so the order is guaranteed.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><title>Independent scripts</title>
+  <script async src="chat-widget.js"></script>
+  <script async src="analytics.js"></script>
+  <script defer src="app.js"></script>
+</head>
+<body><h1>Independent scripts use async, app code uses defer</h1></body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Tag managers, analytics and ad scripts are loaded with async so they do not delay the page.<br>
+• Module scripts are deferred by default and can also take async.<br><br>
+
+<h3>Best Practices</h3>
+• Do not depend on load order between async files.<br>
+• Measure the effect on Largest Contentful Paint.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> How do async scripts differ in order of execution?<br>
+• <b>A:</b> They run as soon as they are downloaded, so the order is unpredictable. That is why dependent scripts should not use async.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><title>async module</title>
+  <script type="module" async src="widget.js"></script>
+</head>
+<body><h1>Module scripts can be async too</h1></body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-advanced-defer-scripts',
                             name: 'Defer Scripts',
                             beginner: [
                                 {
-                                    content: `<h3>Defer Scripts</h3>
-&bull; Part of the HTML Advanced section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• <b>defer</b> downloads a script in parallel and runs it <b>after the HTML is parsed</b>.<br>
+• Deferred scripts run in the order they appear.<br>
+• It is the best default for scripts that need the DOM.<br><br>
+
+<h3>Key Points</h3>
+• Runs just before the DOMContentLoaded event.<br>
+• Only works on external scripts with a src.<br>
+• Syntax: <b>&lt;script defer src="app.js"&gt;&lt;/script&gt;</b>.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><title>defer</title>
+  <script defer src="app.js"></script>
+</head>
+<body><h1 id="title">Title</h1></body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Put deferred scripts in the head so the download starts early without blocking the page.<br>
+• Use defer for libraries and then your app code, since order is kept.<br>
+• The DOM is fully parsed, so getElementById works without waiting for an event.<br><br>
+
+<h3>Common Mistakes</h3>
+• Using defer on inline scripts, where it does nothing.<br>
+• Assuming deferred scripts run after images load. They run after parsing, not after load.<br>
+• Mixing async and defer on the same tag. async wins.<br><br>
+
+<h3>Try It Yourself</h3>
+• Place a deferred script in the head that reads an element near the bottom of the body. It works, because the DOM is already parsed.<br>
+• Remember: defer scripts run after parsing but before the DOMContentLoaded event, so you rarely need to wrap their code in a load listener at all. Compare the Network panel with and without defer to see the download start earlier while the page keeps rendering.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><title>Order kept</title>
+  <script defer src="library.js"></script>
+  <script defer src="app.js"></script>
+</head>
+<body><h1>library.js always runs before app.js</h1></body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Most modern sites use defer for the main bundle.<br>
+• Frameworks add defer or type="module" automatically in their HTML output.<br><br>
+
+<h3>Best Practices</h3>
+• Default to defer unless a script must run immediately.<br>
+• Keep render-critical code small and inline.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> async or defer for your main application bundle?<br>
+• <b>A:</b> defer. It keeps the order of scripts and runs them after the HTML is parsed, so the DOM is ready.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><title>defer timing</title>
+  <script defer src="data:text/javascript,document.getElementById('box').textContent='DOM was ready'"></script>
+</head>
+<body><p id="box">Waiting</p></body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-advanced-module-scripts',
                             name: 'Module Scripts',
                             beginner: [
                                 {
-                                    content: `<h3>Module Scripts</h3>
-&bull; Part of the HTML Advanced section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• <b>type="module"</b> turns a script into an <b>ES module</b>, which can use import and export.<br>
+• Modules are deferred by default and run in strict mode.<br>
+• Each module has its own scope, so variables do not leak into the global scope.<br><br>
+
+<h3>Key Points</h3>
+• Syntax: <b>&lt;script type="module" src="main.js"&gt;&lt;/script&gt;</b>.<br>
+• Inside the file you can write <b>import { x } from "./x.js"</b>.<br>
+• The browser downloads each imported file once.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>module</title></head>
+<body>
+  <p id="out"></p>
+  <script type="module">
+    const greet = name => 'Hello, ' + name;
+    document.getElementById('out').textContent = greet('modules');
+  </script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Inline modules are allowed and are also deferred.<br>
+• Use a <b>nomodule</b> script as a fallback for very old browsers.<br>
+• Modules need to be served over http, so file:// may block them because of CORS.<br><br>
+
+<h3>Common Mistakes</h3>
+• Opening the page from the file system and getting a CORS error.<br>
+• Forgetting the file extension in an import path.<br>
+• Expecting top-level variables to appear on window.<br><br>
+
+<h3>Try It Yourself</h3>
+• Create a module that declares a variable, then check typeof window.variable. Compare with a classic script that declares the same variable.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>scope</title></head>
+<body>
+  <p id="out"></p>
+  <script type="module">
+    const secret = 42;          // not on window
+    document.getElementById('out').textContent =
+      'window.secret is ' + typeof window.secret;
+  </script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Build tools such as Vite output module scripts for modern browsers.<br>
+• Import maps let you use bare names such as "lodash" in the browser.<br><br>
+
+<h3>Best Practices</h3>
+• Prefer modules for new code.<br>
+• Split code into small files and let the browser cache them.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> What are two behaviours that differ between a module and a classic script?<br>
+• <b>A:</b> Modules are deferred by default and have their own scope with strict mode, so top-level variables do not become globals.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>importmap</title>
+  <script type="importmap">
+    { "imports": { "greet": "data:text/javascript,export default n => 'Hi ' + n" } }
+  </script>
+</head>
+<body>
+  <p id="out"></p>
+  <script type="module">
+    import greet from 'greet';
+    document.getElementById('out').textContent = greet('import map');
+  </script>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-advanced-web-components',
                             name: 'Web Components',
                             beginner: [
                                 {
-                                    content: `<h3>Web Components</h3>
-&bull; Part of the HTML Advanced section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• <b>Web Components</b> let you create your own reusable HTML elements with built-in browser features.<br>
+• They are made from three standards: custom elements, shadow DOM and HTML templates.<br>
+• No framework is needed, and they work in any page.<br><br>
+
+<h3>Key Points</h3>
+• A custom element has a name with a hyphen, such as <b>user-card</b>.<br>
+• Shadow DOM hides its internal markup and styles.<br>
+• Templates hold markup that is cloned when needed.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>First web component</title></head>
+<body>
+  <hello-tag name="JavaSchoolLab"></hello-tag>
+  <script>
+    class HelloTag extends HTMLElement {
+      connectedCallback() {
+        this.textContent = 'Hello, ' + this.getAttribute('name') + '!';
+      }
+    }
+    customElements.define('hello-tag', HelloTag);
+  </script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• You can use a web component inside React, Angular or plain HTML.<br>
+• Attributes and properties let you pass data in, and events send data out.<br>
+• Slots let users put their own content inside your component.<br><br>
+
+<h3>Common Mistakes</h3>
+• Using a name without a hyphen. The browser rejects it.<br>
+• Forgetting to register the element before using it.<br>
+• Expecting global CSS to style the inside of a shadow root.<br><br>
+
+<h3>Try It Yourself</h3>
+• Define a custom tag that shows a greeting from an attribute. Wrap its content in a shadow root and style it so the page CSS cannot affect it.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>Slot</title></head>
+<body>
+  <info-box><b>Tip:</b> Slots show your own content.</info-box>
+  <script>
+    class InfoBox extends HTMLElement {
+      constructor() {
+        super();
+        const root = this.attachShadow({ mode: 'open' });
+        root.innerHTML = '<style>div{padding:10px;border-left:4px solid #ea580c;background:#fff7ed}</style><div><slot></slot></div>';
+      }
+    }
+    customElements.define('info-box', InfoBox);
+  </script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Design systems share buttons and dialogs across teams as web components.<br>
+• Libraries such as Lit make writing them shorter.<br><br>
+
+<h3>Best Practices</h3>
+• Keep each component small with a clear public API.<br>
+• Document the attributes, events and CSS custom properties.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> Which three standards make up web components?<br>
+• <b>A:</b> Custom elements, shadow DOM and HTML templates (with slots). Together they allow reusable, encapsulated elements without a framework.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>Component events</title></head>
+<body>
+  <like-button></like-button>
+  <p id="log"></p>
+  <script>
+    class LikeButton extends HTMLElement {
+      connectedCallback() {
+        const b = document.createElement('button');
+        b.textContent = 'Like';
+        b.onclick = () => this.dispatchEvent(new CustomEvent('liked', { bubbles: true }));
+        this.append(b);
+      }
+    }
+    customElements.define('like-button', LikeButton);
+    document.addEventListener('liked', () => log.textContent = 'Liked!');
+  </script>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-advanced-custom-elements',
                             name: 'Custom Elements',
                             beginner: [
                                 {
-                                    content: `<h3>Custom Elements</h3>
-&bull; Part of the HTML Advanced section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• A <b>custom element</b> is an HTML tag you define yourself with a JavaScript class.<br>
+• The name must contain a hyphen, such as <b>my-counter</b>.<br>
+• You register it with <b>customElements.define</b>.<br><br>
+
+<h3>Key Points</h3>
+• The class extends <b>HTMLElement</b>.<br>
+• <b>connectedCallback</b> runs when the element is added to the page.<br>
+• <b>disconnectedCallback</b> runs when it is removed.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>Custom element</title></head>
+<body>
+  <my-badge></my-badge>
+  <script>
+    class MyBadge extends HTMLElement {
+      connectedCallback() { this.innerHTML = '<b style="color:#ea580c">JavaSchoolLab</b>'; }
+    }
+    customElements.define('my-badge', MyBadge);
+  </script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Declare <b>observedAttributes</b> and implement <b>attributeChangedCallback</b> to react to attribute changes.<br>
+• Use properties for complex data and attributes for simple strings.<br>
+• Customised built-in elements use the <b>is</b> attribute but are not supported in Safari.<br><br>
+
+<h3>Common Mistakes</h3>
+• Doing heavy work in the constructor. Use connectedCallback.<br>
+• Forgetting to clean up timers or listeners in disconnectedCallback.<br>
+• Reading children in the constructor, where they may not exist yet.<br><br>
+
+<h3>Try It Yourself</h3>
+• Build a star-rating element driven by a value attribute. Update the attribute from a button and confirm that the display refreshes.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>Observed attributes</title></head>
+<body>
+  <star-rating value="3"></star-rating>
+  <button onclick="document.querySelector('star-rating').setAttribute('value', 5)">Set 5</button>
+  <script>
+    class StarRating extends HTMLElement {
+      static get observedAttributes() { return ['value']; }
+      attributeChangedCallback() { this.render(); }
+      connectedCallback() { this.render(); }
+      render() { this.textContent = '★'.repeat(this.getAttribute('value') || 0); }
+    }
+    customElements.define('star-rating', StarRating);
+  </script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Components such as date pickers, tabs and rating stars are common custom elements.<br>
+• Server-rendered pages can upgrade plain markup into interactive components.<br><br>
+
+<h3>Best Practices</h3>
+• Make them accessible: keyboard support, roles and labels.<br>
+• Choose clear, prefixed names such as jsl-card to avoid conflicts.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> What rule applies to custom element names?<br>
+• <b>A:</b> The name must contain a hyphen and be lowercase, such as user-card, so it never clashes with a built-in element.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>Lifecycle</title></head>
+<body>
+  <tick-clock></tick-clock>
+  <script>
+    class TickClock extends HTMLElement {
+      connectedCallback() {
+        this.timer = setInterval(() => this.textContent = new Date().toLocaleTimeString(), 1000);
+      }
+      disconnectedCallback() { clearInterval(this.timer); }
+    }
+    customElements.define('tick-clock', TickClock);
+  </script>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-advanced-shadow-dom',
                             name: 'Shadow DOM',
                             beginner: [
                                 {
-                                    content: `<h3>Shadow DOM</h3>
-&bull; Part of the HTML Advanced section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• <b>Shadow DOM</b> gives an element its own hidden DOM tree with <b>scoped styles</b>.<br>
+• Styles inside do not leak out, and page styles do not leak in.<br>
+• You create it with <b>element.attachShadow({ mode: "open" })</b>.<br><br>
+
+<h3>Key Points</h3>
+• The hidden tree is called the shadow root.<br>
+• <b>mode: "open"</b> allows outside code to reach it through element.shadowRoot.<br>
+• Built-in elements such as video use shadow DOM for their controls.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>Shadow DOM</title>
+  <style> p { color: red; } /* does not reach inside the shadow root */ </style>
+</head>
+<body>
+  <p>Outside: red</p>
+  <div id="host"></div>
+  <script>
+    const root = document.getElementById('host').attachShadow({ mode: 'open' });
+    root.innerHTML = '<style>p { color: green; }</style><p>Inside: green</p>';
+  </script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Outside styling is allowed through <b>CSS custom properties</b>, which pass through the boundary.<br>
+• The <b>::part()</b> selector lets you style elements the component exposes.<br>
+• The <b>:host</b> selector styles the host element itself from inside.<br><br>
+
+<h3>Common Mistakes</h3>
+• Expecting document.querySelector to find elements inside a shadow root.<br>
+• Using global class names and wondering why they have no effect.<br>
+• Not using slots, so the component ignores the content placed between its tags.<br><br>
+
+<h3>Try It Yourself</h3>
+• Attach a shadow root to a div and give its paragraph a different colour from the page. Then expose a CSS variable to change that colour from outside.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>:host</title></head>
+<body>
+  <fancy-card></fancy-card>
+  <script>
+    class FancyCard extends HTMLElement {
+      constructor() {
+        super();
+        this.attachShadow({ mode: 'open' }).innerHTML =
+          '<style>:host{display:block;padding:12px;border:2px solid #ea580c;border-radius:8px}</style>A scoped card';
+      }
+    }
+    customElements.define('fancy-card', FancyCard);
+  </script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Third-party widgets use shadow DOM so their styles never clash with the host site.<br>
+• Design systems expose theming through custom properties and parts.<br><br>
+
+<h3>Best Practices</h3>
+• Expose a small, documented styling API.<br>
+• Keep accessibility in mind, since focus and labels cross the boundary.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> How can you theme a component that uses shadow DOM?<br>
+• <b>A:</b> Through CSS custom properties, which cross the boundary, and through ::part() for elements the component exposes.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>CSS variables and parts</title>
+  <style>
+    themed-button { --btn-bg: #2563eb; }
+    themed-button::part(label) { letter-spacing: 1px; }
+  </style>
+</head>
+<body>
+  <themed-button></themed-button>
+  <script>
+    class ThemedButton extends HTMLElement {
+      constructor() {
+        super();
+        this.attachShadow({ mode: 'open' }).innerHTML =
+          '<style>button{background:var(--btn-bg,#ea580c);color:#fff;border:0;padding:8px 14px;border-radius:6px}</style><button><span part="label">Click me</span></button>';
+      }
+    }
+    customElements.define('themed-button', ThemedButton);
+  </script>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-advanced-html-templates',
                             name: 'HTML Templates',
                             beginner: [
                                 {
-                                    content: `<h3>HTML Templates</h3>
-&bull; Part of the HTML Advanced section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• An <b>HTML template</b> is markup that the browser parses but <b>does not render or run</b> until you use it.<br>
+• You define it with the <b>template</b> element.<br>
+• JavaScript clones it whenever you need a new copy.<br><br>
+
+<h3>Key Points</h3>
+• Content inside a template is inert: images do not load and scripts do not run.<br>
+• You read it through the <b>content</b> property, a document fragment.<br>
+• Use <b>cloneNode(true)</b> to make a copy.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>templates</title></head>
+<body>
+  <template id="card">
+    <div style="padding:10px;border:1px solid #ccc;margin:6px"><b class="title"></b></div>
+  </template>
+  <div id="list"></div>
+  <script>
+    const t = document.getElementById('card');
+    ['Java', 'Spring Boot', 'HTML'].forEach(name => {
+      const c = t.content.cloneNode(true);
+      c.querySelector('.title').textContent = name;
+      document.getElementById('list').append(c);
+    });
+  </script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Templates keep markup in HTML instead of long strings in JavaScript.<br>
+• Fill in the clone with data before adding it to the page.<br>
+• Combine templates with shadow DOM to build components.<br><br>
+
+<h3>Common Mistakes</h3>
+• Inserting the template content itself rather than a clone, which empties it.<br>
+• Expecting it to be visible. It is never displayed.<br>
+• Using innerHTML with untrusted data when filling templates.<br><br>
+
+<h3>Try It Yourself</h3>
+• Create a template for a course card and render three cards from an array of names. Use textContent to fill them in.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>template rows</title></head>
+<body>
+  <table border="1" cellpadding="6"><tbody id="rows"></tbody></table>
+  <template id="row"><tr><td class="n"></td><td class="p"></td></tr></template>
+  <script>
+    const data = [['Notebook', 'Rs. 50'], ['Pen', 'Rs. 10']];
+    data.forEach(([n, p]) => {
+      const r = document.getElementById('row').content.cloneNode(true);
+      r.querySelector('.n').textContent = n;
+      r.querySelector('.p').textContent = p;
+      document.getElementById('rows').append(r);
+    });
+  </script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Lists of cards, rows and comments are often rendered from one template.<br>
+• Lightweight alternative to a framework for small pages.<br><br>
+
+<h3>Best Practices</h3>
+• Set text with textContent to avoid injection bugs.<br>
+• Keep one template per repeated pattern.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> Why use a template instead of a string in JavaScript?<br>
+• <b>A:</b> The markup stays in HTML, is parsed once and is inert until cloned. It is easier to read and avoids repeated string concatenation.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>Template + shadow</title></head>
+<body>
+  <template id="t"><style>p{color:#7c3aed}</style><p><slot>default text</slot></p></template>
+  <x-note>Slotted content</x-note>
+  <script>
+    customElements.define('x-note', class extends HTMLElement {
+      constructor() {
+        super();
+        this.attachShadow({ mode: 'open' }).append(document.getElementById('t').content.cloneNode(true));
+      }
+    });
+  </script>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-advanced-template-element',
                             name: 'Template Element',
                             beginner: [
                                 {
-                                    content: `<h3>Template Element</h3>
-&bull; Part of the HTML Advanced section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• The <b>template</b> element is a container for markup that stays <b>hidden and inactive</b> until JavaScript copies it.<br>
+• It can be placed anywhere in head, body or even inside a table.<br>
+• Its children belong to a separate document fragment.<br><br>
+
+<h3>Key Points</h3>
+• Read the contents through <b>template.content</b>.<br>
+• The element itself has the display value none by default.<br>
+• There is also a declarative shadow DOM form using <b>shadowrootmode</b>.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>template element</title></head>
+<body>
+  <template id="hello"><h2>Hello from a template</h2></template>
+  <button onclick="document.body.append(document.getElementById('hello').content.cloneNode(true))">
+    Add heading
+  </button>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Because it can sit inside a table or select, it avoids the parsing problems of a div in those places.<br>
+• Use <b>importNode</b> when cloning across documents such as an iframe.<br>
+• Declarative shadow DOM lets server HTML create a shadow root with no JavaScript.<br><br>
+
+<h3>Common Mistakes</h3>
+• Querying the page for elements inside a template. They are not part of the live DOM.<br>
+• Reusing the same fragment object. Clone it each time.<br>
+• Forgetting that scripts inside run only after being inserted into the page.<br><br>
+
+<h3>Try It Yourself</h3>
+• Place a template inside a table body and add rows to it with a button. Notice that the template itself never appears on the page.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>template in a table</title></head>
+<body>
+  <table border="1" cellpadding="6">
+    <tbody id="tb"></tbody>
+    <template id="r"><tr><td>New row</td></tr></template>
+  </table>
+  <button onclick="tb.append(r.content.cloneNode(true))">Add row</button>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Server-rendered web components use declarative shadow DOM for faster first paint.<br>
+• Client-side widgets use templates for rows and modals.<br><br>
+
+<h3>Best Practices</h3>
+• Keep templates close to the code that uses them.<br>
+• Give each template a clear id.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> What is declarative shadow DOM?<br>
+• <b>A:</b> A template with the shadowrootmode attribute that creates a shadow root directly from HTML, so server-rendered components need no JavaScript to attach it.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>Declarative shadow DOM</title></head>
+<body>
+  <div>
+    <template shadowrootmode="open">
+      <style>p { color: #0f766e; }</style>
+      <p>Shadow root created by HTML alone</p>
+    </template>
+  </div>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-advanced-slot-element',
                             name: 'Slot Element',
                             beginner: [
                                 {
-                                    content: `<h3>Slot Element</h3>
-&bull; Part of the HTML Advanced section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• The <b>slot</b> element is a <b>placeholder</b> inside a web component where the user can insert their own markup.<br>
+• It works only inside a shadow tree.<br>
+• Content passed in from outside is called slotted content.<br><br>
+
+<h3>Key Points</h3>
+• A <b>default slot</b> has no name and receives all unnamed content.<br>
+• A <b>named slot</b> uses name="title" and receives elements with slot="title".<br>
+• Text inside a slot is the fallback content when nothing is passed in.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>slot</title></head>
+<body>
+  <my-panel>This text goes into the slot.</my-panel>
+  <script>
+    customElements.define('my-panel', class extends HTMLElement {
+      constructor() {
+        super();
+        this.attachShadow({ mode: 'open' }).innerHTML =
+          '<div style="border:2px dashed #ea580c;padding:10px"><slot>Fallback</slot></div>';
+      }
+    });
+  </script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Slotted nodes stay in the light DOM, so outside CSS can still style them.<br>
+• Use <b>::slotted(selector)</b> inside the component to style slotted elements.<br>
+• The <b>slotchange</b> event fires when the assigned content changes.<br><br>
+
+<h3>Common Mistakes</h3>
+• Using slot outside a shadow root, where it does nothing.<br>
+• Targeting nested slotted children with ::slotted, which only reaches direct children.<br>
+• Forgetting the fallback content.<br><br>
+
+<h3>Try It Yourself</h3>
+• Build a card component with a named title slot, a default slot and an action slot. Pass a heading, a paragraph and a button into it.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>Named slots</title></head>
+<body>
+  <info-card>
+    <h3 slot="title">Course tip</h3>
+    <p>Practice a little every day.</p>
+    <button slot="action">Got it</button>
+  </info-card>
+  <script>
+    customElements.define('info-card', class extends HTMLElement {
+      constructor() {
+        super();
+        this.attachShadow({ mode: 'open' }).innerHTML =
+          '<style>::slotted(h3){margin:0;color:#c2410c}</style><slot name="title"></slot><slot></slot><slot name="action"></slot>';
+      }
+    });
+  </script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Cards, dialogs and tab panels expose slots for title, body and actions.<br>
+• It gives the flexibility of children in React with plain browser features.<br><br>
+
+<h3>Best Practices</h3>
+• Name slots clearly and document them.<br>
+• Provide fallback text for empty slots.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> What is the difference between a default slot and a named slot?<br>
+• <b>A:</b> A default slot receives all content with no slot attribute. A named slot receives only elements whose slot attribute matches its name.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>slotchange</title></head>
+<body>
+  <count-items><li>One</li><li>Two</li></count-items>
+  <script>
+    customElements.define('count-items', class extends HTMLElement {
+      constructor() {
+        super();
+        const root = this.attachShadow({ mode: 'open' });
+        root.innerHTML = '<p id="n"></p><ul><slot></slot></ul>';
+        root.querySelector('slot').addEventListener('slotchange', e =>
+          root.getElementById('n').textContent = e.target.assignedElements().length + ' items');
+      }
+    });
+  </script>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-advanced-dialog-element',
                             name: 'Dialog Element',
                             beginner: [
                                 {
-                                    content: `<h3>Dialog Element</h3>
-&bull; Part of the HTML Advanced section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• The <b>dialog</b> element is a built-in <b>popup window</b> for messages, forms and confirmations.<br>
+• It is hidden until opened, and the browser handles focus and layering.<br>
+• It replaces many custom modal scripts.<br><br>
+
+<h3>Key Points</h3>
+• <b>dialog.showModal()</b> opens it as a modal with a backdrop and traps focus.<br>
+• <b>dialog.show()</b> opens a non-modal version.<br>
+• <b>dialog.close()</b> or a form with <b>method="dialog"</b> closes it.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>dialog</title></head>
+<body>
+  <button onclick="d.showModal()">Open dialog</button>
+  <dialog id="d">
+    <p>Hello from a dialog!</p>
+    <button onclick="d.close()">Close</button>
+  </dialog>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Style the dimmed area behind a modal with the <b>::backdrop</b> pseudo-element.<br>
+• A form with method="dialog" closes the dialog and gives the clicked button value as returnValue.<br>
+• The Escape key closes a modal dialog by default.<br><br>
+
+<h3>Common Mistakes</h3>
+• Using the <b>open</b> attribute to show a modal, which skips focus trapping. Use showModal.<br>
+• Forgetting a visible close button.<br>
+• Not restoring focus to the button that opened it.<br><br>
+
+<h3>Try It Yourself</h3>
+• Make a confirm-delete dialog with Cancel and Delete buttons inside a form with method dialog. Show the chosen button value on the page after it closes.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>dialog form</title></head>
+<body>
+  <button onclick="d.showModal()">Delete item</button>
+  <p id="out"></p>
+  <dialog id="d" aria-labelledby="t">
+    <h3 id="t">Delete this item?</h3>
+    <form method="dialog">
+      <button value="cancel">Cancel</button>
+      <button value="ok">Delete</button>
+    </form>
+  </dialog>
+  <script>d.addEventListener('close', () => out.textContent = 'You chose: ' + d.returnValue);</script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Confirm delete boxes, login forms and image viewers are good fits.<br>
+• Most browsers now support it fully, so custom modal libraries are often unnecessary.<br><br>
+
+<h3>Best Practices</h3>
+• Give the dialog a heading and use aria-labelledby.<br>
+• Keep content short and the main action obvious.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> Why prefer showModal() over setting the open attribute?<br>
+• <b>A:</b> showModal() adds a backdrop, traps focus, makes the rest of the page inert and lets Escape close it. The open attribute only makes it visible.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>backdrop</title>
+  <style>
+    dialog { border: 0; border-radius: 12px; padding: 1.5rem; }
+    dialog::backdrop { background: rgba(15, 23, 42, .6); backdrop-filter: blur(3px); }
+  </style>
+</head>
+<body>
+  <button onclick="d.showModal()">Open styled dialog</button>
+  <dialog id="d"><p>Styled backdrop</p><button onclick="d.close()">OK</button></dialog>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-advanced-popover-api',
                             name: 'Popover API',
                             beginner: [
                                 {
-                                    content: `<h3>Popover API</h3>
-&bull; Part of the HTML Advanced section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• The <b>Popover API</b> shows floating content such as menus, tips and toasts <b>with HTML alone</b>.<br>
+• You mark an element with the <b>popover</b> attribute.<br>
+• A button with <b>popovertarget</b> toggles it.<br><br>
+
+<h3>Key Points</h3>
+• Popovers appear in the top layer, above all other content.<br>
+• They close when you click outside or press Escape (in auto mode).<br>
+• <b>popover="manual"</b> disables light dismiss.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>popover</title></head>
+<body>
+  <button popovertarget="tip">Show tip</button>
+  <div id="tip" popover>Practice every day to improve faster.</div>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Use <b>popovertargetaction</b> with show, hide or toggle for exact control.<br>
+• Style the open state with the <b>:popover-open</b> pseudo-class.<br>
+• Anchor positioning in CSS can place a popover next to its button.<br><br>
+
+<h3>Common Mistakes</h3>
+• Using it for modal behaviour that needs focus trapping. Use dialog for that.<br>
+• Forgetting that hidden popovers use display none by default.<br>
+• Nesting popovers incorrectly so the parent closes the child.<br><br>
+
+<h3>Try It Yourself</h3>
+• Create a help popover opened by a button. Add a second manual popover that acts as a toast and hides itself after two seconds.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>popover actions</title>
+  <style>
+    #menu { padding: 12px; border: 1px solid #ccc; border-radius: 8px; }
+    #menu:popover-open { background: #fff7ed; }
+  </style>
+</head>
+<body>
+  <button popovertarget="menu" popovertargetaction="show">Open</button>
+  <div id="menu" popover="auto">
+    <p>Menu content</p>
+    <button popovertarget="menu" popovertargetaction="hide">Close</button>
+  </div>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Dropdown menus, tooltips, and notification toasts replace JavaScript show and hide code.<br>
+• Combine with CSS transitions using allow-discrete behaviour for smooth appearance.<br><br>
+
+<h3>Best Practices</h3>
+• Provide an accessible name and keep keyboard use in mind.<br>
+• Pick manual mode for toasts that auto-dismiss.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> When would you choose dialog instead of popover?<br>
+• <b>A:</b> Choose dialog when you need modal behaviour such as focus trapping and blocking the page. Popover suits lightweight, dismissable content like menus and tips.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>Toast</title>
+  <style> #toast { background: #166534; color: #fff; padding: 10px 16px; border-radius: 8px; inset: auto 16px 16px auto; } </style>
+</head>
+<body>
+  <button onclick="toast.showPopover(); setTimeout(() => toast.hidePopover(), 2000)">Save</button>
+  <div id="toast" popover="manual">Saved!</div>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-advanced-contenteditable-attribute',
                             name: 'contenteditable Attribute',
                             beginner: [
                                 {
-                                    content: `<h3>contenteditable Attribute</h3>
-&bull; Part of the HTML Advanced section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• The <b>contenteditable</b> attribute makes any element <b>editable by the user</b> in the browser.<br>
+• Clicking inside the element places a text cursor.<br>
+• It turns plain HTML into a basic rich text area.<br><br>
+
+<h3>Key Points</h3>
+• <b>contenteditable="true"</b> (or just the attribute) enables editing.<br>
+• <b>"false"</b> disables it again inside an editable parent.<br>
+• Edits live only in the DOM until you save them yourself.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>contenteditable</title></head>
+<body>
+  <h2 contenteditable="true">Click here and edit this heading</h2>
+  <p contenteditable>You can edit this paragraph too.</p>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Read the edited HTML with innerHTML or the plain text with innerText.<br>
+• Listen for the <b>input</b> event to react to changes.<br>
+• Use <b>spellcheck</b> and <b>autocapitalize</b> attributes to control hints.<br><br>
+
+<h3>Common Mistakes</h3>
+• Saving innerHTML from users without sanitising it, which allows script injection.<br>
+• Expecting form submission to include the content. It does not, unlike a textarea.<br>
+• Copy and paste bringing in unwanted styles.<br><br>
+
+<h3>Try It Yourself</h3>
+• Make a note box that is editable and show a live character count. Then try pasting formatted text and try the plaintext-only value.<br>
+• Remember: contenteditable only changes what the user sees. Nothing is saved or sent to the server until your own code reads the content and stores it.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>Listen for edits</title>
+  <style> #note { border: 1px dashed #999; padding: 10px; min-height: 40px; } </style>
+</head>
+<body>
+  <div id="note" contenteditable="true" spellcheck="true">Type here</div>
+  <p>Characters: <span id="n">0</span></p>
+  <script>
+    note.addEventListener('input', () => n.textContent = note.innerText.length);
+  </script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Inline editing of titles, notes and table cells uses it.<br>
+• Rich text editors are built on top of it with lots of extra handling.<br><br>
+
+<h3>Best Practices</h3>
+• Prefer <b>contenteditable="plaintext-only"</b> where supported for plain text.<br>
+• Always sanitise before storing or displaying other people content.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> How do you read user edits safely from a contenteditable element?<br>
+• <b>A:</b> Use innerText for plain text, or sanitise innerHTML before storing or showing it, because it can contain injected markup.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>plaintext-only</title></head>
+<body>
+  <div contenteditable="plaintext-only" style="border:1px solid #999;padding:8px">
+    Paste formatted text here. Only plain text is kept.
+  </div>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-advanced-drag-and-drop-api',
                             name: 'Drag and Drop API',
                             beginner: [
                                 {
-                                    content: `<h3>Drag and Drop API</h3>
-&bull; Part of the HTML Advanced section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• The <b>HTML Drag and Drop API</b> lets users pick up an element and drop it somewhere else.<br>
+• Add <b>draggable="true"</b> to the item and listen for events.<br>
+• It powers file upload zones, sortable lists and boards.<br><br>
+
+<h3>Key Points</h3>
+• Key events: <b>dragstart</b>, <b>dragover</b>, <b>drop</b> and <b>dragend</b>.<br>
+• You must call <b>preventDefault()</b> in dragover to allow dropping.<br>
+• Data travels in the <b>dataTransfer</b> object.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>drag and drop</title>
+  <style>
+    #item { width: 100px; padding: 10px; background: #fdba74; cursor: grab; }
+    #zone { width: 220px; height: 100px; border: 2px dashed #888; margin-top: 12px; padding: 8px; }
+  </style>
+</head>
+<body>
+  <div id="item" draggable="true">Drag me</div>
+  <div id="zone">Drop here</div>
+  <script>
+    item.ondragstart = e => e.dataTransfer.setData('text', 'item');
+    zone.ondragover = e => e.preventDefault();
+    zone.ondrop = e => { e.preventDefault(); zone.append(item); };
+  </script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Use <b>dataTransfer.setData</b> in dragstart and <b>getData</b> in drop to pass an id.<br>
+• Highlight the drop zone during dragenter and dragleave for feedback.<br>
+• File drops expose <b>dataTransfer.files</b>.<br><br>
+
+<h3>Common Mistakes</h3>
+• Forgetting preventDefault on dragover, so nothing can be dropped.<br>
+• Not supporting touch screens, where native drag and drop is limited.<br>
+• Providing no keyboard alternative.<br><br>
+
+<h3>Try It Yourself</h3>
+• Build two boxes and drag an item between them. Add a highlight while the item is over the target and a button as a keyboard alternative.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>drop feedback</title>
+  <style>
+    #zone { width: 240px; padding: 20px; border: 2px dashed #888; }
+    #zone.over { background: #dcfce7; border-color: #16a34a; }
+  </style>
+</head>
+<body>
+  <p draggable="true" id="p">Drag this text</p>
+  <div id="zone">Drop zone</div>
+  <script>
+    p.ondragstart = e => e.dataTransfer.setData('text/plain', p.textContent);
+    zone.ondragenter = () => zone.classList.add('over');
+    zone.ondragleave = () => zone.classList.remove('over');
+    zone.ondragover = e => e.preventDefault();
+    zone.ondrop = e => { e.preventDefault(); zone.classList.remove('over'); zone.textContent = 'Got: ' + e.dataTransfer.getData('text/plain'); };
+  </script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Kanban boards, image uploaders and playlist editors use it.<br>
+• For touch support, many projects use pointer events or a small library.<br><br>
+
+<h3>Best Practices</h3>
+• Always offer buttons or keyboard shortcuts as an alternative.<br>
+• Show clear visual feedback for valid drop targets.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> Why does a drop event not fire on your target?<br>
+• <b>A:</b> You must call preventDefault() in the dragover handler to mark the element as a valid drop target.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>file drop</title>
+  <style> #drop { border: 2px dashed #888; padding: 30px; text-align: center; } </style>
+</head>
+<body>
+  <div id="drop">Drop files here</div>
+  <ul id="list"></ul>
+  <script>
+    drop.ondragover = e => e.preventDefault();
+    drop.ondrop = e => {
+      e.preventDefault();
+      list.innerHTML = [...e.dataTransfer.files].map(f => '<li>' + f.name + ' (' + f.size + ' bytes)</li>').join('');
+    };
+  </script>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-advanced-global-data-attributes',
                             name: 'Global data Attributes',
                             beginner: [
                                 {
-                                    content: `<h3>Global data Attributes</h3>
-&bull; Part of the HTML Advanced section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• <b>data-*</b> attributes let you store <b>custom data</b> on any HTML element.<br>
+• The name starts with "data-" followed by your own lowercase name, such as <b>data-user-id</b>.<br>
+• They are ignored by the browser display but available to CSS and JavaScript.<br><br>
+
+<h3>Key Points</h3>
+• Read them in JavaScript with <b>element.dataset.userId</b> (camelCase).<br>
+• Write them with <b>element.dataset.userId = "7"</b>.<br>
+• Values are always strings.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>data attributes</title></head>
+<body>
+  <button id="b" data-course="java" data-level="beginner">Show data</button>
+  <p id="out"></p>
+  <script>
+    b.onclick = () => out.textContent = b.dataset.course + ' / ' + b.dataset.level;
+  </script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• CSS can select them with <b>[data-state="open"]</b> and show them with <b>attr(data-label)</b>.<br>
+• They link markup to behaviour, such as which modal a button opens.<br>
+• Event delegation reads <b>event.target.dataset</b> to know which item was clicked.<br><br>
+
+<h3>Common Mistakes</h3>
+• Putting sensitive data in them. Anyone can read the page source.<br>
+• Using them for styling that normal classes can do.<br>
+• Storing large JSON in attributes, which bloats the HTML.<br><br>
+
+<h3>Try It Yourself</h3>
+• Add data-id to every item of a list, then use one click listener on the list to show which id was clicked. Style items by their data-status value.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>CSS with data</title>
+  <style>
+    .badge { padding: 4px 10px; border-radius: 999px; color: #fff; }
+    .badge[data-status="ok"] { background: #16a34a; }
+    .badge[data-status="error"] { background: #dc2626; }
+    .badge::after { content: " (" attr(data-status) ")"; }
+  </style>
+</head>
+<body>
+  <span class="badge" data-status="ok">Build</span>
+  <span class="badge" data-status="error">Tests</span>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Analytics tags, test selectors such as data-testid and UI libraries rely on them.<br>
+• Server-rendered pages pass initial values to scripts through them.<br><br>
+
+<h3>Best Practices</h3>
+• Use clear names and keep values short.<br>
+• Do not rely on data attributes for content that should be visible to search engines.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> How do data attributes map to the dataset property?<br>
+• <b>A:</b> data-user-id becomes dataset.userId. Names switch from kebab-case to camelCase, and all values are strings.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>Event delegation</title></head>
+<body>
+  <ul id="list">
+    <li data-id="1">Java</li>
+    <li data-id="2">Spring</li>
+    <li data-id="3">HTML</li>
+  </ul>
+  <p id="out">Click an item</p>
+  <script>
+    list.addEventListener('click', e => {
+      const li = e.target.closest('li');
+      if (li) out.textContent = 'Selected id ' + li.dataset.id;
+    });
+  </script>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         }

@@ -4,13 +4,13 @@
  "totals": {
   "modules": 324,
   "topics": 3588,
-  "blocks": 25908,
-  "codeExamples": 18129,
+  "blocks": 25972,
+  "codeExamples": 18225,
   "codeExplanations": 558,
   "interviewQA": 446,
   "cheatNotes": 975,
   "interviewQuestions": 3135,
-  "characters": 19611569
+  "characters": 19697639
  },
  "items": [
   {
@@ -53,18 +53,18 @@
    "id": "HTML and CSS",
    "name": "HTML & CSS",
    "file": "courses/html-and-css.json",
-   "bytes": 1396858,
-   "sha256": "c3fa56400cdbae5bbaf2c80e3a3b72a98f51a369a5c1b7ed24a688a1160a1ab9",
+   "bytes": 1491033,
+   "sha256": "86c7eb8c127370e98c769e4cd6965ab40a3b79c26bb69a9c91d5edc453833e61",
    "counts": {
     "modules": 46,
     "topics": 783,
-    "blocks": 1319,
-    "codeExamples": 662,
+    "blocks": 1383,
+    "codeExamples": 758,
     "codeExplanations": 0,
     "interviewQA": 0,
     "cheatNotes": 46,
     "interviewQuestions": 20,
-    "characters": 1253557
+    "characters": 1339627
    }
   },
   {

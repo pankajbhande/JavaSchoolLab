@@ -7,6 +7,7 @@ import { useProgress } from '../context/ProgressContext';
 import { fetchReviewQueue, ReviewItem } from '../services/api';
 import { TOTAL_TOPICS } from '../data/courseStats';
 import { slugify } from '../lib/slug';
+import { courseTitle, topicTitle } from '../lib/topicLookup';
 import { StreakBanner } from './StreakBanner';
 
 function formatDuration(totalSeconds: number) {
@@ -97,9 +98,11 @@ export function ProgressPanel() {
           >
             <PlayCircle className="w-8 h-8 text-orange-600 dark:text-orange-400 shrink-0" />
             <div className="min-w-0">
-              <div className="text-[11px] uppercase tracking-wider text-gray-500 dark:text-gray-400">Continue where you left off</div>
+              <div className="text-[11px] uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                Continue where you left off{courseTitle(summary.resume.courseId) ? ` · ${courseTitle(summary.resume.courseId)}` : ''}
+              </div>
               <div className="font-semibold text-gray-800 dark:text-gray-100 truncate">
-                {summary.resume.topicId.replace(/[-_]/g, ' ')}
+                {topicTitle(summary.resume.courseId, summary.resume.topicId)}
               </div>
             </div>
           </button>

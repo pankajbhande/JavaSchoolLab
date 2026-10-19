@@ -74,10 +74,15 @@ When the condition is <code>true</code> the <code>if</code> block runs; when it 
                             {
                                 content: `<h3>3. if-else-if ladder</h3>
 Used to pick exactly one branch out of many conditions. Java checks each condition top to bottom and runs the block for the first one that is <code>true</code> - if none match, the final <code>else</code> runs.<br>
-<div class="syntax-box"><div class="syntax-label">Syntax</div><pre><code><span class="syn-kw">if</span> (condition 1) { statement 1; }
-<span class="syn-kw">else</span> <span class="syn-kw">if</span> (condition 2) { statement 2; }
-<span class="syn-kw">else</span> <span class="syn-kw">if</span> (condition 3) { statement 3; }
-<span class="syn-kw">else</span> { statement 4; } <span class="syn-cmt">// runs only if all conditions are false</span></code></pre></div>
+<div class="syntax-box"><div class="syntax-label">Syntax</div><pre><code><span class="syn-kw">if</span> (condition 1) {
+  statement 1;
+} <span class="syn-kw">else</span> <span class="syn-kw">if</span> (condition 2) {
+  statement 2;
+} <span class="syn-kw">else</span> <span class="syn-kw">if</span> (condition 3) {
+  statement 3;
+} <span class="syn-kw">else</span> {
+  statement 4; <span class="syn-cmt">// runs only if all conditions are false</span>
+}</code></pre></div>
 <h4>Flowchart of if-else-if ladder:</h4>
 <img src="${ifElseLadderImg}" alt="Flowchart of if-else-if ladder" class="d-block mx-auto h-96"/>`,
                                 codeExamples: [

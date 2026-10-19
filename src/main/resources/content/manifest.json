@@ -10,7 +10,7 @@
   "interviewQA": 446,
   "cheatNotes": 975,
   "interviewQuestions": 3135,
-  "characters": 19585253
+  "characters": 19585261
  },
  "items": [
   {
@@ -71,8 +71,8 @@
    "id": "java",
    "name": "Java",
    "file": "courses/java.json",
-   "bytes": 2274736,
-   "sha256": "197d9d30638c26ccfed1b560ce6b4531c469f1f6fabedb1ead31e328464c6662",
+   "bytes": 2274749,
+   "sha256": "2a562fad3c32735cc2e6ac5e5c91325f465c6ccd94af71b7d1f03e5168d5653a",
    "counts": {
     "modules": 10,
     "topics": 89,
@@ -82,7 +82,7 @@
     "interviewQA": 446,
     "cheatNotes": 98,
     "interviewQuestions": 2070,
-    "characters": 1994784
+    "characters": 1994792
    }
   },
   {

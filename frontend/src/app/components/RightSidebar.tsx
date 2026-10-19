@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect, useRef } from 'react';
+import { useState, useMemo, useEffect, useLayoutEffect, useRef } from 'react';
 import { PanelRightClose, PanelRight, CheckCircle, Users, Globe, Award, TrendingUp, BookOpen, Sparkles, Lightbulb, XCircle, Inbox } from 'lucide-react';
 import type { Course, Topic } from '../data/types';
 import { buildKeypoints } from '../services/keypoints';
@@ -195,6 +195,8 @@ export function RightSidebar({ course, topic, topicName, isMinimized, onToggleMi
   const [activeTab, setActiveTab] = useState<'cheatsheet' | 'interview' | 'keypoints'>('keypoints');
   const [revealedAnswers, setRevealedAnswers] = useState<Set<number>>(new Set());
   const reduceMotion = useReducedMotion();
+  const tabsRef = useRef<HTMLDivElement>(null);
+  const [tabsHeight, setTabsHeight] = useState(0);
   const [picked, setPicked] = useState<Record<number, number>>({});
   const { count: visitorCount } = useVisitorCount();
   const animatedVisitorCount = useCountUp(visitorCount);
@@ -226,6 +228,16 @@ export function RightSidebar({ course, topic, topicName, isMinimized, onToggleMi
     const derived = questionsForTopic(course, topicName).filter(q => !seen.has(q.toLowerCase()));
     return [...authored, ...derived];
   }, [pack, noteQA, course, topicName]);
+  useLayoutEffect(() => {
+    const el = tabsRef.current;
+    if (!el) { setTabsHeight(0); return; }
+    const measure = () => setTabsHeight(el.offsetHeight);
+    measure();
+    if (typeof ResizeObserver === 'undefined') return;
+    const ro = new ResizeObserver(measure);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [isMinimized, topicQuestions.length]);
   const [revealedInterview, setRevealedInterview] = useState<Set<string>>(new Set());
 
   // Real MCQs when the topic has them; otherwise the generic ones built from the questions.
@@ -406,7 +418,7 @@ export function RightSidebar({ course, topic, topicName, isMinimized, onToggleMi
 
               {/* Tabs - only shown when topic is selected */}
               {topicQuestions.length > 0 && (
-              <div className="flex items-center gap-1.5 mb-3">
+              <div ref={tabsRef} className="sticky top-0 z-20 -mx-3 -mt-3 mb-0 px-3 pt-2 pb-2 flex items-center gap-1.5 bg-orange-50/95 dark:bg-gray-900/95 backdrop-blur-sm">
                 {toggleButton}
                 <div role="tablist" aria-label="Study panel sections" className="grid flex-1 min-w-0 grid-cols-3 gap-1 p-1 rounded-xl bg-white/70 dark:bg-gray-800/70 border border-orange-200/70 dark:border-white/10">
                   {([
@@ -457,7 +469,7 @@ export function RightSidebar({ course, topic, topicName, isMinimized, onToggleMi
                   initial={reduceMotion ? false : { opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                 >
-                  <div className="mb-3">
+                  <div className="sticky z-10 mb-3 pb-2 bg-orange-50/95 dark:bg-gray-900/95 backdrop-blur-sm" style={{ top: tabsHeight }}>
                     <div className="flex items-center gap-1.5 mb-1 px-1">
                       <Sparkles className="w-3.5 h-3.5 text-orange-600 dark:text-orange-400" aria-hidden="true" />
                       <p className="text-[11px] font-bold uppercase tracking-wider text-gray-600 dark:text-gray-300">Quick Revision Notes</p>

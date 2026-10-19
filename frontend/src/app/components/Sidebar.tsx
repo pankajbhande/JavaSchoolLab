@@ -78,6 +78,9 @@ export function Sidebar({
     </motion.button>
   );
 
+  // The one open course is named in the pinned header; with several courses listed each keeps its own heading in the list.
+  const pinnedCourse = selectedCourse ? courses.find(c => c.id === selectedCourse) ?? null : null;
+
   return (
     <motion.aside
       aria-label="Course contents"
@@ -97,6 +100,27 @@ export function Sidebar({
         </div>
       )}
 
+      {/* Pinned header: the COURSE label, the toggle and the course name stay put while only the topic list scrolls. */}
+      {!isMinimized && (
+        <div className="relative shrink-0 border-b border-orange-200/60 dark:border-gray-700 px-3 pt-2 pb-2">
+          <div className="flex items-center gap-1.5 mb-2 px-1">
+            <Layers className="w-3.5 h-3.5 text-orange-500" />
+            <h2 className="font-bold text-[11px] text-gray-800 dark:text-gray-200 uppercase tracking-wider">Course</h2>
+            <span className="ml-auto">{toggleButton}</span>
+          </div>
+          {pinnedCourse && (
+            <div className="border-l-4 border-orange-500 pl-2.5">
+              <h3 className="font-bold text-sm text-gray-800 dark:text-gray-200">
+                <Highlight text={pinnedCourse.name} query={query} />
+              </h3>
+              <p className="text-[11px] text-gray-600 dark:text-gray-400">
+                {topicCount(pinnedCourse.subTopics)} topics · Select a topic to start learning
+              </p>
+            </div>
+          )}
+        </div>
+      )}
+
       <div className="flex-1 overflow-y-auto custom-scrollbar">
         <AnimatePresence>
           {!isMinimized && (
@@ -106,26 +130,22 @@ export function Sidebar({
               exit={{ opacity: 0 }}
               className="p-2 pb-20"
             >
-              <div className="flex items-center gap-1.5 mb-2 px-1">
-                <Layers className="w-3.5 h-3.5 text-orange-500" />
-                <h2 className="font-bold text-[11px] text-gray-800 dark:text-gray-200 uppercase tracking-wider">Course</h2>
-                <span className="ml-auto">{toggleButton}</span>
-              </div>
-
               {courses
                 .filter(course => !selectedCourse || course.id === selectedCourse)
                 .map(course => {
                   let idx = 0;
                   return (
                     <div key={course.id}>
-                      <div className="border-l-4 border-orange-500 pl-2.5 mb-2">
-                        <h3 className="font-bold text-sm text-gray-800 dark:text-gray-200">
-                          <Highlight text={course.name} query={query} />
-                        </h3>
-                        <p className="text-[11px] text-gray-600 dark:text-gray-400">
-                          {topicCount(course.subTopics)} topics · Select a topic to start learning
-                        </p>
-                      </div>
+                      {!pinnedCourse && (
+                        <div className="border-l-4 border-orange-500 pl-2.5 mb-2">
+                          <h3 className="font-bold text-sm text-gray-800 dark:text-gray-200">
+                            <Highlight text={course.name} query={query} />
+                          </h3>
+                          <p className="text-[11px] text-gray-600 dark:text-gray-400">
+                            {topicCount(course.subTopics)} topics · Select a topic to start learning
+                          </p>
+                        </div>
+                      )}
 
                       <div className="space-y-2">
                         {course.subTopics.map(subTopic => {

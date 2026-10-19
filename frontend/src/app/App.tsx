@@ -2,6 +2,7 @@
 import { useState, useEffect, lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route, useNavigate, useParams, useSearchParams, useLocation, Navigate } from 'react-router-dom';
 import { trackPageView } from './services/analytics';
+import { AchievementWatcher } from './components/AchievementWatcher';
 import { ErrorBoundary } from './components/study/ErrorBoundary';
 import { Header } from './components/Header';
 import { Dashboard } from './components/Dashboard';
@@ -26,6 +27,7 @@ const FlashcardsPage = lazy(() => import('./pages/FlashcardsPage'));
 const InterviewPracticePage = lazy(() => import('./pages/InterviewPracticePage'));
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
 const AdminAnalyticsPage = lazy(() => import('./pages/AdminAnalyticsPage'));
+const AchievementsPage = lazy(() => import('./pages/AchievementsPage'));
 
 // Starts the same dynamic import ahead of the click. The browser and the module cache
 // dedupe it, so the later lazy() resolves instantly instead of the student waiting on a
@@ -225,6 +227,7 @@ export default function App() {
         <AuthProvider>
           <ProgressProvider>
           <AppToaster />
+          <AchievementWatcher />
           <AuthGate>
             <AppRoutes />
           </AuthGate>
@@ -251,6 +254,7 @@ function AppRoutes() {
               <Route path="/dashboard" element={<DashboardPage />} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/account" element={<AccountRoute />} />
+              <Route path="/achievements" element={<Suspense fallback={<WorkspaceFallback />}><AchievementsPage /></Suspense>} />
               <Route path="/admin" element={<Suspense fallback={<WorkspaceFallback />}><AdminAnalyticsPage /></Suspense>} />
               <Route path="/signup" element={<SignupPage />} />
               <Route path="/verify" element={<Suspense fallback={<WorkspaceFallback />}><VerifyCertificate /></Suspense>} />

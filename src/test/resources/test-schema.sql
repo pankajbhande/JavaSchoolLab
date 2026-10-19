@@ -121,3 +121,10 @@ CREATE TABLE IF NOT EXISTS analytics_events (
   result_count INT         NULL,
   created_at  TIMESTAMP    DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE TABLE IF NOT EXISTS user_badges (
+  user_id   INT         NOT NULL,
+  badge_id  VARCHAR(40) NOT NULL,
+  earned_at TIMESTAMP   DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (user_id, badge_id)
+);

@@ -41,6 +41,7 @@ class ArchitectureTest {
             Map.entry("search", Set.of("content")),
             Map.entry("analytics", Set.of()),
             Map.entry("share", Set.of("content")),
+            Map.entry("achievements", Set.of("progress", "quiz", "certificate")),
             Map.entry("visitor", Set.of()));
 
     private static final Set<String> INFRASTRUCTURE = Set.of("common", "config", "security", "web");

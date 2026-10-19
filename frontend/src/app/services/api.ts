@@ -2,6 +2,12 @@
 // Set VITE_API_BASE_URL at build time to target a deployed backend.
 export const API_BASE = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:3001/api';
 
+/** Progress was just saved (a topic opened, a quiz taken, a certificate issued): the achievements watcher looks for new badges shortly after. */
+export const PROGRESS_EVENT = 'jsl:progress';
+export function announceProgress(): void {
+  try { window.dispatchEvent(new Event(PROGRESS_EVENT)); } catch { /* not in a browser */ }
+}
+
 function getToken(): string | null {
   return localStorage.getItem('jsl_token');
 }
@@ -170,6 +176,7 @@ export async function fetchLeaderboard(): Promise<Leaderboard> {
 export async function issueCertificate(data: { courseName: string; topicName: string; score: number; totalQuestions: number }): Promise<CertificateData> {
   const res = await fetch(`${API_BASE}/certificates`, { method: 'POST', headers: authHeaders(), body: JSON.stringify(data) });
   if (!res.ok) { const err = await res.json(); throw new Error(err.error); }
+  announceProgress();
   return res.json();
 }
 
@@ -288,7 +295,8 @@ export interface ReviewItem {
 }
 
 export async function recordTopicVisit(data: VisitedTopic): Promise<void> {
-  await fetch(`${API_BASE}/progress/topic`, { method: 'POST', headers: authHeaders(), body: JSON.stringify(data) });
+  const res = await fetch(`${API_BASE}/progress/topic`, { method: 'POST', headers: authHeaders(), body: JSON.stringify(data) });
+  if (res.ok) announceProgress();
 }
 
 export async function importProgress(topics: VisitedTopic[]): Promise<{ imported: number }> {
@@ -330,6 +338,7 @@ export async function recordQuizAttempt(data: {
 }): Promise<{ id: number; percentage: number; passed: boolean }> {
   const res = await fetch(`${API_BASE}/quiz/attempts`, { method: 'POST', headers: authHeaders(), body: JSON.stringify(data) });
   if (!res.ok) throw new Error('Failed to record attempt');
+  announceProgress();
   return res.json();
 }
 

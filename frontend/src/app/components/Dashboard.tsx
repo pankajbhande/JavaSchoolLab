@@ -3,6 +3,8 @@ import { motion, MotionConfig, useMotionValue, useTransform, useInView, animate 
 import { ImageWithFallback } from './figma/ImageWithFallback';
 import { useVisitorCount } from '../hooks/useVisitorCount';
 import { Avatar } from './Avatar';
+import { Link } from 'react-router-dom';
+import { useAchievements } from '../hooks/useAchievements';
 import { ProgressPanel } from './ProgressPanel';
 import { useProgress } from '../context/ProgressContext';
 import { courseStats } from '../data/courseStats';
@@ -457,6 +459,11 @@ function AnimatedCounter({ value, suffix = '' }: { value: number; suffix?: strin
   return <motion.span ref={ref}>{display}</motion.span>;
 }
 
+function greeting(): string {
+  const h = new Date().getHours();
+  return h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
+}
+
 export function Dashboard({ onCourseSelect, searchQuery = '' }: DashboardProps) {
   const { summary } = useProgress();
 
@@ -470,6 +477,7 @@ export function Dashboard({ onCourseSelect, searchQuery = '' }: DashboardProps) 
       });
   const { isLoggedIn, user } = useAuth();
   const displayName = user?.fullName?.trim();
+  const achievements = useAchievements();
   const { visited } = useProgress();
   const resume = summary?.resume ?? null;
   const resumeCourse = resume ? courseCards.find((c) => c.id === resume.courseId) : undefined;
@@ -504,6 +512,38 @@ export function Dashboard({ onCourseSelect, searchQuery = '' }: DashboardProps) 
         transition={{ duration: 0.5 }}
         className="relative max-w-7xl mx-auto"
       >
+        {isLoggedIn && displayName ? (
+          <motion.section initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} aria-label="Welcome" className="mb-6 flex flex-col items-center gap-3 text-center">
+            <div className="flex items-center gap-3 text-left">
+              <Avatar src={user?.avatar} name={displayName} className="w-12 h-12 text-xl" fallbackClassName="bg-gradient-to-br from-orange-500 to-amber-500 text-white" />
+              <div>
+                <h1 className="font-display text-2xl md:text-3xl font-extrabold tracking-tight text-gray-900 dark:text-white">
+                  {greeting()}, <span className="text-orange-600 dark:text-orange-400">{displayName.split(' ')[0]}</span>
+                </h1>
+                <p className="text-sm text-gray-600 dark:text-gray-300">
+                  {achievements ? `Level ${achievements.level.number} · ${achievements.level.name}. ${achievements.level.saying}` : 'Ready to learn something new today?'}
+                </p>
+              </div>
+            </div>
+            {achievements && (
+              <Link to="/achievements" aria-label={`Level ${achievements.level.number}, ${achievements.level.name}. See my badges`} className="block w-full max-w-sm rounded-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600">
+                <div className="h-2 overflow-hidden rounded-full bg-orange-100 dark:bg-gray-700" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={achievements.level.percent} aria-label="Progress to the next level">
+                  <div className="h-full rounded-full bg-gradient-to-r from-orange-600 to-amber-500" style={{ width: `${achievements.level.percent}%` }} />
+                </div>
+                <p className="mt-1 text-xs text-gray-600 dark:text-gray-400">
+                  {achievements.level.maxed ? 'Top of the fort reached!' : `${achievements.level.xp} / ${achievements.level.toXp} XP to ${achievements.level.nextName}`} · {achievements.totalEarned} of {achievements.totalBadges} badges
+                </p>
+              </Link>
+            )}
+            {resumeCourse && (
+              <button type="button" onClick={() => onCourseSelect(resumeCourse.id)}
+                className="inline-flex items-center gap-2 rounded-full bg-orange-600 hover:bg-orange-700 text-white text-sm font-semibold px-5 py-2.5 shadow-lg shadow-orange-500/25 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600">
+                <Play className="w-4 h-4" aria-hidden="true" />
+                Continue: {resumeCourse.name}
+              </button>
+            )}
+          </motion.section>
+        ) : (
         <div className="text-center mb-10">
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
@@ -567,6 +607,7 @@ export function Dashboard({ onCourseSelect, searchQuery = '' }: DashboardProps) 
             </motion.button>
           )}
         </div>
+        )}
 
         <ProgressPanel />
 

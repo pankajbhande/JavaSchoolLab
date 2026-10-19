@@ -1,4 +1,4 @@
-import { Search, Moon, Sun, LogIn, LogOut, User, Bot } from 'lucide-react';
+import { Search, Moon, Sun, LogIn, LogOut, User, Bot, Trophy } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import logo from '../../assets/logo1.jpg';
@@ -200,6 +200,12 @@ export function Header({ onToggleSpeech, isSpeaking, onSearch, showSearch = true
                         className="w-full flex items-center gap-2 px-4 py-3 text-gray-700 dark:text-gray-200 hover:bg-orange-50 dark:hover:bg-gray-700 transition-all text-sm"
                       >
                         <User className="w-4 h-4" /> My Account
+                      </button>
+                      <button
+                        onClick={() => { navigate('/achievements'); setShowUserMenu(false); }}
+                        className="w-full flex items-center gap-2 px-4 py-3 text-gray-700 dark:text-gray-200 hover:bg-orange-50 dark:hover:bg-gray-700 transition-all text-sm"
+                      >
+                        <Trophy className="w-4 h-4" /> My achievements
                       </button>
                       <button
                         onClick={() => { logout(); setShowUserMenu(false); toast('Logged out'); }}

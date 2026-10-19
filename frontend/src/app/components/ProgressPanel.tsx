@@ -58,7 +58,6 @@ export function ProgressPanel() {
   if (!summary) return null;
 
   const pct = TOTAL_TOPICS > 0 ? Math.round((summary.topicsSeen / TOTAL_TOPICS) * 100) : 0;
-  const firstName = user?.fullName?.split(' ')[0] || 'there';
   const dueNow = review.slice(0, 3);
 
   return (
@@ -68,14 +67,9 @@ export function ProgressPanel() {
       className="mb-8 rounded-2xl border border-gray-200 dark:border-gray-700 bg-white/60 dark:bg-gray-900/50 backdrop-blur-sm p-5"
       aria-label="Your learning progress"
     >
-      <div className="flex flex-wrap items-baseline justify-between gap-2 mb-4">
-        <h2 className="font-display text-lg font-bold text-gray-800 dark:text-gray-100 tracking-tight">
-          Welcome back, {firstName}
-        </h2>
-        <p className="text-xs text-gray-500 dark:text-gray-400">
-          {summary.topicsSeen} of {TOTAL_TOPICS} topics opened
-        </p>
-      </div>
+      <p className="mb-3 text-xs text-gray-500 dark:text-gray-400">
+        {summary.topicsSeen} of {TOTAL_TOPICS} topics opened ({pct}% of the library)
+      </p>
 
       <StreakBanner />
 
@@ -105,24 +99,6 @@ export function ProgressPanel() {
           tone="bg-gradient-to-br from-sky-500 to-indigo-500"
         />
       </div>
-
-      {/* Overall coverage */}
-      <div className="mb-5">
-        <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mb-1.5">
-          <span>Course library covered</span>
-          <span className="tabular-nums">{pct}%</span>
-        </div>
-        <div className="w-full h-2 rounded-full bg-gray-200 dark:bg-gray-700 overflow-hidden">
-          <motion.div
-            className="h-2 rounded-full bg-gradient-to-r from-orange-600 to-amber-500"
-            initial={{ width: 0 }}
-            animate={{ width: `${pct}%` }}
-            transition={{ duration: 0.8, ease: 'easeOut' }}
-          />
-        </div>
-      </div>
-
-      <StudyActivity />
 
       <div className="flex flex-col lg:flex-row gap-3">
         {summary.resume && (
@@ -168,6 +144,15 @@ export function ProgressPanel() {
           </div>
         )}
       </div>
+
+      <details className="mt-4 group rounded-xl border border-gray-200 dark:border-gray-700">
+        <summary className="cursor-pointer select-none list-none px-4 py-3 text-sm font-semibold text-gray-800 dark:text-gray-100 flex items-center justify-between focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 rounded-xl">
+          Study activity and weekly goal
+          <span aria-hidden="true" className="text-xs font-medium text-orange-700 dark:text-orange-300 group-open:hidden">Show</span>
+          <span aria-hidden="true" className="text-xs font-medium text-orange-700 dark:text-orange-300 hidden group-open:inline">Hide</span>
+        </summary>
+        <div className="px-3 pb-3"><StudyActivity /></div>
+      </details>
     </motion.section>
   );
 }

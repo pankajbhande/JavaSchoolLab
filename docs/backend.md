@@ -146,7 +146,7 @@ They are public, send a strong `ETag` and `Cache-Control: no-cache`, so a client
 
 ## Tests
 
-`mvn test` runs 147 tests (including the 7 architecture rules): validation rules, Node-token and bcrypt compatibility, the streak/XP/review maths
+`mvn test` runs 153 tests (including the 7 architecture rules): validation rules, Node-token and bcrypt compatibility, the streak/XP/review maths
 (the same cases as the original Node server's `progress.test.js`), and the whole flow against the real Spring context: sign-in
 (OTP, register, password and OTP login, change password, 401/403 rules), progress (topics, import, study time clamps,
 summary, weekly goal, quiz grading, review queue), profile and avatar checks, bookmarks and notes, certificate issuing and public verification, public profiles (opt-in, privacy, handle rules and ownership), the leaderboard, the 429 limits, the visitor counter, the course content API (every course checked against its manifest hash and counts), and site hosting with the React-route fallback. The tests use H2 in MySQL mode; the
@@ -162,6 +162,18 @@ The script in `scripts/` (Node 18+, no install) checks a running server over rea
 A throwaway MySQL is enough: `docker run -d --rm -e MYSQL_ROOT_PASSWORD=... -p 3307:3306 mysql:8.4`, then start the app with
 `DB_PORT=3307`. Last run: fresh database migrated by Flyway (6 migrations), a database built by the old Node `migrate.js` adopted by
 Flyway without touching its data, and 54/54 smoke checks.
+
+## Levels and badges
+
+Learners level up and earn badges as they study. Levels are named after the forts of the Maratha empire: **Torna** (start), Sinhagad (100 XP), Purandar (300),
+Pratapgad (700), Rajgad (1500) and **Raigad** (3000 XP). There are 15 badges (First Step, Curious Mind, Explorer, Scholar, three streak badges,
+Test Taker, Module Master, Fort Builder, Perfectionist, Certified, two study-time badges and All-Rounder). The page is `/achievements`.
+
+- **Worked out from real activity** (topics, streaks, quizzes, certificates, study time) on every request, so it cannot be inflated. `user_badges` only remembers
+  when each was earned, so the site can celebrate it **once**: a pop-up with a warm message, confetti (not for people who prefer reduced motion) and "Share my win".
+- **No flood for existing learners:** the first time anyone is looked at, what they already had is recorded quietly, not announced.
+- API: `GET /api/achievements` (signed in). The server reports a new badge once, so the browser asks through one shared store (`services/achievements.ts`).
+- To add a badge: one line in `AchievementsService.DEFS`, plus an icon name in `BadgeIcon.tsx`.
 
 ## Sharing a topic
 

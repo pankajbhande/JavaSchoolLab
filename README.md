@@ -5,8 +5,7 @@ A learning site for Java, Spring, SQL, web and more: 31 courses, quizzes, certif
 ```
 pom.xml, src/   Spring Boot (Maven) project: the API, the course content and the web hosting.  <- import THIS folder into STS
 frontend/        React + TypeScript site (Vite). Built and served by the Spring Boot app, or run on its own while developing
-node-server/     the original Node/Express API, kept until the Spring Boot backend replaces it everywhere
-docker/          docker compose files (Spring + MySQL; or nginx + Express) and the nginx config
+docker/          docker-compose.yml (Spring Boot app + MySQL) and its .env.example
 docs/            authoring notes and backend details (docs/backend.md)
 ```
 
@@ -47,6 +46,6 @@ client id from Google Cloud Console and the button appears on the login form. Le
 | React dev server | `frontend/` | `npm install`, then `npm run dev` (needs the backend on :3001) |
 | Front-end tests and type check | `frontend/` | `npm test`, `npm run typecheck` |
 | Re-export the course content | `frontend/` | `npm run export:content` (writes into `src/main/resources`) |
-| Spring + MySQL in Docker | repository root | `cd docker && docker compose -f docker-compose.spring.yml up -d --build` |
+| Spring + MySQL in Docker | repository root | `cd docker && docker compose up -d --build` |
 
 More detail: `docs/backend.md` (API, architecture, deployment) and `frontend/README.md` (the React app).

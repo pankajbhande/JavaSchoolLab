@@ -1,9 +1,15 @@
-# JavaSchoolLab: web (nginx + static site) -> api (Express) -> db (MySQL)
+# JavaSchoolLab: app (Spring Boot serving the React site AND the API) -> db (MySQL)
 #
-#   cd docker
-#   cp .env.example .env            # set JWT_SECRET and DB passwords
-#   docker compose up -d --build
+# Spring serves the built React site, the API and the course content itself, so there is no nginx
+# service here (put your own TLS proxy in front if you need HTTPS). Settings come from docker/.env (copy .env.example).
+#
+#   cd docker && docker compose up -d --build
 #   open http://localhost:8080
+#
+# The mysql-init scripts are deliberately NOT mounted: Spring runs Flyway migrations on startup
+# (baseline-on-migrate), creating the tables on an empty volume and adopting an existing one without
+# touching its data. Running 000_base_schema.sql first would only create tables outside Flyway's history.
+# The db_data volume keeps users and progress across redeploys; do not run "down -v".
 name: javaschoollab
 
 services:
@@ -17,9 +23,6 @@ services:
       MYSQL_PASSWORD: ${DB_PASSWORD:?set DB_PASSWORD in .env}
     volumes:
       - db_data:/var/lib/mysql
-      # Run once on first start (empty volume only), in filename order.
-      - ./mysql-init/000_base_schema.sql:/docker-entrypoint-initdb.d/000_base_schema.sql:ro
-      - ../node-server/migrations/001_learning_progress.sql:/docker-entrypoint-initdb.d/001_learning_progress.sql:ro
     healthcheck:
       test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p\"$$MYSQL_ROOT_PASSWORD\" --silent"]
       interval: 10s
@@ -28,56 +31,46 @@ services:
       start_period: 30s
     networks: [backend]
 
-  api:
+  app:
     build:
-      context: ../node-server
+      context: ..
+      dockerfile: Dockerfile
+      args:
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL:-/api}
+        VITE_CONTENT_SOURCE: api
+        SITE_URL: ${SITE_URL:-https://javaschoollab.com}
     restart: unless-stopped
     depends_on:
       db:
         condition: service_healthy
     environment:
-      NODE_ENV: production
+      SPRING_PROFILES_ACTIVE: prod
       PORT: 3001
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/${DB_NAME:-javaschoollab}?createDatabaseIfNotExist=true&useUnicode=true&characterEncoding=utf8&serverTimezone=UTC
+      SPRING_DATASOURCE_USERNAME: ${DB_USER:-jsl}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD:?set DB_PASSWORD in .env}
       JWT_SECRET: ${JWT_SECRET:?set JWT_SECRET in .env}
-      DB_HOST: db
-      DB_PORT: 3306
-      DB_USER: ${DB_USER:-jsl}
-      DB_PASSWORD: ${DB_PASSWORD:?set DB_PASSWORD in .env}
-      DB_NAME: ${DB_NAME:-javaschoollab}
-      DB_POOL_SIZE: ${DB_POOL_SIZE:-10}
       CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:8080}
+      # Needed behind a proxy / load balancer so rate limits see real visitor addresses.
+      FORWARD_HEADERS_STRATEGY: native
       # Email OTP delivery (Hostinger SMTP). Leave SMTP_HOST empty to disable.
       SMTP_HOST: ${SMTP_HOST:-}
       SMTP_PORT: ${SMTP_PORT:-465}
       SMTP_USER: ${SMTP_USER:-}
       SMTP_PASS: ${SMTP_PASS:-}
       SMTP_FROM: ${SMTP_FROM:-}
-    # Not published to the host: only nginx reaches it, via the internal network.
-    expose:
-      - "3001"
-    networks: [backend, frontend]
-
-  web:
-    build:
-      context: ..
-      dockerfile: docker/Dockerfile
-      args:
-        VITE_API_BASE_URL: ${VITE_API_BASE_URL:-/api}
-        VITE_ADSENSE_CLIENT: ${VITE_ADSENSE_CLIENT:-}
-        VITE_AD_SLOT_RAIL_TOP: ${VITE_AD_SLOT_RAIL_TOP:-}
-        VITE_AD_SLOT_RAIL_BOTTOM: ${VITE_AD_SLOT_RAIL_BOTTOM:-}
-        VITE_AD_SLOT_CORNER: ${VITE_AD_SLOT_CORNER:-}
-        SITE_URL: ${SITE_URL:-https://javaschoollab.com}
-    restart: unless-stopped
-    depends_on:
-      - api
+    healthcheck:
+      test: ["CMD-SHELL", "bash -c 'exec 3<>/dev/tcp/127.0.0.1/3001'"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 60s
     ports:
-      - "${WEB_PORT:-8080}:80"
-    networks: [frontend]
+      - "${WEB_PORT:-8080}:3001"
+    networks: [backend]
 
 volumes:
   db_data:
 
 networks:
   backend:
-  frontend:

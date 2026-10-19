@@ -1,5 +1,5 @@
-// Handle and bio rules for public profiles. The server (node-server/lib/profiles.js) is the authority;
-// this copy gives instant feedback while typing. node-server/lib/profiles.test.js asserts they agree.
+// Handle and bio rules for public profiles. The server (ProfileRules.java) is the authority;
+// this copy gives instant feedback while typing. ProfileRulesTest asserts they agree.
 
 export const HANDLE_MIN = 3;
 export const HANDLE_MAX = 30;

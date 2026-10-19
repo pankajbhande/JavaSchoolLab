@@ -1,4 +1,4 @@
-# Same environment variables as the Node server (node-server/.env.example), so the two are interchangeable.
+# Variable names are the ones the original Node server used, so existing deployments keep working.
 # Real values come from the environment; nothing secret is stored in this file.
 
 server:

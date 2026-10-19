@@ -12,7 +12,7 @@
  *
  * Bump VERSION to drop every old cache on the next activation.
  */
-const VERSION = 'v2';
+const VERSION = 'v3';
 const SHELL_CACHE = `jsl-shell-${VERSION}`;
 const ASSET_CACHE = `jsl-assets-${VERSION}`;
 const STATIC_CACHE = `jsl-static-${VERSION}`;
@@ -104,11 +104,14 @@ async function staleWhileRevalidate(req, name) {
 
 async function cacheFirst(req, name) {
   const cache = await caches.open(name);
+  // An image or font request must never be answered with an HTML page (the single-page-app fallback for a missing
+  // file): such a copy is ignored and never stored, so one bad response cannot stick for a year.
+  const isHtml = (r) => (r.headers.get('content-type') || '').includes('text/html');
   const cached = await cache.match(req);
-  if (cached) return cached;
+  if (cached && !isHtml(cached)) return cached;
   try {
     const res = await fetch(req);
-    if (res.ok || res.type === 'opaque') cache.put(req, res.clone());
+    if ((res.ok && !isHtml(res)) || res.type === 'opaque') cache.put(req, res.clone());
     return res;
   } catch {
     return Response.error();

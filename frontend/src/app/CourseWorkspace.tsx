@@ -23,6 +23,8 @@ import { useDocumentMeta, toDescription } from './hooks/useDocumentMeta';
 import { PanelLeft, PanelRight, X, Search } from 'lucide-react';
 import { courseStats } from './data/courseStats';
 import { buildSpeechScript, prosody } from './lib/speechScript';
+import { pickVoice as pickVoiceFor } from './lib/voicePicker';
+import { toast } from 'sonner';
 import { useTheme } from './components/ThemeProvider';
 import { CommandPalette, type PaletteAction } from './components/shell/CommandPalette';
 import { ShortcutsSheet } from './components/shell/ShortcutsSheet';
@@ -248,38 +250,8 @@ export default function CourseWorkspace() {
     html.replace(/(<h[1-6][^>]*>|<br\s*\/?>|<li[^>]*>|<td[^>]*>|<strong[^>]*>|^)(\d{1,3})\.\s+/gim,
       (_match, lead, num) => `${lead}${numberToOrdinalWord(Number(num))}, `);
 
-  // Picks the Indian-English voice that matches the chosen gender, else the best fallback.
-  const pickVoice = (): SpeechSynthesisVoice | undefined => {
-    const voices = window.speechSynthesis.getVoices();
-
-    // Prefer a voice whose locale is explicitly Indian English (en-IN)
-    const localeIndianVoices = voices.filter(v => v.lang?.toLowerCase() === 'en-in');
-    const byName = (v: SpeechSynthesisVoice) => v.name.toLowerCase();
-
-    // Known Indian English voice names shipped by Windows/Edge/Chrome/Google TTS
-    const knownFemaleNames = ['heera', 'neerja', 'kalpana', 'lekha', 'veena', 'raveena', 'prataprao'];
-    const knownMaleNames = ['raoji', 'prabhat', 'hemant', 'rishi', 'madhur', 'arjun'];
-
-    const matchesGender = (v: SpeechSynthesisVoice) => {
-      const vn = byName(v);
-      if (knownFemaleNames.some(n => vn.includes(n))) return voiceGender === 'female';
-      if (knownMaleNames.some(n => vn.includes(n))) return voiceGender === 'male';
-      return voiceGender === 'female'
-        ? vn.includes('female') || vn.includes('woman') || vn.includes('girl') || (!vn.includes('male'))
-        : vn.includes('male') || vn.includes('man') || vn.includes('boy');
-    };
-
-    return (
-      localeIndianVoices.find(matchesGender) ||
-      localeIndianVoices[0] ||
-      voices.find(v => {
-        const vn = byName(v);
-        const isIndian = vn.includes('indian') || vn.includes('hindi') || vn.includes('en-in');
-        return isIndian && matchesGender(v);
-      }) ||
-      voices.find(matchesGender)
-    );
-  };
+  // Girl / Boy voice: strict gender match, Indian English and the neural "Natural" voices first (lib/voicePicker.ts).
+  const pickVoice = () => pickVoiceFor(window.speechSynthesis.getVoices(), voiceGender);
 
   // Stops the voice AND the pending pause timer, and invalidates the running script so a
   // late onend callback cannot start the next sentence.
@@ -306,7 +278,11 @@ export default function CourseWorkspace() {
     if (script.length <= 2) return;
 
     const run = ++speechRunRef.current;
-    const voice = pickVoice();
+    const picked = pickVoice();
+    const voice = picked.voice;
+    if (!picked.exact) {
+      toast.info(`No ${voiceGender === 'female' ? 'girl' : 'boy'} Indian voice is installed in this browser. Open the site in Microsoft Edge for natural Indian voices.`);
+    }
     let index = 0;
 
     const speakNext = () => {

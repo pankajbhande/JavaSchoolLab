@@ -9,7 +9,7 @@ import java.util.Arrays;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
-/** The same cases as node-server/lib/progress.test.js, so the Java port provably behaves like the Node original. */
+/** The same cases as the original Node server's progress.test.js, so the Java port provably behaves like the Node original. */
 class ProgressMathTest {
 
     // 2026-08-24 is a Monday, so 24..30 Aug is one freeze week.

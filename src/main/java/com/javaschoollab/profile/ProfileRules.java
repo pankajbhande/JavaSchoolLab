@@ -9,7 +9,7 @@ import java.util.regex.Pattern;
 
 /**
  * Public learner profile rules: handle and bio validation, badges, and the builder that decides what may leave
- * the server. A port of node-server/lib/profiles.js. Privacy lives in one pure place: {@link PublicProfiles#build} starts
+ * the server. A port of the original Node server's profiles.js. Privacy lives in one pure place: {@link PublicProfiles#build} starts
  * from an empty object and adds a section only when the owner switched it on, and it never receives email, mobile,
  * date of birth, organisation or internal ids, so it cannot leak them.
  */

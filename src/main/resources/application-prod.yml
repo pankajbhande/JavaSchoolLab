@@ -1,4 +1,4 @@
-# PRODUCTION profile: SPRING_PROFILES_ACTIVE=prod (docker/docker-compose.spring.yml sets it).
+# PRODUCTION profile: SPRING_PROFILES_ACTIVE=prod (docker/docker-compose.yml sets it).
 # Nothing secret and nothing environment-specific has a default here: a missing value stops the app at start-up with
 # "Could not resolve placeholder", instead of running half-configured.
 #

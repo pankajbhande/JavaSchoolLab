@@ -12,7 +12,7 @@ import java.util.HashSet;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
 
-/** The same cases as node-server/lib/certificates.test.js. */
+/** The same cases as the original Node server's certificates.test.js. */
 class CertificateUnitTest {
 
     /** A clock the test can move forward by hand. */

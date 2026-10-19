@@ -16,7 +16,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.junit.jupiter.api.Test;
 
-/** The same cases as node-server/lib/profiles.test.js. */
+/** The same cases as the original Node server's profiles.test.js. */
 class ProfileRulesTest {
 
     @Test

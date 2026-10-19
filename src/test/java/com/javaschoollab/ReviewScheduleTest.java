@@ -5,7 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.javaschoollab.quiz.ReviewSchedule;
 import org.junit.jupiter.api.Test;
 
-/** The review-timing cases from node-server/lib/progress.test.js. */
+/** The review-timing cases from the original Node server's progress.test.js. */
 class ReviewScheduleTest {
 
     @Test

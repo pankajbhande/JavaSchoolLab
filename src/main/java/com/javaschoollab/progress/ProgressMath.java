@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Streaks and XP. A direct port of node-server/lib/progress.js: same rules, same boundaries,
+ * Streaks and XP. A direct port of the original Node server's progress.js: same rules, same boundaries,
  * and pure functions of their arguments so they can be tested without a database or a clock.
  */
 public final class ProgressMath {

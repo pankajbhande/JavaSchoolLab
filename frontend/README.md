@@ -13,36 +13,12 @@ be started by hand before the API.
 
 ### 1. MySQL
 
-Start your local MySQL server, then create the schema (once):
-
-```sql
-CREATE DATABASE IF NOT EXISTS javaschoollab;
-```
-
-Then apply the migrations (re-runnable, every statement is IF NOT EXISTS):
-
-```bash
-mysql -u root -p javaschoollab < ../node-server/migrations/001_learning_progress.sql
-```
-
-Tables: `users`, `certificates`, `otp_codes`, `visitor_count`, plus `topic_progress`,
-`quiz_attempts` and `study_days` for learning progress.
+Start your local MySQL server. The Spring Boot app creates the `javaschoollab` database and all tables itself (Flyway) on first start.
 
 ### 2. API server
 
-```bash
-cd server
-npm install
-cp .env.example .env      # then set JWT_SECRET and your DB password
-npm start                 # http://localhost:3001
-```
-
-`../node-server/.env` is git-ignored and the server refuses to boot without `JWT_SECRET`.
-Generate one with:
-
-```bash
-node -e "console.log(require('node:crypto').randomBytes(48).toString('hex'))"
-```
+The API is the Spring Boot app in the folder above this one (`../pom.xml`). Import it into STS or run `mvn spring-boot:run` from `..`; it listens on http://localhost:3001.
+Put your MySQL password and `app.jwt.secret` in `../application.properties` (copy `../application.properties.example`; the file is git-ignored).
 
 ### 3. Front end
 
@@ -107,7 +83,6 @@ it covers the logic that is easy to break silently and expensive to get wrong, n
 
 | File | Guards |
 | --- | --- |
-| `../node-server/lib/progress.test.js` | XP and streak arithmetic, and the MySQL DATE timezone handling |
 | `src/app/services/quizEngine.test.ts` | Answer-position fairness, shuffle integrity, bank resolution |
 | `src/app/services/contentSearch.test.ts` | Multi-term matching, ranking, regex safety |
 | `src/app/lib/slug.test.ts` | URL collisions and round-tripping across all 3,588 real topics |
@@ -124,8 +99,7 @@ Two regressions are pinned explicitly because both actually shipped:
 
 Both were mutation-checked: reintroducing each bug turns the suite red.
 
-`../node-server/lib/progress.js` exists so this arithmetic can be tested without booting Express
-or connecting to MySQL; `../node-server/index.js` imports it rather than keeping its own copy.
+The XP and streak arithmetic is tested on the server side (`ProgressMathTest` in the Spring Boot project).
 
 ## Architecture
 
@@ -145,8 +119,6 @@ src/
     services/
       api.ts            typed API client
       quizEngine.ts     assessment engine: selection, shuffling, scoring
-server/
-  index.js              Express + MySQL API
 ```
 
 Routing is URL-driven: `/course/:courseId/:subTopicId/:topicId`, with `?level=expert`
@@ -270,8 +242,8 @@ Already prepared, with no change in behaviour:
 - `npm run check:content` fails if the JSON has drifted from the TypeScript (it is the same as `verify:content`, and a no-op
   once the TypeScript is gone). Run it, or `npm run export:content`, after editing the TypeScript.
 - The text helper `highlight` lives in `src/app/lib/highlight.ts`, not inside the course-data folder.
-- `../Dockerfile` builds the site with `VITE_CONTENT_SOURCE=api`; `docker/docker-compose.spring.yml` runs
-  Spring + MySQL as one stack; `docker/nginx.conf` proxies `/content-assets/` (harmless with Express).
+- `../Dockerfile` builds the site with `VITE_CONTENT_SOURCE=api`; `docker/docker-compose.yml` runs
+  Spring + MySQL as one stack.
 
 Still to do before a deletion would be safe: remove the bundled branch of `courseLoader.ts`; port or drop the five tests that
 compare against the TypeScript (`courseLoader.test.ts`, `courseStats.test.ts`, `studyPacks.test.ts`, `slug.test.ts`,

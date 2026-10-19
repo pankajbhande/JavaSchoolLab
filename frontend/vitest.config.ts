@@ -12,7 +12,7 @@ export default defineConfig({
     // Pin the clock to a zone AHEAD of UTC. The date bug this suite guards against only
     // reproduces at a positive UTC offset, so running in UTC would let it back in silently.
     env: { TZ: 'Asia/Kolkata' },
-    include: ['src/**/*.test.ts', '../node-server/**/*.test.js'],
+    include: ['src/**/*.test.ts'],
     // The course data files import images; nothing under test needs them.
     exclude: ['node_modules', 'dist'],
   },

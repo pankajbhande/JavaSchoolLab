@@ -29803,14 +29803,111 @@ Why each step matters:
                             ],
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-semantic-section-element',
                             name: 'Section Element',
                             beginner: [
                                 {
-                                    content: `<h3>Section Element</h3>
-&bull; Part of the HTML Semantic Elements section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• The <b>section</b> element groups <b>related content under a heading</b>.<br>
+• It marks a thematic part of a page, such as a chapter or a feature list.<br>
+• It should normally start with a heading (h2 to h6).<br>
+• It adds structure that screen readers can navigate.<br><br>
+
+<h3>Key Points</h3>
+• Use it when the content would appear in an outline of the page.<br>
+• If it has no heading, a div is usually the better choice.<br>
+• Sections can be nested inside articles, and articles inside sections.<br>
+• Give it an accessible name with aria-labelledby to expose it as a region landmark.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>section</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+</style>
+</head>
+<body>
+<section>
+  <h2>Features</h2>
+  <p>Fast, free and friendly lessons.</p>
+</section>
+<section>
+  <h2>Pricing</h2>
+  <p>Everything is free to read.</p>
+</section>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Use section for chapters of an article, tabs panels and landing page blocks.<br>
+• Connect heading and section with <b>aria-labelledby</b> so it becomes a landmark.<br>
+• Choose heading levels by the outline, not by size.<br>
+• Style sections with a class when you need layout.<br><br>
+
+<h3>Common Mistakes</h3>
+• Using section as a generic styling wrapper. Use div for that.<br>
+• Leaving out the heading.<br>
+• Wrapping the whole page in a section.<br>
+• Using section where article or nav is the better meaning.<br><br>
+
+<h3>Try It Yourself</h3>
+• Build a landing page with hero, features and pricing sections, each with a heading, and name one of them with aria-labelledby.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>labelled region</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+</style>
+</head>
+<body>
+<section aria-labelledby="h">
+  <h2 id="h">Latest courses</h2>
+  <ul><li>Java</li><li>HTML</li></ul>
+</section>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Marketing pages are built from stacked sections: hero, features, pricing, FAQ.<br>
+• Documentation sites use sections for chapters.<br>
+• Single page apps render each view as a section.<br>
+• Accessibility tools list headings and landmarks to help users jump around.<br><br>
+
+<h3>Best Practices</h3>
+• Ask: would this block have its own heading? If yes, use section.<br>
+• Keep the heading outline logical.<br>
+• Prefer more specific elements such as article, nav or aside when they fit.<br>
+• Do not nest sections deeper than needed.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> When do you use section instead of div?<br>
+• <b>A:</b> When the block is a meaningful part of the document that has its own heading. A div is only a neutral wrapper for styling or scripting.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>article inside section</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+</style>
+</head>
+<body>
+<section>
+  <h2>Blog</h2>
+  <article><h3>Post one</h3><p>Text</p></article>
+  <article><h3>Post two</h3><p>Text</p></article>
+</section>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
@@ -30214,98 +30311,841 @@ Why each step matters:
                             ],
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-semantic-aside-element',
                             name: 'Aside Element',
                             beginner: [
                                 {
-                                    content: `<h3>Aside Element</h3>
-&bull; Part of the HTML Semantic Elements section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• The <b>aside</b> element holds content that is <b>related but not essential</b> to the main content.<br>
+• Examples: sidebars, pull quotes, related links and ads.<br>
+• It can be placed inside or outside the main content.<br>
+• It becomes a complementary landmark for screen readers.<br><br>
+
+<h3>Key Points</h3>
+• The page still makes sense when the aside is removed.<br>
+• Inside an article it relates to that article only.<br>
+• Outside main it usually relates to the whole page.<br>
+• Give it a heading or an aria-label.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>aside</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+</style>
+</head>
+<body>
+<article>
+  <h2>CSS Grid</h2>
+  <p>Grid is a two dimensional layout system.</p>
+  <aside><strong>Tip:</strong> Browser tools show grid lines.</aside>
+</article>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Use CSS to float or position it as a side column.<br>
+• Use it for glossary notes, author boxes and related reading.<br>
+• Add <b>aria-labelledby</b> when a page has more than one aside.<br>
+• Hide non-essential asides on small screens if needed.<br><br>
+
+<h3>Common Mistakes</h3>
+• Putting main content in an aside.<br>
+• Using aside only for visual placement.<br>
+• Leaving asides unlabelled when there are several.<br>
+• Using it for navigation, where nav fits better.<br><br>
+
+<h3>Try It Yourself</h3>
+• Create an article with an inline tip aside and a page level sidebar aside, each with an accessible label.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>sidebar layout</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  .wrap { display: grid; grid-template-columns: 2fr 1fr; gap: 1rem; }
+  aside { background: #fff7ed; padding: .8rem; border-radius: 8px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <main><h1>Article</h1><p>Main reading content goes here.</p></main>
+  <aside aria-label="Related"><h2>Related</h2><ul><li>Flexbox</li><li>Grid</li></ul></aside>
+</div>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• News sites show related stories in an aside.<br>
+• Documentation pages show notes and warnings.<br>
+• Blog layouts have author or newsletter boxes.<br>
+• Screen reader users jump straight to complementary landmarks.<br><br>
+
+<h3>Best Practices</h3>
+• Make asides skippable and clearly labelled.<br>
+• Keep them short.<br>
+• Do not hide essential information in them.<br>
+• Test the reading order.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> What role does aside expose to assistive technology?<br>
+• <b>A:</b> complementary. It tells users the content supports the main content and can be skipped.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>pull quote</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  aside.quote { font-size: 1.3rem; border-left: 4px solid #ea580c; padding-left: 1rem; }
+</style>
+</head>
+<body>
+<p>Long article text...</p>
+<aside class="quote">&ldquo;Practice beats theory.&rdquo;</aside>
+<p>More article text...</p>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-semantic-footer-element',
                             name: 'Footer Element',
                             beginner: [
                                 {
-                                    content: `<h3>Footer Element</h3>
-&bull; Part of the HTML Semantic Elements section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• The <b>footer</b> element is the <b>closing part</b> of a page or section.<br>
+• It usually holds copyright, contact links and related information.<br>
+• A page footer is a contentinfo landmark.<br>
+• Articles and sections can have their own footers too.<br><br>
+
+<h3>Key Points</h3>
+• A footer inside body is the page footer.<br>
+• A footer inside article or section describes that block, for example the author and date.<br>
+• It does not have to be at the very bottom visually.<br>
+• It may contain headings, nav and address elements.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>footer</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+</style>
+</head>
+<body>
+<footer>
+  <p>&copy; 2026 JavaSchoolLab</p>
+  <nav><a href="/privacy">Privacy</a> | <a href="/terms">Terms</a></nav>
+</footer>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Use a sticky footer layout with flexbox so it stays at the bottom on short pages.<br>
+• Place contact details in an address element inside the footer.<br>
+• Add social links with proper labels.<br>
+• Article footers show author, date and tags.<br><br>
+
+<h3>Common Mistakes</h3>
+• Using footer for any bottom content, such as a div at the end.<br>
+• Putting the main navigation only in the footer.<br>
+• Forgetting accessible names on icon links.<br>
+• Making too many nested footers.<br><br>
+
+<h3>Try It Yourself</h3>
+• Build a page with a sticky footer containing links, and an article with its own footer showing the author and date.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>sticky footer</title>
+<style>
+  body { margin: 0; min-height: 100vh; display: flex; flex-direction: column; font-family: sans-serif; }
+  main { flex: 1; padding: 1rem; }
+  footer { background: #1e293b; color: #fff; padding: 1rem; }
+</style>
+</head>
+<body>
+<main><h1>Short page</h1></main>
+<footer>&copy; 2026 JavaSchoolLab</footer>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Every site has a footer with legal links and contacts.<br>
+• Large sites use a mega footer with link columns.<br>
+• Blogs put author boxes in article footers.<br>
+• Screen readers can jump to the contentinfo landmark.<br><br>
+
+<h3>Best Practices</h3>
+• Keep one page-level footer.<br>
+• Group links with headings.<br>
+• Make links descriptive.<br>
+• Check contrast on dark footers.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> Is footer only for the bottom of the page?<br>
+• <b>A:</b> No. It can be the footer of a page, article or section, and it describes that nearest ancestor, such as author or related links.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>article footer</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+</style>
+</head>
+<body>
+<article>
+  <h2>Release notes</h2><p>Text...</p>
+  <footer><small>Posted by Asha on <time datetime="2026-10-19">19 Oct 2026</time></small></footer>
+</article>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-semantic-address-element',
                             name: 'Address Element',
                             beginner: [
                                 {
-                                    content: `<h3>Address Element</h3>
-&bull; Part of the HTML Semantic Elements section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• The <b>address</b> element provides <b>contact information</b> for its nearest article or the page.<br>
+• It may hold names, emails, phone numbers, social links and a postal address.<br>
+• It is displayed in italics by default.<br>
+• It is not for arbitrary postal addresses in the text.<br><br>
+
+<h3>Key Points</h3>
+• Use it inside a footer or article.<br>
+• Separate lines with br or elements.<br>
+• Links with mailto: and tel: make it actionable.<br>
+• It must not contain headings or sectioning elements.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>address</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  address { font-style: normal; }
+</style>
+</head>
+<body>
+<address>
+  JavaSchoolLab<br>
+  12 Tech Park Road, Pune<br>
+  <a href="mailto:team@example.com">team@example.com</a>
+</address>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Reset the italic style with font-style: normal.<br>
+• Combine with a map link to the location.<br>
+• Provide opening hours outside the address element.<br>
+• Use microdata or JSON-LD for structured addresses for search engines.<br><br>
+
+<h3>Common Mistakes</h3>
+• Using it for every address, such as one inside an article about a restaurant.<br>
+• Adding headings inside.<br>
+• Leaving the contact unlinked.<br>
+• Mixing unrelated content.<br><br>
+
+<h3>Try It Yourself</h3>
+• Create a footer with an address that has a phone link, an email link and a map link, with the italic style reset.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>links</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  address { font-style: normal; }
+</style>
+</head>
+<body>
+<address>
+  Call: <a href="tel:+912012345678">+91 20 1234 5678</a><br>
+  Write: <a href="mailto:team@example.com">team@example.com</a><br>
+  <a href="https://maps.example.com/?q=Pune">View on map</a>
+</address>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Contact pages and article bylines use address.<br>
+• Search engines read structured address data.<br>
+• Support footers show chat and phone links.<br>
+• Mobile users tap to call or navigate.<br><br>
+
+<h3>Best Practices</h3>
+• Include only contact details.<br>
+• Make each channel actionable.<br>
+• Keep data current.<br>
+• Add structured data in addition.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> Is address meant for any postal address?<br>
+• <b>A:</b> No. It is for the contact information of the author or owner of the document or article, not for any address that appears in the text.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>byline</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  address { display: inline; font-style: normal; }
+</style>
+</head>
+<body>
+<article>
+  <h2>Post</h2>
+  <p>By <address>Asha <a href="mailto:asha@example.com">asha@example.com</a></address></p>
+</article>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-semantic-figure-element',
                             name: 'Figure Element',
                             beginner: [
                                 {
-                                    content: `<h3>Figure Element</h3>
-&bull; Part of the HTML Semantic Elements section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• The <b>figure</b> element wraps <b>self-contained content</b> such as an image, diagram, code listing or quote.<br>
+• It is usually referenced from the main text.<br>
+• It can have a figcaption as a caption.<br>
+• Moving it elsewhere should not break the text.<br><br>
+
+<h3>Key Points</h3>
+• Put an img, svg, pre or blockquote inside.<br>
+• A figcaption must be the first or last child.<br>
+• Figures can hold several images with one caption.<br>
+• Browsers add some margin by default.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>figure</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  figure { margin: 1rem 0; }
+</style>
+</head>
+<body>
+<figure>
+  <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='120'%3E%3Crect width='300' height='120' fill='%23fde68a'/%3E%3C/svg%3E" alt="Placeholder chart" width="300" height="120">
+  <figcaption>Figure 1: Learners per month</figcaption>
+</figure>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Use figure for code samples with a caption.<br>
+• Reset the margin to align with text.<br>
+• Make images responsive with <b>max-width: 100%</b>.<br>
+• Group a gallery of related images in one figure.<br><br>
+
+<h3>Common Mistakes</h3>
+• Wrapping every image in a figure, even decorative ones.<br>
+• Missing alt text on the image.<br>
+• Using figcaption outside a figure.<br>
+• Putting the caption in the middle.<br><br>
+
+<h3>Try It Yourself</h3>
+• Create a figure containing a code sample and a caption, and another containing an image, with alt text and a numbered caption.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>code listing</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  pre { background: #1e293b; color: #e2e8f0; padding: 1rem; border-radius: 8px; }
+</style>
+</head>
+<body>
+<figure>
+  <pre><code>System.out.println("Hello");</code></pre>
+  <figcaption>Listing 1: Hello in Java</figcaption>
+</figure>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Articles and papers number figures and refer to them.<br>
+• Blogs caption screenshots.<br>
+• Photo galleries use one figure per photo.<br>
+• Screen readers announce the figure and its caption together.<br><br>
+
+<h3>Best Practices</h3>
+• Use alt text for the image and caption for context.<br>
+• Number figures that are referenced.<br>
+• Keep captions short.<br>
+• Avoid using figure for layout.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> What makes content suitable for a figure?<br>
+• <b>A:</b> It is self-contained and referred to from the text, so moving it to an appendix would not break the flow of the surrounding article.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>gallery</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  .g { display: flex; gap: .5rem; } img { width: 100px; height: 60px; background: #e2e8f0; }
+</style>
+</head>
+<body>
+<figure>
+  <div class="g"><img alt="One"><img alt="Two"><img alt="Three"></div>
+  <figcaption>Three screenshots</figcaption>
+</figure>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-semantic-figcaption-element',
                             name: 'Figcaption Element',
                             beginner: [
                                 {
-                                    content: `<h3>Figcaption Element</h3>
-&bull; Part of the HTML Semantic Elements section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• The <b>figcaption</b> element is the <b>caption of a figure</b>.<br>
+• It must be a direct child of figure, first or last.<br>
+• It describes what the content shows.<br>
+• Assistive technology links it to the figure.<br><br>
+
+<h3>Key Points</h3>
+• Only one figcaption per figure.<br>
+• It can contain text and inline elements.<br>
+• It is block level and has no default style beyond that.<br>
+• It gives the figure an accessible name.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>figcaption</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+</style>
+</head>
+<body>
+<figure>
+  <blockquote>Simplicity is the ultimate sophistication.</blockquote>
+  <figcaption>&mdash; A Famous Designer</figcaption>
+</figure>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Style with a smaller font and a muted colour.<br>
+• Use text such as Figure 2 to refer to it from the text.<br>
+• Use the caption for credit lines like photographer names.<br>
+• Keep alt text on the image different from the caption.<br><br>
+
+<h3>Common Mistakes</h3>
+• Repeating the caption as the alt text.<br>
+• Placing the caption outside the figure.<br>
+• Using it as a heading.<br>
+• Writing captions that only say Image.<br><br>
+
+<h3>Try It Yourself</h3>
+• Create three figures (image, quote and table), each with a styled figcaption that includes a credit or number.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>styled</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  figcaption { font-size: .85rem; color: #64748b; text-align: center; }
+</style>
+</head>
+<body>
+<figure>
+  <img alt="Sunrise over hills" width="240" height="100" style="background:#fde68a">
+  <figcaption>Sunrise over the Sahyadri hills. Photo: Asha</figcaption>
+</figure>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Newspapers and blogs credit photographers in captions.<br>
+• Documentation numbers diagrams.<br>
+• Tables and charts also sit in figures.<br>
+• Captions help SEO and comprehension.<br><br>
+
+<h3>Best Practices</h3>
+• Write helpful captions.<br>
+• Do not duplicate alt text.<br>
+• Put credits in captions.<br>
+• Keep the style consistent.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> Where may figcaption appear inside figure?<br>
+• <b>A:</b> Only as the first or the last child of the figure element.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>table in figure</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  table { border-collapse: collapse; } td, th { border: 1px solid #cbd5e1; padding: 4px 8px; }
+</style>
+</head>
+<body>
+<figure>
+  <table><tr><th>Month</th><th>Users</th></tr><tr><td>Oct</td><td>1800</td></tr></table>
+  <figcaption>Table 1: Monthly users</figcaption>
+</figure>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-semantic-details-element',
                             name: 'Details Element',
                             beginner: [
                                 {
-                                    content: `<h3>Details Element</h3>
-&bull; Part of the HTML Semantic Elements section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• The <b>details</b> element creates a <b>disclosure widget</b> that shows and hides content.<br>
+• The visible title is given by a summary element.<br>
+• It works with no JavaScript.<br>
+• It is keyboard accessible and announced correctly.<br><br>
+
+<h3>Key Points</h3>
+• Add the <b>open</b> attribute to start expanded.<br>
+• Clicking the summary toggles the state.<br>
+• The <b>toggle</b> event fires when it changes.<br>
+• The default marker is a small triangle.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>details</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+</style>
+</head>
+<body>
+<details>
+  <summary>What is HTML?</summary>
+  <p>HTML is the markup language of the web.</p>
+</details>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Give several details the same <b>name</b> attribute to make an exclusive accordion.<br>
+• Style the marker with <b>summary::marker</b>.<br>
+• Animate opening with CSS or the interpolate-size feature where supported.<br>
+• Read and set <b>details.open</b> in script.<br><br>
+
+<h3>Common Mistakes</h3>
+• Hiding essential content that users must see.<br>
+• Placing interactive content that needs scripts to open.<br>
+• Forgetting the summary element.<br>
+• Using details for navigation menus with complex behaviour.<br><br>
+
+<h3>Try It Yourself</h3>
+• Build an FAQ accordion with three details elements sharing a name and show the current open or closed state with the toggle event.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>accordion</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  summary { cursor: pointer; font-weight: 600; } details { border: 1px solid #e2e8f0; border-radius: 8px; padding: .5rem 1rem; margin: .4rem 0; }
+</style>
+</head>
+<body>
+<details name="faq" open><summary>Is it free?</summary><p>Yes.</p></details>
+<details name="faq"><summary>Do I need to sign up?</summary><p>No.</p></details>
+<details name="faq"><summary>Can I use it offline?</summary><p>Partly.</p></details>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• FAQ pages and settings sections use details.<br>
+• Long documents collapse optional notes.<br>
+• Search results can expand to show more.<br>
+• Frameworks recommend it before building custom accordions.<br><br>
+
+<h3>Best Practices</h3>
+• Keep summaries short and meaningful.<br>
+• Use the name attribute for accordions.<br>
+• Do not hide content search engines need to see.<br>
+• Test with keyboard and screen reader.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> What does the name attribute do on details?<br>
+• <b>A:</b> Details elements with the same name form a group where only one can be open at a time, which creates an accordion with no JavaScript.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>toggle event</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+</style>
+</head>
+<body>
+<details id="d"><summary>More info</summary><p>Hidden details.</p></details>
+<p id="o">closed</p>
+<script>d.addEventListener('toggle', () => o.textContent = d.open ? 'open' : 'closed');</script>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-semantic-summary-element',
                             name: 'Summary Element',
                             beginner: [
                                 {
-                                    content: `<h3>Summary Element</h3>
-&bull; Part of the HTML Semantic Elements section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• The <b>summary</b> element is the <b>visible heading</b> of a details widget.<br>
+• It must be the first child of details.<br>
+• Clicking or pressing Enter or Space on it toggles the content.<br>
+• It is focusable by default.<br><br>
+
+<h3>Key Points</h3>
+• It can contain text, and even a heading element.<br>
+• The default marker is a triangle.<br>
+• If missing, the browser shows the word Details.<br>
+• It shows a pointer cursor in most browsers.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>summary</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+</style>
+</head>
+<body>
+<details>
+  <summary>Click to read more</summary>
+  <p>Here is the extra text.</p>
+</details>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Style the marker with <b>summary::marker</b> or hide it with list-style: none.<br>
+• Put a heading inside the summary if it should appear in the outline.<br>
+• Add an icon that rotates with <b>details[open] summary::after</b>.<br>
+• Keep the summary text a short label.<br><br>
+
+<h3>Common Mistakes</h3>
+• Placing interactive elements such as links in the summary, which conflicts with the toggle.<br>
+• Using empty summaries.<br>
+• Removing the focus style.<br>
+• Making it look unclickable.<br><br>
+
+<h3>Try It Yourself</h3>
+• Create a details widget with a custom plus and minus marker and a heading inside the summary.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>custom marker</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  summary { list-style: none; cursor: pointer; }
+  summary::after { content: " +"; }
+  details[open] summary::after { content: " -"; }
+</style>
+</head>
+<body>
+<details><summary>Show answer</summary><p>42</p></details>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Question lists use the question as the summary.<br>
+• Cards show a title and expand to details.<br>
+• Code documentation collapses long examples.<br>
+• The label is read by screen readers as a button.<br><br>
+
+<h3>Best Practices</h3>
+• Write the summary as an action or question.<br>
+• Do not nest other controls.<br>
+• Keep focus outlines.<br>
+• Indicate state visually.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> What happens if details has no summary?<br>
+• <b>A:</b> The browser supplies a default label such as Details, so you should always write your own meaningful summary.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>heading inside</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  summary h3 { display: inline; margin: 0; }
+</style>
+</head>
+<body>
+<details><summary><h3>Section title</h3></summary><p>Content</p></details>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-semantic-time-element',
                             name: 'Time Element',
                             beginner: [
                                 {
-                                    content: `<h3>Time Element</h3>
-&bull; Part of the HTML Semantic Elements section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• The <b>time</b> element marks a <b>date, time or duration</b> in a machine readable way.<br>
+• The visible text can be in any format.<br>
+• The <b>datetime</b> attribute holds the exact value.<br>
+• Search engines and tools can read it.<br><br>
+
+<h3>Key Points</h3>
+• Format examples: 2026-10-19, 14:30 and 2026-10-19T14:30.<br>
+• Durations use the form PT1H30M.<br>
+• If the text is already machine readable, datetime may be omitted.<br>
+• It does not change how the text looks.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>time</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+</style>
+</head>
+<body>
+<p>Published on <time datetime="2026-10-19">19 October 2026</time>.</p>
+<p>Class starts at <time datetime="14:30">2:30 PM</time>.</p>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Use it for publication dates, events and opening hours.<br>
+• Use the <b>PT</b> format for durations such as PT45M.<br>
+• Update displayed text with script, for example relative time such as 2 hours ago.<br>
+• Pair with microdata for rich search results.<br><br>
+
+<h3>Common Mistakes</h3>
+• Putting a human format into datetime.<br>
+• Using it for vague text such as sometime soon.<br>
+• Forgetting time zones in a full date time.<br>
+• Writing invalid formats.<br><br>
+
+<h3>Try It Yourself</h3>
+• Mark a publish date, an event with a time zone and a lesson duration with time elements and datetime values.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>duration</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+</style>
+</head>
+<body>
+<p>This lesson takes <time datetime="PT45M">45 minutes</time>.</p>
+<p>Event: <time datetime="2026-11-01T10:30+05:30">1 Nov, 10:30 IST</time></p>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Blogs and news sites mark publish dates.<br>
+• Calendars read events from time elements.<br>
+• Scripts convert datetime to the reader time zone.<br>
+• Search engines display dates in results.<br><br>
+
+<h3>Best Practices</h3>
+• Always include a correct datetime value.<br>
+• Include time zones for events.<br>
+• Show a friendly format for people.<br>
+• Keep both in sync.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> Why add a datetime attribute?<br>
+• <b>A:</b> It gives browsers and search engines an exact, machine readable value, while the visible text can use any friendly format.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>relative</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+</style>
+</head>
+<body>
+<time id="t" datetime="2026-10-19T09:00:00+05:30">19 Oct</time>
+<script>
+  const d = (Date.now() - new Date(t.dateTime)) / 864e5;
+  t.title = Math.round(d) + ' days from this date';
+</script>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         }
@@ -30316,158 +31156,1335 @@ Why each step matters:
                 name: 'HTML Multimedia',
                 topics: [
                         {
-                            // TODO: authored content pending.
                             id: 'html-media-audio-element',
                             name: 'Audio Element',
                             beginner: [
                                 {
-                                    content: `<h3>Audio Element</h3>
-&bull; Part of the HTML Multimedia section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• The <b>audio</b> element plays <b>sound</b> in the page.<br>
+• The <b>src</b> attribute points to the file.<br>
+• Add <b>controls</b> to show the built-in player.<br>
+• Text inside is a fallback for old browsers.<br><br>
+
+<h3>Key Points</h3>
+• Common formats: MP3, AAC, OGG and WAV.<br>
+• Offer several formats with source elements.<br>
+• The browser picks the first one it can play.<br>
+• Audio does not autoplay with sound in most browsers.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>audio</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+</style>
+</head>
+<body>
+<audio controls src="https://interactive-examples.mdn.mozilla.net/media/cc0-audio/t-rex-roar.mp3">
+  Your browser does not support audio.
+</audio>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Control it with <b>play()</b>, <b>pause()</b>, <b>currentTime</b> and <b>volume</b>.<br>
+• Listen to events such as <b>ended</b> and <b>timeupdate</b>.<br>
+• Use <b>preload</b> to control early loading.<br>
+• Provide a transcript for spoken content.<br><br>
+
+<h3>Common Mistakes</h3>
+• Autoplaying audio, which browsers block and users hate.<br>
+• Only one format that some browsers cannot play.<br>
+• No transcript.<br>
+• Forgetting controls, leaving no way to start it.<br><br>
+
+<h3>Try It Yourself</h3>
+• Build an audio player with a custom play and pause button, a progress text using timeupdate and a transcript link.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>custom button</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+</style>
+</head>
+<body>
+<audio id="a" src="https://interactive-examples.mdn.mozilla.net/media/cc0-audio/t-rex-roar.mp3"></audio>
+<button id="b">Play</button>
+<script>b.onclick = () => { a.paused ? a.play() : a.pause(); b.textContent = a.paused ? 'Play' : 'Pause'; };</script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Podcasts, music players and sound effects use audio.<br>
+• Courses add listening exercises.<br>
+• Games preload short effects.<br>
+• Accessibility rules require transcripts.<br><br>
+
+<h3>Best Practices</h3>
+• Provide controls and a transcript.<br>
+• Use compressed formats.<br>
+• Do not autoplay.<br>
+• Respect user volume.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> Why do browsers block autoplay audio?<br>
+• <b>A:</b> Unexpected sound is disruptive, so browsers allow autoplay only when it is muted or after the user has interacted with the page.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>events</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+</style>
+</head>
+<body>
+<audio id="a" controls src="https://interactive-examples.mdn.mozilla.net/media/cc0-audio/t-rex-roar.mp3"></audio>
+<p id="o">stopped</p>
+<script>a.onplay = () => o.textContent = 'playing'; a.onended = () => o.textContent = 'finished';</script>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-media-video-element',
                             name: 'Video Element',
                             beginner: [
                                 {
-                                    content: `<h3>Video Element</h3>
-&bull; Part of the HTML Multimedia section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• The <b>video</b> element plays <b>video</b> in the page without plugins.<br>
+• Add <b>controls</b> to show the player.<br>
+• Set <b>width</b> and <b>height</b> to reserve space.<br>
+• Text inside is a fallback message.<br><br>
+
+<h3>Key Points</h3>
+• Common formats: MP4 (H.264), WebM and Ogg.<br>
+• Use several source elements for compatibility.<br>
+• The <b>poster</b> attribute shows an image before playing.<br>
+• The aspect ratio keeps the layout stable.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>video</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  video { max-width: 100%; }
+</style>
+</head>
+<body>
+<video controls width="320" src="https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4">
+  Your browser does not support video.
+</video>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Make it responsive with <b>max-width: 100%</b> and <b>height: auto</b>.<br>
+• Use <b>preload="metadata"</b> to save bandwidth.<br>
+• Use <b>playsinline</b> so iPhones do not force fullscreen.<br>
+• Add captions with a track element.<br><br>
+
+<h3>Common Mistakes</h3>
+• Large video files with no compression.<br>
+• Autoplay with sound.<br>
+• No captions.<br>
+• Missing size, which causes layout shifts.<br><br>
+
+<h3>Try It Yourself</h3>
+• Create a responsive video with a poster, metadata preloading and buttons that change the playback speed.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>responsive</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  video { width: 100%; height: auto; border-radius: 8px; }
+</style>
+</head>
+<body>
+<video controls preload="metadata" playsinline src="https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4"></video>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Course sites host lesson videos or embed them.<br>
+• Background loops use muted autoplay.<br>
+• Streaming uses HLS or DASH with libraries.<br>
+• Analytics track play and completion events.<br><br>
+
+<h3>Best Practices</h3>
+• Compress and offer several formats.<br>
+• Add captions and a transcript.<br>
+• Set preload deliberately.<br>
+• Lazy load below the fold.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> Which attributes keep a video from shifting the layout?<br>
+• <b>A:</b> Width and height (or an aspect-ratio rule) reserve the space, and a poster image fills it before playback starts.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>custom speed</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+</style>
+</head>
+<body>
+<video id="v" controls width="320" src="https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4"></video>
+<button onclick="v.playbackRate = 2">2x</button> <button onclick="v.playbackRate = 1">1x</button>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-media-source-element',
                             name: 'Source Element',
                             beginner: [
                                 {
-                                    content: `<h3>Source Element</h3>
-&bull; Part of the HTML Multimedia section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• The <b>source</b> element lists <b>alternative files</b> for audio, video or picture.<br>
+• The browser uses the first one it supports.<br>
+• It is a void element with src and type attributes.<br>
+• It must be a child of the media element.<br><br>
+
+<h3>Key Points</h3>
+• <b>type</b> holds the MIME type so the browser can skip unsupported files quickly.<br>
+• In picture, <b>srcset</b> and <b>media</b> select images.<br>
+• Text after the sources is the fallback.<br>
+• Order matters.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>source</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+</style>
+</head>
+<body>
+<video controls width="300">
+  <source src="https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4" type="video/mp4">
+  <source src="movie.webm" type="video/webm">
+  Video not supported.
+</video>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Put the best compressed format first, such as WebM, then MP4.<br>
+• Add <b>codecs</b> to the type for precise matching.<br>
+• In picture use media queries for art direction.<br>
+• Changing sources in script needs a call to <b>load()</b>.<br><br>
+
+<h3>Common Mistakes</h3>
+• Wrong type values, so the browser skips good files.<br>
+• Putting src on the video as well as source elements.<br>
+• Forgetting to call load after changing sources.<br>
+• Large unoptimised files.<br><br>
+
+<h3>Try It Yourself</h3>
+• Create a video with MP4 and WebM sources and a picture element with a wide and a narrow image chosen by a media query.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>picture</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+</style>
+</head>
+<body>
+<picture>
+  <source media="(min-width: 600px)" srcset="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='100'%3E%3Crect width='300' height='100' fill='%232563eb'/%3E%3C/svg%3E">
+  <img alt="Banner" width="150" height="100" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='150' height='100'%3E%3Crect width='150' height='100' fill='%23ea580c'/%3E%3C/svg%3E">
+</picture>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Streaming sites serve modern codecs to supported browsers.<br>
+• Responsive images use source in picture.<br>
+• Fallback formats protect older devices.<br>
+• Build tools generate all variants.<br><br>
+
+<h3>Best Practices</h3>
+• Offer modern and fallback formats.<br>
+• Set types correctly.<br>
+• Optimise sizes.<br>
+• Test several browsers.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> How does the browser choose between several source elements?<br>
+• <b>A:</b> It goes through them in order and uses the first whose type and conditions it supports, ignoring the rest.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>switch source</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+</style>
+</head>
+<body>
+<video id="v" controls width="260"><source id="s" src="https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4" type="video/mp4"></video>
+<button onclick="s.src = 'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4?t=' + Date.now(); v.load();">Reload source</button>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-media-track-element',
                             name: 'Track Element',
                             beginner: [
                                 {
-                                    content: `<h3>Track Element</h3>
-&bull; Part of the HTML Multimedia section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• The <b>track</b> element adds <b>text tracks</b> to audio or video, such as captions and subtitles.<br>
+• It is a void element placed inside the media element.<br>
+• The track file is in the WebVTT format.<br>
+• It makes media accessible.<br><br>
+
+<h3>Key Points</h3>
+• <b>kind</b> can be subtitles, captions, descriptions, chapters or metadata.<br>
+• <b>src</b> is the VTT file and <b>srclang</b> its language.<br>
+• <b>label</b> is the name shown in the menu.<br>
+• <b>default</b> turns the track on automatically.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>track</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+</style>
+</head>
+<body>
+<video controls width="320" src="https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4">
+  <track kind="captions" srclang="en" label="English" src="captions.vtt" default>
+</video>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Offer several languages with several track elements.<br>
+• Use kind="chapters" for chapter navigation.<br>
+• Control tracks in script through <b>video.textTracks</b>.<br>
+• Serve track files from the same origin or with CORS.<br><br>
+
+<h3>Common Mistakes</h3>
+• Forgetting srclang for subtitles.<br>
+• Cross-origin track files with no CORS header.<br>
+• Marking several tracks as default.<br>
+• Wrong file format.<br><br>
+
+<h3>Try It Yourself</h3>
+• Add English and Hindi tracks to a video and create a caption track from script with a cue that shows its text on the page.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>two languages</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+</style>
+</head>
+<body>
+<video controls width="320" src="https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4">
+  <track kind="subtitles" srclang="en" label="English" src="en.vtt" default>
+  <track kind="subtitles" srclang="hi" label="Hindi" src="hi.vtt">
+</video>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Education and public sites must provide captions.<br>
+• Video platforms upload VTT files.<br>
+• Chapters help navigation in long videos.<br>
+• Search can index captions.<br><br>
+
+<h3>Best Practices</h3>
+• Provide captions for all spoken content.<br>
+• Keep line lengths readable.<br>
+• Test with the browser menu.<br>
+• Offer a transcript as well.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> What is the difference between subtitles and captions?<br>
+• <b>A:</b> Subtitles translate spoken words, while captions also describe sounds and speaker information for viewers who cannot hear.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>listen to cues</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+</style>
+</head>
+<body>
+<video id="v" controls width="320" src="https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4"></video>
+<p id="o"></p>
+<script>
+  const t = v.addTextTrack('captions', 'English', 'en'); t.mode = 'showing';
+  t.addCue(new VTTCue(0, 3, 'Welcome to the lesson'));
+  t.oncuechange = () => o.textContent = t.activeCues[0] ? t.activeCues[0].text : '';
+</script>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-media-audio-controls',
                             name: 'Audio Controls',
                             beginner: [
                                 {
-                                    content: `<h3>Audio Controls</h3>
-&bull; Part of the HTML Multimedia section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• The <b>controls</b> attribute shows the <b>built-in player interface</b> on an audio element.<br>
+• It includes play, pause, seek bar, time and volume.<br>
+• It is a boolean attribute.<br>
+• The look depends on the browser.<br><br>
+
+<h3>Key Points</h3>
+• Without controls the audio is invisible and needs script to start.<br>
+• Browsers add keyboard shortcuts for the controls.<br>
+• The <b>controlslist</b> attribute can hide the download button in some browsers.<br>
+• The controls are accessible by default.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>audio controls</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+</style>
+</head>
+<body>
+<audio controls src="https://interactive-examples.mdn.mozilla.net/media/cc0-audio/t-rex-roar.mp3"></audio>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Build custom controls with buttons and the media API when you need a branded look.<br>
+• Keep keyboard support in custom controls.<br>
+• Use a range input for seeking and volume.<br>
+• Announce the state with aria-pressed.<br><br>
+
+<h3>Common Mistakes</h3>
+• Hiding controls with no alternative.<br>
+• Custom controls that are not keyboard accessible.<br>
+• Forgetting to update the button state.<br>
+• Tiny click targets.<br><br>
+
+<h3>Try It Yourself</h3>
+• Create an audio element with native controls, then a second one with custom play and volume controls that work with the keyboard.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>custom</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+</style>
+</head>
+<body>
+<audio id="a" src="https://interactive-examples.mdn.mozilla.net/media/cc0-audio/t-rex-roar.mp3"></audio>
+<button id="p">Play</button>
+<input id="v" type="range" min="0" max="1" step="0.1" value="1" aria-label="Volume">
+<script>
+  p.onclick = () => { a.paused ? a.play() : a.pause(); };
+  a.onplay = () => p.textContent = 'Pause'; a.onpause = () => p.textContent = 'Play';
+  v.oninput = () => a.volume = v.value;
+</script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Podcast pages use native controls for reliability.<br>
+• Brand pages build custom players.<br>
+• Mobile apps follow the platform look.<br>
+• Accessibility tests verify keyboard use.<br><br>
+
+<h3>Best Practices</h3>
+• Prefer native controls.<br>
+• If custom, replicate native behaviour.<br>
+• Label every control.<br>
+• Test on mobile.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> What happens to an audio element without controls?<br>
+• <b>A:</b> It is invisible and cannot be started by the user, so it needs script or autoplay to play.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>seek</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+</style>
+</head>
+<body>
+<audio id="a" controls src="https://interactive-examples.mdn.mozilla.net/media/cc0-audio/t-rex-roar.mp3"></audio>
+<button onclick="a.currentTime = Math.max(0, a.currentTime - 5)">-5s</button>
+<button onclick="a.currentTime += 5">+5s</button>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-media-video-controls',
                             name: 'Video Controls',
                             beginner: [
                                 {
-                                    content: `<h3>Video Controls</h3>
-&bull; Part of the HTML Multimedia section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• The <b>controls</b> attribute shows the <b>built-in video player controls</b>.<br>
+• They include play, seek, time, volume, captions and fullscreen.<br>
+• It is a boolean attribute.<br>
+• The design is provided by the browser.<br><br>
+
+<h3>Key Points</h3>
+• Without it the video shows a still frame only.<br>
+• Right-click menus offer speed and picture-in-picture in many browsers.<br>
+• Keyboard: space toggles play, arrows seek.<br>
+• The controls appear on hover or focus.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>video controls</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  video { max-width: 100%; }
+</style>
+</head>
+<body>
+<video controls width="320" src="https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4"></video>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Add <b>disablePictureInPicture</b> or <b>controlslist</b> to remove options.<br>
+• Build custom controls with the media API for a branded UI.<br>
+• Use fullscreen API on the container, not only on the video, when custom controls are inside.<br>
+• Keep visible focus styles.<br><br>
+
+<h3>Common Mistakes</h3>
+• Custom controls that skip captions and accessibility.<br>
+• Removing controls from content videos.<br>
+• Small controls on touch devices.<br>
+• No keyboard support.<br><br>
+
+<h3>Try It Yourself</h3>
+• Create a video with native controls and another with custom play, mute and fullscreen buttons.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>custom</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+</style>
+</head>
+<body>
+<video id="v" width="300" src="https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4" muted loop></video><br>
+<button id="p">Play</button> <button id="m">Unmute</button>
+<script>
+  p.onclick = () => { v.paused ? v.play() : v.pause(); p.textContent = v.paused ? 'Play' : 'Pause'; };
+  m.onclick = () => { v.muted = !v.muted; m.textContent = v.muted ? 'Unmute' : 'Mute'; };
+</script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Lesson videos use native controls so learners can change speed.<br>
+• Marketing loops hide controls and mute.<br>
+• Streaming services build their own UI.<br>
+• Accessibility audits cover control labels.<br><br>
+
+<h3>Best Practices</h3>
+• Use native controls unless branding demands more.<br>
+• Keep captions accessible.<br>
+• Make targets large.<br>
+• Support keyboard shortcuts.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> What changes if you remove the controls attribute from a content video?<br>
+• <b>A:</b> Users can no longer start, pause or seek it, which harms accessibility unless you supply your own accessible controls.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>fullscreen</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+</style>
+</head>
+<body>
+<div id="box"><video width="300" controls src="https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4"></video></div>
+<button onclick="box.requestFullscreen()">Fullscreen</button>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-media-autoplay',
                             name: 'Autoplay',
                             beginner: [
                                 {
-                                    content: `<h3>Autoplay</h3>
-&bull; Part of the HTML Multimedia section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• The <b>autoplay</b> attribute starts media <b>as soon as it can</b>.<br>
+• Browsers restrict it because unexpected sound is annoying.<br>
+• Autoplay normally works only when the media is <b>muted</b>.<br>
+• It is a boolean attribute.<br><br>
+
+<h3>Key Points</h3>
+• Pair <b>autoplay</b> with <b>muted</b> and <b>playsinline</b> for background videos.<br>
+• Chrome allows sound after the user has interacted with the site.<br>
+• Safari is stricter and may block it entirely on low power mode.<br>
+• Calling play() returns a promise that can be rejected.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>autoplay</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+</style>
+</head>
+<body>
+<video autoplay muted loop playsinline width="300" src="https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4"></video>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Handle rejection: <b>video.play().catch(...)</b> and show a play button.<br>
+• Respect <b>prefers-reduced-motion</b> by not autoplaying decorative videos.<br>
+• Pause videos that scroll out of view with IntersectionObserver.<br>
+• Provide a visible pause control for longer clips.<br><br>
+
+<h3>Common Mistakes</h3>
+• Autoplaying with sound.<br>
+• Ignoring a blocked autoplay, leaving a frozen video.<br>
+• Autoplay for users who prefer reduced motion.<br>
+• No way to pause moving content.<br><br>
+
+<h3>Try It Yourself</h3>
+• Create a muted autoplay loop that respects prefers-reduced-motion and shows a message if the browser blocks playback.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>handle block</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+</style>
+</head>
+<body>
+<video id="v" muted playsinline width="300" src="https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4"></video>
+<p id="o"></p>
+<script>
+  v.play().then(() => o.textContent = 'Playing').catch(() => o.textContent = 'Autoplay blocked, press play.');
+</script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Hero background loops autoplay muted.<br>
+• News sites autoplay muted previews.<br>
+• Accessibility rules require a way to pause moving content longer than five seconds.<br>
+• Performance budgets avoid heavy autoplay.<br><br>
+
+<h3>Best Practices</h3>
+• Mute and provide controls.<br>
+• Honour reduced motion.<br>
+• Keep files small.<br>
+• Pause offscreen.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> Why does autoplay usually need the muted attribute?<br>
+• <b>A:</b> Browsers allow muted autoplay because it does not disturb the user, while autoplay with sound is blocked until the user interacts with the page.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>reduced motion</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+</style>
+</head>
+<body>
+<video id="v" muted loop playsinline width="300" src="https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4"></video>
+<script>if (!matchMedia('(prefers-reduced-motion: reduce)').matches) v.play();</script>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-media-muted',
                             name: 'Muted',
                             beginner: [
                                 {
-                                    content: `<h3>Muted</h3>
-&bull; Part of the HTML Multimedia section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• The <b>muted</b> attribute starts audio or video <b>silent</b>.<br>
+• It is a boolean attribute.<br>
+• It is required for autoplay in most browsers.<br>
+• The user can unmute with the controls.<br><br>
+
+<h3>Key Points</h3>
+• In script use <b>media.muted = true or false</b>.<br>
+• The volume setting is separate from muted.<br>
+• The HTML attribute sets only the initial state.<br>
+• Changing the property later does not change the attribute.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>muted</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+</style>
+</head>
+<body>
+<video controls muted width="300" src="https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4"></video>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Show a visible Unmute button on autoplaying videos.<br>
+• Remember the user choice in localStorage.<br>
+• Use the <b>volumechange</b> event to react to changes.<br>
+• Mute decorative media by default.<br><br>
+
+<h3>Common Mistakes</h3>
+• Hiding the unmute option.<br>
+• Confusing muted with volume 0.<br>
+• Forgetting that the muted attribute is only the default.<br>
+• Starting audio with sound on page load.<br><br>
+
+<h3>Try It Yourself</h3>
+• Create a muted autoplay video with an unmute button and log changes with the volumechange event.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>toggle</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+</style>
+</head>
+<body>
+<video id="v" autoplay muted loop playsinline width="260" src="https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4"></video><br>
+<button id="b">Unmute</button>
+<script>b.onclick = () => { v.muted = !v.muted; b.textContent = v.muted ? 'Unmute' : 'Mute'; };</script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Social feeds autoplay videos muted.<br>
+• Product pages play silent demos.<br>
+• Users unmute when interested.<br>
+• Accessibility tools respect the state.<br><br>
+
+<h3>Best Practices</h3>
+• Offer a clear unmute control.<br>
+• Remember choices.<br>
+• Default to silence.<br>
+• Test on mobile.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> What is the difference between muted and volume zero?<br>
+• <b>A:</b> Muted silences the output and remembers the previous volume, while volume zero changes the level itself. Unmuting restores the old volume.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>volumechange</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+</style>
+</head>
+<body>
+<audio id="a" controls muted src="https://interactive-examples.mdn.mozilla.net/media/cc0-audio/t-rex-roar.mp3"></audio>
+<p id="o">muted</p>
+<script>a.onvolumechange = () => o.textContent = a.muted ? 'muted' : 'volume ' + a.volume;</script>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-media-loop',
                             name: 'Loop',
                             beginner: [
                                 {
-                                    content: `<h3>Loop</h3>
-&bull; Part of the HTML Multimedia section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• The <b>loop</b> attribute makes media <b>restart automatically</b> when it ends.<br>
+• It works on audio and video.<br>
+• It is a boolean attribute.<br>
+• Playback continues until paused.<br><br>
+
+<h3>Key Points</h3>
+• Typical uses: background videos, short sound effects and ambient music.<br>
+• The <b>ended</b> event does not fire while looping.<br>
+• Set it in script with <b>media.loop = true</b>.<br>
+• Short clips loop more smoothly.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>loop</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+</style>
+</head>
+<body>
+<audio controls loop src="https://interactive-examples.mdn.mozilla.net/media/cc0-audio/t-rex-roar.mp3"></audio>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Use seamless loops, with matching start and end frames or samples.<br>
+• Combine with muted autoplay for hero videos.<br>
+• Provide a way to stop looping content.<br>
+• For gap-free audio loops, the Web Audio API is more precise.<br><br>
+
+<h3>Common Mistakes</h3>
+• Looping long videos by mistake.<br>
+• Expecting a gap-free audio loop from the audio element.<br>
+• Moving content with no pause control.<br>
+• Waiting for the ended event on a loop.<br><br>
+
+<h3>Try It Yourself</h3>
+• Create a video with a loop checkbox that turns looping on and off in script.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>toggle</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+</style>
+</head>
+<body>
+<audio id="a" controls src="https://interactive-examples.mdn.mozilla.net/media/cc0-audio/t-rex-roar.mp3"></audio><br>
+<label><input type="checkbox" id="l"> Loop</label>
+<script>l.onchange = () => a.loop = l.checked;</script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Landing page hero videos loop silently.<br>
+• Meditation apps loop ambient sounds.<br>
+• Games loop background music.<br>
+• Learning sites loop short animations.<br><br>
+
+<h3>Best Practices</h3>
+• Keep loops short and light.<br>
+• Mute decorative loops.<br>
+• Offer a pause button.<br>
+• Respect reduced motion.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> Why does the ended event not fire on a looping video?<br>
+• <b>A:</b> Because the media restarts instead of finishing, so playback never reaches an ended state. Use timeupdate or compare currentTime to detect a loop.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>count loops</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+</style>
+</head>
+<body>
+<video id="v" muted autoplay playsinline width="240" src="https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4"></video>
+<p id="o">0 plays</p>
+<script>let n = 0; v.onended = () => { n++; o.textContent = n + ' plays'; v.play(); };</script>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-media-poster-images',
                             name: 'Poster Images',
                             beginner: [
                                 {
-                                    content: `<h3>Poster Images</h3>
-&bull; Part of the HTML Multimedia section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• The <b>poster</b> attribute sets an <b>image shown before the video plays</b>.<br>
+• It appears until the user presses play.<br>
+• It is used only on the video element.<br>
+• It prevents a black or empty box.<br><br>
+
+<h3>Key Points</h3>
+• The value is the URL of an image.<br>
+• Use an image with the same aspect ratio as the video.<br>
+• Without it, browsers may show the first frame, which is often black.<br>
+• It does not need to load the video to show.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>poster</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+</style>
+</head>
+<body>
+<video controls width="320" poster="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='180'%3E%3Crect width='320' height='180' fill='%231e293b'/%3E%3Ctext x='160' y='100' fill='white' font-size='22' text-anchor='middle'%3EPlay lesson%3C/text%3E%3C/svg%3E" preload="none" src="https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4"></video>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Combine with <b>preload="none"</b> to save bandwidth while still showing a picture.<br>
+• Use optimised JPEG or WebP.<br>
+• Add a play icon in the poster image.<br>
+• Use object-fit through CSS if the poster ratio differs.<br><br>
+
+<h3>Common Mistakes</h3>
+• Huge poster images that slow the page.<br>
+• A poster with the wrong aspect ratio.<br>
+• Forgetting it, leaving a black box.<br>
+• Using it on audio, where it has no effect.<br><br>
+
+<h3>Try It Yourself</h3>
+• Create a video with a branded poster image and preload set to none, and compare network usage with preload auto.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>lazy video</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+</style>
+</head>
+<body>
+<video controls width="280" preload="none" poster="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='280' height='160'%3E%3Crect width='280' height='160' fill='%23ea580c'/%3E%3C/svg%3E" src="https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4"></video>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Video galleries show posters in a grid.<br>
+• Performance sites use posters and preload none.<br>
+• Social cards reuse the poster image.<br>
+• Posters carry the title and branding.<br><br>
+
+<h3>Best Practices</h3>
+• Always set a poster.<br>
+• Keep it small.<br>
+• Match the ratio.<br>
+• Use meaningful frames.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> Why combine poster with preload none?<br>
+• <b>A:</b> The user sees a picture instantly while no video data is downloaded until they press play, which saves bandwidth.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>custom thumbnail</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+</style>
+</head>
+<body>
+<video controls width="280" poster="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='280' height='160'%3E%3Crect width='280' height='160' fill='%232563eb'/%3E%3C/svg%3E" src="https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4"></video>
+<p>Thumbnail is the poster image.</p>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-media-subtitles',
                             name: 'Subtitles',
                             beginner: [
                                 {
-                                    content: `<h3>Subtitles</h3>
-&bull; Part of the HTML Multimedia section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• <b>Subtitles</b> are text versions of the <b>spoken words</b> shown during video.<br>
+• They are added with track elements of kind subtitles.<br>
+• They often translate the speech into another language.<br>
+• The text comes from a WebVTT file.<br><br>
+
+<h3>Key Points</h3>
+• Each track needs <b>srclang</b> and <b>label</b>.<br>
+• Users choose them from the player menu.<br>
+• Mark one as <b>default</b> if appropriate.<br>
+• The language should match the audience.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>subtitles</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+</style>
+</head>
+<body>
+<video controls width="320" src="https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4">
+  <track kind="subtitles" srclang="en" label="English" src="en.vtt" default>
+  <track kind="subtitles" srclang="mr" label="Marathi" src="mr.vtt">
+</video>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Style subtitles with the <b>::cue</b> pseudo-element.<br>
+• Position cues using VTT settings.<br>
+• Generate files with tools or services, then proofread.<br>
+• Test long lines and fast speech.<br><br>
+
+<h3>Common Mistakes</h3>
+• Machine translations with errors.<br>
+• No srclang.<br>
+• Subtitles that cover the important part of the video.<br>
+• Cross-origin files with no CORS header.<br><br>
+
+<h3>Try It Yourself</h3>
+• Add two subtitle tracks to a video and style the text with the ::cue selector.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>style cues</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  video::cue { background: rgba(0,0,0,.7); color: #fde68a; font-size: 1.1em; }
+</style>
+</head>
+<body>
+<video controls width="320" src="https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4"><track kind="subtitles" srclang="en" label="English" src="en.vtt" default></video>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Streaming platforms offer many languages.<br>
+• Educational videos reach more learners with subtitles.<br>
+• Many viewers watch silently on mobile.<br>
+• Search engines can use the text.<br><br>
+
+<h3>Best Practices</h3>
+• Proofread translations.<br>
+• Keep lines short.<br>
+• Offer common languages.<br>
+• Allow viewers to turn them off.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> Which attributes does a subtitle track need?<br>
+• <b>A:</b> kind="subtitles", srclang with the language code, a label for the menu and src pointing to the VTT file.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>dynamic track</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+</style>
+</head>
+<body>
+<video id="v" controls width="320" src="https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4"></video>
+<script>
+  const t = v.addTextTrack('subtitles', 'English', 'en'); t.mode = 'showing';
+  t.addCue(new VTTCue(0, 4, 'Hello and welcome'));
+  t.addCue(new VTTCue(4, 8, 'Let us begin'));
+</script>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-media-captions',
                             name: 'Captions',
                             beginner: [
                                 {
-                                    content: `<h3>Captions</h3>
-&bull; Part of the HTML Multimedia section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• <b>Captions</b> are text for <b>everything audible</b> in a video, including speech and sounds.<br>
+• They help viewers who are deaf or hard of hearing.<br>
+• They are added with kind="captions" tracks.<br>
+• They are often required by accessibility rules.<br><br>
+
+<h3>Key Points</h3>
+• Include speaker names and sounds such as [applause].<br>
+• They are in the same language as the audio.<br>
+• They are different from subtitles, which assume the viewer can hear.<br>
+• Closed captions can be turned on and off.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>captions</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+</style>
+</head>
+<body>
+<video controls width="320" src="https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4">
+  <track kind="captions" srclang="en" label="English captions" src="captions.vtt" default>
+</video>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Write captions in sync with the audio within about a second.<br>
+• Use line breaks at natural phrases.<br>
+• Identify speakers when they are off screen.<br>
+• Include a transcript for audio-only content.<br><br>
+
+<h3>Common Mistakes</h3>
+• Auto-generated captions without review.<br>
+• Leaving out sound effects that carry meaning.<br>
+• Captions that are too fast to read.<br>
+• Hiding the captions button.<br><br>
+
+<h3>Try It Yourself</h3>
+• Create a caption track with a sound description and a speaker label, and add a transcript section under the video.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>sound cues</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+</style>
+</head>
+<body>
+<video id="v" controls width="320" src="https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4"></video>
+<script>
+  const t = v.addTextTrack('captions', 'English', 'en'); t.mode = 'showing';
+  t.addCue(new VTTCue(0, 2, '[gentle music]'));
+  t.addCue(new VTTCue(2, 5, 'ASHA: Welcome to the lesson.'));
+</script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Universities and governments require captions.<br>
+• Platforms generate captions automatically, then people correct them.<br>
+• Captions also help in noisy places.<br>
+• Legal rules such as WCAG and ADA refer to them.<br><br>
+
+<h3>Best Practices</h3>
+• Review auto captions.<br>
+• Include meaningful sounds.<br>
+• Keep a readable pace.<br>
+• Provide transcripts.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> How do captions differ from subtitles?<br>
+• <b>A:</b> Captions include non-speech audio such as music and sound effects for viewers who cannot hear. Subtitles only render the spoken words, often in another language.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>transcript link</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+</style>
+</head>
+<body>
+<p><a href="#t">Read the transcript</a></p><div id="t"><p>ASHA: Welcome to the lesson.</p></div>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-media-webvtt',
                             name: 'WebVTT',
                             beginner: [
                                 {
-                                    content: `<h3>WebVTT</h3>
-&bull; Part of the HTML Multimedia section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• <b>WebVTT</b> (Web Video Text Tracks) is the <b>file format</b> for captions and subtitles.<br>
+• A file has the extension .vtt and starts with the line WEBVTT.<br>
+• Each cue has a start time, an end time and text.<br>
+• Browsers read it through the track element.<br><br>
+
+<h3>Key Points</h3>
+• Time format: <b>00:00:01.000 --&gt; 00:00:04.000</b>.<br>
+• Cues are separated by blank lines.<br>
+• Optional cue ids and settings are allowed.<br>
+• Basic tags such as b, i and u can style text.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>webvtt</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  pre { background: #0f172a; color: #e2e8f0; padding: 1rem; border-radius: 8px; }
+</style>
+</head>
+<body>
+<p>Contents of captions.vtt:</p>
+<pre>WEBVTT
+
+00:00:00.000 --&gt; 00:00:03.000
+Welcome to the lesson.
+
+00:00:03.000 --&gt; 00:00:06.000
+Today we learn about &lt;b&gt;HTML&lt;/b&gt;.</pre>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Add positions with settings such as <b>line:90%</b> or <b>align:start</b>.<br>
+• Use voice tags like <b>&lt;v Asha&gt;</b> for speakers.<br>
+• Use NOTE blocks for comments.<br>
+• Add chapters with kind="chapters" files.<br><br>
+
+<h3>Common Mistakes</h3>
+• Missing the WEBVTT header.<br>
+• Using a comma instead of a dot in milliseconds.<br>
+• Overlapping cues by mistake.<br>
+• Wrong MIME type from the server (text/vtt is expected).<br><br>
+
+<h3>Try It Yourself</h3>
+• Write a small VTT file with two cues and a voice tag, then load it as a track using a Blob URL from script.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>build from script</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+</style>
+</head>
+<body>
+<video id="v" controls width="300" src="https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4"></video>
+<script>
+  const vtt = 'WEBVTT\\n\\n00:00:00.000 --> 00:00:03.000\\nHello from a Blob track';
+  const url = URL.createObjectURL(new Blob([vtt], { type: 'text/vtt' }));
+  const t = document.createElement('track');
+  Object.assign(t, { kind: 'captions', label: 'Demo', srclang: 'en', src: url, default: true });
+  v.append(t);
+</script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Subtitle tools export VTT.<br>
+• Chapters files let users jump through long lessons.<br>
+• Streaming players read VTT for captions.<br>
+• Converters exist from SRT to VTT.<br><br>
+
+<h3>Best Practices</h3>
+• Validate files with a VTT validator.<br>
+• Keep cues short.<br>
+• Serve with the right MIME type.<br>
+• Version control subtitle files.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> What must the first line of a WebVTT file be?<br>
+• <b>A:</b> The text WEBVTT, optionally followed by a title, then a blank line before the first cue.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>voices</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  pre { background: #0f172a; color: #e2e8f0; padding: 1rem; border-radius: 8px; }
+</style>
+</head>
+<body>
+<pre>WEBVTT
+
+00:00:00.000 --&gt; 00:00:02.500
+&lt;v Asha&gt;Welcome back.
+
+00:00:02.500 --&gt; 00:00:05.000 line:85% align:center
+&lt;v Ravi&gt;Thanks, glad to be here.</pre>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         }
@@ -30478,182 +32495,1682 @@ Why each step matters:
                 name: 'HTML Graphics',
                 topics: [
                         {
-                            // TODO: authored content pending.
                             id: 'html-graphics-canvas-element',
                             name: 'Canvas Element',
                             beginner: [
                                 {
-                                    content: `<h3>Canvas Element</h3>
-&bull; Part of the HTML Graphics section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• The <b>canvas</b> element provides a <b>drawing surface</b> that you paint with JavaScript.<br>
+• It is a bitmap, so it is made of pixels.<br>
+• It is used for charts, games, image effects and animations.<br>
+• It has no drawing ability without a script.<br><br>
+
+<h3>Key Points</h3>
+• Set <b>width</b> and <b>height</b> as attributes, not only with CSS.<br>
+• Default size is 300 by 150 pixels.<br>
+• Text inside the tag is a fallback for old browsers.<br>
+• Get a drawing context with <b>getContext("2d")</b>.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>canvas</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  canvas { border: 1px solid #cbd5e1; background: #fff; }
+</style>
+</head>
+<body>
+<canvas id="c" width="300" height="120">Your browser does not support canvas.</canvas>
+<script>
+  const ctx = c.getContext('2d');
+  ctx.fillStyle = '#ea580c';
+  ctx.fillRect(20, 20, 120, 60);
+</script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• CSS size scales the bitmap, which makes it blurry. Match the attributes to the displayed size.<br>
+• Handle high DPI screens by scaling with <b>devicePixelRatio</b>.<br>
+• Give the canvas an <b>aria-label</b> or fallback text describing it.<br>
+• Use several stacked canvases for layers.<br><br>
+
+<h3>Common Mistakes</h3>
+• Sizing only with CSS, which stretches the drawing.<br>
+• No accessible description.<br>
+• Forgetting that content is lost when the size attribute changes.<br>
+• Expecting elements inside to be clickable. Only pixels exist.<br><br>
+
+<h3>Try It Yourself</h3>
+• Draw a rectangle on a canvas, make it sharp on high DPI screens and add a button that downloads the canvas as a PNG.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>sharp on retina</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  canvas { border: 1px solid #cbd5e1; background: #fff; }
+  canvas { width: 300px; height: 120px; }
+</style>
+</head>
+<body>
+<canvas id="c" aria-label="Orange circle"></canvas>
+<script>
+  const r = devicePixelRatio || 1;
+  c.width = 300 * r; c.height = 120 * r;
+  const ctx = c.getContext('2d'); ctx.scale(r, r);
+  ctx.beginPath(); ctx.arc(150, 60, 40, 0, Math.PI * 2); ctx.fillStyle = '#ea580c'; ctx.fill();
+</script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Chart libraries render to canvas for speed with many points.<br>
+• Games redraw the canvas 60 times a second.<br>
+• Image editors apply filters pixel by pixel.<br>
+• Screenshots and exports use canvas.toDataURL.<br><br>
+
+<h3>Best Practices</h3>
+• Provide text alternatives.<br>
+• Handle resize and high DPI.<br>
+• Prefer SVG for few interactive shapes.<br>
+• Keep drawing code organised.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> Why does a canvas look blurry when sized only with CSS?<br>
+• <b>A:</b> The canvas has a fixed pixel bitmap set by its width and height attributes. CSS scales that bitmap up or down, so match the attributes to the displayed size times the device pixel ratio.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>export image</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  canvas { border: 1px solid #cbd5e1; background: #fff; }
+</style>
+</head>
+<body>
+<canvas id="c" width="200" height="80"></canvas><br>
+<button id="b">Download PNG</button>
+<script>
+  const x = c.getContext('2d'); x.fillStyle = '#2563eb'; x.fillRect(0, 0, 200, 80);
+  b.onclick = () => { const a = document.createElement('a'); a.href = c.toDataURL('image/png'); a.download = 'canvas.png'; a.click(); };
+</script>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-graphics-canvas-api',
                             name: 'Canvas API',
                             beginner: [
                                 {
-                                    content: `<h3>Canvas API</h3>
-&bull; Part of the HTML Graphics section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• The <b>Canvas API</b> is the set of JavaScript methods that <b>draw on a canvas</b>.<br>
+• You get it from <b>canvas.getContext("2d")</b>.<br>
+• It includes shapes, paths, text, images, transforms and pixel access.<br>
+• The context holds the current drawing state.<br><br>
+
+<h3>Key Points</h3>
+• State properties: <b>fillStyle</b>, <b>strokeStyle</b>, <b>lineWidth</b> and <b>font</b>.<br>
+• Draw with fill and stroke methods.<br>
+• <b>save()</b> and <b>restore()</b> manage the state stack.<br>
+• <b>clearRect()</b> erases an area.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>api</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  canvas { border: 1px solid #cbd5e1; background: #fff; }
+</style>
+</head>
+<body>
+<canvas id="c" width="300" height="100"></canvas>
+<script>
+  const ctx = c.getContext('2d');
+  ctx.strokeStyle = '#2563eb'; ctx.lineWidth = 4;
+  ctx.strokeRect(20, 20, 100, 60);
+  ctx.fillStyle = '#16a34a'; ctx.fillRect(150, 20, 100, 60);
+</script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Use <b>translate</b>, <b>rotate</b> and <b>scale</b> to draw rotated shapes without maths.<br>
+• Use <b>globalAlpha</b> and <b>globalCompositeOperation</b> for blending.<br>
+• Use <b>createLinearGradient</b> for gradients.<br>
+• <b>getImageData</b> reads pixels for filters.<br><br>
+
+<h3>Common Mistakes</h3>
+• Forgetting beginPath before a new shape, so old paths are redrawn.<br>
+• Forgetting restore after save.<br>
+• Reading pixels from cross-origin images, which is blocked.<br>
+• Drawing before images are loaded.<br><br>
+
+<h3>Try It Yourself</h3>
+• Draw a gradient filled rectangle that is rotated using translate and rotate, then turn the picture to grayscale by editing its pixel data.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>gradient + transform</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  canvas { border: 1px solid #cbd5e1; background: #fff; }
+</style>
+</head>
+<body>
+<canvas id="c" width="300" height="120"></canvas>
+<script>
+  const ctx = c.getContext('2d');
+  const g = ctx.createLinearGradient(0, 0, 300, 0);
+  g.addColorStop(0, '#f97316'); g.addColorStop(1, '#2563eb');
+  ctx.fillStyle = g;
+  ctx.save(); ctx.translate(150, 60); ctx.rotate(Math.PI / 12);
+  ctx.fillRect(-100, -30, 200, 60); ctx.restore();
+</script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Libraries such as Chart.js and Pixi wrap this API.<br>
+• Image tools use getImageData and putImageData.<br>
+• Games use drawImage for sprites.<br>
+• Performance tools measure frame times.<br><br>
+
+<h3>Best Practices</h3>
+• Wrap state changes in save and restore.<br>
+• Batch drawing calls.<br>
+• Avoid unneeded reads of pixels.<br>
+• Consider OffscreenCanvas for heavy work.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> What do save and restore do?<br>
+• <b>A:</b> They push and pop the drawing state (styles, transforms, clip) on a stack, so changes you make temporarily do not affect later drawing.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>grayscale</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  canvas { border: 1px solid #cbd5e1; background: #fff; }
+</style>
+</head>
+<body>
+<canvas id="c" width="200" height="60"></canvas>
+<script>
+  const ctx = c.getContext('2d');
+  ctx.fillStyle = '#ea580c'; ctx.fillRect(0, 0, 100, 60); ctx.fillStyle = '#2563eb'; ctx.fillRect(100, 0, 100, 60);
+  const img = ctx.getImageData(0, 0, 200, 60), d = img.data;
+  for (let i = 0; i < d.length; i += 4) { const g = (d[i] + d[i+1] + d[i+2]) / 3; d[i] = d[i+1] = d[i+2] = g; }
+  ctx.putImageData(img, 0, 0);
+</script>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-graphics-canvas-drawing',
                             name: 'Canvas Drawing',
                             beginner: [
                                 {
-                                    content: `<h3>Canvas Drawing</h3>
-&bull; Part of the HTML Graphics section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• <b>Canvas drawing</b> means painting shapes, lines and colours with context methods.<br>
+• The coordinate system starts at the top left, with y growing downwards.<br>
+• You choose a style, then call a fill or stroke method.<br>
+• Anything drawn stays until you clear it.<br><br>
+
+<h3>Key Points</h3>
+• <b>fillRect(x, y, w, h)</b> draws a filled rectangle.<br>
+• <b>strokeRect</b> draws only the outline.<br>
+• <b>clearRect</b> erases a rectangle.<br>
+• Colours accept names, hex, rgb(), hsl() and gradients.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>drawing</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  canvas { border: 1px solid #cbd5e1; background: #fff; }
+</style>
+</head>
+<body>
+<canvas id="c" width="300" height="120"></canvas>
+<script>
+  const ctx = c.getContext('2d');
+  ctx.fillStyle = 'rgba(234, 88, 12, 0.8)'; ctx.fillRect(30, 20, 120, 70);
+  ctx.fillStyle = 'rgba(37, 99, 235, 0.8)'; ctx.fillRect(90, 40, 120, 70);
+  ctx.clearRect(110, 50, 20, 20);
+</script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Draw a grid or axes with lines before plotting data.<br>
+• Use shadows with <b>shadowBlur</b> and <b>shadowColor</b>.<br>
+• Use <b>lineCap</b> and <b>lineJoin</b> to shape line ends.<br>
+• Set <b>lineDash</b> for dashed lines.<br><br>
+
+<h3>Common Mistakes</h3>
+• Forgetting that drawing order decides what is on top.<br>
+• Odd line widths that look blurry on half-pixel positions.<br>
+• Not clearing between frames.<br>
+• Mixing up x and y.<br><br>
+
+<h3>Try It Yourself</h3>
+• Draw a bar chart from an array of numbers with axes, and then make the line style dashed for a grid.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>bar chart</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  canvas { border: 1px solid #cbd5e1; background: #fff; }
+</style>
+</head>
+<body>
+<canvas id="c" width="300" height="140"></canvas>
+<script>
+  const ctx = c.getContext('2d'), data = [40, 90, 60, 110, 75];
+  data.forEach((v, i) => { ctx.fillStyle = '#ea580c'; ctx.fillRect(20 + i * 55, 130 - v, 40, v); });
+  ctx.strokeStyle = '#334155'; ctx.beginPath(); ctx.moveTo(10, 130); ctx.lineTo(290, 130); ctx.stroke();
+</script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Simple charts and dashboards are drawn directly.<br>
+• Signature pads capture strokes.<br>
+• Teaching tools illustrate geometry.<br>
+• Games draw backgrounds and sprites.<br><br>
+
+<h3>Best Practices</h3>
+• Create helper functions for repeated shapes.<br>
+• Clear and redraw for changes.<br>
+• Keep colours in a palette.<br>
+• Add alternative text for charts.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> Where is the origin of the canvas coordinate system?<br>
+• <b>A:</b> At the top-left corner. x increases to the right and y increases downwards.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>dashed</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  canvas { border: 1px solid #cbd5e1; background: #fff; }
+</style>
+</head>
+<body>
+<canvas id="c" width="300" height="80"></canvas>
+<script>
+  const ctx = c.getContext('2d');
+  ctx.setLineDash([8, 6]); ctx.lineWidth = 3; ctx.strokeStyle = '#7c3aed';
+  ctx.strokeRect(20, 15, 260, 50);
+</script>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-graphics-canvas-paths',
                             name: 'Canvas Paths',
                             beginner: [
                                 {
-                                    content: `<h3>Canvas Paths</h3>
-&bull; Part of the HTML Graphics section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• A <b>path</b> is a series of points joined by lines and curves that you can fill or stroke.<br>
+• You begin with <b>beginPath()</b>.<br>
+• Then move and draw with moveTo, lineTo, arc and curve methods.<br>
+• Finally call <b>fill()</b> or <b>stroke()</b>.<br><br>
+
+<h3>Key Points</h3>
+• <b>moveTo(x, y)</b> lifts the pen.<br>
+• <b>lineTo(x, y)</b> draws a straight segment.<br>
+• <b>closePath()</b> joins the end to the start.<br>
+• <b>arc</b>, <b>quadraticCurveTo</b> and <b>bezierCurveTo</b> create curves.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>path</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  canvas { border: 1px solid #cbd5e1; background: #fff; }
+</style>
+</head>
+<body>
+<canvas id="c" width="300" height="120"></canvas>
+<script>
+  const ctx = c.getContext('2d');
+  ctx.beginPath(); ctx.moveTo(30, 100); ctx.lineTo(150, 20); ctx.lineTo(270, 100); ctx.closePath();
+  ctx.fillStyle = '#fde68a'; ctx.fill(); ctx.strokeStyle = '#b45309'; ctx.lineWidth = 3; ctx.stroke();
+</script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Use <b>isPointInPath</b> for simple hit testing.<br>
+• Use the <b>Path2D</b> object to reuse shapes.<br>
+• Use <b>clip()</b> to restrict drawing to a path.<br>
+• Add a Bezier curve with two control points for smooth shapes.<br><br>
+
+<h3>Common Mistakes</h3>
+• Forgetting beginPath, so several shapes merge.<br>
+• Calling stroke before the path is complete.<br>
+• Mixing arc angles in degrees. They are radians.<br>
+• Not closing a shape you want filled.<br><br>
+
+<h3>Try It Yourself</h3>
+• Draw a triangle with lines, a smooth curve with bezierCurveTo and a five pointed star using a Path2D.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>star with Path2D</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  canvas { border: 1px solid #cbd5e1; background: #fff; }
+</style>
+</head>
+<body>
+<canvas id="c" width="200" height="120"></canvas>
+<script>
+  const ctx = c.getContext('2d'), star = new Path2D();
+  for (let i = 0; i < 10; i++) { const r = i % 2 ? 20 : 45, a = i * Math.PI / 5 - Math.PI / 2; star.lineTo(100 + r * Math.cos(a), 60 + r * Math.sin(a)); }
+  star.closePath(); ctx.fillStyle = '#f59e0b'; ctx.fill(star);
+</script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Charts draw lines through points with lineTo.<br>
+• Map tools draw polygons as paths.<br>
+• Signature pads add points on each pointer move.<br>
+• Custom shapes in games are built from paths.<br><br>
+
+<h3>Best Practices</h3>
+• Reuse Path2D objects.<br>
+• Keep paths short for speed.<br>
+• Use curves for natural shapes.<br>
+• Convert degrees to radians with a helper.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> Why call beginPath before every new shape?<br>
+• <b>A:</b> Without it, new segments are added to the previous path and the next fill or stroke draws both shapes again.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>curve</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  canvas { border: 1px solid #cbd5e1; background: #fff; }
+</style>
+</head>
+<body>
+<canvas id="c" width="300" height="120"></canvas>
+<script>
+  const ctx = c.getContext('2d');
+  ctx.beginPath(); ctx.moveTo(20, 100); ctx.bezierCurveTo(80, 0, 220, 0, 280, 100);
+  ctx.lineWidth = 4; ctx.strokeStyle = '#2563eb'; ctx.stroke();
+</script>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-graphics-canvas-shapes',
                             name: 'Canvas Shapes',
                             beginner: [
                                 {
-                                    content: `<h3>Canvas Shapes</h3>
-&bull; Part of the HTML Graphics section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• <b>Canvas shapes</b> include rectangles, circles, arcs, lines, polygons and rounded boxes.<br>
+• Rectangles have dedicated methods, other shapes use paths.<br>
+• Circles are drawn with <b>arc(x, y, r, start, end)</b>.<br>
+• The angles are in radians.<br><br>
+
+<h3>Key Points</h3>
+• A full circle goes from 0 to <b>Math.PI * 2</b>.<br>
+• <b>ellipse()</b> draws ovals.<br>
+• <b>roundRect()</b> draws rectangles with rounded corners.<br>
+• Fill and stroke can be combined.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>shapes</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  canvas { border: 1px solid #cbd5e1; background: #fff; }
+</style>
+</head>
+<body>
+<canvas id="c" width="300" height="120"></canvas>
+<script>
+  const ctx = c.getContext('2d');
+  ctx.fillStyle = '#ea580c'; ctx.fillRect(20, 30, 60, 60);
+  ctx.beginPath(); ctx.arc(140, 60, 30, 0, Math.PI * 2); ctx.fillStyle = '#2563eb'; ctx.fill();
+  ctx.beginPath(); ctx.roundRect(200, 30, 80, 60, 12); ctx.fillStyle = '#16a34a'; ctx.fill();
+</script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Draw a pie chart by changing the start and end angle of arcs.<br>
+• Use <b>ellipse</b> with rotation for tilted ovals.<br>
+• Use loops to draw patterns of shapes.<br>
+• Create helper functions such as drawCircle.<br><br>
+
+<h3>Common Mistakes</h3>
+• Using degrees instead of radians.<br>
+• Forgetting moveTo for partial arcs, which adds an unwanted line.<br>
+• Drawing outlines on half pixels, which blur.<br>
+• Not checking support for roundRect in older browsers.<br><br>
+
+<h3>Try It Yourself</h3>
+• Draw a pie chart from an array of percentages with different colours and a row of circles coloured by hsl in a loop.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>pie chart</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  canvas { border: 1px solid #cbd5e1; background: #fff; }
+</style>
+</head>
+<body>
+<canvas id="c" width="200" height="140"></canvas>
+<script>
+  const ctx = c.getContext('2d'), data = [40, 30, 20, 10], col = ['#ea580c', '#2563eb', '#16a34a', '#a855f7'];
+  let a = -Math.PI / 2;
+  data.forEach((v, i) => { const s = v / 100 * Math.PI * 2; ctx.beginPath(); ctx.moveTo(100, 70); ctx.arc(100, 70, 60, a, a + s); ctx.closePath(); ctx.fillStyle = col[i]; ctx.fill(); a += s; });
+</script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Dashboards draw gauges, rings and pies.<br>
+• Games draw bullets, balls and obstacles.<br>
+• Pattern art loops over shapes.<br>
+• Maps draw markers and areas.<br><br>
+
+<h3>Best Practices</h3>
+• Write small helper functions.<br>
+• Mind pixel alignment.<br>
+• Use consistent palettes.<br>
+• Keep a data structure and draw from it.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> Which unit does arc use for angles?<br>
+• <b>A:</b> Radians. A full turn is 2 times pi, so degrees must be multiplied by Math.PI / 180.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>dots pattern</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  canvas { border: 1px solid #cbd5e1; background: #fff; }
+</style>
+</head>
+<body>
+<canvas id="c" width="300" height="80"></canvas>
+<script>
+  const ctx = c.getContext('2d');
+  for (let i = 0; i < 12; i++) { ctx.beginPath(); ctx.arc(25 + i * 23, 40 + Math.sin(i) * 20, 8, 0, Math.PI * 2); ctx.fillStyle = 'hsl(' + i * 30 + ', 80%, 50%)'; ctx.fill(); }
+</script>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-graphics-canvas-text',
                             name: 'Canvas Text',
                             beginner: [
                                 {
-                                    content: `<h3>Canvas Text</h3>
-&bull; Part of the HTML Graphics section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• <b>Canvas text</b> draws words on the canvas as part of the picture.<br>
+• Use <b>fillText</b> for filled text and <b>strokeText</b> for outlined text.<br>
+• The <b>font</b> property uses the same syntax as CSS.<br>
+• Once drawn, the text is just pixels.<br><br>
+
+<h3>Key Points</h3>
+• <b>textAlign</b> sets horizontal alignment: left, center, right.<br>
+• <b>textBaseline</b> sets vertical alignment, such as middle.<br>
+• <b>measureText</b> returns the width.<br>
+• Fonts must be loaded before drawing.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>text</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  canvas { border: 1px solid #cbd5e1; background: #fff; }
+</style>
+</head>
+<body>
+<canvas id="c" width="300" height="100"></canvas>
+<script>
+  const ctx = c.getContext('2d');
+  ctx.font = 'bold 32px sans-serif'; ctx.fillStyle = '#ea580c';
+  ctx.fillText('Hello Canvas', 20, 60);
+  ctx.strokeStyle = '#2563eb'; ctx.strokeText('Hello Canvas', 20, 60);
+</script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Centre text with textAlign = "center" and the x coordinate at the middle.<br>
+• Wrap long text by measuring words with measureText.<br>
+• Use <b>document.fonts.load</b> before drawing custom fonts.<br>
+• Add shadows for readability over images.<br><br>
+
+<h3>Common Mistakes</h3>
+• Drawing before a web font has loaded.<br>
+• No wrapping, so text runs outside the canvas.<br>
+• Making important text only in the canvas, which is inaccessible.<br>
+• Blurry text from a low resolution canvas.<br><br>
+
+<h3>Try It Yourself</h3>
+• Draw centred text with an outline, then write a function that wraps a long sentence onto several lines using measureText.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>centre and measure</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  canvas { border: 1px solid #cbd5e1; background: #fff; }
+</style>
+</head>
+<body>
+<canvas id="c" width="300" height="100"></canvas>
+<script>
+  const ctx = c.getContext('2d');
+  ctx.font = '24px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  const t = 'Centred text'; ctx.fillText(t, 150, 40);
+  const w = ctx.measureText(t).width;
+  ctx.strokeRect(150 - w / 2, 20, w, 40);
+</script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Chart labels and watermarks are drawn as canvas text.<br>
+• Meme generators write on images.<br>
+• Game scoreboards draw numbers each frame.<br>
+• Accessible alternatives repeat the text in HTML.<br><br>
+
+<h3>Best Practices</h3>
+• Keep real text in HTML when possible.<br>
+• Load fonts first.<br>
+• Scale for high DPI.<br>
+• Provide alt text for the canvas.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> Why should important text not live only in a canvas?<br>
+• <b>A:</b> Canvas text is only pixels, so screen readers, search engines and browser find cannot see it. Provide the same content in HTML or an aria-label.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>wrap</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  canvas { border: 1px solid #cbd5e1; background: #fff; }
+</style>
+</head>
+<body>
+<canvas id="c" width="260" height="110"></canvas>
+<script>
+  const ctx = c.getContext('2d'); ctx.font = '16px sans-serif';
+  const words = 'Canvas text does not wrap by itself so we measure each word'.split(' ');
+  let line = '', y = 24;
+  words.forEach(w => { const t = line + w + ' '; if (ctx.measureText(t).width > 240) { ctx.fillText(line, 10, y); line = w + ' '; y += 22; } else line = t; });
+  ctx.fillText(line, 10, y);
+</script>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-graphics-canvas-images',
                             name: 'Canvas Images',
                             beginner: [
                                 {
-                                    content: `<h3>Canvas Images</h3>
-&bull; Part of the HTML Graphics section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• <b>Canvas images</b> are pictures drawn onto the canvas with <b>drawImage</b>.<br>
+• The source can be an img, another canvas, a video or an ImageBitmap.<br>
+• You can draw a whole image, scale it or copy a part.<br>
+• The image must be loaded first.<br><br>
+
+<h3>Key Points</h3>
+• <b>drawImage(img, x, y)</b> draws at natural size.<br>
+• <b>drawImage(img, x, y, w, h)</b> scales it.<br>
+• The nine argument form crops a region.<br>
+• Wait for the <b>load</b> event before drawing.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>drawImage</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  canvas { border: 1px solid #cbd5e1; background: #fff; }
+</style>
+</head>
+<body>
+<canvas id="c" width="300" height="120"></canvas>
+<script>
+  const img = new Image();
+  img.onload = () => c.getContext('2d').drawImage(img, 0, 0, 300, 120);
+  img.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='80'%3E%3Crect width='200' height='80' fill='%23fb923c'/%3E%3Ccircle cx='100' cy='40' r='30' fill='%231e293b'/%3E%3C/svg%3E";
+</script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Use sprite sheets by drawing a source rectangle for each frame.<br>
+• Apply filters with <b>ctx.filter = "blur(2px)"</b> in supporting browsers.<br>
+• Cross-origin images taint the canvas unless CORS is enabled with crossOrigin.<br>
+• Use <b>createImageBitmap</b> for faster decoding.<br><br>
+
+<h3>Common Mistakes</h3>
+• Drawing before the image is loaded.<br>
+• Tainted canvas errors when exporting a cross-origin image.<br>
+• Stretching images with the wrong aspect ratio.<br>
+• Loading images every frame.<br><br>
+
+<h3>Try It Yourself</h3>
+• Draw a scaled image, crop part of it and copy a video frame onto a canvas with a button.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>crop</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  canvas { border: 1px solid #cbd5e1; background: #fff; }
+</style>
+</head>
+<body>
+<canvas id="c" width="160" height="80"></canvas>
+<script>
+  const img = new Image();
+  img.onload = () => c.getContext('2d').drawImage(img, 0, 0, 100, 50, 0, 0, 160, 80);   // source rect to destination rect
+  img.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='100'%3E%3Crect width='100' height='50' fill='%232563eb'/%3E%3Crect x='100' width='100' height='50' fill='%23ea580c'/%3E%3C/svg%3E";
+</script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Image editors, meme tools and thumbnail generators use drawImage.<br>
+• Games draw sprites from atlases.<br>
+• Video effects draw the video onto a canvas each frame.<br>
+• Servers and browsers compress images by drawing and exporting.<br><br>
+
+<h3>Best Practices</h3>
+• Preload assets.<br>
+• Set crossOrigin for external images.<br>
+• Reuse image objects.<br>
+• Handle errors on load.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> What is a tainted canvas?<br>
+• <b>A:</b> A canvas that has drawn an image from another origin without CORS permission. The browser then blocks reading its pixels or exporting it, to protect user data.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>video frame</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  canvas { border: 1px solid #cbd5e1; background: #fff; }
+</style>
+</head>
+<body>
+<video id="v" muted width="160" src="https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4" crossorigin="anonymous"></video>
+<canvas id="c" width="160" height="90"></canvas><br>
+<button onclick="v.currentTime = 1; v.onseeked = () => c.getContext('2d').drawImage(v, 0, 0, 160, 90)">Grab frame</button>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-graphics-canvas-animation',
                             name: 'Canvas Animation',
                             beginner: [
                                 {
-                                    content: `<h3>Canvas Animation</h3>
-&bull; Part of the HTML Graphics section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• <b>Canvas animation</b> redraws the picture many times a second so it appears to move.<br>
+• The standard tool is <b>requestAnimationFrame</b>.<br>
+• Each frame clears the canvas and draws the new state.<br>
+• It usually runs at 60 frames per second.<br><br>
+
+<h3>Key Points</h3>
+• The loop function calls <b>requestAnimationFrame(loop)</b> at its end.<br>
+• Update positions before drawing.<br>
+• Use the timestamp argument for time based movement.<br>
+• Stop by not requesting another frame.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>animation</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  canvas { border: 1px solid #cbd5e1; background: #fff; }
+</style>
+</head>
+<body>
+<canvas id="c" width="300" height="100"></canvas>
+<script>
+  const ctx = c.getContext('2d'); let x = 0;
+  (function loop() {
+    ctx.clearRect(0, 0, 300, 100);
+    ctx.beginPath(); ctx.arc(x, 50, 18, 0, Math.PI * 2); ctx.fillStyle = '#ea580c'; ctx.fill();
+    x = (x + 2) % 320;
+    requestAnimationFrame(loop);
+  })();
+</script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Use delta time so speed is the same on fast and slow screens.<br>
+• Pause animations when the tab is hidden, which rAF does automatically.<br>
+• Respect <b>prefers-reduced-motion</b>.<br>
+• Separate update and draw functions.<br><br>
+
+<h3>Common Mistakes</h3>
+• Using setInterval, which is less smooth and wastes power.<br>
+• Not clearing the canvas, leaving trails.<br>
+• Allocating objects every frame, causing pauses.<br>
+• Frame based speeds that vary between devices.<br><br>
+
+<h3>Try It Yourself</h3>
+• Create an animation that moves a ball using delta time, bounces at the edges and has a pause button.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>delta time</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  canvas { border: 1px solid #cbd5e1; background: #fff; }
+</style>
+</head>
+<body>
+<canvas id="c" width="300" height="100"></canvas>
+<script>
+  const ctx = c.getContext('2d'); let x = 0, last = 0, dir = 1;
+  function loop(t) {
+    const dt = (t - last) / 1000; last = t;
+    x += dir * 120 * dt; if (x > 280 || x < 20) dir = -dir;
+    ctx.clearRect(0, 0, 300, 100); ctx.fillStyle = '#2563eb'; ctx.fillRect(x - 15, 35, 30, 30);
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+</script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Games, simulations and visualisations run animation loops.<br>
+• Particle effects update hundreds of objects per frame.<br>
+• Data dashboards animate changes smoothly.<br>
+• Devtools show frame rate and paint time.<br><br>
+
+<h3>Best Practices</h3>
+• Use requestAnimationFrame.<br>
+• Use time based movement.<br>
+• Reuse objects.<br>
+• Offer a way to pause.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> Why use requestAnimationFrame instead of setInterval?<br>
+• <b>A:</b> It syncs with the screen refresh, pauses in background tabs to save power and gives a precise timestamp, so animation is smoother and cheaper.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>pause</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  canvas { border: 1px solid #cbd5e1; background: #fff; }
+</style>
+</head>
+<body>
+<canvas id="c" width="300" height="60"></canvas><br><button id="b">Pause</button>
+<script>
+  const ctx = c.getContext('2d'); let x = 0, run = true;
+  function loop() { if (!run) return; ctx.clearRect(0, 0, 300, 60); ctx.fillRect(x, 20, 20, 20); x = (x + 2) % 300; requestAnimationFrame(loop); }
+  b.onclick = () => { run = !run; b.textContent = run ? 'Pause' : 'Resume'; if (run) loop(); };
+  loop();
+</script>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-graphics-svg',
                             name: 'SVG',
                             beginner: [
                                 {
-                                    content: `<h3>SVG</h3>
-&bull; Part of the HTML Graphics section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• <b>SVG</b> (Scalable Vector Graphics) describes pictures with <b>XML shapes</b> instead of pixels.<br>
+• It stays sharp at any size.<br>
+• It can be written inline in HTML or loaded as a file.<br>
+• Each shape is an element in the DOM.<br><br>
+
+<h3>Key Points</h3>
+• Common elements: rect, circle, line, path and text.<br>
+• The <b>svg</b> element is the container.<br>
+• Style with attributes or CSS.<br>
+• Scripts can change shapes and handle events.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>svg</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  canvas { border: 1px solid #cbd5e1; background: #fff; }
+</style>
+</head>
+<body>
+<svg width="300" height="100" role="img" aria-label="Orange circle and blue rectangle">
+  <circle cx="60" cy="50" r="35" fill="#ea580c"/>
+  <rect x="140" y="20" width="120" height="60" fill="#2563eb" rx="8"/>
+</svg>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Use CSS for hover effects and transitions on shapes.<br>
+• Use <b>currentColor</b> so icons match the text colour.<br>
+• Optimise files with tools like SVGO.<br>
+• Add <b>role="img"</b> with a title for meaningful graphics.<br><br>
+
+<h3>Common Mistakes</h3>
+• Using a huge raster image where an SVG fits.<br>
+• No accessible name.<br>
+• Fixed width and height, which blocks scaling without a viewBox.<br>
+• Embedding with img and expecting to style the inside from the page.<br><br>
+
+<h3>Try It Yourself</h3>
+• Draw a circle and rectangle in SVG, add a CSS hover effect and make an icon that follows the surrounding text colour.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>hover effect</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  canvas { border: 1px solid #cbd5e1; background: #fff; }
+  circle { transition: r .2s, fill .2s; } circle:hover { r: 45; fill: #16a34a; }
+</style>
+</head>
+<body>
+<svg width="200" height="100"><circle cx="100" cy="50" r="30" fill="#2563eb"/></svg>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Logos and icons are SVG.<br>
+• Charts and maps use SVG for interactive shapes.<br>
+• Animations use CSS or SMIL.<br>
+• Design tools export SVG.<br><br>
+
+<h3>Best Practices</h3>
+• Prefer SVG for icons and diagrams.<br>
+• Optimise before shipping.<br>
+• Provide titles and descriptions.<br>
+• Use a viewBox for scaling.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> When is SVG a better choice than canvas?<br>
+• <b>A:</b> When you have a modest number of shapes that need scaling, styling with CSS, events and accessibility. Canvas is better for thousands of moving pixels.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>icon sprite</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  canvas { border: 1px solid #cbd5e1; background: #fff; }
+  svg { width: 32px; height: 32px; color: #ea580c; }
+</style>
+</head>
+<body>
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+  <path d="M5 12l5 5L20 7"/>
+</svg> Done
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-graphics-svg-elements',
                             name: 'SVG Elements',
                             beginner: [
                                 {
-                                    content: `<h3>SVG Elements</h3>
-&bull; Part of the HTML Graphics section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• <b>SVG elements</b> are the building blocks: shapes, text, groups and definitions.<br>
+• Basic shapes: rect, circle, ellipse, line, polyline, polygon.<br>
+• Structure: g (group), defs, use, symbol.<br>
+• Each is an element you can style and script.<br><br>
+
+<h3>Key Points</h3>
+• <b>g</b> groups shapes so you can transform or style them together.<br>
+• <b>defs</b> stores reusable items such as gradients.<br>
+• <b>use</b> places a copy of a defined shape.<br>
+• <b>title</b> and <b>desc</b> give accessible text.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>elements</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  canvas { border: 1px solid #cbd5e1; background: #fff; }
+</style>
+</head>
+<body>
+<svg width="300" height="100" viewBox="0 0 300 100">
+  <g fill="#2563eb">
+    <rect x="10" y="10" width="60" height="60"/>
+    <circle cx="120" cy="40" r="30"/>
+  </g>
+  <line x1="170" y1="10" x2="290" y2="70" stroke="#ea580c" stroke-width="4"/>
+</svg>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Reuse a shape with <b>&lt;use href="#id"&gt;</b>.<br>
+• Define gradients and patterns in defs and refer with url(#id).<br>
+• Transform groups with <b>transform</b> such as rotate and translate.<br>
+• Layering follows the order in the document.<br><br>
+
+<h3>Common Mistakes</h3>
+• Forgetting that later elements draw on top.<br>
+• Duplicate ids when pasting several SVGs into one page.<br>
+• Setting CSS width on shapes instead of attributes.<br>
+• Not grouping related shapes.<br><br>
+
+<h3>Try It Yourself</h3>
+• Create an SVG with a gradient defined in defs and three copies of a circle placed with use at different positions.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>defs and use</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  canvas { border: 1px solid #cbd5e1; background: #fff; }
+</style>
+</head>
+<body>
+<svg width="300" height="80">
+  <defs>
+    <linearGradient id="g"><stop offset="0" stop-color="#f97316"/><stop offset="1" stop-color="#2563eb"/></linearGradient>
+    <circle id="dot" r="14" fill="url(#g)"/>
+  </defs>
+  <use href="#dot" x="40" y="40"/><use href="#dot" x="100" y="40"/><use href="#dot" x="160" y="40"/>
+</svg>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Icon systems use symbol and use.<br>
+• Charts group axes and series in g elements.<br>
+• Maps group regions.<br>
+• Animations target groups.<br><br>
+
+<h3>Best Practices</h3>
+• Name ids uniquely.<br>
+• Group logically.<br>
+• Keep files small.<br>
+• Add titles to key groups.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> What does the use element do?<br>
+• <b>A:</b> It places a copy of another element, such as a shape or symbol defined elsewhere, so you can reuse it without repeating markup.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>title and desc</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  canvas { border: 1px solid #cbd5e1; background: #fff; }
+</style>
+</head>
+<body>
+<svg width="200" height="80" role="img" aria-labelledby="t d">
+  <title id="t">Warning sign</title><desc id="d">A yellow triangle</desc>
+  <polygon points="100,10 190,70 10,70" fill="#facc15"/>
+</svg>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-graphics-svg-paths',
                             name: 'SVG Paths',
                             beginner: [
                                 {
-                                    content: `<h3>SVG Paths</h3>
-&bull; Part of the HTML Graphics section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• The <b>path</b> element draws <b>any shape</b> from a list of commands in its <b>d</b> attribute.<br>
+• Commands are letters followed by numbers.<br>
+• It can draw lines, arcs and curves in one element.<br>
+• Design tools export icons as paths.<br><br>
+
+<h3>Key Points</h3>
+• <b>M</b> moves to a point, <b>L</b> draws a line, <b>Z</b> closes the shape.<br>
+• <b>H</b> and <b>V</b> draw horizontal and vertical lines.<br>
+• <b>C</b> is a cubic curve and <b>Q</b> a quadratic curve.<br>
+• Lowercase letters use relative coordinates.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>path</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  canvas { border: 1px solid #cbd5e1; background: #fff; }
+</style>
+</head>
+<body>
+<svg width="300" height="120">
+  <path d="M20 100 L150 20 L280 100 Z" fill="#fde68a" stroke="#b45309" stroke-width="3"/>
+</svg>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Use <b>stroke-dasharray</b> and <b>stroke-dashoffset</b> to animate drawing a line.<br>
+• Use <b>pathLength</b> to normalise lengths.<br>
+• Combine commands such as M, C and S for smooth shapes.<br>
+• Use <b>getTotalLength()</b> in script.<br><br>
+
+<h3>Common Mistakes</h3>
+• Mixing absolute and relative letters by accident.<br>
+• Forgetting Z for filled shapes.<br>
+• Typing numbers without separators.<br>
+• Editing complex paths by hand instead of a tool.<br><br>
+
+<h3>Try It Yourself</h3>
+• Draw a triangle with M, L and Z, a wave with C and S, and animate the wave drawing itself with dash offset.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>draw animation</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  canvas { border: 1px solid #cbd5e1; background: #fff; }
+  .p { stroke-dasharray: 400; stroke-dashoffset: 400; animation: d 2s forwards; }
+  @keyframes d { to { stroke-dashoffset: 0; } }
+</style>
+</head>
+<body>
+<svg width="300" height="100">
+  <path class="p" d="M10 80 C 60 0, 120 0, 170 80 S 280 160, 290 40" fill="none" stroke="#ea580c" stroke-width="4" stroke-linecap="round"/>
+</svg>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Icon sets are libraries of paths.<br>
+• Signature and logo reveals animate dash offsets.<br>
+• Maps are paths for regions.<br>
+• Charts draw line series with one path.<br><br>
+
+<h3>Best Practices</h3>
+• Use a tool to simplify paths.<br>
+• Keep decimals short.<br>
+• Name important paths with ids.<br>
+• Prefer shapes for simple cases.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> What do M, L and Z mean in a path?<br>
+• <b>A:</b> M moves the pen to a point, L draws a straight line to a point and Z closes the shape by joining the end back to the start.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>relative</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  canvas { border: 1px solid #cbd5e1; background: #fff; }
+</style>
+</head>
+<body>
+<svg width="200" height="80"><path d="M10 10 h60 v40 h-60 z" fill="#2563eb"/><path d="M100 10 l40 0 l-20 40 z" fill="#16a34a"/></svg>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-graphics-svg-shapes',
                             name: 'SVG Shapes',
                             beginner: [
                                 {
-                                    content: `<h3>SVG Shapes</h3>
-&bull; Part of the HTML Graphics section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• <b>SVG shapes</b> are ready-made elements: rect, circle, ellipse, line, polyline and polygon.<br>
+• Each uses simple attributes for size and position.<br>
+• Fill and stroke colour them.<br>
+• They are simpler than paths for basic forms.<br><br>
+
+<h3>Key Points</h3>
+• <b>rect</b> uses x, y, width, height and rx for rounding.<br>
+• <b>circle</b> uses cx, cy and r.<br>
+• <b>ellipse</b> uses rx and ry.<br>
+• <b>polygon</b> uses a list of points and closes automatically.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>shapes</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  canvas { border: 1px solid #cbd5e1; background: #fff; }
+</style>
+</head>
+<body>
+<svg width="300" height="120">
+  <rect x="10" y="20" width="70" height="70" rx="10" fill="#ea580c"/>
+  <circle cx="130" cy="55" r="35" fill="#2563eb"/>
+  <ellipse cx="220" cy="55" rx="40" ry="25" fill="#16a34a"/>
+  <polygon points="270,20 295,90 245,90" fill="#a855f7"/>
+</svg>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Use <b>stroke-width</b>, <b>stroke-linejoin</b> and <b>opacity</b> for styling.<br>
+• Use CSS classes so many shapes share a style.<br>
+• Use <b>polyline</b> for open lines through points.<br>
+• Use <b>transform-box</b> and <b>transform-origin</b> for rotation around the centre.<br><br>
+
+<h3>Common Mistakes</h3>
+• Expecting CSS width and height to move a circle.<br>
+• Using fill none with no stroke, so nothing is visible.<br>
+• Forgetting units. Numbers inside SVG are user units.<br>
+• Overlapping shapes without thinking of order.<br><br>
+
+<h3>Try It Yourself</h3>
+• Draw a rectangle, circle, ellipse and polygon, then build a circular progress ring using stroke-dasharray.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>css classes</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  canvas { border: 1px solid #cbd5e1; background: #fff; }
+  .a { fill: #ea580c; } .b { fill: #2563eb; } svg rect:hover { opacity: .7; }
+</style>
+</head>
+<body>
+<svg width="260" height="80"><rect class="a" x="10" y="10" width="100" height="60"/><rect class="b" x="140" y="10" width="100" height="60"/></svg>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Pictograms and infographics use shapes.<br>
+• Charts are rectangles and circles with data bound to attributes.<br>
+• UI components draw badges and progress rings.<br>
+• Games build simple graphics.<br><br>
+
+<h3>Best Practices</h3>
+• Use shapes for simple forms.<br>
+• Share styles through classes.<br>
+• Keep consistent units.<br>
+• Group related shapes.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> How do you make a rectangle with rounded corners in SVG?<br>
+• <b>A:</b> Set the rx attribute (and ry if different) on the rect element, for example rx="10".<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>progress ring</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  canvas { border: 1px solid #cbd5e1; background: #fff; }
+</style>
+</head>
+<body>
+<svg width="120" height="120" viewBox="0 0 120 120">
+  <circle cx="60" cy="60" r="45" fill="none" stroke="#e2e8f0" stroke-width="10"/>
+  <circle cx="60" cy="60" r="45" fill="none" stroke="#ea580c" stroke-width="10" stroke-linecap="round"
+          stroke-dasharray="212 283" transform="rotate(-90 60 60)"/>
+  <text x="60" y="66" text-anchor="middle" font-size="20" font-family="sans-serif">75%</text>
+</svg>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-graphics-svg-text',
                             name: 'SVG Text',
                             beginner: [
                                 {
-                                    content: `<h3>SVG Text</h3>
-&bull; Part of the HTML Graphics section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• The <b>text</b> element draws <b>text</b> inside an SVG.<br>
+• It is positioned with <b>x</b> and <b>y</b>, where y is the baseline.<br>
+• The text remains real text that can be selected and read.<br>
+• It scales with the graphic.<br><br>
+
+<h3>Key Points</h3>
+• <b>font-size</b>, <b>font-family</b> and <b>fill</b> style it.<br>
+• <b>text-anchor</b> sets alignment: start, middle or end.<br>
+• <b>tspan</b> changes part of the text.<br>
+• SVG text does not wrap by itself.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>text</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  canvas { border: 1px solid #cbd5e1; background: #fff; }
+</style>
+</head>
+<body>
+<svg width="300" height="80">
+  <text x="150" y="50" text-anchor="middle" font-size="28" font-family="sans-serif" fill="#ea580c">SVG Text</text>
+</svg>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Use <b>dominant-baseline="middle"</b> to centre vertically.<br>
+• Use <b>textPath</b> to run text along a curve.<br>
+• Use tspan with dy for several lines.<br>
+• Add letter-spacing and text-decoration with CSS.<br><br>
+
+<h3>Common Mistakes</h3>
+• Forgetting that y is the baseline, so text appears above the point.<br>
+• Expecting automatic line wrapping.<br>
+• Outlining text as paths, which makes it inaccessible.<br>
+• Relying on fonts the viewer lacks.<br><br>
+
+<h3>Try It Yourself</h3>
+• Create centred SVG text, a three line label with tspan and a sentence that runs along a curve with textPath.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>multi-line</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  canvas { border: 1px solid #cbd5e1; background: #fff; }
+</style>
+</head>
+<body>
+<svg width="300" height="90" font-family="sans-serif" font-size="16">
+  <text x="10" y="25">First line
+    <tspan x="10" dy="24" fill="#2563eb">Second line</tspan>
+    <tspan x="10" dy="24" font-weight="bold">Third line</tspan>
+  </text>
+</svg>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Chart axes and labels are SVG text.<br>
+• Logos use text with custom fonts.<br>
+• Maps label regions.<br>
+• Infographics put text on paths.<br><br>
+
+<h3>Best Practices</h3>
+• Keep text as text for accessibility.<br>
+• Use system or web fonts you load.<br>
+• Check contrast.<br>
+• Test scaling.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> What does the y attribute of an SVG text element represent?<br>
+• <b>A:</b> The baseline of the first line of text, so the glyphs mostly appear above that coordinate.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>textPath</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  canvas { border: 1px solid #cbd5e1; background: #fff; }
+</style>
+</head>
+<body>
+<svg width="300" height="120">
+  <path id="p" d="M20 100 Q150 -20 280 100" fill="none" stroke="#e2e8f0"/>
+  <text font-size="18" font-family="sans-serif" fill="#2563eb"><textPath href="#p">Text that follows a curve</textPath></text>
+</svg>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-graphics-svg-viewbox',
                             name: 'SVG ViewBox',
                             beginner: [
                                 {
-                                    content: `<h3>SVG ViewBox</h3>
-&bull; Part of the HTML Graphics section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• The <b>viewBox</b> attribute defines the <b>internal coordinate system</b> of an SVG.<br>
+• It has four numbers: min-x, min-y, width and height.<br>
+• The browser scales that area to fit the displayed size.<br>
+• It makes SVG responsive.<br><br>
+
+<h3>Key Points</h3>
+• Example: <b>viewBox="0 0 100 50"</b> gives a 100 by 50 grid.<br>
+• The element width and height can then be anything.<br>
+• Aspect ratio is kept by default.<br>
+• It is the key to icons that scale.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>viewBox</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  canvas { border: 1px solid #cbd5e1; background: #fff; }
+</style>
+</head>
+<body>
+<svg viewBox="0 0 100 50" width="300" style="border:1px solid #cbd5e1">
+  <circle cx="50" cy="25" r="20" fill="#ea580c"/>
+</svg>
+<svg viewBox="0 0 100 50" width="120" style="border:1px solid #cbd5e1">
+  <circle cx="50" cy="25" r="20" fill="#ea580c"/>
+</svg>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• <b>preserveAspectRatio</b> controls fitting, such as xMidYMid meet or slice.<br>
+• Change min-x and min-y to pan, and width and height to zoom.<br>
+• Omit width and height and use CSS to size the SVG.<br>
+• Animate the viewBox for zoom effects.<br><br>
+
+<h3>Common Mistakes</h3>
+• Fixed width and height with no viewBox, which does not scale the drawing.<br>
+• A viewBox that does not match the drawing, leaving empty space.<br>
+• Confusing the viewBox with the size in pixels.<br>
+• Forgetting preserveAspectRatio effects.<br><br>
+
+<h3>Try It Yourself</h3>
+• Make an SVG with a viewBox that scales to any width, add zoom buttons that change the viewBox and experiment with slice.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>zoom and pan</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  canvas { border: 1px solid #cbd5e1; background: #fff; }
+</style>
+</head>
+<body>
+<svg id="s" viewBox="0 0 100 50" width="300" style="border:1px solid #cbd5e1">
+  <circle cx="30" cy="25" r="15" fill="#2563eb"/><circle cx="70" cy="25" r="15" fill="#ea580c"/>
+</svg><br>
+<button onclick="s.setAttribute('viewBox','0 0 50 25')">Zoom in</button>
+<button onclick="s.setAttribute('viewBox','0 0 100 50')">Reset</button>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Icon libraries use viewBox 0 0 24 24.<br>
+• Maps zoom by changing the viewBox.<br>
+• Responsive charts set viewBox and width 100%.<br>
+• Logos scale from favicon to billboard.<br><br>
+
+<h3>Best Practices</h3>
+• Always include a viewBox.<br>
+• Size with CSS.<br>
+• Choose a round coordinate system like 100 by 100.<br>
+• Use preserveAspectRatio deliberately.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> What does a viewBox of 0 0 100 50 mean?<br>
+• <b>A:</b> The drawing uses a coordinate area 100 units wide and 50 high starting at the origin, and the browser scales that area to fit the SVG element size.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>slice</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  canvas { border: 1px solid #cbd5e1; background: #fff; }
+</style>
+</head>
+<body>
+<svg viewBox="0 0 100 50" width="200" height="100" preserveAspectRatio="xMidYMid slice" style="border:1px solid #cbd5e1">
+  <rect width="100" height="50" fill="#fde68a"/><circle cx="50" cy="25" r="30" fill="#ea580c"/>
+</svg>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-graphics-inline-svg',
                             name: 'Inline SVG',
                             beginner: [
                                 {
-                                    content: `<h3>Inline SVG</h3>
-&bull; Part of the HTML Graphics section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• <b>Inline SVG</b> means writing the svg element <b>directly in the HTML</b>.<br>
+• Its shapes become part of the page DOM.<br>
+• CSS and JavaScript can reach every shape.<br>
+• No extra request is needed.<br><br>
+
+<h3>Key Points</h3>
+• Style with page CSS, including :hover and media queries.<br>
+• Use <b>currentColor</b> to inherit text colour.<br>
+• Scripts can add, remove and animate elements.<br>
+• Add accessible names with title or aria-label.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>inline svg</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  canvas { border: 1px solid #cbd5e1; background: #fff; }
+  .icon { width: 28px; height: 28px; color: #ea580c; vertical-align: middle; }
+</style>
+</head>
+<body>
+<p><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg> Opens at 9 AM</p>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Use <b>symbol</b> and <b>use</b> to share icons across the page.<br>
+• Animate with CSS transitions and keyframes.<br>
+• Respond to dark mode with CSS variables.<br>
+• Create SVG in script with <b>createElementNS</b>.<br><br>
+
+<h3>Common Mistakes</h3>
+• Using document.createElement for SVG elements. Use the SVG namespace.<br>
+• Duplicate ids across inline icons.<br>
+• Huge inline files that bloat the HTML.<br>
+• Missing accessible names for meaningful graphics.<br><br>
+
+<h3>Try It Yourself</h3>
+• Place an inline SVG icon that follows the text colour, create three circles from script with the SVG namespace and share an icon using symbol and use.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>create in script</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  canvas { border: 1px solid #cbd5e1; background: #fff; }
+</style>
+</head>
+<body>
+<div id="host"></div>
+<script>
+  const NS = 'http://www.w3.org/2000/svg';
+  const svg = document.createElementNS(NS, 'svg'); svg.setAttribute('width', 200); svg.setAttribute('height', 60);
+  [30, 90, 150].forEach(x => { const c = document.createElementNS(NS, 'circle'); c.setAttribute('cx', x); c.setAttribute('cy', 30); c.setAttribute('r', 20); c.setAttribute('fill', '#2563eb'); svg.append(c); });
+  host.append(svg);
+</script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Design systems ship icons as inline SVG components.<br>
+• Charts built with D3 create inline SVG.<br>
+• Interactive diagrams react to clicks.<br>
+• Dark mode works with CSS variables.<br><br>
+
+<h3>Best Practices</h3>
+• Use currentColor for icons.<br>
+• Hide decorative icons from screen readers.<br>
+• Optimise markup.<br>
+• Prefer a sprite for many icons.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> Why must SVG elements be created with createElementNS in script?<br>
+• <b>A:</b> SVG elements live in the SVG XML namespace. Creating them with createElement makes HTML elements that the browser does not draw.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>sprite</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  canvas { border: 1px solid #cbd5e1; background: #fff; }
+  svg { width: 24px; height: 24px; fill: #2563eb; }
+</style>
+</head>
+<body>
+<svg style="display:none"><symbol id="star" viewBox="0 0 24 24"><path d="M12 2l3 7h7l-5.5 4.5L18 21l-6-4-6 4 1.5-7.5L2 9h7z"/></symbol></svg>
+<svg><use href="#star"/></svg> <svg><use href="#star"/></svg>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         }
@@ -30664,110 +34181,899 @@ Why each step matters:
                 name: 'HTML Embedded Content',
                 topics: [
                         {
-                            // TODO: authored content pending.
                             id: 'html-embed-iframe-element',
                             name: 'Iframe Element',
                             beginner: [
                                 {
-                                    content: `<h3>Iframe Element</h3>
-&bull; Part of the HTML Embedded Content section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• The <b>iframe</b> element embeds <b>another web page</b> inside the current one.<br>
+• The <b>src</b> attribute gives the address of the page to show.<br>
+• The frame has its own document, styles and scripts.<br>
+• It is used for maps, videos, widgets and payment forms.<br><br>
+
+<h3>Key Points</h3>
+• Always give it a <b>title</b> that describes the content, for screen readers.<br>
+• Set <b>width</b> and <b>height</b> or size it with CSS.<br>
+• <b>srcdoc</b> lets you write the HTML inline.<br>
+• <b>loading="lazy"</b> delays loading until the frame is near the viewport.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>iframe</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+</style>
+</head>
+<body>
+<iframe title="Demo frame" width="300" height="120" srcdoc="<h3 style='font-family:sans-serif'>Hello from inside the frame</h3>"></iframe>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Use <b>allow</b> to grant features such as fullscreen or clipboard-write.<br>
+• Use <b>sandbox</b> to restrict what the embedded page can do.<br>
+• Make frames responsive with <b>aspect-ratio</b> and width: 100%.<br>
+• Communicate with the frame using postMessage.<br><br>
+
+<h3>Common Mistakes</h3>
+• Embedding without a title.<br>
+• Embedding untrusted sites without sandbox.<br>
+• Fixed sizes that overflow on phones.<br>
+• Expecting to style the content inside from the parent page.<br><br>
+
+<h3>Try It Yourself</h3>
+• Embed a small page with srcdoc, make it responsive with aspect-ratio and lazy loading, and receive a message from it using postMessage.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>responsive</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  iframe { width: 100%; aspect-ratio: 16 / 9; border: 0; border-radius: 8px; }
+</style>
+</head>
+<body>
+<iframe title="Responsive frame" loading="lazy" srcdoc="<h3 style='font-family:sans-serif'>Hello from inside the frame</h3>"></iframe>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Maps, videos, payment widgets and ads are iframes.<br>
+• Some sites block being framed with X-Frame-Options or CSP frame-ancestors.<br>
+• Micro-frontends compose parts from different teams.<br>
+• Performance budgets track the cost of each embed.<br><br>
+
+<h3>Best Practices</h3>
+• Embed only what you trust.<br>
+• Add title, loading and sandbox.<br>
+• Keep frames few and lazy.<br>
+• Provide a fallback link.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> Why does an iframe need a title attribute?<br>
+• <b>A:</b> Screen readers announce the title to tell users what the frame contains. Without it the frame is just an unnamed region.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>postMessage</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+</style>
+</head>
+<body>
+<iframe id="f" title="Child" width="300" height="80" srcdoc="<script>parent.postMessage('hello from child','*')</script><p>Child page</p>"></iframe>
+<p id="o"></p>
+<script>addEventListener('message', e => o.textContent = 'Got: ' + e.data);</script>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-embed-embed-element',
                             name: 'Embed Element',
                             beginner: [
                                 {
-                                    content: `<h3>Embed Element</h3>
-&bull; Part of the HTML Embedded Content section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• The <b>embed</b> element places <b>external content</b>, often from a plugin, into the page.<br>
+• It is a void element with src and type attributes.<br>
+• It was used for Flash, which is no longer supported.<br>
+• Today it is mostly used for PDFs and some media.<br><br>
+
+<h3>Key Points</h3>
+• <b>src</b> is the file address and <b>type</b> is its MIME type.<br>
+• <b>width</b> and <b>height</b> set the size.<br>
+• There is no fallback content, because it is void.<br>
+• Support depends on the browser.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>embed</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+</style>
+</head>
+<body>
+<embed src="https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf" type="application/pdf" width="300" height="200">
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Prefer object or iframe for PDFs, because they allow fallback text.<br>
+• Use video and audio for media instead of embed.<br>
+• Provide a download link for users whose browser cannot show the file.<br>
+• Set a clear size so the layout does not jump.<br><br>
+
+<h3>Common Mistakes</h3>
+• Embedding Flash or other plugins that no longer exist.<br>
+• Forgetting the type attribute.<br>
+• Giving no fallback link.<br>
+• Using it for content that has a proper element.<br><br>
+
+<h3>Try It Yourself</h3>
+• Embed a PDF with embed, add a download link as fallback, and compare how the same file works with object.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>with link</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+</style>
+</head>
+<body>
+<embed src="https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf" type="application/pdf" width="320" height="180">
+<p><a href="https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf">Download the PDF</a></p>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Legacy pages still contain embed tags.<br>
+• PDF viewers in browsers handle many embeds.<br>
+• Mobile browsers often download instead of displaying.<br>
+• Modern media use dedicated elements.<br><br>
+
+<h3>Best Practices</h3>
+• Choose object or iframe for new work.<br>
+• Offer a download.<br>
+• Test on phones.<br>
+• Avoid plugins entirely.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> Why is embed rarely used today?<br>
+• <b>A:</b> It was designed for browser plugins that are gone, and modern elements such as video, audio, iframe and object do the job with better fallbacks and accessibility.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>svg</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+</style>
+</head>
+<body>
+<embed src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='60'%3E%3Crect width='120' height='60' fill='%23ea580c'/%3E%3C/svg%3E" type="image/svg+xml" width="120" height="60">
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-embed-object-element',
                             name: 'Object Element',
                             beginner: [
                                 {
-                                    content: `<h3>Object Element</h3>
-&bull; Part of the HTML Embedded Content section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• The <b>object</b> element embeds <b>external resources</b> such as images, PDFs and other pages.<br>
+• The <b>data</b> attribute gives the file and <b>type</b> the MIME type.<br>
+• Content inside the element is the fallback shown when the file cannot load.<br>
+• It can nest to offer several alternatives.<br><br>
+
+<h3>Key Points</h3>
+• Use <b>width</b> and <b>height</b> for the size.<br>
+• Use <b>param</b> children to pass settings to plugins.<br>
+• Fallback can be text, an image or a link.<br>
+• SVG can be embedded with object while keeping scripts.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>object</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+</style>
+</head>
+<body>
+<object data="https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf" type="application/pdf" width="320" height="200">
+  <p>Cannot display the PDF. <a href="https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf">Download it</a>.</p>
+</object>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Use it for SVG files that need to keep their own links and scripts.<br>
+• Use it for PDFs with a link fallback.<br>
+• Check <b>typemustmatch</b> support, which is limited.<br>
+• Style it with CSS like an inline-block element.<br><br>
+
+<h3>Common Mistakes</h3>
+• Forgetting the fallback text.<br>
+• Wrong type values, so the browser does not render it.<br>
+• Expecting same-origin access to the embedded document across domains.<br>
+• Using it for plugin technologies that are gone.<br><br>
+
+<h3>Try It Yourself</h3>
+• Embed a PDF with object and a link fallback, then create a nested fallback chain for an image that cannot be found.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>fallback chain</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+</style>
+</head>
+<body>
+<object data="missing.svg" type="image/svg+xml" width="160" height="80">
+  <object data="missing.png" type="image/png"><p>Image not available.</p></object>
+</object>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Documentation embeds diagrams as SVG with object.<br>
+• Document portals preview PDFs.<br>
+• Legacy sites embed Java or Flash, now removed.<br>
+• Fallbacks protect users on limited devices.<br><br>
+
+<h3>Best Practices</h3>
+• Always write fallback content.<br>
+• Use correct MIME types.<br>
+• Prefer img or iframe where they fit.<br>
+• Test download options.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> What is special about the content inside an object element?<br>
+• <b>A:</b> It is fallback content, shown only when the browser cannot display the resource, and it can be nested for several levels of alternatives.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>svg object</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+</style>
+</head>
+<body>
+<object type="image/svg+xml" width="120" height="60" data="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='60'%3E%3Ccircle cx='30' cy='30' r='25' fill='%232563eb'/%3E%3C/svg%3E">SVG not supported</object>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-embed-param-element',
                             name: 'Param Element',
                             beginner: [
                                 {
-                                    content: `<h3>Param Element</h3>
-&bull; Part of the HTML Embedded Content section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• The <b>param</b> element passes a <b>named setting</b> to an object element.<br>
+• It is a void element with name and value attributes.<br>
+• It must be a child of object, before any fallback content.<br>
+• It was mainly used for plugins such as Flash and Java applets.<br><br>
+
+<h3>Key Points</h3>
+• Each param has <b>name</b> and <b>value</b>.<br>
+• Several param elements can appear in one object.<br>
+• Browsers without a plugin ignore them.<br>
+• Modern content rarely needs them.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>param</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+</style>
+</head>
+<body>
+<object data="movie.swf" type="application/x-shockwave-flash" width="200" height="100">
+  <param name="autoplay" value="false">
+  <param name="quality" value="high">
+  <p>Legacy plugin content is not supported.</p>
+</object>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Read settings in a plugin through its own API.<br>
+• For modern content use data attributes or query strings instead.<br>
+• Avoid new uses entirely.<br>
+• Know it when you maintain old pages.<br><br>
+
+<h3>Common Mistakes</h3>
+• Using param outside of object.<br>
+• Expecting it to configure an iframe.<br>
+• Relying on plugins that browsers removed.<br>
+• Missing the fallback content.<br><br>
+
+<h3>Try It Yourself</h3>
+• Read a legacy object with params, then rewrite it as an iframe that receives the same settings through query parameters.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>legacy</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+</style>
+</head>
+<body>
+<object data="app.jar" type="application/x-java-applet" width="100" height="60">
+  <param name="mode" value="demo">
+  <p>Java applets are no longer supported by browsers.</p>
+</object>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Old intranet sites still contain Flash and applet embeds.<br>
+• Migration projects replace them with HTML5 media or web apps.<br>
+• Archives preserve them through emulators.<br>
+• Security teams audit plugin usage.<br><br>
+
+<h3>Best Practices</h3>
+• Replace plugin content.<br>
+• Document legacy pages.<br>
+• Provide alternatives.<br>
+• Do not add new param usage.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> Where must a param element be placed?<br>
+• <b>A:</b> As a child of an object element, before its fallback content.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>modern alternative</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+</style>
+</head>
+<body>
+<iframe title="Configured widget" width="260" height="70" srcdoc="<p style='font-family:sans-serif'>Config via URL query: ?mode=demo</p>"></iframe>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-embed-embedded-documents',
                             name: 'Embedded Documents',
                             beginner: [
                                 {
-                                    content: `<h3>Embedded Documents</h3>
-&bull; Part of the HTML Embedded Content section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• <b>Embedded documents</b> show another HTML page inside your page with an iframe.<br>
+• The embedded page keeps its own styles, scripts and history.<br>
+• Common uses are help panels, previews and third-party widgets.<br>
+• The src attribute or srcdoc supplies the content.<br><br>
+
+<h3>Key Points</h3>
+• Same-origin frames can be read by script, cross-origin frames cannot.<br>
+• <b>name</b> lets links target the frame.<br>
+• Use <b>target="frame-name"</b> on a link to load pages inside it.<br>
+• Frames keep their own scroll bars.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>documents</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+</style>
+</head>
+<body>
+<p><a href="data:text/html,<h3>Page A</h3>" target="viewer">Open A</a> |
+   <a href="data:text/html,<h3>Page B</h3>" target="viewer">Open B</a></p>
+<iframe name="viewer" title="Viewer" width="300" height="100"></iframe>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Auto-resize frames by posting the content height to the parent.<br>
+• Use <b>sandbox</b> for untrusted documents.<br>
+• Use <b>srcdoc</b> for live previews of user HTML.<br>
+• Set the document language inside the frame.<br><br>
+
+<h3>Common Mistakes</h3>
+• Trusting content inside frames.<br>
+• Nesting many frames, which hurts performance.<br>
+• Forgetting accessibility titles.<br>
+• Fixed heights that cut off content.<br><br>
+
+<h3>Try It Yourself</h3>
+• Build a live HTML previewer with a textarea and a sandboxed iframe using srcdoc, and a navigation list that loads pages into a named frame.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>live preview</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+</style>
+</head>
+<body>
+<textarea id="t" rows="3" cols="36"><b>Edit me</b></textarea>
+<iframe id="f" title="Preview" sandbox width="300" height="60"></iframe>
+<script>
+  const go = () => f.srcdoc = t.value; t.oninput = go; go();
+</script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Code playgrounds preview user code in frames.<br>
+• Email builders render templates in sandboxed frames.<br>
+• Help centres embed docs inside apps.<br>
+• Admin panels show reports from another service.<br><br>
+
+<h3>Best Practices</h3>
+• Sandbox user content.<br>
+• Resize responsibly.<br>
+• Keep frames few.<br>
+• Offer a link to open in a new tab.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> How do links load into a specific iframe?<br>
+• <b>A:</b> Give the iframe a name and set the link target to that name, so the page opens inside the frame.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>sandbox preview</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+</style>
+</head>
+<body>
+<iframe sandbox title="Safe" width="300" height="70" srcdoc="<p>Scripts would not run here</p><script>document.body.append('blocked?')</script>"></iframe>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-embed-embedded-maps',
                             name: 'Embedded Maps',
                             beginner: [
                                 {
-                                    content: `<h3>Embedded Maps</h3>
-&bull; Part of the HTML Embedded Content section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• <b>Embedded maps</b> show an interactive map inside your page, usually with an iframe.<br>
+• Map services give you an embed code you can paste.<br>
+• Visitors can zoom and drag without leaving the page.<br>
+• It is common on contact and location pages.<br><br>
+
+<h3>Key Points</h3>
+• Use the share and embed option in the map service.<br>
+• Set width and height or make it responsive.<br>
+• Add <b>title</b> for accessibility.<br>
+• <b>loading="lazy"</b> reduces load time.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>map</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  iframe { width: 100%; height: 220px; border: 0; }
+</style>
+</head>
+<body>
+<iframe title="Pune map" loading="lazy"
+  src="https://www.openstreetmap.org/export/embed.html?bbox=73.80%2C18.50%2C73.90%2C18.56&layer=mapnik"></iframe>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Add a text link to open the full map in a new tab.<br>
+• Provide the address in text for users who cannot use maps.<br>
+• Mind privacy and cookie rules, because map providers may track visitors.<br>
+• Use a static image placeholder that loads the map on click.<br><br>
+
+<h3>Common Mistakes</h3>
+• Letting the map push the page load time.<br>
+• Providing only the map with no address.<br>
+• Fixed pixel width that overflows on phones.<br>
+• Ignoring consent rules.<br><br>
+
+<h3>Try It Yourself</h3>
+• Add a lazy loaded map with a text address and a link to the full map, then change it so the map loads only after a button click.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>click to load</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  .ph { background: #e2e8f0; padding: 2rem; text-align: center; border-radius: 8px; }
+</style>
+</head>
+<body>
+<div class="ph" id="p"><button id="b">Load map</button></div>
+<script>
+  b.onclick = () => p.innerHTML = '<iframe title="Pune map" width="100%" height="200" style="border:0" src="https://www.openstreetmap.org/export/embed.html?bbox=73.80%2C18.50%2C73.90%2C18.56"></iframe>';
+</script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Store locators and event pages embed maps.<br>
+• Privacy friendly sites load maps only after consent.<br>
+• Open data maps avoid API keys.<br>
+• Mapping libraries replace iframes when you need custom markers.<br><br>
+
+<h3>Best Practices</h3>
+• Always show the address in text.<br>
+• Lazy load or load on demand.<br>
+• Respect privacy.<br>
+• Provide directions links.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> Why show the address as text as well as the map?<br>
+• <b>A:</b> Screen reader users, search engines and people with blocked scripts need the address, and it can be copied into other apps.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>responsive</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  .box { position: relative; padding-bottom: 56%; } .box iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+</style>
+</head>
+<body>
+<div class="box"><iframe title="Map" loading="lazy" src="https://www.openstreetmap.org/export/embed.html?bbox=73.80%2C18.50%2C73.90%2C18.56"></iframe></div>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-embed-embedded-videos',
                             name: 'Embedded Videos',
                             beginner: [
                                 {
-                                    content: `<h3>Embedded Videos</h3>
-&bull; Part of the HTML Embedded Content section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• <b>Embedded videos</b> from services such as YouTube are placed with an iframe.<br>
+• The service provides an embed address with its own player.<br>
+• This saves hosting and bandwidth costs.<br>
+• Players include controls, captions and quality selection.<br><br>
+
+<h3>Key Points</h3>
+• Use the embed URL, not the normal watch URL.<br>
+• Add a descriptive <b>title</b>.<br>
+• Use <b>allowfullscreen</b> to enable fullscreen.<br>
+• Make the frame responsive with a 16:9 aspect ratio.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>video embed</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  iframe { width: 100%; aspect-ratio: 16 / 9; border: 0; }
+</style>
+</head>
+<body>
+<iframe title="Sample video" loading="lazy" allowfullscreen
+  srcdoc="<body style='margin:0;display:grid;place-items:center;height:100vh;background:#111;color:#fff;font-family:sans-serif'>Video player goes here</body>"></iframe>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Use privacy enhanced domains where offered, such as youtube-nocookie.com.<br>
+• Show a thumbnail and load the player only when clicked, for speed.<br>
+• Use the <b>allow</b> attribute for autoplay or picture-in-picture only when needed.<br>
+• Provide a transcript for accessibility.<br><br>
+
+<h3>Common Mistakes</h3>
+• Using the watch URL, which refuses framing.<br>
+• Several players loaded at once.<br>
+• Autoplay with sound.<br>
+• No transcript or captions.<br><br>
+
+<h3>Try It Yourself</h3>
+• Create a responsive video container with a click-to-load placeholder and a transcript in a details element.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>facade</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+  .v { background: #111; color: #fff; aspect-ratio: 16/9; display: grid; place-items: center; cursor: pointer; border-radius: 8px; }
+</style>
+</head>
+<body>
+<div class="v" id="v">Click to load video</div>
+<script>v.onclick = () => v.innerHTML = '<iframe title="Video" width="100%" height="100%" style="border:0" allowfullscreen srcdoc="Playing..."></iframe>';</script>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Tutorial sites embed screencasts.<br>
+• Performance teams replace heavy players with a click-to-load facade.<br>
+• Privacy settings avoid tracking until the user presses play.<br>
+• Self-hosted video suits full control and no ads.<br><br>
+
+<h3>Best Practices</h3>
+• Load on interaction.<br>
+• Add transcripts.<br>
+• Use responsive ratios.<br>
+• Choose privacy friendly embeds.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> Why use a click-to-load facade for embedded videos?<br>
+• <b>A:</b> Video players are heavy. Showing a lightweight placeholder and loading the real player on click keeps the page fast and avoids third-party tracking until needed.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>transcript</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+</style>
+</head>
+<body>
+<details><summary>Transcript</summary><p>Welcome to the lesson. First we open the editor...</p></details>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-embed-sandbox-iframes',
                             name: 'Sandbox Iframes',
                             beginner: [
                                 {
-                                    content: `<h3>Sandbox Iframes</h3>
-&bull; Part of the HTML Embedded Content section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• The <b>sandbox</b> attribute <b>restricts what an iframe can do</b>.<br>
+• With no value it applies all restrictions: no scripts, no forms, no popups and no same-origin access.<br>
+• You then re-enable features by listing tokens.<br>
+• It protects your page from untrusted content.<br><br>
+
+<h3>Key Points</h3>
+• <b>allow-scripts</b> lets scripts run.<br>
+• <b>allow-forms</b> lets forms submit.<br>
+• <b>allow-same-origin</b> treats the frame as its real origin.<br>
+• <b>allow-popups</b> lets it open new windows.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>sandbox</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+</style>
+</head>
+<body>
+<iframe sandbox title="Locked" width="300" height="70"
+  srcdoc="<p>Scripts are blocked.</p><script>document.body.style.background='red'</script>"></iframe>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Start with an empty sandbox and add only the tokens needed.<br>
+• Never combine allow-scripts and allow-same-origin for untrusted content on your own origin.<br>
+• Use a separate domain for user content.<br>
+• Pair with a Content Security Policy.<br><br>
+
+<h3>Common Mistakes</h3>
+• Granting every permission, which removes the benefit.<br>
+• Using allow-scripts with allow-same-origin on same-origin content, which lets it remove its own sandbox.<br>
+• Forgetting that sandboxed frames have a null origin.<br>
+• Expecting storage and cookies to work.<br><br>
+
+<h3>Try It Yourself</h3>
+• Create three sandboxed frames: fully locked, with allow-scripts only, and with allow-forms, and observe what each one can do.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>allow scripts</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+</style>
+</head>
+<body>
+<iframe sandbox="allow-scripts" title="Scripted" width="300" height="70"
+  srcdoc="<p id='p'>Waiting</p><script>p.textContent='Script ran in sandbox'</script>"></iframe>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Code playgrounds run user code inside sandboxed frames.<br>
+• Comment systems render untrusted HTML in sandboxes.<br>
+• Ad networks use them to contain ads.<br>
+• Security reviews check every iframe.<br><br>
+
+<h3>Best Practices</h3>
+• Least privilege.<br>
+• Use separate origins for user content.<br>
+• Add CSP frame rules.<br>
+• Test what the frame really can do.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> Why is allow-scripts plus allow-same-origin dangerous?<br>
+• <b>A:</b> A same-origin script can reach into the parent page or remove the sandbox attribute from its own frame, which cancels the protection.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>permissions</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+</style>
+</head>
+<body>
+<iframe sandbox="allow-forms allow-popups" title="Limited" width="300" height="80"
+  srcdoc="<form><input name=q placeholder=Search><button>Go</button></form>"></iframe>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         },
                         {
-                            // TODO: authored content pending.
                             id: 'html-embed-cross-origin-iframes',
                             name: 'Cross-Origin Iframes',
                             beginner: [
                                 {
-                                    content: `<h3>Cross-Origin Iframes</h3>
-&bull; Part of the HTML Embedded Content section.<br>
-&bull; Detailed notes, syntax and worked examples for this topic are being prepared and will appear here.`,
+                                    content: `<h3>What It Is</h3>
+• A <b>cross-origin iframe</b> loads a page from a <b>different domain, protocol or port</b>.<br>
+• The browser applies the same-origin policy, so the two pages cannot read each other directly.<br>
+• They can talk through the <b>postMessage</b> API.<br>
+• Most third-party embeds are cross-origin.<br><br>
+
+<h3>Key Points</h3>
+• Origin means scheme, host and port together.<br>
+• Parent scripts cannot read the child DOM, and the reverse.<br>
+• Cookies in third-party frames may be blocked by browsers.<br>
+• Servers can refuse framing with headers.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>cross-origin</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+</style>
+</head>
+<body>
+<p>Frames from other sites are isolated from this page.</p>
+<iframe title="Example" width="300" height="80" srcdoc="<p style='font-family:sans-serif'>Imagine this came from another site.</p>"></iframe>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            intermediate: [
+                                {
+                                    content: `<h3>In Practice</h3>
+• Use <b>postMessage</b> with a specific target origin, never a wildcard for sensitive data.<br>
+• Always check <b>event.origin</b> in the receiver.<br>
+• Servers use <b>X-Frame-Options</b> or <b>Content-Security-Policy: frame-ancestors</b> to control who may embed them.<br>
+• Use the Permissions Policy to limit features.<br><br>
+
+<h3>Common Mistakes</h3>
+• Posting messages with * as target for private data.<br>
+• Not verifying event.origin.<br>
+• Assuming third-party cookies will work.<br>
+• Embedding pages that block framing.<br><br>
+
+<h3>Try It Yourself</h3>
+• Send a message from a parent page to an iframe and reply from the frame, verifying the origin in both handlers.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>secure message</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+</style>
+</head>
+<body>
+<iframe id="f" title="Child" width="300" height="70" srcdoc="<script>addEventListener('message', e => { document.body.textContent = 'Child got: ' + e.data; })</script>"></iframe>
+<button onclick="f.contentWindow.postMessage('hi', '*')">Send</button>
+</body>
+</html>`,
+                                    ]
+                                }
+                            ],
+                            expert: [
+                                {
+                                    content: `<h3>Real-World Use</h3>
+• Payment forms are cross-origin frames so card data never touches your page.<br>
+• Single sign-on and widgets rely on postMessage.<br>
+• Browsers keep tightening third-party storage.<br>
+• Security headers decide who can frame a page.<br><br>
+
+<h3>Best Practices</h3>
+• Verify origins on every message.<br>
+• Use exact target origins.<br>
+• Send minimal data.<br>
+• Test with third-party cookies blocked.<br><br>
+
+<h3>Interview Question</h3>
+• <b>Q:</b> How can two cross-origin pages communicate safely?<br>
+• <b>A:</b> With window.postMessage, giving an exact target origin when sending and checking event.origin when receiving.<br>`,
+                                    codeExamples: [
+`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>check origin</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 1rem auto; line-height: 1.5; }
+</style>
+</head>
+<body>
+<script>
+  addEventListener('message', e => {
+    if (e.origin !== 'https://trusted.example.com') return;   // ignore others
+    console.log('accepted', e.data);
+  });
+</script><p>Handler registered. Open the console.</p>
+</body>
+</html>`,
+                                    ]
                                 }
                             ]
                         }

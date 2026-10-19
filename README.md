@@ -41,7 +41,7 @@ client id from Google Cloud Console and the button appears on the login form. Le
 | What | Where | Command |
 |---|---|---|
 | Run the API | repository root | `mvn spring-boot:run` |
-| Backend tests (126, H2) | repository root | `mvn test` |
+| Backend tests (131, H2) | repository root | `mvn test` |
 | One jar with the site inside | repository root | `mvn -Pwith-site -DskipTests package`, then `java -jar target/javaschoollab-server-0.1.0.jar` |
 | React dev server | `frontend/` | `npm install`, then `npm run dev` (needs the backend on :3001) |
 | Front-end tests and type check | `frontend/` | `npm test`, `npm run typecheck` |

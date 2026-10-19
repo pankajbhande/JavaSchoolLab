@@ -43,7 +43,16 @@ interface ContentAreaProps {
   extraBelowNotes?: React.ReactNode;
 }
 
+// HTML/CSS lessons share this button; their samples are web pages, not Java.
+const looksLikeHtml = (code: string) => /^\s*(<!doctype\s+html|<html[\s>]|<(head|body|style|div|p|h[1-6]|a|ul|ol|table|form|img|span|button)[\s>])/i.test(code);
+
 const handleAction = (code: string) => {
+  if (looksLikeHtml(code)) {
+    const url = URL.createObjectURL(new Blob([code], { type: "text/html" }));
+    window.open(url, "_blank");
+    setTimeout(() => URL.revokeObjectURL(url), 60_000);
+    return;
+  }
   localStorage.setItem("java_try_code", code);
   window.open("/java-compiler.html", "_blank");   // served from public/, so it also exists in production builds
 };

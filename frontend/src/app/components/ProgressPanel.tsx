@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'motion/react';
-import { Flame, Zap, BookOpenCheck, Clock, PlayCircle, RefreshCw } from 'lucide-react';
+import { Flame, Clock, PlayCircle, RefreshCw } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useProgress } from '../context/ProgressContext';
@@ -72,24 +72,12 @@ export function ProgressPanel() {
 
       <StreakBanner />
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-5">
+      <div className="grid grid-cols-2 gap-3 mb-5">
         <Stat
           icon={<Flame className="w-5 h-5 text-white" />}
           value={summary.currentStreak === 0 ? 'Start today' : `${summary.currentStreak} day${summary.currentStreak === 1 ? '' : 's'}`}
           label={`${summary.longestStreak > summary.currentStreak ? `Best: ${summary.longestStreak} days` : 'Current streak'} · freeze ${summary.streakFreeze.available ? 'ready' : 'used'}`}
           tone="bg-gradient-to-br from-orange-500 to-red-500"
-        />
-        <Stat
-          icon={<Zap className="w-5 h-5 text-white" />}
-          value={summary.xp.toLocaleString()}
-          label="XP earned"
-          tone="bg-gradient-to-br from-amber-400 to-yellow-500"
-        />
-        <Stat
-          icon={<BookOpenCheck className="w-5 h-5 text-white" />}
-          value={`${summary.modulesPassed}`}
-          label={summary.modulesPassed === 1 ? 'Module passed' : 'Modules passed'}
-          tone="bg-gradient-to-br from-emerald-500 to-teal-500"
         />
         <Stat
           icon={<Clock className="w-5 h-5 text-white" />}

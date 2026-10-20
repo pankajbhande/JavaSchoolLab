@@ -16,3 +16,18 @@
 ::highlight(jsl-find) { background-color: #fde047; color: #111827; }
 /* Night mode: lesson text and inline code are light, so a pale yellow highlight made them unreadable; use a deep amber instead. */
 .dark ::highlight(jsl-find) { background-color: #92400e; color: #fffbeb; }
+
+/* Night mode: inline code, highlights and marks must always keep a dark background with light text.
+   Unlayered and !important so no layer, utility class or highlight can turn them into pale boxes with pale text. */
+.dark .topic-content :not(pre) > code,
+.dark .prose :not(pre) > code {
+  background: rgba(251, 146, 60, 0.16) !important;
+  color: #fed7aa !important;
+  border: 1px solid rgba(251, 146, 60, 0.3) !important;
+}
+.dark .topic-content mark,
+.dark .prose mark {
+  background: rgba(180, 83, 9, 0.55) !important;
+  color: #fffbeb !important;
+}
+.dark .topic-content ::selection { background: rgba(59, 130, 246, 0.55); color: #fff; }

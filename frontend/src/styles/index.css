@@ -1017,3 +1017,11 @@
 .dark .topic-content [style*="background-color: #fbbf24" i][style*="color: #6b7280" i] {
   color: #4b5563 !important;
 }
+
+/* Inheritance diagrams in the older lessons use table cells only 30-40px wide for "<- extends"; the label then wraps one letter per line. */
+.topic-content td[style*="width:40px" i], .topic-content td[style*="width:30px" i] {
+  white-space: nowrap;
+  width: auto !important;
+  padding-left: 8px;
+  padding-right: 8px;
+}

@@ -10,7 +10,7 @@
   "interviewQA": 1872,
   "cheatNotes": 960,
   "interviewQuestions": 3181,
-  "characters": 21414195
+  "characters": 21415151
  },
  "items": [
   {
@@ -161,8 +161,8 @@
    "id": "collection",
    "name": "Collection Framework",
    "file": "courses/collection.json",
-   "bytes": 514268,
-   "sha256": "d4259d36f253f47877810ba88f48c97162c884b61fb4e204b8e7b58021c1779f",
+   "bytes": 515240,
+   "sha256": "ec06239caa51005efde23715e0953644ae2f28d0a482e37f5e5d56948d24d9e8",
    "counts": {
     "modules": 6,
     "topics": 16,
@@ -172,7 +172,7 @@
     "interviewQA": 0,
     "cheatNotes": 57,
     "interviewQuestions": 138,
-    "characters": 475109
+    "characters": 476065
    }
   },
   {

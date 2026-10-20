@@ -436,19 +436,13 @@ A quick decision guide for picking the correct collection type based on the requ
 </ul>
 <h4>ArrayList Class Hierarchy</h4>
 <br>
-<table border="0" cellpadding="0" cellspacing="0" style="width:100%; text-align:center;">
-<tr>
-<td style="background:#eef7e9; border:1px solid #8fbf7f; border-radius:6px; padding:10px 14px;"><strong>Iterable</strong><br>(I)</td>
-<td style="width:40px; font-size:12px; color:#3b6e3b;">&larr; extends</td>
-<td style="background:#eef7e9; border:1px solid #8fbf7f; border-radius:6px; padding:10px 14px;"><strong>Collection</strong><br>(I)</td>
-<td style="width:40px; font-size:12px; color:#3b6e3b;">&larr; extends</td>
-<td style="background:#eef7e9; border:1px solid #8fbf7f; border-radius:6px; padding:10px 14px;"><strong>List</strong><br>(I)</td>
-<td style="width:40px; font-size:12px; color:#b5651d;">&larr; implements</td>
-<td style="background:#e6eefc; border:1px solid #7fa0d9; border-radius:6px; padding:10px 14px;"><strong>AbstractList</strong><br>(c)</td>
-<td style="width:40px; font-size:12px; color:#3b6e3b;">&larr; extends</td>
-<td style="background:#e6eefc; border:1px solid #7fa0d9; border-radius:6px; padding:10px 14px;"><strong>ArrayList</strong><br>(c)</td>
-</tr>
-</table>
+<div style="display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:8px 4px; width:100%; font-size:12px; line-height:1.25;">
+<div style="background:#eef7e9; border:1px solid #8fbf7f; border-radius:5px; padding:3px 8px; text-align:center; line-height:1.25;"><strong style="font-size:12px; padding:0 5px;">Iterable</strong><br><span style="font-size:11px;">(I)</span></div>
+<div style="display:inline-flex; align-items:center; gap:4px;"><span style="font-size:11px; color:#3b6e3b; white-space:nowrap;">&larr; extends</span><div style="background:#eef7e9; border:1px solid #8fbf7f; border-radius:5px; padding:3px 8px; text-align:center; line-height:1.25;"><strong style="font-size:12px; padding:0 5px;">Collection</strong><br><span style="font-size:11px;">(I)</span></div></div>
+<div style="display:inline-flex; align-items:center; gap:4px;"><span style="font-size:11px; color:#3b6e3b; white-space:nowrap;">&larr; extends</span><div style="background:#eef7e9; border:1px solid #8fbf7f; border-radius:5px; padding:3px 8px; text-align:center; line-height:1.25;"><strong style="font-size:12px; padding:0 5px;">List</strong><br><span style="font-size:11px;">(I)</span></div></div>
+<div style="display:inline-flex; align-items:center; gap:4px;"><span style="font-size:11px; color:#b5651d; white-space:nowrap;">&larr; implements</span><div style="background:#e6eefc; border:1px solid #7fa0d9; border-radius:5px; padding:3px 8px; text-align:center; line-height:1.25;"><strong style="font-size:12px; padding:0 5px;">AbstractList</strong><br><span style="font-size:11px;">(c)</span></div></div>
+<div style="display:inline-flex; align-items:center; gap:4px;"><span style="font-size:11px; color:#3b6e3b; white-space:nowrap;">&larr; extends</span><div style="background:#e6eefc; border:1px solid #7fa0d9; border-radius:5px; padding:3px 8px; text-align:center; line-height:1.25;"><strong style="font-size:12px; padding:0 5px;">ArrayList</strong><br><span style="font-size:11px;">(c)</span></div></div>
+</div>
 <br>
 <h4>ArrayList Cannot Hold Primitive Types</h4>
 <br>
@@ -561,15 +555,15 @@ import java.util.ArrayList;
 
 public class ArrayListAddDemo { // class that holds the main method
     public static void main(String[] args) { // program entry point
-        ArrayList<String> cars = new ArrayList<String>(); // creates an empty ArrayList named cars
-        cars.add("Sheru");
-        cars.add("Pankaj");
-        cars.add("Dheeraj");
-        cars.add("Mumbai");
-        System.out.println(cars);
+        ArrayList<String> names = new ArrayList<String>(); // creates an empty ArrayList named names
+        names.add("Sheru");
+        names.add("Pankaj");
+        names.add("Dheeraj");
+        names.add("Meena");
+        System.out.println(names);
     }
 }
-// OUTPUT: [Sheru, Pankaj, Dheeraj, Mumbai]`,
+// OUTPUT: [Sheru, Pankaj, Dheeraj, Meena]`,
                   `// Java ArrayList addAll() Method
 package com.javaschoollab.demo;
 
@@ -1664,13 +1658,13 @@ import java.util.List;
 
 public class SynchronizedArrayListExample { // class that holds the main method
     public static void main(String[] args) { // program entry point
-        ArrayList<String> arrayList = new ArrayList<>(); // creates an empty ArrayList named arrayList
-        arrayList.add("Sheru");
-        arrayList.add("Dheeraj");
-        arrayList.add("Pankaj");
+        ArrayList<String> names = new ArrayList<>(); // creates an empty ArrayList named names
+        names.add("Sheru");
+        names.add("Dheeraj");
+        names.add("Pankaj");
 
         // Get a synchronized (thread-safe) view of the ArrayList
-        List<String> synchronizedList = Collections.synchronizedList(arrayList);
+        List<String> synchronizedList = Collections.synchronizedList(names);
 
         // Always synchronize manually while iterating
         synchronized (synchronizedList) {
@@ -2073,25 +2067,25 @@ import java.util.Iterator;
 
 public class ArrayListStringIterationDemo { // class that holds the main method
     public static void main(String[] args) { // program entry point
-        ArrayList<String> obj = new ArrayList<String>(); // creates an empty ArrayList named obj
-        obj.add("Pankaj");       // Index: 0
-        obj.add("Udgir");        // Index: 1
-        obj.add("Latur");        // Index: 2
-        obj.add("Maharashtra");  // Index: 3
-        obj.add("India");        // Index: 4
+        ArrayList<String> address = new ArrayList<String>(); // creates an empty ArrayList named address
+        address.add("Pankaj");       // Index: 0
+        address.add("Udgir");        // Index: 1
+        address.add("Latur");        // Index: 2
+        address.add("Maharashtra");  // Index: 3
+        address.add("India");        // Index: 4
 
         // 1st Way: Using Simple Way
-        System.out.println("Using Simple Way: " + obj);
+        System.out.println("Using Simple Way: " + address);
 
         // 2nd Way: Iterator
-        Iterator<String> itr = obj.iterator();
+        Iterator<String> itr = address.iterator();
         while (itr.hasNext()) {
             System.out.println("Using Iterator: " + itr.next());
         }
 
         // 3rd Way: For Each Loop
-        for (Object o : obj) {
-            System.out.println("Using For Each Loop: " + o);
+        for (String part : address) {
+            System.out.println("Using For Each Loop: " + part);
         }
     }
 }

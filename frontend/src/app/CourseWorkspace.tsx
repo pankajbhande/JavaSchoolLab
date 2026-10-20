@@ -501,7 +501,7 @@ export default function CourseWorkspace() {
       onTopicSelect={handleTopicSelect}
       searchQuery={searchQuery}
       isMinimized={isDesktop ? leftSidebarMinimized : false}
-      onToggleMinimize={() => setLeftSidebarMinimized(!leftSidebarMinimized)}
+      onToggleMinimize={() => (isDesktop ? setLeftSidebarMinimized(!leftSidebarMinimized) : setMobileDrawer(null))}
       visitedTopics={visitedTopics}
     />
   );
@@ -512,13 +512,14 @@ export default function CourseWorkspace() {
       topic={selectedTopic}
       topicName={selectedTopic?.name || null}
       isMinimized={isDesktop ? rightSidebarMinimized : false}
-      onToggleMinimize={() => setRightSidebarMinimized(!rightSidebarMinimized)}
+      onToggleMinimize={() => (isDesktop ? setRightSidebarMinimized(!rightSidebarMinimized) : setMobileDrawer(null))}
     />
   );
 
   return (
     <div className="h-screen flex flex-col bg-gray-100 dark:bg-gray-900">
-      <Header
+      {/* Focus mode on a phone or tablet hides the header, course tabs and toolbar too: the reading area gets the whole screen. */}
+      {!(focusMode && !isDesktop) && <Header
         onToggleSpeech={toggleSpeech}
         isSpeaking={isSpeaking}
         onSearch={handleSearch}
@@ -526,14 +527,14 @@ export default function CourseWorkspace() {
         voiceGender={voiceGender}
         onVoiceChange={setVoiceGender}
         onOpenSearch={() => setPaletteOpen(true)}
-      />
+      />}
 
-      {!showDashboard && (
+      {!showDashboard && !(focusMode && !isDesktop) && (
         <TopicsBar courses={filteredCourses} onCourseSelect={handleCourseSelect} selectedCourseId={selectedCourseId} />
       )}
 
       {/* Below lg the sidebars are off-screen, so this bar is the only way to reach them. */}
-      {!showDashboard && !isDesktop && (
+      {!showDashboard && !isDesktop && !focusMode && (
         <div className="flex items-center gap-2 px-3 py-2 bg-white dark:bg-gray-900 border-b border-orange-200/70 dark:border-orange-900/40">
           {mobileSearchOpen ? (
             // Takes the whole bar while active: a 44px-wide field on a phone is unusable,

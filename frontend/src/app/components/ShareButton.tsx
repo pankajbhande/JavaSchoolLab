@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Share2, Link2, Check } from 'lucide-react';
 import { toast } from 'sonner';
-import { CHANNELS, canonicalTopicUrl, shareLink, shareText, type ShareChannel } from '../lib/share';
+import { CHANNELS, canonicalCourseUrl, canonicalTopicUrl, shareLink, shareText, type ShareChannel } from '../lib/share';
 import { track } from '../services/analytics';
 
 const btn =
@@ -12,7 +12,23 @@ const btn =
  * small menu offers WhatsApp, Telegram, LinkedIn, X, Facebook, email and Copy link. The link is the topic's own address, so the friend
  * lands on the same lesson; the preview they see in the chat is made by the server (see SharePageService).
  */
-export function ShareButton({ topicName, courseName }: { topicName: string; courseName: string }) {
+const chipBtn =
+  'h-8 w-8 rounded-full grid place-items-center border border-orange-200 bg-white/95 text-orange-600 shadow-sm hover:bg-orange-50 dark:border-orange-900/50 dark:bg-gray-800/95 dark:text-orange-400 dark:hover:bg-gray-700 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500';
+
+interface ShareButtonProps {
+  courseName: string;
+  /** Required for a topic share; for a course share it is ignored. */
+  topicName?: string;
+  /** 'course' shares the whole course (needs courseId); the default shares the lesson that is open. */
+  kind?: 'topic' | 'course';
+  courseId?: string;
+  /** 'tile' is the lesson toolbar button; 'chip' is a small round button for cards and headers. */
+  variant?: 'tile' | 'chip';
+  /** Which side the menu opens towards, so it stays inside the screen. */
+  menuAlign?: 'left' | 'right';
+}
+
+export function ShareButton({ topicName = '', courseName, kind = 'topic', courseId, variant = 'tile', menuAlign = 'right' }: ShareButtonProps) {
   const [open, setOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   const box = useRef<HTMLDivElement>(null);
@@ -26,14 +42,18 @@ export function ShareButton({ topicName, courseName }: { topicName: string; cour
     return () => { document.removeEventListener('mousedown', away); document.removeEventListener('keydown', esc); };
   }, [open]);
 
-  const payload = () => ({ url: canonicalTopicUrl(window.location.origin, window.location.pathname), topicName, courseName });
+  const isCourse = kind === 'course' && !!courseId;
+  const what = isCourse ? 'course' : 'topic';
+  const payload = () => isCourse
+    ? { url: canonicalCourseUrl(window.location.origin, courseId!), topicName: courseName, courseName, kind: 'course' as const }
+    : { url: canonicalTopicUrl(window.location.origin, window.location.pathname), topicName, courseName };
   const record = (channel: string) => track('share', { path: window.location.pathname, detail: channel });
 
   const onClick = async () => {
     const p = payload();
     if (typeof navigator.share === 'function' && window.matchMedia?.('(pointer: coarse)').matches) {
       try {
-        await navigator.share({ title: `${topicName} on JavaSchoolLab`, text: shareText(p), url: p.url });
+        await navigator.share({ title: `${isCourse ? courseName : topicName} on JavaSchoolLab`, text: shareText(p), url: p.url });
         record('system');
       } catch { /* the person closed the sheet: nothing to do */ }
       return;
@@ -65,11 +85,11 @@ export function ShareButton({ topicName, courseName }: { topicName: string; cour
 
   return (
     <div className="relative" ref={box}>
-      <button type="button" onClick={onClick} className={btn} title="Share this topic with friends" aria-label="Share this topic with friends" aria-haspopup="menu" aria-expanded={open}>
-        <Share2 className="w-5 h-5 sm:w-4 sm:h-4" aria-hidden="true" />
+      <button type="button" onClick={e => { e.stopPropagation(); onClick(); }} className={variant === 'chip' ? chipBtn : btn} title={`Share this ${what} with friends`} aria-label={`Share this ${what} with friends`} aria-haspopup="menu" aria-expanded={open}>
+        <Share2 className={variant === 'chip' ? 'w-4 h-4' : 'w-5 h-5 sm:w-4 sm:h-4'} aria-hidden="true" />
       </button>
       {open && (
-        <div role="menu" aria-label="Share this topic" className="absolute right-0 z-40 mt-2 w-56 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-1.5 shadow-xl">
+        <div role="menu" aria-label={`Share this ${what}`} onClick={e => e.stopPropagation()} className={`absolute ${menuAlign === 'left' ? 'left-0' : 'right-0'} z-40 mt-2 w-56 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-1.5 shadow-xl`}>
           <p className="px-2.5 pb-1 pt-1.5 text-[11px] font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">Share with friends</p>
           {CHANNELS.map(c => (
             <button key={c.id} role="menuitem" type="button" onClick={() => openChannel(c.id)}

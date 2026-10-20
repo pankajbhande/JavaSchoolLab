@@ -10,6 +10,7 @@ import { ProgressPanel } from './ProgressPanel';
 import { useProgress } from '../context/ProgressContext';
 import { courseStats } from '../data/courseStats';
 import { useAuth } from '../context/AuthContext';
+import { ShareButton } from './ShareButton';
 import {
   Users, Sparkles, GraduationCap, BookOpen, Award,
   FileCode2, Coffee, Boxes, Puzzle, Database, Globe, Link2, Workflow, Rocket, Atom, Network,
@@ -631,13 +632,16 @@ export function Dashboard({ onCourseSelect, searchQuery = '' }: DashboardProps) 
                   viewport={{ once: true, amount: 0.15 }}
                 >
                   {coursesInCategory.map((course) => (
-                    <motion.button
-                      type="button"
+                    <motion.div
                       key={course.id}
-                      aria-label={`${course.name}: ${course.description}${courseStats[course.id] ? `, ${courseStats[course.id].modules} modules, ${courseStats[course.id].topics} topics` : ''}`}
                       variants={cardVariants}
                       whileHover={{ scale: 1.05, y: -6, transition: { type: 'spring', stiffness: 320, damping: 18 } }}
                       whileTap={{ scale: 0.96 }}
+                      className="group relative"
+                    >
+                    <button
+                      type="button"
+                      aria-label={`${course.name}: ${course.description}${courseStats[course.id] ? `, ${courseStats[course.id].modules} modules, ${courseStats[course.id].topics} topics` : ''}`}
                       onClick={() => onCourseSelect(course.id)}
                       className="group cursor-pointer block w-full text-left rounded-2xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-orange-600"
                     >
@@ -699,7 +703,9 @@ export function Dashboard({ onCourseSelect, searchQuery = '' }: DashboardProps) 
                           </span>
                         </div>
                       </div>
-                    </motion.button>
+                    </button>
+                    <div className="absolute bottom-2 right-2 z-10"><ShareButton kind="course" courseId={course.id} courseName={course.name} variant="chip" menuAlign="right" /></div>
+                    </motion.div>
                   ))}
                 </motion.div>
               </div>

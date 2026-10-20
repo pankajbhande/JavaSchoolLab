@@ -26,11 +26,15 @@ public class SharePageService {
     /** A topic as found in the course index. */
     record Topic(String courseName, String moduleName, String name) {}
 
+    /** A course as found in the course index. */
+    record Course(String name, int modules, int topics) {}
+
     private static final Pattern TITLE = Pattern.compile("<title>.*?</title>", Pattern.DOTALL);
 
     private final ContentService content;
     private final ObjectMapper json;
     private volatile Map<String, Topic> topics;      // "courseId|normalised topic id" -> topic
+    private volatile Map<String, Course> courses;    // normalised course id -> course
 
     SharePageService(ContentService content, ObjectMapper json) {
         this.content = content;
@@ -62,6 +66,61 @@ public class SharePageService {
             topics = t;
         }
         return t;
+    }
+
+    private Map<String, Course> courses() {
+        Map<String, Course> c = courses;
+        if (c == null) {
+            c = new HashMap<>();
+            try {
+                for (JsonNode course : json.readTree(content.index().bytes())) {
+                    int modules = 0;
+                    int topicCount = 0;
+                    for (JsonNode module : course.path("subTopics")) {
+                        modules++;
+                        topicCount += module.path("topics").size();
+                    }
+                    c.putIfAbsent(norm(course.path("id").asText()), new Course(course.path("name").asText(), modules, topicCount));
+                }
+            } catch (IOException e) {
+                c = Map.of();
+            }
+            courses = c;
+        }
+        return c;
+    }
+
+    Optional<Course> findCourse(String courseId) {
+        return Optional.ofNullable(courses().get(norm(courseId)));
+    }
+
+    /** The page for a course URL (/course/{id}): the real index.html carrying that course's title and description. */
+    public Optional<String> coursePage(String courseId, String origin, String path) {
+        String html;
+        try {
+            html = indexHtml();
+        } catch (IOException e) {
+            return Optional.empty();
+        }
+        Optional<Course> course = findCourse(courseId);
+        if (course.isEmpty()) return Optional.of(html);           // unknown course: the plain app, which shows its own "not found"
+        return Optional.of(withCourseTags(html, course.get(), origin + path));
+    }
+
+    static String withCourseTags(String html, Course c, String url) {
+        String title = c.name() + " course | JavaSchoolLab";
+        String description = "Learn " + c.name() + " step by step: " + c.topics() + " lessons in " + c.modules()
+                + " modules with worked examples, quizzes and interview questions. Free on JavaSchoolLab.";
+        String out = html;
+        out = replaceTag(out, TITLE, "<title>" + escape(title) + "</title>");
+        out = replaceMeta(out, "name=\"description\"", description);
+        out = replaceMeta(out, "property=\"og:title\"", title);
+        out = replaceMeta(out, "property=\"og:description\"", description);
+        out = replaceMeta(out, "property=\"og:url\"", url);
+        out = replaceMeta(out, "property=\"og:type\"", "website");
+        out = replaceMeta(out, "name=\"twitter:title\"", title);
+        out = replaceMeta(out, "name=\"twitter:description\"", description);
+        return out;
     }
 
     Optional<Topic> find(String courseId, String topicId) {

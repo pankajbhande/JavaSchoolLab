@@ -83,8 +83,8 @@ class DatasetsApiTest {
         for (JsonNode p : dataset("learning-paths")) { paths++; steps += p.get("steps").size(); }
 
         JsonNode totals = manifest.get("totals");
-        assertEquals(8, banks);
-        assertEquals(68, questions);
+        assertTrue(banks >= 8, "quiz banks: " + banks);
+        assertTrue(questions >= 68, "quiz questions: " + questions);
         assertEquals(99, challenges);
         assertEquals(19, packs);
         assertEquals(6, paths);

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { CHANNELS, canonicalTopicUrl, shareLink, shareText } from './share';
+import { CHANNELS, canonicalCourseUrl, canonicalTopicUrl, shareLink, shareText } from './share';
 
 const p = { url: 'https://javaschoollab.com/course/java/basics/constructor-chaining', topicName: 'Constructor Chaining', courseName: 'Java' };
 
@@ -36,5 +36,14 @@ describe('share links', () => {
     expect(link).not.toContain('"');
     expect(link.split('&').length).toBe(2);             // only the url= / text= separator, every other & is encoded
     expect(decodeURIComponent(link)).toContain('Q&A: "if" & else <tags>');
+  });
+
+  it('shares a whole course: its own address, text and email subject', () => {
+    expect(canonicalCourseUrl('https://javaschoollab.com/', 'javafx')).toBe('https://javaschoollab.com/course/javafx');
+    expect(canonicalCourseUrl('https://javaschoollab.com', 'HTML and CSS')).toBe('https://javaschoollab.com/course/HTML_and_CSS');
+    const c = { url: 'https://javaschoollab.com/course/javafx', topicName: 'JavaFX', courseName: 'JavaFX', kind: 'course' as const };
+    expect(shareText(c)).toContain('Learn JavaFX on JavaSchoolLab');
+    expect(shareLink('email', c)).toContain(encodeURIComponent('JavaFX on JavaSchoolLab'));
+    expect(shareLink('whatsapp', c)).toContain(encodeURIComponent('https://javaschoollab.com/course/javafx'));
   });
 });

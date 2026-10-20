@@ -1,7 +1,7 @@
 import { clearFindHighlight, highlightInPage } from '../lib/findInPage';
 import { useState, useRef, useEffect } from 'react';
 import type { Course, Topic, ContentBlock } from '../data/types';
-import { Copy, Check, Award, Image as ImageIcon, Layers, Code, ChevronRight, ChevronDown, Bot, Volume2, VolumeX, Clock, Lightbulb } from 'lucide-react';
+import { Copy, Check, Award, Image as ImageIcon, Layers, Code, ChevronRight, ChevronDown, Bot, Volume2, VolumeX, Clock, Lightbulb, X } from 'lucide-react';
 import { MCQTest } from './MCQTest';
 import { motion, AnimatePresence } from 'motion/react';
 import { toast } from 'sonner';
@@ -17,6 +17,7 @@ import { TopicToolbar } from './TopicToolbar';
 import { withJavaPackage } from '../lib/javaPackage';
 import { looksLikeHtml, formatHtml, highlightHtml } from '../lib/htmlCode';
 import { canTryOnline } from '../lib/tryIt';
+import { ShareButton } from './ShareButton';
 import { ReadingControls } from './shell/ReadingControls';
 import { useReadingPrefs } from '../hooks/useReadingPrefs';
 import { FONT_SCALES } from '../lib/readingPrefs';
@@ -421,6 +422,11 @@ export function ContentArea({
             </motion.div>
           </div>
 
+          <div className="mb-5 flex items-center justify-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300">
+            <ShareButton kind="course" courseId={course.id} courseName={course.name} variant="chip" menuAlign="left" />
+            <span>Share this course</span>
+          </div>
+
           <div className="bg-orange-100 dark:bg-orange-900/20 border border-orange-300 dark:border-orange-700 rounded-lg p-6">
             <p className="text-orange-800 dark:text-orange-300 font-medium mb-2">Select a topic from the sidebar to get started</p>
             <p className="text-orange-700 dark:text-orange-400 text-sm">
@@ -470,14 +476,16 @@ export function ContentArea({
       <div className="sticky top-0 z-30 h-1 -mb-1 pointer-events-none" aria-hidden="true">
         <div ref={progressRef} className="h-full origin-left bg-gradient-to-r from-orange-600 to-amber-400" style={{ transform: 'scaleX(0)' }} />
       </div>
+      {/* Focus mode: a slim bar that takes its own space (it never covers the lesson); the Esc hint only shows on larger screens. */}
       {focusMode && onToggleFocus && (
-        <div className="sticky top-2 z-30 h-0 flex justify-end pr-3">
+        <div className="sticky top-0 z-30 flex h-11 items-center justify-between gap-3 bg-gray-900/95 px-4 text-white backdrop-blur dark:bg-gray-800/95">
+          <span className="text-xs font-semibold uppercase tracking-wider text-white/80">Focus mode</span>
           <button
             type="button"
             onClick={onToggleFocus}
-            className="h-9 rounded-full bg-gray-900/85 px-4 text-xs font-semibold text-white shadow-lg backdrop-blur hover:bg-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400 dark:bg-white/90 dark:text-gray-900 dark:hover:bg-white"
+            className="inline-flex h-8 items-center gap-1.5 rounded-full bg-white/15 px-3 text-xs font-semibold text-white hover:bg-white/25 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400"
           >
-            Exit focus mode <span className="opacity-70">(Esc)</span>
+            <X className="h-3.5 w-3.5" aria-hidden="true" /> Exit <span className="hidden opacity-70 sm:inline">(Esc)</span>
           </button>
         </div>
       )}
@@ -565,7 +573,7 @@ export function ContentArea({
         {/* Test CTA — sits on the topic-title row, floated right. Kept outside contentRef so
             its label isn't read aloud. */}
         <div className="mt-1 mb-3 flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-end sm:gap-2 sm:float-right sm:ml-3 sm:mb-0 sm:flex-nowrap">
-          <div className="flex items-center justify-end gap-3 sm:gap-2">
+          <div className="flex items-center justify-center sm:justify-end gap-3 sm:gap-2">
           <ReadingControls prefs={reading} onChange={setReading} focusMode={focusMode} onToggleFocus={onToggleFocus} />
           <TopicToolbar
             courseName={course.name}

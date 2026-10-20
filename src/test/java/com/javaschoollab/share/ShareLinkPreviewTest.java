@@ -93,4 +93,30 @@ class ShareLinkPreviewTest {
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("Constructor Chaining | Java | JavaSchoolLab")));
     }
+
+    @Test
+    void theCoursesOwnTitleAndCountsReplaceTheGenericOnes() {
+        var course = new SharePageService.Course("JavaFX", 18, 120);
+        String html = SharePageService.withCourseTags(HEAD, course, "https://javaschoollab.com/course/javafx");
+        assertThat(html).contains("<title>JavaFX course | JavaSchoolLab</title>");
+        assertThat(html).contains("property=\"og:url\" content=\"https://javaschoollab.com/course/javafx\"");
+        assertThat(html).contains("120 lessons in 18 modules");
+        assertThat(html).doesNotContain("31 courses, 3,588 topics");
+    }
+
+    @Test
+    void aKnownCourseUrlAnswersWithItsOwnTitle() throws Exception {
+        mvc.perform(get("/course/java"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith("text/html"))
+                .andExpect(content().string(containsString("course | JavaSchoolLab</title>")))
+                .andExpect(content().string(containsString("test shell")));
+    }
+
+    @Test
+    void anUnknownCourseStillGetsTheNormalPage() throws Exception {
+        mvc.perform(get("/course/no-such-course-xyz"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("<title>JavaSchoolLab test shell</title>")));
+    }
 }

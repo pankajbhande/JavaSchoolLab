@@ -1,3 +1,4 @@
+import { ShareButton } from './ShareButton';
 import { useState, useEffect, useRef, Fragment } from 'react';
 import { Code, BookOpen, FileText, Database, PanelLeftClose, PanelLeft, Layers, CheckCircle2 } from 'lucide-react';
 import type { Course } from '../data/types';
@@ -110,9 +111,12 @@ export function Sidebar({
           </div>
           {pinnedCourse && (
             <div className="border-l-4 border-orange-500 pl-2.5">
+              <div className="flex items-start justify-between gap-2">
               <h3 className="font-bold text-sm text-gray-800 dark:text-gray-200">
                 <Highlight text={pinnedCourse.name} query={query} />
               </h3>
+              <ShareButton kind="course" courseId={pinnedCourse.id} courseName={pinnedCourse.name} variant="chip" menuAlign="left" />
+              </div>
               <p className="text-[11px] text-gray-600 dark:text-gray-400">
                 {topicCount(pinnedCourse.subTopics)} topics · Select a topic to start learning
               </p>

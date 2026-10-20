@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * Topic pages (/course/{course}/{module}/{topic} and /course/{course}/{topic}) answer with the React app's index.html carrying that
- * topic's title and description, so a shared link previews properly. Everything else is served by the normal site handler.
+ * Course pages (/course/{course}) and topic pages (/course/{course}/{module}/{topic}, /course/{course}/{topic}) answer with the React app's index.html carrying that
+ * course's or topic's title and description, so a shared link previews properly. Everything else is served by the normal site handler.
  */
 @RestController
 public class SharePageController {
@@ -20,6 +20,11 @@ public class SharePageController {
 
     public SharePageController(SharePageService pages) {
         this.pages = pages;
+    }
+
+    @GetMapping("/course/{courseId}")
+    public ResponseEntity<byte[]> course(@PathVariable String courseId, HttpServletRequest request) {
+        return html(pages.coursePage(courseId, origin(request), request.getRequestURI()));
     }
 
     @GetMapping("/course/{courseId}/{topicId}")
@@ -33,9 +38,16 @@ public class SharePageController {
     }
 
     private ResponseEntity<byte[]> respond(String courseId, String topicId, HttpServletRequest request) {
-        String origin = request.getScheme() + "://" + request.getServerName()
+        return html(pages.page(courseId, topicId, origin(request), request.getRequestURI()));
+    }
+
+    private static String origin(HttpServletRequest request) {
+        return request.getScheme() + "://" + request.getServerName()
                 + ((request.getServerPort() == 80 || request.getServerPort() == 443) ? "" : ":" + request.getServerPort());
-        return pages.page(courseId, topicId, origin, request.getRequestURI())
+    }
+
+    private static ResponseEntity<byte[]> html(java.util.Optional<String> page) {
+        return page
                 .map(html -> ResponseEntity.ok()
                         .contentType(new MediaType(MediaType.TEXT_HTML, StandardCharsets.UTF_8))
                         .cacheControl(CacheControl.noCache())

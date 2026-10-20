@@ -237,9 +237,11 @@ function splitIdentifier(name: string): string {
  * next or link to the one they want.
  */
 function codeTitle(code: string, index: number): string {
-  const cls = code.match(
-    /\b(?:public\s+|final\s+|abstract\s+|static\s+)*(?:class|interface|enum|record)\s+([A-Za-z_$][\w$]*)/
-  );
+  // a declaration starts a line (after modifiers); a word "class" at the end of a comment line must not match
+  const decl = String.raw`(?:class|interface|enum|record)[ \t]+([A-Za-z_$][\w$]*)`;
+  const cls =
+    code.match(new RegExp(String.raw`^[ \t]*public[ \t]+(?:(?:final|abstract|static)[ \t]+)*` + decl, 'm')) ??
+    code.match(new RegExp(String.raw`^[ \t]*(?:(?:public|final|abstract|static)[ \t]+)*` + decl, 'm'));
   if (cls) return splitIdentifier(cls[1]);
 
   const docTitle = code.match(/<title>([^<]{1,80})<\/title>/i);
@@ -727,8 +729,8 @@ export function ContentArea({
                     const explanationKey = `${idx}-${codeIdx}`;
                     const isExplanationOpen = openExplanations.has(explanationKey);
                     const exampleKey = `${topic?.id}-${idx}-${codeIdx}`;
-                    // a long single-example block has no button, so its code is always shown
-                    const isExampleOpen = !flippedExamples.has(exampleKey) || (hasSingleExample(content) && !hasInlineToggle(content));
+                    // every example can be hidden: short single-example blocks use the top-right button, all others a title row
+                    const isExampleOpen = !flippedExamples.has(exampleKey);
                     return (
                     <motion.div
                       key={codeIdx}
@@ -740,7 +742,7 @@ export function ContentArea({
                       {/* Every sample gets a heading derived from the code itself, so a
                           page of many programs reads as a labelled list rather than an
                           undifferentiated wall of code. */}
-                      {!hasSingleExample(content) && (
+                      {!hasInlineToggle(content) && (
                       <div className="flex items-center gap-2 mb-2">
                         <h3 className="font-display font-semibold text-base text-gray-800 dark:text-gray-200 min-w-0 flex-1">
                           {exampleLabel(listedExampleNames(content.content, content.codeExamples!.length)?.[codeIdx] ?? codeTitle(code, codeIdx), codeIdx)}
@@ -757,7 +759,7 @@ export function ContentArea({
                         animate={{ opacity: 1, height: 'auto' }}
                         exit={{ opacity: 0, height: 0 }}
                         transition={{ duration: 0.25 }}
-                        className={`overflow-hidden${hasSingleExample(content) ? ' mt-2' : ''}`}
+                        className={`overflow-hidden${hasInlineToggle(content) ? ' mt-2' : ''}`}
                       >
                       <div className="relative">
                       <div className="absolute top-2 right-2 z-10 flex gap-2">

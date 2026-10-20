@@ -4,13 +4,13 @@
  "totals": {
   "modules": 434,
   "topics": 3467,
-  "blocks": 26777,
-  "codeExamples": 19380,
+  "blocks": 26791,
+  "codeExamples": 19394,
   "codeExplanations": 558,
   "interviewQA": 2050,
   "cheatNotes": 960,
   "interviewQuestions": 3181,
-  "characters": 21597088
+  "characters": 21652865
  },
  "items": [
   {
@@ -161,18 +161,18 @@
    "id": "collection",
    "name": "Collection Framework",
    "file": "courses/collection.json",
-   "bytes": 731192,
-   "sha256": "66e52a2ed2cb01f8d6a3ae323ea958b4f98a0492456b61ed9bc6e78de68ad5ba",
+   "bytes": 788863,
+   "sha256": "3dcb283154c2f6f394a5f3a7411f5e591b3237ec1568b30c8837ebeb6b01a785",
    "counts": {
     "modules": 6,
     "topics": 16,
-    "blocks": 398,
-    "codeExamples": 239,
+    "blocks": 412,
+    "codeExamples": 253,
     "codeExplanations": 0,
     "interviewQA": 178,
     "cheatNotes": 57,
     "interviewQuestions": 138,
-    "characters": 658037
+    "characters": 713814
    }
   },
   {

@@ -46,9 +46,25 @@ def with_output(code: str, name: str) -> str:
     return code.replace(AUTO, block)
 
 
+def number_headings(blocks):
+    """Puts a running count before every method name ("1. add(E e)") and before every practice program."""
+    m = p = 0
+    out = []
+    for b in blocks:
+        content = b[0]
+        if '<h3 class="mcard">' in content:
+            m += 1
+            content = content.replace('<h3 class="mcard">', f'<h3>{m}. ', 1)
+        elif '<h3 class="practice">' in content:
+            p += 1
+            content = content.replace('<h3 class="practice">', f'<h3>Real-time practice {p}: ', 1)
+        out.append((content, *b[1:]))
+    return out
+
+
 def process_blocks(blocks, name):
     done = []
-    for i, b in enumerate(blocks):
+    for i, b in enumerate(number_headings(blocks)):
         content, codes = b[0], b[1] if len(b) > 1 else []
         new_codes = [with_output(c, f'{name} block {i} sample {j}') for j, c in enumerate(codes)]
         entry = {'content': content}
@@ -65,6 +81,13 @@ def build(spec_name: str):
     mod_spec.loader.exec_module(mod)
     t = mod.TOPIC
     topic = {'id': t['id'], 'name': t['name']}
+    sys.path.insert(0, os.path.join(HERE, 'specs'))
+    from _practice import PRACTICE
+    expert = list(t.get('expert', []))
+    extra = PRACTICE.get(t['id'], [])
+    if extra:
+        expert[-1:-1] = extra                      # practice programs go just before "Best practices"
+    t = {**t, 'expert': expert}
     for tier in ('beginner', 'intermediate', 'expert'):
         topic[tier] = process_blocks(t.get(tier, []), f"{t['id']}/{tier}")
     topic['interviewQA'] = [list(q) for q in t.get('qa', [])]

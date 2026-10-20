@@ -16,7 +16,7 @@ def table(headers, rows):
 def method(title, sig, returns, time, fresher, expert, code, watch=None, extra_codes=()):
     """One method card: what it is, how it behaves, a plain-English explanation for freshers, the deeper picture for experienced
     developers, an optional "watch out", and a runnable sample (more than one via extra_codes)."""
-    html = (f'<h3>{title}</h3>\n'
+    html = (f'<h3 class="mcard">{title}</h3>\n'
             f'<ul>\n<li><strong>Signature:</strong> <code>{sig}</code></li>\n<li><strong>Returns:</strong> {returns}</li>\n<li><strong>Time:</strong> {time}</li>\n</ul>\n'
             f'<p><strong>For freshers:</strong> {fresher}</p>\n'
             f'<p><strong>For experienced developers:</strong> {expert}</p>')
@@ -50,3 +50,12 @@ def hierarchy(chain):
         parts.append(link(word, color, name, kind, green) if word else box(name, kind, green))
     return ('<div style="display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:8px 4px; width:100%; font-size:12px; line-height:1.25;">\n'
             + '\n'.join(parts) + '\n</div>')
+
+
+
+
+def practice(title, intro, steps, code):
+    """A real-time practice block: a story, what the program does step by step, and one complete runnable program."""
+    html = (f'<h3 class="practice">{title}</h3>\n<p>{intro}</p>\n'
+            '<p><strong>What the program does:</strong></p>\n<ol>\n' + '\n'.join(f'<li>{x}</li>' for x in steps) + '\n</ol>')
+    return (html, [code])

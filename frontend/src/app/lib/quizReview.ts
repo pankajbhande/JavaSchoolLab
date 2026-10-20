@@ -19,6 +19,13 @@ interface ConceptRule {
 }
 
 const RULES: ConceptRule[] = [
+  { label: 'JavaFX Lifecycle & Scene Graph', test: /^fx-(lifecycle|init|stage|single-parent|canvas|timeline|swing)/i, lessons: ['application lifecycle','scene graph'] },
+  { label: 'JavaFX Layouts & Events', test: /^fx-(hbox|gridpane|stackpane|managed|event|setonaction|keyevent)/i, lessons: ['layouts','event handling'] },
+  { label: 'JavaFX Properties & Binding', test: /^fx-(unidirectional|bidirectional|change|listener|observablelist)/i, lessons: ['properties','binding'] },
+  { label: 'JavaFX FXML & CSS', test: /^fx-(fxml|css)/i, lessons: ['fxml','css'] },
+  { label: 'JavaFX TableView', test: /^fx-(table|updateitem)/i, lessons: ['tableview'] },
+  { label: 'JavaFX Concurrency & Data', test: /^fx-(ui-thread|runlater|task|jdbc|prepared)/i, lessons: ['concurrency','background'] },
+  { label: 'JavaFX Integration & Packaging', test: /^fx-(spring|testfx|jlink|fatjar)/i, lessons: ['spring boot','packaging'] },
   { label: 'JVM & Memory', test: /\bjvm\b|jvm-|\bheap\b|\bmetaspace\b|permgen|garbage|\bjit\b|stackoverflow|outofmemory|memory area/i, lessons: ['garbage collection', 'jvm memory', 'jvm architecture', 'memory management'] },
   { label: 'Design Patterns', test: /singleton|factory|builder pattern|\bbuilder\b|adapter|decorator|strategy|observer|\bproxy\b|template method|^dp-/i, lessons: ['design pattern'] },
   { label: 'Servlets & JSP', test: /servlet|\bjsp\b|httpsession|requestdispatcher|sendredirect|\bfilter\b|^srv-/i, lessons: ['servlet'] },

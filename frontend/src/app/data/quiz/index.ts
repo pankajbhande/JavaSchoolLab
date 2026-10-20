@@ -16,6 +16,7 @@ import { collections } from './banks/collections';
 import { servlets } from './banks/servlets';
 import { jvm } from './banks/jvm';
 import { designPatterns } from './banks/designPatterns';
+import { javafx } from './banks/javafx';
 
 // The JVM questions now sit inside the Java course: one copy of the bank per JVM module
 const JVM_MODULES = ['jvm-architecture', 'object-memory', 'garbage-collection', 'jvm-performance', 'jvm-problems'];
@@ -30,6 +31,7 @@ const BANKS: QuizBank[] = [
   servlets,
   ...jvmBanks,
   designPatterns,
+  javafx,
 ];
 
 const byKey = new Map<string, QuizBank>(BANKS.map(b => [b.key, b]));

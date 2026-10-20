@@ -9,8 +9,8 @@
   "codeExplanations": 558,
   "interviewQA": 1872,
   "cheatNotes": 960,
-  "interviewQuestions": 3123,
-  "characters": 21414203
+  "interviewQuestions": 3181,
+  "characters": 21414195
  },
  "items": [
   {
@@ -413,8 +413,8 @@
    "id": "javafx",
    "name": "JavaFX",
    "file": "courses/javafx.json",
-   "bytes": 227043,
-   "sha256": "79ba90e4966fe3a4bbd05d18c72b79975bfd2bbb52c8e1038d39106d88825bab",
+   "bytes": 231264,
+   "sha256": "79c1f68fcc0e04bb06705e22701f7cd71d1d80757161b1d348e0c0b3c865b309",
    "counts": {
     "modules": 20,
     "topics": 42,
@@ -423,8 +423,8 @@
     "codeExplanations": 0,
     "interviewQA": 122,
     "cheatNotes": 17,
-    "interviewQuestions": 6,
-    "characters": 185434
+    "interviewQuestions": 64,
+    "characters": 185426
    }
   },
   {

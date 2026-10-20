@@ -4,6 +4,7 @@
 // Used by coursesData.ts (eager list) and courseModules.ts (lazy loaders) so both build the same courses.
 
 import type { Course, SubTopic } from './types';
+import { javaFxInterviewGroups } from './JavaFXInterview';
 
 const join = (base: Course, before: Course[], after: Course[]): Course => ({
   ...base,
@@ -54,4 +55,4 @@ export const withSpringCoreRoadmap = (courses: Course[], overview: SubTopic[], s
 
 /** The JavaFX course with the roadmap overview in front and the 16 roadmap sections after its original modules. */
 export const withJavaFxRoadmap = (courses: Course[], overview: SubTopic[], sections: SubTopic[]): Course[] =>
-  courses.map(c => (c.id === 'javafx' ? { ...c, subTopics: [...overview, ...c.subTopics, ...sections] } : c));
+  courses.map(c => (c.id === 'javafx' ? { ...c, subTopics: [...overview, ...c.subTopics, ...sections], interviewQuestions: [...c.interviewQuestions, ...javaFxInterviewGroups] } : c));

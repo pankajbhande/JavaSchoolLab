@@ -91,10 +91,7 @@ stage.show();
 // header on top, text area in the middle, two buttons at the bottom`],
             ['Lifecycle logging.',
                 r`@Override public void init() { System.out.println("init: " + Thread.currentThread().getName()); }
-@Override public void start(Stage s) {
-    System.out.println("start: " + Thread.currentThread().getName());
-    s.show();
-}
+@Override public void start(Stage s) { System.out.println("start: " + Thread.currentThread().getName()); s.show(); }
 @Override public void stop() { System.out.println("stop"); }
 
 // OUTPUT:

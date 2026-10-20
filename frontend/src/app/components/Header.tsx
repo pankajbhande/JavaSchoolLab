@@ -1,5 +1,5 @@
-import { Search, Moon, Sun, LogIn, LogOut, User, Bot, Trophy } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { Search, Moon, Sun, LogIn, LogOut, User, Bot, Trophy, Home } from 'lucide-react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { toast } from 'sonner';
 import logo from '../../assets/logo1.jpg';
 import { Alarm } from './Alarm';
@@ -31,6 +31,7 @@ const isMac = typeof navigator !== 'undefined' && /Mac|iPhone|iPad/i.test(naviga
 
 export function Header({ onToggleSpeech, isSpeaking, onSearch, showSearch = true, voiceGender, onVoiceChange, onOpenSearch }: HeaderProps) {
   const navigate = useNavigate();
+  const onMainPage = useLocation().pathname === '/dashboard';
   const { theme, toggleTheme } = useTheme();
   const { user, isLoggedIn, isGuest, logout } = useAuth();
   const [showAlarm, setShowAlarm] = useState(false);
@@ -71,11 +72,13 @@ export function Header({ onToggleSpeech, isSpeaking, onSearch, showSearch = true
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
           >
+            <button type="button" onClick={() => navigate('/dashboard')} aria-label="Go to the main page" title="Main page" className="flex items-center gap-2 sm:gap-4 min-w-0 text-left cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white rounded-xl">
             <img src={logo} alt="JavaSchoolLab Logo" className="h-9 w-9 sm:h-12 sm:w-12 object-contain rounded-xl bg-white/90 p-0.5 shadow-md shadow-black/15 ring-1 ring-white/40" />
             <div className="min-w-0 leading-tight">
               <h1 className="font-bold text-lg sm:text-2xl tracking-tight truncate drop-shadow-sm">JavaSchoolLab</h1>
               <p className="hidden sm:block text-[13px] text-white/90 truncate">Learn Java, Python, React & More</p>
             </div>
+            </button>
           </motion.div>
 
           <div className="flex flex-wrap items-center justify-end gap-2 sm:gap-3">
@@ -90,6 +93,19 @@ export function Header({ onToggleSpeech, isSpeaking, onSearch, showSearch = true
                 onChange={(e) => onSearch?.(e.target.value)}
               />
             </label>}
+
+            {!onMainPage && (
+              <button
+                type="button"
+                onClick={() => navigate('/dashboard')}
+                aria-label="Home: back to the main page with all courses"
+                title="Home (all courses)"
+                className={`${headerBox} !px-0 w-10 justify-center md:!px-3 md:w-auto md:gap-2 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white`}
+              >
+                <Home className="w-4 h-4" aria-hidden="true" />
+                <span className="hidden md:inline text-sm font-semibold text-white">Home</span>
+              </button>
+            )}
 
             {/* Command palette trigger: replaces the old inline search box. One button so the
                 tour has a single target; the label collapses to an icon on phones. */}

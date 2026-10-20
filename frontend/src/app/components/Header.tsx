@@ -153,7 +153,7 @@ export function Header({ onToggleSpeech, isSpeaking, onSearch, showSearch = true
               >
                 <Bell className="w-5 h-5" />
               </button>
-              <div className={showAlarm ? 'absolute right-0 mt-3 w-72 z-50' : ''}>
+              <div className={showAlarm ? 'fixed inset-x-3 top-[calc(var(--app-header-h,56px)+0.5rem)] z-50 sm:absolute sm:inset-x-auto sm:top-auto sm:right-0 sm:mt-3 sm:w-72' : ''}>
                 <Alarm isOpen={showAlarm} />
               </div>
             </div>
@@ -179,7 +179,7 @@ export function Header({ onToggleSpeech, isSpeaking, onSearch, showSearch = true
                 )}
               </button>
               {showTimer && (
-                <div className="absolute right-0 mt-3 w-72">
+                <div className="fixed inset-x-3 top-[calc(var(--app-header-h,56px)+0.5rem)] z-50 sm:absolute sm:inset-x-auto sm:top-auto sm:right-0 sm:mt-3 sm:w-72">
                   <Timer timer={studyTimer} />
                 </div>
               )}

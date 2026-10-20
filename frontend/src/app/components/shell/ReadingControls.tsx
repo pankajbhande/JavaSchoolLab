@@ -56,7 +56,7 @@ export function ReadingControls({ prefs, onChange, focusMode, onToggleFocus }: P
         <div
           role="dialog"
           aria-label="Reading controls"
-          className="absolute right-0 z-40 mt-2 w-[min(92vw,18rem)] space-y-3 rounded-xl border border-gray-200 bg-white p-3 text-gray-800 shadow-xl dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
+          className="fixed inset-x-3 bottom-3 z-[60] max-h-[75vh] overflow-y-auto sm:absolute sm:inset-x-auto sm:bottom-auto sm:right-0 sm:z-40 sm:mt-2 sm:max-h-none sm:w-72 space-y-3 rounded-xl border border-gray-200 bg-white p-3 text-gray-800 shadow-xl dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
         >
           <div>
             <div className="mb-1 text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">Text size</div>

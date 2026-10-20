@@ -1,11 +1,12 @@
 // Angular roadmap, part 3: sections 10-13 (advanced Angular, state management, security and performance, testing and deployment).
 import type { SubTopic } from './types';
 import { blk, phaseOf, topic } from './jsRoadmapKit';
+import { angularExamples } from './RoadmapExamples2';
 
 const TABLE = 'class="w-full border border-gray-700 border-collapse [&_th]:border [&_td]:border [&_td]:px-2 [&_th]:py-2"';
 const ng = (n: number, title: string, priority: string, topics: SubTopic['topics']) => phaseOf('ng', n, title, priority, topics);
 
-export const angularRoadmap3: SubTopic[] = [
+const angularRoadmap3Base: SubTopic[] = [
   ng(10, 'Advanced Angular', 'Essential', [
     topic(
       'ng-standalone-signals',
@@ -1287,3 +1288,5 @@ jobs:
     ),
   ]),
 ];
+
+export const angularRoadmap3: SubTopic[] = [...angularRoadmap3Base, ...angularExamples];

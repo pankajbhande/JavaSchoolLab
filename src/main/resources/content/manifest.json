@@ -2,15 +2,15 @@
  "generatedBy": "scripts/export-content.mjs",
  "courses": 29,
  "totals": {
-  "modules": 426,
-  "topics": 3441,
-  "blocks": 26645,
-  "codeExamples": 19480,
+  "modules": 434,
+  "topics": 3467,
+  "blocks": 26723,
+  "codeExamples": 19556,
   "codeExplanations": 558,
-  "interviewQA": 1820,
+  "interviewQA": 1872,
   "cheatNotes": 960,
   "interviewQuestions": 3123,
-  "characters": 21322519
+  "characters": 21414203
  },
  "items": [
   {
@@ -89,18 +89,18 @@
    "id": "spring-core",
    "name": "Spring Core",
    "file": "courses/spring-core.json",
-   "bytes": 395128,
-   "sha256": "95c4693d6f4ac67f3af83466da0b3fd7285923be02e9ba104dee81d217542be5",
+   "bytes": 412310,
+   "sha256": "14cf99d3d15abc185e0a127edcf2148644e48c19635743c8e0d1418f9528509b",
    "counts": {
-    "modules": 23,
-    "topics": 58,
-    "blocks": 255,
-    "codeExamples": 228,
+    "modules": 24,
+    "topics": 62,
+    "blocks": 267,
+    "codeExamples": 240,
     "codeExplanations": 0,
-    "interviewQA": 178,
+    "interviewQA": 186,
     "cheatNotes": 45,
     "interviewQuestions": 10,
-    "characters": 325826
+    "characters": 340206
    }
   },
   {
@@ -287,18 +287,18 @@
    "id": "microservices-fundamentals",
    "name": "Microservices",
    "file": "courses/microservices-fundamentals.json",
-   "bytes": 343415,
-   "sha256": "8380722a2318a5472d8898022d39567809a3c582b9ded44476bdc2bf3b2ef2e8",
+   "bytes": 356106,
+   "sha256": "e1ead6d54c3ab03523cc5254b0397a77201447902786bb31e4881d605710aeb2",
    "counts": {
-    "modules": 18,
-    "topics": 59,
-    "blocks": 191,
-    "codeExamples": 135,
+    "modules": 19,
+    "topics": 62,
+    "blocks": 200,
+    "codeExamples": 143,
     "codeExplanations": 0,
-    "interviewQA": 134,
+    "interviewQA": 140,
     "cheatNotes": 8,
     "interviewQuestions": 10,
-    "characters": 287116
+    "characters": 297496
    }
   },
   {
@@ -323,108 +323,108 @@
    "id": "hibernate",
    "name": "Hibernate",
    "file": "courses/hibernate.json",
-   "bytes": 511523,
-   "sha256": "7416db028a2832e8589eef58fa26925cccc5bfc5d7b3f71ae66b412bec026e3d",
+   "bytes": 522771,
+   "sha256": "639983f5bdee6d01bb9d2dd5687ba3316ad54b7c1f1ccf24e9fab965ec3c9a28",
    "counts": {
-    "modules": 14,
-    "topics": 53,
-    "blocks": 528,
-    "codeExamples": 377,
+    "modules": 15,
+    "topics": 56,
+    "blocks": 537,
+    "codeExamples": 385,
     "codeExplanations": 0,
-    "interviewQA": 95,
+    "interviewQA": 101,
     "cheatNotes": 78,
     "interviewQuestions": 10,
-    "characters": 448422
+    "characters": 457508
    }
   },
   {
    "id": "react-js",
    "name": "ReactJS",
    "file": "courses/react-js.json",
-   "bytes": 414745,
-   "sha256": "388c3c8e3f5fe9c1d4b6a21c0e5972e22df1d0db796dcced920505dd86f8314e",
+   "bytes": 426081,
+   "sha256": "588e1ca5e4e19a40f4dfcd45c86464b12a05860253e3359421bcdc7e365232da",
    "counts": {
-    "modules": 18,
-    "topics": 65,
-    "blocks": 383,
-    "codeExamples": 331,
+    "modules": 19,
+    "topics": 68,
+    "blocks": 392,
+    "codeExamples": 340,
     "codeExplanations": 0,
-    "interviewQA": 148,
+    "interviewQA": 154,
     "cheatNotes": 39,
     "interviewQuestions": 4,
-    "characters": 347838
+    "characters": 356946
    }
   },
   {
    "id": "javascript",
    "name": "JavaScript",
    "file": "courses/javascript.json",
-   "bytes": 328916,
-   "sha256": "f84d233861b53afae4b9385d50f9088edc895ee9820d6883d29c5a098b8a54ab",
+   "bytes": 339987,
+   "sha256": "6ccbda4b3a4a493f67933d39d74a63b3b5dc72e35fd5af6ed5524023cead1469",
    "counts": {
-    "modules": 21,
-    "topics": 63,
-    "blocks": 369,
-    "codeExamples": 313,
+    "modules": 22,
+    "topics": 66,
+    "blocks": 378,
+    "codeExamples": 322,
     "codeExplanations": 0,
-    "interviewQA": 140,
+    "interviewQA": 146,
     "cheatNotes": 22,
     "interviewQuestions": 8,
-    "characters": 269060
+    "characters": 277963
    }
   },
   {
    "id": "angular",
    "name": "Angular",
    "file": "courses/angular.json",
-   "bytes": 267364,
-   "sha256": "43929c749b2d2a9a4d722b4164cef84b5cf77e217c45f598f44326eab3c9b4c9",
+   "bytes": 278858,
+   "sha256": "b14d2564670f1d1e0595e79ed3d1f9fbc12872fb507b5b433f627e635caa8b0c",
    "counts": {
-    "modules": 16,
-    "topics": 45,
-    "blocks": 177,
-    "codeExamples": 158,
+    "modules": 17,
+    "topics": 48,
+    "blocks": 186,
+    "codeExamples": 167,
     "codeExplanations": 0,
-    "interviewQA": 122,
+    "interviewQA": 128,
     "cheatNotes": 20,
     "interviewQuestions": 8,
-    "characters": 219689
+    "characters": 229044
    }
   },
   {
    "id": "flutter",
    "name": "Flutter",
    "file": "courses/flutter.json",
-   "bytes": 390781,
-   "sha256": "97b243c1368bd7258ccbd26313ede486ad0028b1dee95267c89daaeaba7f052c",
+   "bytes": 404290,
+   "sha256": "d778d17ff1440dc8e65ff760dd7bbf17911cfa629d9ca7f5d71bcf278c04e114",
    "counts": {
-    "modules": 22,
-    "topics": 63,
-    "blocks": 181,
-    "codeExamples": 175,
+    "modules": 23,
+    "topics": 66,
+    "blocks": 190,
+    "codeExamples": 184,
     "codeExplanations": 0,
-    "interviewQA": 173,
+    "interviewQA": 179,
     "cheatNotes": 24,
     "interviewQuestions": 8,
-    "characters": 326640
+    "characters": 338031
    }
   },
   {
    "id": "javafx",
    "name": "JavaFX",
    "file": "courses/javafx.json",
-   "bytes": 204880,
-   "sha256": "92b86b07ce230c37f3918d61fab9a5dd223578548151b6c1dd20de65af86d296",
+   "bytes": 227043,
+   "sha256": "79ba90e4966fe3a4bbd05d18c72b79975bfd2bbb52c8e1038d39106d88825bab",
    "counts": {
-    "modules": 19,
-    "topics": 38,
-    "blocks": 157,
-    "codeExamples": 138,
+    "modules": 20,
+    "topics": 42,
+    "blocks": 169,
+    "codeExamples": 150,
     "codeExplanations": 0,
-    "interviewQA": 114,
+    "interviewQA": 122,
     "cheatNotes": 17,
     "interviewQuestions": 6,
-    "characters": 166353
+    "characters": 185434
    }
   },
   {

@@ -2,11 +2,12 @@
 // Examples use JavaFX 21, Java 21 and Spring Boot 3. "${...}" placeholders are written "\${...}" in these template literals.
 import type { SubTopic } from './types';
 import { blk, phaseOf, topic } from './jsRoadmapKit';
+import { javaFxExamplesFull } from './RoadmapExamples2';
 
 const TABLE = 'class="w-full border border-gray-700 border-collapse [&_th]:border [&_td]:border [&_td]:px-2 [&_th]:py-2"';
 const fx = (n: number, title: string, priority: string, topics: SubTopic['topics']) => phaseOf('fx', n, title, priority, topics);
 
-export const javaFxRoadmap3: SubTopic[] = [
+const javaFxRoadmap3Base: SubTopic[] = [
   fx(11, 'Database Integration', 'Core', [
     topic(
       'fx-db-jdbc-crud',
@@ -786,3 +787,5 @@ steps:
     ),
   ]),
 ];
+
+export const javaFxRoadmap3: SubTopic[] = [...javaFxRoadmap3Base, ...javaFxExamplesFull];

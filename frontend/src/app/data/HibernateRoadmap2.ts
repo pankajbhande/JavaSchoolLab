@@ -2,11 +2,12 @@
 // Examples use Hibernate 6 / Jakarta Persistence 3 with Spring Boot 3. "${...}" placeholders are written "\${...}" in these template literals.
 import type { SubTopic } from './types';
 import { blk, phaseOf, topic } from './jsRoadmapKit';
+import { hibernateExamplesFull } from './RoadmapExamples2';
 
 const TABLE = 'class="w-full border border-gray-700 border-collapse [&_th]:border [&_td]:border [&_td]:px-2 [&_th]:py-2"';
 const hb = (n: number, title: string, priority: string, topics: SubTopic['topics']) => phaseOf('hb', n, title, priority, topics);
 
-export const hibernateRoadmap2: SubTopic[] = [
+const hibernateRoadmap2Base: SubTopic[] = [
   hb(6, 'Hibernate Caching', 'Essential', [
     topic(
       'hb-first-level-cache',
@@ -1321,3 +1322,5 @@ SQLStatementCountValidator.assertSelectCount(1);`,
     ),
   ]),
 ];
+
+export const hibernateRoadmap2: SubTopic[] = [...hibernateRoadmap2Base, ...hibernateExamplesFull];

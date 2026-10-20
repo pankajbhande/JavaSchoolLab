@@ -2651,6 +2651,26 @@
     <priority>0.6</priority>
   </url>
   <url>
+    <loc>https://javaschoollab.com/course/spring-core/sc-examples/sc-ex-di-app</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://javaschoollab.com/course/spring-core/sc-examples/sc-ex-aop-audit</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://javaschoollab.com/course/spring-core/sc-examples/sc-ex-transactions-jdbc</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://javaschoollab.com/course/spring-core/sc-examples/sc-ex-realworld-orders</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://javaschoollab.com/course/spring-mvc</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -8626,6 +8646,21 @@
     <priority>0.6</priority>
   </url>
   <url>
+    <loc>https://javaschoollab.com/course/microservices-fundamentals/ms-examples/ms-ex-resilient-client</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://javaschoollab.com/course/microservices-fundamentals/ms-examples/ms-ex-outbox-saga</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://javaschoollab.com/course/microservices-fundamentals/ms-examples/ms-ex-realworld-checkout</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://javaschoollab.com/course/mysql</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -10136,6 +10171,21 @@
     <priority>0.6</priority>
   </url>
   <url>
+    <loc>https://javaschoollab.com/course/hibernate/hb-examples/hb-ex-blog-mapping</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://javaschoollab.com/course/hibernate/hb-examples/hb-ex-optimistic-locking</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://javaschoollab.com/course/hibernate/hb-examples/hb-ex-realworld-dashboard</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://javaschoollab.com/course/react-js</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -10466,6 +10516,21 @@
     <priority>0.6</priority>
   </url>
   <url>
+    <loc>https://javaschoollab.com/course/react-js/rr-examples/rr-ex-course-search</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://javaschoollab.com/course/react-js/rr-examples/rr-ex-optimistic-form</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://javaschoollab.com/course/react-js/rr-examples/rr-ex-realworld-dashboard</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://javaschoollab.com/course/javascript</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -10786,6 +10851,21 @@
     <priority>0.6</priority>
   </url>
   <url>
+    <loc>https://javaschoollab.com/course/javascript/jsr-examples/jsr-ex-todo-vanilla</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://javaschoollab.com/course/javascript/jsr-examples/jsr-ex-fetch-search</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://javaschoollab.com/course/javascript/jsr-examples/jsr-ex-realworld-checkout</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://javaschoollab.com/course/angular</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -11012,6 +11092,21 @@
   </url>
   <url>
     <loc>https://javaschoollab.com/course/angular/ng-phase-13/ng-build-deploy</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://javaschoollab.com/course/angular/ng-examples/ng-ex-course-list-signals</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://javaschoollab.com/course/angular/ng-examples/ng-ex-reactive-form</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://javaschoollab.com/course/angular/ng-examples/ng-ex-realworld-admin</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -11336,6 +11431,21 @@
     <priority>0.6</priority>
   </url>
   <url>
+    <loc>https://javaschoollab.com/course/flutter/fl-examples/fl-ex-counter-form</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://javaschoollab.com/course/flutter/fl-examples/fl-ex-api-list</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://javaschoollab.com/course/flutter/fl-examples/fl-ex-realworld-offline</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://javaschoollab.com/course/javafx</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -11527,6 +11637,26 @@
   </url>
   <url>
     <loc>https://javaschoollab.com/course/javafx/fx-phase-16/fx-iq-threading-integration</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://javaschoollab.com/course/javafx/fx-examples/fx-ex-login-form</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://javaschoollab.com/course/javafx/fx-examples/fx-ex-course-table-app</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://javaschoollab.com/course/javafx/fx-examples/fx-ex-background-import</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://javaschoollab.com/course/javafx/fx-examples/fx-ex-realworld-inventory</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>

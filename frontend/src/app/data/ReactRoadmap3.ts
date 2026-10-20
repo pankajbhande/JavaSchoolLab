@@ -2,10 +2,11 @@
 // advanced rendering, deployment and monitoring).
 import type { SubTopic } from './types';
 import { blk, phaseOf, topic } from './jsRoadmapKit';
+import { reactExamples } from './RoadmapExamples2';
 
 const rp = (n: number, title: string, priority: string, topics: SubTopic['topics']) => phaseOf('rr', n, title, priority, topics);
 
-export const reactRoadmap3: SubTopic[] = [
+const reactRoadmap3Base: SubTopic[] = [
   rp(11, 'Context and State Management', 'Important', [
     topic(
       'rr-context-patterns',
@@ -1747,3 +1748,5 @@ async function apiCall(path, options) {
     ),
   ]),
 ];
+
+export const reactRoadmap3: SubTopic[] = [...reactRoadmap3Base, ...reactExamples];

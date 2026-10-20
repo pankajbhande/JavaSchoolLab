@@ -2,11 +2,12 @@
 // Examples use Java 21, Spring Boot 3.x. "${...}" placeholders are written "\${...}" in these template literals.
 import type { SubTopic } from './types';
 import { blk, phaseOf, topic } from './jsRoadmapKit';
+import { microservicesExamplesFull } from './RoadmapExamples2';
 
 const TABLE = 'class="w-full border border-gray-700 border-collapse [&_th]:border [&_td]:border [&_td]:px-2 [&_th]:py-2"';
 const ms = (n: number, title: string, priority: string, topics: SubTopic['topics']) => phaseOf('ms', n, title, priority, topics);
 
-export const microservicesRoadmap3: SubTopic[] = [
+const microservicesRoadmap3Base: SubTopic[] = [
   ms(11, 'Docker and Kubernetes', 'Core', [
     topic(
       'ms-docker-fundamentals',
@@ -1082,3 +1083,5 @@ curl -s localhost:9090/actuator/metrics/hikaricp.connections.pending
     ),
   ]),
 ];
+
+export const microservicesRoadmap3: SubTopic[] = [...microservicesRoadmap3Base, ...microservicesExamplesFull];

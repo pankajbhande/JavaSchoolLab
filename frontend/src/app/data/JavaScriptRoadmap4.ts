@@ -1,8 +1,9 @@
 // JavaScript roadmap, part 4: phases 14-17 (TypeScript, React, Node.js and Express, advanced internals and performance).
 import type { SubTopic } from './types';
 import { blk, phase, topic } from './jsRoadmapKit';
+import { jsExamples } from './RoadmapExamples2';
 
-export const jsRoadmap4: SubTopic[] = [
+const jsRoadmap4Base: SubTopic[] = [
   phase(14, 'TypeScript', 'Essential for your chosen stack', [
     topic(
       'jsr-ts-basics',
@@ -954,3 +955,5 @@ const [user, orders] = await Promise.all([getUser(), getOrders()]);   // paralle
     ),
   ]),
 ];
+
+export const jsRoadmap4: SubTopic[] = [...jsRoadmap4Base, ...jsExamples];

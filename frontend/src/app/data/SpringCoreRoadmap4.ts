@@ -2,11 +2,12 @@
 // Examples use Spring Framework 6 / Spring Boot 3 and Java 21. "${...}" placeholders are written "\${...}" in these template literals.
 import type { SubTopic } from './types';
 import { blk, phaseOf, topic } from './jsRoadmapKit';
+import { springCoreExamplesFull } from './RoadmapExamples2';
 
 const TABLE = 'class="w-full border border-gray-700 border-collapse [&_th]:border [&_td]:border [&_td]:px-2 [&_th]:py-2"';
 const sc = (n: number, title: string, priority: string, topics: SubTopic['topics']) => phaseOf('sc', n, title, priority, topics);
 
-export const springCoreRoadmap4: SubTopic[] = [
+const springCoreRoadmap4Base: SubTopic[] = [
   sc(16, 'Spring JDBC and Data Access', 'Core', [
     topic(
       'sc-jdbc-template-client',
@@ -768,3 +769,5 @@ String name = TransactionSynchronizationManager.getCurrentTransactionName();`,
     ),
   ]),
 ];
+
+export const springCoreRoadmap4: SubTopic[] = [...springCoreRoadmap4Base, ...springCoreExamplesFull];

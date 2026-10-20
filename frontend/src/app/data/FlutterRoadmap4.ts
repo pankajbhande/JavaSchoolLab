@@ -2,11 +2,12 @@
 // Dart string interpolation "${...}" is written as "\${...}" inside these template literals; "$name" needs no escape.
 import type { SubTopic } from './types';
 import { blk, phaseOf, topic } from './jsRoadmapKit';
+import { flutterExamples } from './RoadmapExamples2';
 
 const TABLE = 'class="w-full border border-gray-700 border-collapse [&_th]:border [&_td]:border [&_td]:px-2 [&_th]:py-2"';
 const fl = (n: number, title: string, priority: string, topics: SubTopic['topics']) => phaseOf('fl', n, title, priority, topics);
 
-export const flutterRoadmap4: SubTopic[] = [
+const flutterRoadmap4Base: SubTopic[] = [
   fl(15, 'Testing and Debugging', 'Production', [
     topic(
       'fl-unit-widget-tests',
@@ -1170,3 +1171,5 @@ Future<void> complete(String courseId, String topicId) async {
     ),
   ]),
 ];
+
+export const flutterRoadmap4: SubTopic[] = [...flutterRoadmap4Base, ...flutterExamples];

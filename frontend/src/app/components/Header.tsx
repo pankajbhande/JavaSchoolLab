@@ -75,13 +75,13 @@ export function Header({ onToggleSpeech, isSpeaking, onSearch, showSearch = true
   return (
     <>
       <header ref={headerRef} className="bg-gradient-to-r from-[#ff5500] to-[#ff9a0a] dark:from-orange-800 dark:to-amber-700 text-white shadow-lg sticky top-0 z-50">
-        <div className="container mx-auto max-w-[1200px] px-3 sm:px-4 py-2 sm:py-3.5 flex flex-wrap items-center justify-between gap-y-2">
+        <div className="container mx-auto max-w-[1200px] px-2 sm:px-4 py-2 sm:py-3.5 flex flex-nowrap sm:flex-wrap items-center justify-between gap-x-2 gap-y-2">
           <motion.div
             className="flex items-center gap-2 sm:gap-4 min-w-0"
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
           >
-            <button type="button" onClick={() => navigate('/dashboard')} aria-label="Go to the main page" title="Main page" className="flex items-center gap-2 sm:gap-4 min-w-0 text-left cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white rounded-xl">
+            <button type="button" onClick={() => navigate('/dashboard')} aria-label="Go to the main page" title="Main page" className="flex items-center gap-2 sm:gap-4 min-w-0 shrink-0 sm:shrink text-left cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white rounded-xl">
             <img src={logo} alt="JavaSchoolLab Logo" className="h-9 w-9 sm:h-12 sm:w-12 object-contain rounded-xl bg-white/90 p-0.5 shadow-md shadow-black/15 ring-1 ring-white/40" />
             <div className="hidden min-[440px]:block min-w-0 leading-tight">
               <h1 className="font-bold text-lg sm:text-2xl tracking-tight truncate drop-shadow-sm">JavaSchoolLab</h1>
@@ -90,7 +90,7 @@ export function Header({ onToggleSpeech, isSpeaking, onSearch, showSearch = true
             </button>
           </motion.div>
 
-          <div className="flex flex-wrap items-center justify-end gap-2 sm:gap-3">
+          <div className="flex flex-nowrap sm:flex-wrap items-center justify-end gap-1.5 sm:gap-3 min-w-0">
             {showSearch && <label className={`hidden md:flex w-56 cursor-text focus-within:bg-white/25 focus-within:ring-white/60 ${headerBox}`}>
               <span className={headerBadge}><Search className="w-4 h-4" /></span>
               <input
@@ -253,9 +253,9 @@ export function Header({ onToggleSpeech, isSpeaking, onSearch, showSearch = true
             ) : (
               <button
                 onClick={() => setShowLogin(true)}
-                className="flex items-center gap-2 bg-white text-orange-600 rounded-xl px-3 sm:px-4 h-9 sm:h-11 font-semibold shadow-sm hover:bg-orange-50 transition-all text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-orange-600"
+                className="flex items-center gap-2 bg-white text-orange-600 rounded-xl px-2.5 sm:px-4 h-9 sm:h-11 font-semibold shadow-sm hover:bg-orange-50 transition-all text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-orange-600"
               >
-                <LogIn className="w-4 h-4" aria-hidden="true" /> <span className="hidden min-[360px]:inline">Login</span>
+                <LogIn className="w-4 h-4" aria-hidden="true" /> <span className="hidden min-[460px]:inline">Login</span>
               </button>
             )}
           </div>

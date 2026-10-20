@@ -5,7 +5,7 @@ import { CHANNELS, canonicalTopicUrl, shareLink, shareText, type ShareChannel } 
 import { track } from '../services/analytics';
 
 const btn =
-  'h-9 w-9 rounded-lg grid place-items-center border border-orange-200 dark:border-orange-900/50 bg-white dark:bg-gray-800 text-orange-600 dark:text-orange-400 hover:bg-orange-50 dark:hover:bg-gray-700 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500';
+  'h-12 w-12 sm:h-9 sm:w-9 rounded-2xl sm:rounded-lg grid place-items-center border border-orange-200 shadow-sm sm:shadow-none dark:border-orange-900/50 bg-white dark:bg-gray-800 text-orange-600 dark:text-orange-400 hover:bg-orange-50 dark:hover:bg-gray-700 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500';
 
 /**
  * "Share this topic". On phones the system share sheet opens (WhatsApp, Instagram, Messages and so on, whatever is installed). Elsewhere a
@@ -66,7 +66,7 @@ export function ShareButton({ topicName, courseName }: { topicName: string; cour
   return (
     <div className="relative" ref={box}>
       <button type="button" onClick={onClick} className={btn} title="Share this topic with friends" aria-label="Share this topic with friends" aria-haspopup="menu" aria-expanded={open}>
-        <Share2 className="w-4 h-4" aria-hidden="true" />
+        <Share2 className="w-5 h-5 sm:w-4 sm:h-4" aria-hidden="true" />
       </button>
       {open && (
         <div role="menu" aria-label="Share this topic" className="absolute right-0 z-40 mt-2 w-56 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-1.5 shadow-xl">

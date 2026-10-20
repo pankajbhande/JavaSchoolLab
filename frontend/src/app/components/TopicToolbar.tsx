@@ -9,7 +9,7 @@ import {
 } from '../services/api';
 
 const btn =
-  'h-9 w-9 rounded-lg grid place-items-center border border-orange-200 dark:border-orange-900/50 bg-white dark:bg-gray-800 text-orange-600 dark:text-orange-400 hover:bg-orange-50 dark:hover:bg-gray-700 transition-colors';
+  'h-12 w-12 sm:h-9 sm:w-9 rounded-2xl sm:rounded-lg grid place-items-center border border-orange-200 shadow-sm sm:shadow-none dark:border-orange-900/50 bg-white dark:bg-gray-800 text-orange-600 dark:text-orange-400 hover:bg-orange-50 dark:hover:bg-gray-700 transition-colors';
 
 /**
  * Bookmark + private-note controls for the open topic. Both live behind the account, so a
@@ -94,7 +94,7 @@ export function TopicToolbar({ topicRef, courseName }: { topicRef: TopicRef; cou
         aria-label={bookmarked ? 'Remove bookmark' : 'Bookmark this topic'}
         aria-pressed={bookmarked}
       >
-        <Bookmark className="w-4 h-4" fill={bookmarked ? 'currentColor' : 'none'} />
+        <Bookmark className="w-5 h-5 sm:w-4 sm:h-4" fill={bookmarked ? 'currentColor' : 'none'} />
       </button>
       <button
         onClick={openNote}
@@ -102,7 +102,7 @@ export function TopicToolbar({ topicRef, courseName }: { topicRef: TopicRef; cou
         title={note ? 'Edit your note' : 'Add a private note'}
         aria-label={note ? 'Edit your note' : 'Add a private note'}
       >
-        <StickyNote className="w-4 h-4" />
+        <StickyNote className="w-5 h-5 sm:w-4 sm:h-4" />
         {note && <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-orange-500" />}
       </button>
 

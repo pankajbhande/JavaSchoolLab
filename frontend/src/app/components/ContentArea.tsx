@@ -564,7 +564,8 @@ export function ContentArea({
 
         {/* Test CTA — sits on the topic-title row, floated right. Kept outside contentRef so
             its label isn't read aloud. */}
-        <div className="mt-1 mb-3 flex flex-wrap items-center justify-end gap-2 sm:float-right sm:ml-3 sm:mb-0 sm:flex-nowrap">
+        <div className="mt-1 mb-3 flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-end sm:gap-2 sm:float-right sm:ml-3 sm:mb-0 sm:flex-nowrap">
+          <div className="flex items-center justify-end gap-3 sm:gap-2">
           <ReadingControls prefs={reading} onChange={setReading} focusMode={focusMode} onToggleFocus={onToggleFocus} />
           <TopicToolbar
             courseName={course.name}
@@ -575,13 +576,14 @@ export function ContentArea({
               topicName: topic.name,
             }}
           />
+          </div>
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={() => setShowMCQ(true)}
             disabled={testLoading}
             aria-busy={testLoading || undefined}
-            className="px-4 py-2 bg-gradient-to-r from-orange-600 to-amber-500 text-white rounded-lg flex items-center gap-2 font-display font-semibold text-sm tracking-tight shadow-md hover:shadow-lg transition-all disabled:opacity-60 disabled:cursor-wait"
+            className="w-full sm:w-auto justify-center px-4 py-3 sm:py-2 bg-gradient-to-r from-orange-600 to-amber-500 text-white rounded-xl sm:rounded-lg flex items-center gap-2 font-display font-semibold text-base sm:text-sm tracking-tight shadow-md hover:shadow-lg transition-all disabled:opacity-60 disabled:cursor-wait"
           >
             <Award className="w-5 h-5" />
             {testLoading ? "Checking assessment…" : testAvailable ? "Take Test & Get Certificate" : "Assessment coming soon"}

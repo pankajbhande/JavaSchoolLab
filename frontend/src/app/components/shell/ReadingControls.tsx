@@ -48,7 +48,7 @@ export function ReadingControls({ prefs, onChange, focusMode, onToggleFocus }: P
         title="Reading controls"
         aria-label="Reading controls"
         data-tour="reading"
-        className="flex h-10 items-center gap-1 rounded-lg border border-orange-300 bg-white px-3 text-sm font-semibold text-orange-700 shadow-sm hover:bg-orange-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 dark:border-orange-700 dark:bg-gray-800 dark:text-orange-300 dark:hover:bg-orange-900/30"
+        className="flex h-12 w-12 sm:h-10 sm:w-auto items-center justify-center gap-1 rounded-2xl sm:rounded-lg border border-orange-300 bg-white px-0 sm:px-3 text-base sm:text-sm font-bold sm:font-semibold shadow-sm text-orange-700 shadow-sm hover:bg-orange-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 dark:border-orange-700 dark:bg-gray-800 dark:text-orange-300 dark:hover:bg-orange-900/30"
       >
         <span aria-hidden="true">A<span className="text-xs">a</span></span>
       </button>

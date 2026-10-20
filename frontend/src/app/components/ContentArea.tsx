@@ -773,7 +773,7 @@ export function ContentArea({
                         )}
                       </div>
 
-                      <pre className="bg-[#1e1e2e] text-gray-100 p-5 rounded-lg overflow-x-auto border border-gray-700/50 shadow-lg font-mono text-[13px] leading-6">
+                      <pre className="bg-[#1e1e2e] text-gray-100 p-3 pt-14 sm:p-5 rounded-lg overflow-x-auto border border-gray-700/50 shadow-lg font-mono text-[12px] sm:text-[13px] leading-5 sm:leading-6">
                         <code dangerouslySetInnerHTML={{ __html: isHtml ? highlightHtml(code) : highlightJava(code) }} />
                       </pre>
                       </div>

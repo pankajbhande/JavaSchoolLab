@@ -32,6 +32,15 @@ const isMac = typeof navigator !== 'undefined' && /Mac|iPhone|iPad/i.test(naviga
 export function Header({ onToggleSpeech, isSpeaking, onSearch, showSearch = true, voiceGender, onVoiceChange, onOpenSearch }: HeaderProps) {
   const navigate = useNavigate();
   const onMainPage = useLocation().pathname === '/dashboard';
+  const headerRef = useRef<HTMLElement>(null);
+  // Sticky bars below the header (the course tab strip) sit at this offset; the header is shorter on phones and can wrap on very narrow screens.
+  useEffect(() => {
+    const el = headerRef.current; if (!el) return;
+    const apply = () => document.documentElement.style.setProperty('--app-header-h', el.getBoundingClientRect().height + 'px');
+    apply();
+    const ro = new ResizeObserver(apply); ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
   const { theme, toggleTheme } = useTheme();
   const { user, isLoggedIn, isGuest, logout } = useAuth();
   const [showAlarm, setShowAlarm] = useState(false);
@@ -65,8 +74,8 @@ export function Header({ onToggleSpeech, isSpeaking, onSearch, showSearch = true
 
   return (
     <>
-      <header className="bg-gradient-to-r from-[#ff5500] to-[#ff9a0a] dark:from-orange-800 dark:to-amber-700 text-white shadow-lg sticky top-0 z-50">
-        <div className="container mx-auto max-w-[1200px] px-3 sm:px-4 py-3 sm:py-3.5 flex flex-wrap items-center justify-between gap-y-2">
+      <header ref={headerRef} className="bg-gradient-to-r from-[#ff5500] to-[#ff9a0a] dark:from-orange-800 dark:to-amber-700 text-white shadow-lg sticky top-0 z-50">
+        <div className="container mx-auto max-w-[1200px] px-3 sm:px-4 py-2 sm:py-3.5 flex flex-wrap items-center justify-between gap-y-2">
           <motion.div
             className="flex items-center gap-2 sm:gap-4 min-w-0"
             initial={{ opacity: 0, x: -20 }}
@@ -74,7 +83,7 @@ export function Header({ onToggleSpeech, isSpeaking, onSearch, showSearch = true
           >
             <button type="button" onClick={() => navigate('/dashboard')} aria-label="Go to the main page" title="Main page" className="flex items-center gap-2 sm:gap-4 min-w-0 text-left cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white rounded-xl">
             <img src={logo} alt="JavaSchoolLab Logo" className="h-9 w-9 sm:h-12 sm:w-12 object-contain rounded-xl bg-white/90 p-0.5 shadow-md shadow-black/15 ring-1 ring-white/40" />
-            <div className="min-w-0 leading-tight">
+            <div className="hidden min-[440px]:block min-w-0 leading-tight">
               <h1 className="font-bold text-lg sm:text-2xl tracking-tight truncate drop-shadow-sm">JavaSchoolLab</h1>
               <p className="hidden sm:block text-[13px] text-white/90 truncate">Learn Java, Python, React & More</p>
             </div>
@@ -244,9 +253,9 @@ export function Header({ onToggleSpeech, isSpeaking, onSearch, showSearch = true
             ) : (
               <button
                 onClick={() => setShowLogin(true)}
-                className="flex items-center gap-2 bg-white text-orange-600 rounded-xl px-4 h-11 font-semibold shadow-sm hover:bg-orange-50 transition-all text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-orange-600"
+                className="flex items-center gap-2 bg-white text-orange-600 rounded-xl px-3 sm:px-4 h-9 sm:h-11 font-semibold shadow-sm hover:bg-orange-50 transition-all text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-orange-600"
               >
-                <LogIn className="w-4 h-4" /> Login
+                <LogIn className="w-4 h-4" aria-hidden="true" /> <span className="hidden min-[360px]:inline">Login</span>
               </button>
             )}
           </div>

@@ -96,7 +96,7 @@ export function TopicsBar({ courses, onCourseSelect, selectedCourseId }: TopicsB
   return (
     <nav
       aria-label="Courses"
-      className="sticky top-[80px] z-40 border-b border-white/10 bg-gray-950/85 backdrop-blur-xl shadow-[0_8px_30px_-12px_rgba(0,0,0,0.7)]"
+      className="sticky top-[var(--app-header-h,80px)] z-40 border-b border-white/10 bg-gray-950/85 backdrop-blur-xl shadow-[0_8px_30px_-12px_rgba(0,0,0,0.7)]"
     >
       {/* ambient glow + hairline highlights */}
       <span aria-hidden="true" className="pointer-events-none absolute inset-0 bg-[radial-gradient(60%_140%_at_50%_-40%,rgba(249,115,22,0.16),transparent_70%)]" />

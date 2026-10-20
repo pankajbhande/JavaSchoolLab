@@ -12,7 +12,7 @@
  *
  * Bump VERSION to drop every old cache on the next activation.
  */
-const VERSION = 'v23';
+const VERSION = 'v28';
 const SHELL_CACHE = `jsl-shell-${VERSION}`;
 const ASSET_CACHE = `jsl-assets-${VERSION}`;
 const STATIC_CACHE = `jsl-static-${VERSION}`;

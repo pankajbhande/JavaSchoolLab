@@ -4,13 +4,13 @@
  "totals": {
   "modules": 434,
   "topics": 3467,
-  "blocks": 26723,
-  "codeExamples": 19556,
+  "blocks": 26777,
+  "codeExamples": 19380,
   "codeExplanations": 558,
-  "interviewQA": 1872,
+  "interviewQA": 2050,
   "cheatNotes": 960,
   "interviewQuestions": 3181,
-  "characters": 21415151
+  "characters": 21597088
  },
  "items": [
   {
@@ -53,8 +53,8 @@
    "id": "HTML and CSS",
    "name": "HTML",
    "file": "courses/html-and-css.json",
-   "bytes": 1504422,
-   "sha256": "07f6ed63e3ad77179b1cddd2bcb76b1019ea8d184d0d26869af634fe9968f1c6",
+   "bytes": 1504387,
+   "sha256": "3e82a8ba7d12650c44ef5adbdced9fc1bdde2c2eb047795a57290ee49da37fc0",
    "counts": {
     "modules": 14,
     "topics": 275,
@@ -64,7 +64,7 @@
     "interviewQA": 0,
     "cheatNotes": 31,
     "interviewQuestions": 8,
-    "characters": 1375356
+    "characters": 1375321
    }
   },
   {
@@ -161,18 +161,18 @@
    "id": "collection",
    "name": "Collection Framework",
    "file": "courses/collection.json",
-   "bytes": 515240,
-   "sha256": "ec06239caa51005efde23715e0953644ae2f28d0a482e37f5e5d56948d24d9e8",
+   "bytes": 731192,
+   "sha256": "66e52a2ed2cb01f8d6a3ae323ea958b4f98a0492456b61ed9bc6e78de68ad5ba",
    "counts": {
     "modules": 6,
     "topics": 16,
-    "blocks": 344,
-    "codeExamples": 415,
+    "blocks": 398,
+    "codeExamples": 239,
     "codeExplanations": 0,
-    "interviewQA": 0,
+    "interviewQA": 178,
     "cheatNotes": 57,
     "interviewQuestions": 138,
-    "characters": 476065
+    "characters": 658037
    }
   },
   {

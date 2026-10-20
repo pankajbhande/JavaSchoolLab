@@ -12571,8 +12571,8 @@ A: It changes the base for every relative URL, including fragment links, which c
                         <img src="flower.jpg" alt="Flower" width="300" height="200">
 
                         <h2>Image from Internet</h2>
-                        <img src="https://www.w3schools.com/images/w3schools_green.jpg" 
-                        alt="W3Schools Logo" width="200">
+                        <img src="/icon-192.png" 
+                        alt="JavaSchoolLab Logo" width="200">
 
                         <h2>Image as Link</h2>
                         <a href="https://www.google.com">

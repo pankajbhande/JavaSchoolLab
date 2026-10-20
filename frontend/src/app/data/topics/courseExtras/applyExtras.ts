@@ -1,6 +1,7 @@
 // Merges extras and deep dives into a course. Kept free of the (large) extras data files so a
 // lazily loaded course can pass in only the extras that belong to it; see courseLoader.ts.
 
+import { commentJava } from './commentJava';
 import type { Course } from '../../types';
 import { withExtras, type Extra } from '../mysql/extras/extra';
 import { withDeep, type Deep } from '../mysql/extras/deep';
@@ -14,6 +15,16 @@ export interface ExtrasContext {
 }
 
 /** Returns the course with extras and deep dives merged into every topic that has them. */
+type Block = NonNullable<Course['subTopics'][number]['topics'][number]['beginner']>[number];
+const commentBlocks = (blocks: Block[] | undefined): Block[] | undefined =>
+    blocks?.map(b => (b.codeExamples?.length ? { ...b, codeExamples: b.codeExamples.map(commentJava) } : b));
+const withCommentedCode = (t: Course['subTopics'][number]['topics'][number]) => ({
+    ...t,
+    beginner: commentBlocks(t.beginner),
+    intermediate: commentBlocks(t.intermediate),
+    expert: commentBlocks(t.expert),
+});
+
 export function applyExtrasWith<T extends Course>(course: T, ctx: ExtrasContext): T {
     type Tp = Course['subTopics'][number]['topics'][number];
     // Placeholder pages ("This topic is being written ...") are dropped once a topic has real extra content.
@@ -28,11 +39,13 @@ export function applyExtrasWith<T extends Course>(course: T, ctx: ExtrasContext)
     const basicOnly = (t: Tp): Tp => BASIC_ONLY.has(t.id) ? { ...t, intermediate: [], expert: [] } : t;
     // Core Java topics are re-arranged into the fixed 12-section learning flow (see javaLayout.ts).
     const build = course.id === 'java' ? (t: Tp) => basicOnly(layoutTopic(merge(t), ctx.overviews[t.id])) : merge;
+    // Collection Framework: every Java sample is formatted and commented line by line (see commentJava.ts).
+    const finish = course.id === 'collection' ? (t: Tp): Tp => withCommentedCode(build(t)) : build;
     return {
         ...course,
         subTopics: course.subTopics.map(m => ({
             ...m,
-            topics: m.topics.map(build)
+            topics: m.topics.map(finish)
         }))
     };
 }

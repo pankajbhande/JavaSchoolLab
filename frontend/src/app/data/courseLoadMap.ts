@@ -7,7 +7,7 @@ export const courseLoadMap: Record<string, { module: string; extras: string[] }>
   "angular": { module: "AngularCourse", extras: ["angular"] },
   "architectural-patterns": { module: "architecturalPatterns", extras: [] },
   "cloud-native-patterns": { module: "cloudNativePatterns", extras: [] },
-  "collection": { module: "CollectionFramework", extras: ["collection1","collection2"] },
+  "collection": { module: "CollectionFramework", extras: ["collection1"] },
   "data-science": { module: "DataScienceCourse", extras: [] },
   "design-patterns": { module: "designPattern", extras: [] },
   "digital-image-analysis": { module: "DigitalImageAnalysisCourse", extras: [] },

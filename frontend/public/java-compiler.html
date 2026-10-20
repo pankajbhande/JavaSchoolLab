@@ -905,6 +905,13 @@
       return;
     }
 
+    var libMatch = code.match(/^\s*import\s+(?:static\s+)?(javafx|org\.springframework|org\.hibernate|jakarta|javax\.(?:persistence|servlet|validation|inject)|org\.junit|org\.mockito|org\.testfx|lombok|com\.fasterxml|org\.apache|org\.slf4j|reactor)/m);
+    if (libMatch) {
+      setStatus("error", "Library not available");
+      renderOutput({ banner: "✕ This sample uses " + libMatch[1] + " which this online compiler does not include (it runs plain OpenJDK only). Copy the code into an IDE project with the library added (Maven/Gradle) to run it.", bannerType: "error" });
+      return;
+    }
+
     if (!/public\s+static\s+void\s+main\s*\(\s*String/.test(code)) {
       setStatus("error", "Compile Error");
       renderOutput({ banner: "✕ No main() method found — add: public static void main(String[] args)", bannerType: "error" });

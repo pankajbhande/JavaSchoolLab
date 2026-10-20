@@ -16,6 +16,7 @@ import type { QuizBank } from '../data/quiz/types';
 import { TopicToolbar } from './TopicToolbar';
 import { withJavaPackage } from '../lib/javaPackage';
 import { looksLikeHtml, formatHtml, highlightHtml } from '../lib/htmlCode';
+import { canTryOnline } from '../lib/tryIt';
 import { ReadingControls } from './shell/ReadingControls';
 import { useReadingPrefs } from '../hooks/useReadingPrefs';
 import { FONT_SCALES } from '../lib/readingPrefs';
@@ -758,6 +759,8 @@ export function ContentArea({
                           {copiedIndex === codeIdx ? <Check /> : <Copy />}
                         </button>
 
+                        {canTryOnline(code, course.id) && (
+                        <>
                         {/* ⭐ Your new button */}
                         <button
                           onClick={() => handleAction(code, course.id)}
@@ -766,6 +769,8 @@ export function ContentArea({
                         Try it
                         
                         </button>
+                        </>
+                        )}
                       </div>
 
                       <pre className="bg-[#1e1e2e] text-gray-100 p-5 rounded-lg overflow-x-auto border border-gray-700/50 shadow-lg font-mono text-[13px] leading-6">

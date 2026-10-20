@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Python Compiler</title>
+<style>
+  :root {
+    color-scheme: dark; /* dark scrollbars and form controls */
+    --bg: #1e1e1e;
+    --bg-panel: #252526;
+    --bg-titlebar: #323233;
+    --border: #3c3c3c;
+    --text: #d4d4d4;
+    --text-dim: #8a8a8a;
+    --accent: #0e9f6e;
+    --accent-hover: #0d8a5f;
+    --blue: #007acc;
+    --blue-hover: #0090f1;
+    --red: #f14c4c;
+    --yellow: #dcb350;
+    --gutter-bg: #1e1e1e;
+    --gutter-text: #6e7681;
+    --page-bg: #12121a;
+    --shadow: 0 20px 50px -20px rgba(0,0,0,0.6);
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    background: var(--page-bg);
+    background-image:
+      radial-gradient(circle at 12% 8%, rgba(234,88,12,0.14), transparent 42%),
+      radial-gradient(circle at 88% 92%, rgba(245,158,11,0.13), transparent 45%),
+      radial-gradient(circle at 92% 15%, rgba(14,159,110,0.06), transparent 38%);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+
+  .page {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 28px 24px 40px;
+    min-height: 100%;
+  }
+
+  .app-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .app-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .app-title .logo {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #f89820, #e76f00);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    box-shadow: 0 4px 14px rgba(232,111,0,0.45);
+  }
+
+  .app-title h1 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 700;
+    color: #f4f4f5;
+    letter-spacing: 0.2px;
+  }
+
+  .app-title .subtitle {
+    margin: 2px 0 0;
+    font-size: 12.5px;
+    color: var(--text-dim);
+  }
+
+  .header-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 12.5px;
+    color: var(--text-dim);
+  }
+
+  .header-badge .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 8px var(--accent);
+  }
+
+  .workspace {
+    display: grid;
+    grid-template-columns: 3fr 2fr;
+    gap: 18px;
+    align-items: stretch;
+  }
+
+  /* Desktop: both panels share one fixed height, so long code or long output scrolls
+     inside its panel instead of stretching the whole page. */
+  @media (min-width: 901px) {
+    .workspace { height: calc(100vh - 150px); min-height: 480px; }
+    .panel { min-height: 0; }
+  }
+
+  @media (max-width: 900px) {
+    .workspace { grid-template-columns: 1fr; }
+    .page { padding: 18px 14px 28px; }
+    .output-area { max-height: 420px; }
+  }
+
+  .panel {
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .panel-titlebar {
+    background: var(--bg-titlebar);
+    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .traffic-lights {
+    display: flex;
+    gap: 7px;
+  }
+
+  .traffic-lights span {
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    display: inline-block;
+  }
+
+  .tl-red { background: #ff5f57; }
+  .tl-yellow { background: #febc2e; }
+  .tl-green { background: #28c840; }
+
+  .panel-filename {
+    font-size: 12.5px;
+    color: var(--text-dim);
+    font-family: ui-monospace, SFMono-Regular, "JetBrains Mono", Menlo, Consolas, monospace;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .panel-filename .file-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--yellow);
+  }
+
+  .toolbar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+    background: var(--bg-panel);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    border: none;
+    border-radius: 7px;
+    padding: 7px 14px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.12s ease, filter 0.12s ease, background 0.12s ease;
+    font-family: inherit;
+  }
+
+  .btn:active { transform: translateY(1px) scale(0.98); }
+
+  .btn svg { width: 14px; height: 14px; flex-shrink: 0; }
+
+  .btn-run {
+    background: linear-gradient(135deg, var(--accent), #0b8659);
+    color: #fff;
+    box-shadow: 0 4px 14px rgba(14,159,110,0.35);
+  }
+  .btn-run:hover { filter: brightness(1.08); }
+  .btn-run:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    filter: none;
+  }
+
+  .btn-copy {
+    background: rgba(255,255,255,0.07);
+    color: var(--text);
+    border: 1px solid var(--border);
+  }
+  .btn-copy:hover { background: rgba(255,255,255,0.12); }
+
+  .btn-reset {
+    background: rgba(220,179,80,0.12);
+    color: var(--yellow);
+    border: 1px solid rgba(220,179,80,0.35);
+  }
+  .btn-reset:hover { background: rgba(220,179,80,0.2); }
+
+  .toolbar-spacer { flex: 1; }
+
+  .lang-pill {
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+    color: #f89820;
+    background: rgba(248,152,32,0.12);
+    border: 1px solid rgba(248,152,32,0.3);
+    padding: 5px 10px;
+    border-radius: 999px;
+  }
+
+  .editor-wrap {
+    position: relative;
+    flex: 1;
+    display: flex;
+    min-height: 320px;
+    background: var(--bg);
+  }
+  @media (min-width: 901px) { .editor-wrap { min-height: 0; } }
+
+  .gutter {
+    flex-shrink: 0;
+    width: 46px;
+    background: var(--gutter-bg);
+    color: var(--gutter-text);
+    font-family: ui-monospace, SFMono-Regular, "JetBrains Mono", Menlo, Consolas, monospace;
+    font-size: 13px;
+    line-height: 21px;
+    text-align: right;
+    /* Extra bottom padding mirrors the textarea's horizontal scrollbar so the last line
+       numbers stay aligned with the code when it scrolls to the end. */
+    padding: 14px 8px 30px 0;
+    user-select: none;
+    overflow: hidden;
+    border-right: 1px solid var(--border);
+    white-space: pre;
+  }
+
+  #code {
+    flex: 1;
+    resize: none;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: #d4d4d4;
+    font-family: ui-monospace, SFMono-Regular, "JetBrains Mono", Menlo, Consolas, monospace;
+    font-size: 13px;
+    line-height: 21px;
+    padding: 14px 16px;
+    tab-size: 4;
+    white-space: pre;
+    overflow: auto;
+  }
+
+  #code::selection { background: rgba(0,122,204,0.4); }
+
+  .btn:focus-visible, #code:focus-visible {
+    outline: 2px solid var(--blue-hover);
+    outline-offset: 2px;
+  }
+  kbd {
+    font-family: inherit;
+    font-size: 10.5px;
+    opacity: 0.75;
+    border: 1px solid rgba(255,255,255,0.25);
+    border-radius: 4px;
+    padding: 0 4px;
+    margin-left: 2px;
+  }
+
+  .status-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 7px 14px;
+    background: var(--bg-titlebar);
+    border-top: 1px solid var(--border);
+    font-size: 11.5px;
+    color: var(--text-dim);
+    font-family: ui-monospace, SFMono-Regular, "JetBrains Mono", Menlo, Consolas, monospace;
+  }
+
+  .status-left { display: flex; align-items: center; gap: 14px; }
+
+  .output-area {
+    flex: 1;
+    min-height: 320px;
+    padding: 16px;
+    font-family: ui-monospace, SFMono-Regular, "JetBrains Mono", Menlo, Consolas, monospace;
+    font-size: 13px;
+    line-height: 1.6;
+    white-space: pre-wrap;
+    word-break: break-word;
+    overflow: auto;
+    background: #1b1d23; /* Eclipse-dark console */
+  }
+
+  /* ---- Eclipse / STS style console ---- */
+  .con-head {
+    font-size: 12px;
+    padding-bottom: 8px;
+    margin-bottom: 8px;
+    border-bottom: 1px solid #2f323b;
+    color: #8b949e;
+  }
+  .con-head .con-tag { font-weight: 700; }
+  .con-head.con-running .con-tag { color: #6bd968; }
+  .con-head.con-terminated .con-tag { color: #e5c07b; }
+  .con-head.con-failed .con-tag { color: #ff6b6b; }
+  .con-head .con-stamp { color: #6e7681; }
+  .con-head .con-exit { margin-left: 8px; padding: 0 7px; border-radius: 999px; font-size: 11px; font-weight: 700; }
+  .con-head .con-exit.ok { color: #6bd968; background: rgba(107,217,104,0.12); }
+  .con-head .con-exit.bad { color: #ff6b6b; background: rgba(255,107,107,0.12); }
+
+  .con-line { white-space: pre-wrap; word-break: break-word; min-height: 1.6em; color: #d4d4d4; }
+  .con-line.err { color: #ff6b6b; }
+  .con-line.sys { color: #8b949e; font-style: italic; }
+  .con-line .lvl-error { color: #ff6b6b; font-weight: 700; }
+  .con-line .lvl-warn  { color: #e5c07b; font-weight: 700; }
+  .con-line .lvl-info  { color: #6bd968; font-weight: 700; }
+  .con-line .lvl-debug { color: #7aa2f7; font-weight: 700; }
+  .con-line .tok-time  { color: #8b949e; }
+  .con-line .tok-num   { color: #79c0ff; }
+  .con-line .tok-kw    { color: #d2a8ff; }
+  .con-line .tok-brk   { color: #56d4dd; }
+  .con-line .tok-str   { color: #f0a868; }
+  .con-line .tok-label { color: #e5c07b; }
+  .con-line .con-link  { color: #589df6; text-decoration: underline; text-underline-offset: 2px; }
+  .con-line.trace      { color: #9aa0a6; padding-left: 2px; }
+  .con-line .con-strong { font-weight: 700; }
+  .con-line.caret      { color: #e5c07b; }
+
+  .con-cursor {
+    display: inline-block;
+    width: 8px;
+    height: 15px;
+    background: #6bd968;
+    vertical-align: text-bottom;
+    animation: blink 1s steps(1) infinite;
+  }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  .btn-stop {
+    background: rgba(241,76,76,0.12);
+    color: var(--red);
+    border: 1px solid rgba(241,76,76,0.4);
+  }
+  .btn-stop:hover:not(:disabled) { background: rgba(241,76,76,0.22); }
+  .btn-stop:disabled { opacity: 0.35; cursor: not-allowed; }
+  .lang-pill.con-pill { color: #6bd968; background: rgba(107,217,104,0.1); border-color: rgba(107,217,104,0.3); }
+  @media (min-width: 901px) { .output-area { min-height: 0; } }
+
+  .output-placeholder {
+    color: var(--text-dim);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .output-placeholder svg { width: 15px; height: 15px; opacity: 0.7; }
+
+  .output-line-stdout { color: #d4d4d4; }
+  .output-line-stderr { color: var(--red); }
+  .output-line-success-banner {
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+    font-weight: 600;
+    padding-bottom: 8px;
+    border-bottom: 1px dashed var(--border);
+  }
+  .output-line-error-banner {
+    color: var(--red);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+    font-weight: 600;
+    padding-bottom: 8px;
+    border-bottom: 1px dashed var(--border);
+  }
+
+  .running-indicator {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--blue);
+    font-weight: 600;
+  }
+
+  .spinner {
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    border: 2px solid rgba(0,122,204,0.25);
+    border-top-color: var(--blue);
+    animation: spin 0.7s linear infinite;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 6px;
+  }
+  .status-ready .status-dot { background: var(--text-dim); }
+  .status-running .status-dot { background: var(--blue); box-shadow: 0 0 6px var(--blue); animation: pulse 1s infinite; }
+  .status-success .status-dot { background: var(--accent); box-shadow: 0 0 6px var(--accent); }
+  .status-error .status-dot { background: var(--red); box-shadow: 0 0 6px var(--red); }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: #1f2937;
+    color: #fff;
+    padding: 10px 18px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+    border: 1px solid rgba(255,255,255,0.08);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    z-index: 50;
+  }
+  .toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+  .toast svg { width: 15px; height: 15px; color: var(--accent); }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <div class="app-header">
+    <div class="app-title">
+      <div class="logo">🐍</div>
+      <div>
+        <h1>Python Compiler</h1>
+        <p class="subtitle">Write, run, and test Python code instantly in your browser</p>
+      </div>
+    </div>
+    <div class="header-badge">
+      <span class="dot"></span>
+      Runs in your browser &middot; Powered by Pyodide
+    </div>
+  </div>
+
+  <div class="workspace">
+
+    <!-- Editor Panel -->
+    <div class="panel">
+      <div class="panel-titlebar">
+        <div class="traffic-lights">
+          <span class="tl-red"></span>
+          <span class="tl-yellow"></span>
+          <span class="tl-green"></span>
+        </div>
+        <div class="panel-filename"><span class="file-dot"></span><span id="fileName">main.py</span></div>
+      </div>
+
+      <div class="toolbar">
+        <button class="btn btn-run" id="runBtn" onclick="runCode()" title="Run (Ctrl+Enter)">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+          Run <kbd>Ctrl&#8629;</kbd>
+        </button>
+        <button class="btn btn-copy" onclick="copyCode()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>
+          Copy
+        </button>
+        <button class="btn btn-reset" onclick="resetCode()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+          Reset
+        </button>
+        <div class="toolbar-spacer"></div>
+        <span class="lang-pill">PYTHON</span>
+      </div>
+
+      <div class="editor-wrap">
+        <div class="gutter" id="gutter">1</div>
+        <textarea id="code" aria-label="Python source code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off"></textarea>
+      </div>
+
+      <div class="status-bar">
+        <div class="status-left">
+          <span>UTF-8</span>
+          <span>Python 3.12</span>
+        </div>
+        <span id="charCount">0 characters</span>
+      </div>
+    </div>
+
+    <!-- Output Panel -->
+    <div class="panel">
+      <div class="panel-titlebar">
+        <div class="traffic-lights">
+          <span class="tl-red"></span>
+          <span class="tl-yellow"></span>
+          <span class="tl-green"></span>
+        </div>
+        <div class="panel-filename"><span class="file-dot" style="background:#3fb950;"></span>Console</div>
+      </div>
+
+      <div class="toolbar">
+        <button class="btn btn-stop" id="stopBtn" onclick="stopRun()" disabled title="Terminate">
+          <svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="1.5"/></svg>
+          Stop
+        </button>
+        <button class="btn btn-copy" onclick="copyConsole()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>
+          Copy
+        </button>
+        <button class="btn btn-copy" onclick="clearConsole()" title="Clear console">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg>
+          Clear
+        </button>
+        <div class="toolbar-spacer"></div>
+        <span class="lang-pill con-pill">CONSOLE</span>
+      </div>
+
+      <!-- No whitespace around the placeholder: .output-area uses white-space: pre-wrap, which
+           would render the newlines as blank lines above it. -->
+      <div class="output-area" id="output" role="log" aria-live="polite"><div class="output-placeholder" id="outputPlaceholder">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 5v14l11-7z"/></svg>
+          <span>Click <b style="color:#d4d4d4; margin: 0 2px;">Run ▶</b> to see the output here</span>
+        </div></div>
+
+      <div class="status-bar">
+        <div class="status-left">
+          <span id="statusIndicator" class="status-ready"><span class="status-dot"></span>Ready</span>
+        </div>
+        <span id="execTime"></span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="toast" id="toast">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+  <span id="toastText">Copied!</span>
+</div>
+
+<script>
+  const defaultCode = `# Python runs in your browser (Pyodide), nothing is sent to a server
+def greet(name):
+    return f"Hello, {name}!"
+
+for n in ["World", "Python"]:
+    print(greet(n))
+`;
+  const STORE_KEY = "python_try_code";
+  const PYODIDE_URL = "https://cdn.jsdelivr.net/pyodide/v0.26.4/full/";
+  const RUN_TIMEOUT_MS = 30000;
+
+  const codeArea = document.getElementById("code");
+  const outputArea = document.getElementById("output");
+  const outputPlaceholder = document.getElementById("outputPlaceholder");
+  const gutter = document.getElementById("gutter");
+  const runBtn = document.getElementById("runBtn");
+  const stopBtn = document.getElementById("stopBtn");
+  const statusIndicator = document.getElementById("statusIndicator");
+  const execTimeEl = document.getElementById("execTime");
+  const charCountEl = document.getElementById("charCount");
+  const toast = document.getElementById("toast");
+  const toastText = document.getElementById("toastText");
+
+  let saved = null;
+  try { saved = localStorage.getItem(STORE_KEY); } catch (e) { /* storage blocked */ }
+  codeArea.value = saved && saved.trim() ? saved : defaultCode;
+
+  const save = () => { try { localStorage.setItem(STORE_KEY, codeArea.value); } catch (e) { /* ignore */ } };
+
+  function updateGutter() {
+    const lineCount = codeArea.value.split("\n").length;
+    let lines = "";
+    for (let i = 1; i <= lineCount; i++) lines += (i < lineCount ? i + "\n" : i);
+    gutter.textContent = lines;
+    charCountEl.textContent = codeArea.value.length + " characters";
+  }
+
+  codeArea.addEventListener("input", () => { updateGutter(); save(); });
+  codeArea.addEventListener("scroll", () => { gutter.scrollTop = codeArea.scrollTop; });
+
+  // Tab inserts 4 spaces; Ctrl/Cmd+Enter runs.
+  codeArea.addEventListener("keydown", (e) => {
+    if (e.key === "Tab") {
+      e.preventDefault();
+      const s = codeArea.selectionStart, en = codeArea.selectionEnd;
+      codeArea.value = codeArea.value.substring(0, s) + "    " + codeArea.value.substring(en);
+      codeArea.selectionStart = codeArea.selectionEnd = s + 4;
+      updateGutter(); save();
+    } else if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
+      e.preventDefault();
+      if (!runBtn.disabled) runCode();
+    }
+  });
+  updateGutter();
+
+  function showToast(message) {
+    toastText.textContent = message;
+    toast.classList.add("show");
+    setTimeout(() => toast.classList.remove("show"), 1800);
+  }
+
+  function copyText(text, message) {
+    navigator.clipboard.writeText(text).then(() => showToast(message)).catch(() => {});
+  }
+  function copyCode() { copyText(codeArea.value, "Code copied to clipboard!"); }
+  function copyConsole() {
+    const text = Array.from(outputArea.querySelectorAll(".con-head, .con-line")).map(el => el.textContent).join("\n");
+    if (text.trim()) copyText(text, "Console copied!");
+  }
+
+  function setStatus(state, label) {
+    statusIndicator.className = "status-" + state;
+    const text = label || (state === "ready" ? "Ready" : state === "running" ? "Running" : state === "success" ? "Success" : "Error");
+    statusIndicator.innerHTML = '<span class="status-dot"></span>' + text;
+  }
+
+  function setOutputPlaceholder() {
+    outputArea.innerHTML = "";
+    outputArea.appendChild(outputPlaceholder);
+  }
+
+  function clearConsole() {
+    setOutputPlaceholder();
+    setStatus("ready");
+    execTimeEl.textContent = "";
+  }
+
+  function resetCode() {
+    codeArea.value = defaultCode;
+    updateGutter(); save();
+    clearConsole();
+  }
+
+  const escapeHtml = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+  function stamp() {
+    return new Date().toLocaleString("en-GB", {
+      day: "2-digit", month: "short", year: "numeric",
+      hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false
+    });
+  }
+
+  function consoleHeader(state, exitCode) {
+    const tag = state === "running" ? "&lt;running&gt;" : "&lt;terminated&gt;";
+    const exit = exitCode === undefined || exitCode === null ? "" :
+      `<span class="con-exit ${exitCode === 0 ? "ok" : "bad"}">exit ${exitCode}</span>`;
+    return `<div class="con-head con-${state}"><span class="con-tag">${tag}</span> main.py [Python Application] Pyodide 3.12 <span class="con-stamp">(${stamp()})</span> ${exit}</div>`;
+  }
+
+  // Python errors go to the err stream; a traceback line naming the file is highlighted.
+  function lineHtml(text, kind) {
+    const s = escapeHtml(text);
+    if (kind === "sys") return { html: s, cls: "sys" };
+    if (kind === "err") {
+      if (/^Traceback /.test(text) || /^\w*(Error|Exception|Interrupt)\b/.test(text)) return { html: `<span class="con-strong">${s}</span>`, cls: "err" };
+      if (/^\s+File "/.test(text)) return { html: s.replace(/(File &quot;[^&]*&quot;, line \d+|File "[^"]*", line \d+)/, '<span class="con-link">$1</span>'), cls: "err trace" };
+      return { html: s, cls: "err" };
+    }
+    return { html: s, cls: "" };
+  }
+
+  // The program runs in a Web Worker: a stuck loop never freezes the page and Stop can end it.
+  const WORKER_SRC = `
+    let pyodide = null;
+    const send = (type, data) => postMessage({ type, data });
+    async function boot() {
+      importScripts(${JSON.stringify(PYODIDE_URL + "pyodide.js")});
+      pyodide = await loadPyodide({ indexURL: ${JSON.stringify(PYODIDE_URL)} });
+      pyodide.setStdout({ batched: (t) => send("out", t) });
+      pyodide.setStderr({ batched: (t) => send("err", t) });
+      // input() has no keyboard in a worker, so it sees end-of-input and raises EOFError
+      pyodide.setStdin({ stdin: () => undefined });
+    }
+    onmessage = async (e) => {
+      try {
+        if (!pyodide) { send("status", "Loading Python (first run downloads about 10 MB)..."); await boot(); }
+        send("status", "Running...");
+        // each run gets fresh globals, like running a new script
+        const globals = pyodide.globals.get("dict")();
+        try {
+          await pyodide.loadPackagesFromImports(e.data.code);
+          await pyodide.runPythonAsync(e.data.code, { globals });
+          send("done", 0);
+        } catch (err) {
+          const msg = String(err && err.message || err);
+          // drop pyodide's own frames: keep the traceback from the user's <exec> code on
+          const i = msg.indexOf("Traceback");
+          send("err", (i >= 0 ? msg.slice(i) : msg).replace(/File "<exec>"/g, 'File "main.py"').replace(/\\n$/, ""));
+          send("done", 1);
+        } finally { globals.destroy(); }
+      } catch (err) {
+        send("fatal", String(err && err.message || err));
+      }
+    };
+  `;
+
+  let worker = null;
+  let runTimer = null;
+  let tick = null;
+  let live = null;
+
+  function startWorker() {
+    worker = new Worker(URL.createObjectURL(new Blob([WORKER_SRC], { type: "text/javascript" })));
+    worker.onmessage = (e) => onWorker(e.data);
+    worker.onerror = (e) => { endRun(1, "Could not start the Python engine: " + (e.message || "worker error")); };
+  }
+
+  function createLive() {
+    outputArea.innerHTML = consoleHeader("running");
+    const head = outputArea.firstElementChild;
+    const body = document.createElement("div");
+    outputArea.appendChild(body);
+    const status = document.createElement("div");
+    status.className = "con-line sys";
+    body.appendChild(status);
+    return {
+      head, body, status,
+      line(text, kind) {
+        const { html, cls } = lineHtml(text, kind);
+        const div = document.createElement("div");
+        div.className = "con-line " + cls;
+        div.innerHTML = html || "&nbsp;";
+        body.appendChild(div);
+        outputArea.scrollTop = outputArea.scrollHeight;
+      },
+    };
+  }
+
+  function armTimeout(ms) {
+    clearTimeout(runTimer);
+    runTimer = setTimeout(() => {
+      killWorker();
+      endRun(1, ms > RUN_TIMEOUT_MS ? "Could not load Python in time. Check your internet connection and try again." : "Stopped: the program ran for more than " + RUN_TIMEOUT_MS / 1000 + " seconds (is there an endless loop?).", "Timed out");
+    }, ms);
+  }
+
+  let sawOutput = false;
+  function onWorker(m) {
+    if (!live) return;
+    if (m.type === "status") {
+      live.status.textContent = m.data;
+      if (m.data === "Running...") armTimeout(RUN_TIMEOUT_MS);   // the clock starts once Python is loaded
+      return;
+    }
+    if (m.type === "out" || m.type === "err") {
+      if (live.status.parentNode) live.status.remove();
+      sawOutput = true;
+      live.line(m.data, m.type);
+    } else if (m.type === "done") {
+      endRun(m.data);
+    } else if (m.type === "fatal") {
+      endRun(1, "Could not load Python. Check your internet connection and try again.\n" + m.data);
+    }
+  }
+
+  function endRun(exitCode, errorText, label) {
+    clearTimeout(runTimer); clearInterval(tick);
+    if (live) {
+      if (live.status.parentNode) {
+        if (errorText) live.status.remove();
+        else { live.status.textContent = "(no output)"; }
+      }
+      if (errorText) live.line(errorText, "err");
+      live.head.outerHTML = consoleHeader("terminated", exitCode)
+        .replace("con-terminated", exitCode === 0 ? "con-terminated" : "con-failed");
+    }
+    live = null;
+    runBtn.disabled = false;
+    stopBtn.disabled = true;
+    setStatus(exitCode === 0 ? "success" : "error", label || (exitCode === 0 ? "Success" : "Error"));
+  }
+
+  function killWorker() {
+    if (worker) { worker.terminate(); worker = null; }
+  }
+
+  function stopRun() {
+    if (!live) return;
+    killWorker();                       // the engine reloads on the next run
+    endRun(1, "Stopped.", "Stopped");
+  }
+
+  function runCode() {
+    const code = codeArea.value;
+    if (!code.trim()) {
+      setStatus("error", "Empty");
+      outputArea.innerHTML = consoleHeader("terminated", 1).replace("con-terminated", "con-failed");
+      const d = document.createElement("div");
+      d.className = "con-line err"; d.textContent = "No code to run";
+      outputArea.appendChild(d);
+      return;
+    }
+    runBtn.disabled = true;
+    stopBtn.disabled = false;
+    setStatus("running");
+    sawOutput = false;
+    live = createLive();
+    const startedAt = performance.now();
+    execTimeEl.textContent = "0.0s";
+    tick = setInterval(() => { execTimeEl.textContent = ((performance.now() - startedAt) / 1000).toFixed(1) + "s"; }, 100);
+    if (!worker) startWorker();
+    armTimeout(120000);                 // loading the engine the first time can be slow
+    worker.postMessage({ code });
+  }
+</script>
+
+</body>
+</html>

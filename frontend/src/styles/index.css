@@ -14,3 +14,5 @@
 
 /* The passage a lesson-text search result landed on (see lib/findInPage.ts). */
 ::highlight(jsl-find) { background-color: #fde047; color: #111827; }
+/* Night mode: lesson text and inline code are light, so a pale yellow highlight made them unreadable; use a deep amber instead. */
+.dark ::highlight(jsl-find) { background-color: #92400e; color: #fffbeb; }

@@ -36,6 +36,34 @@ import { architecturalPatterns } from "./ArchitecturalPatterns";
 import { cloudNativePatterns } from "./CloudNativePatterns";
 import { microservicesFundamentalsPart1 } from "./MicroservicesFundamentalsPart1";
 import { microservicesFundamentalsPart2 } from "./MicroservicesFundamentalsPart2";
+import { JdbcCourse } from "./JdbcCourse";
+import { withJvm, withJdbc, withJsRoadmap, withReactRoadmap, withAngularRoadmap, withFlutterRoadmap, withHibernateRoadmap, withMicroservicesRoadmap, withSpringCoreRoadmap, withJavaFxRoadmap } from "./courseMerges";
+import { javaFxRoadmap1 } from "./JavaFXRoadmap1";
+import { javaFxRoadmap2 } from "./JavaFXRoadmap2";
+import { javaFxRoadmap3 } from "./JavaFXRoadmap3";
+import { springCoreRoadmap1 } from "./SpringCoreRoadmap1";
+import { springCoreRoadmap2 } from "./SpringCoreRoadmap2";
+import { springCoreRoadmap3 } from "./SpringCoreRoadmap3";
+import { springCoreRoadmap4 } from "./SpringCoreRoadmap4";
+import { microservicesRoadmap1 } from "./MicroservicesRoadmap1";
+import { microservicesRoadmap2 } from "./MicroservicesRoadmap2";
+import { microservicesRoadmap3 } from "./MicroservicesRoadmap3";
+import { hibernateRoadmap1 } from "./HibernateRoadmap1";
+import { hibernateRoadmap2 } from "./HibernateRoadmap2";
+import { flutterRoadmap1 } from "./FlutterRoadmap1";
+import { flutterRoadmap2 } from "./FlutterRoadmap2";
+import { flutterRoadmap3 } from "./FlutterRoadmap3";
+import { flutterRoadmap4 } from "./FlutterRoadmap4";
+import { angularRoadmap1 } from "./AngularRoadmap1";
+import { angularRoadmap2 } from "./AngularRoadmap2";
+import { angularRoadmap3 } from "./AngularRoadmap3";
+import { reactRoadmap1 } from "./ReactRoadmap1";
+import { reactRoadmap2 } from "./ReactRoadmap2";
+import { reactRoadmap3 } from "./ReactRoadmap3";
+import { jsRoadmap1 } from "./JavaScriptRoadmap1";
+import { jsRoadmap2 } from "./JavaScriptRoadmap2";
+import { jsRoadmap3 } from "./JavaScriptRoadmap3";
+import { jsRoadmap4 } from "./JavaScriptRoadmap4";
 import { applyCourseExtras } from "./topics/courseExtras";
 
 // Merge split-authored pattern courses into single clean course cards
@@ -57,10 +85,10 @@ const microservicesFundamentals = [{
 }];
 
 
-export const baseCourses = [ ...SoftwareFoundations, ...ProgrammingFundamentals, ...HtmlandCSS,...coreJava, ...JavaMemoryJVM, ...JSPServlets, ...CollectionFramework,
-    ...designPattern, ...enterprisePatterns, ...microservicesPatterns, ...messagingPatterns, ...architecturalPatterns, ...cloudNativePatterns, ...microservicesFundamentals,
-    ...MySQLCSS, ...Hibernate,...Reactjs,
-    ...JavaScriptCourse, ...AngularCourse, ...Flutter, ...JavaFXCourse,
+export const baseCourses = [ ...SoftwareFoundations, ...ProgrammingFundamentals, ...HtmlandCSS,...withSpringCoreRoadmap(withJvm(coreJava, JavaMemoryJVM), springCoreRoadmap1.slice(0, 1), [...springCoreRoadmap1.slice(1), ...springCoreRoadmap2, ...springCoreRoadmap3, ...springCoreRoadmap4]), ...JSPServlets, ...CollectionFramework,
+    ...designPattern, ...enterprisePatterns, ...microservicesPatterns, ...messagingPatterns, ...architecturalPatterns, ...cloudNativePatterns, ...withMicroservicesRoadmap(microservicesFundamentals, microservicesRoadmap1.slice(0, 1), [...microservicesRoadmap1.slice(1), ...microservicesRoadmap2, ...microservicesRoadmap3]),
+    ...MySQLCSS, ...withHibernateRoadmap(withJdbc(Hibernate, JdbcCourse), hibernateRoadmap1.slice(0, 1), [...hibernateRoadmap1.slice(1), ...hibernateRoadmap2]),...withReactRoadmap(Reactjs, reactRoadmap1.slice(0, 1), [...reactRoadmap1.slice(1), ...reactRoadmap2, ...reactRoadmap3]),
+    ...withJsRoadmap(JavaScriptCourse, jsRoadmap1.slice(0, 1), [...jsRoadmap1.slice(1), ...jsRoadmap2, ...jsRoadmap3, ...jsRoadmap4]), ...withAngularRoadmap(AngularCourse, angularRoadmap1.slice(0, 1), [...angularRoadmap1.slice(1), ...angularRoadmap2, ...angularRoadmap3]), ...withFlutterRoadmap(Flutter, flutterRoadmap1.slice(0, 1), [...flutterRoadmap1.slice(1), ...flutterRoadmap2, ...flutterRoadmap3, ...flutterRoadmap4]), ...withJavaFxRoadmap(JavaFXCourse, javaFxRoadmap1.slice(0, 1), [...javaFxRoadmap1.slice(1), ...javaFxRoadmap2, ...javaFxRoadmap3]),
     ...PythonCourse, ...MachineLearningCourse, ...DataScienceCourse, ...DsaCourse,
     ...DigitalImageAnalysisCourse, ...MathFoundationsCourse
 

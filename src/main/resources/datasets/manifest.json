@@ -2,25 +2,25 @@
  "generatedBy": "scripts/export-datasets.mjs",
  "datasets": 4,
  "totals": {
-  "banks": 8,
-  "questions": 68,
+  "banks": 12,
+  "questions": 100,
   "challenges": 99,
   "packs": 19,
   "keypoints": 156,
   "interviewQA": 130,
   "mcq": 132,
   "paths": 6,
-  "steps": 29
+  "steps": 28
  },
  "items": [
   {
    "name": "quiz-banks",
    "file": "quiz-banks.json",
-   "bytes": 44568,
-   "sha256": "da09dbd2a962159e83aa30fc8c335b1b72c968d438bd47ae957cb2f65537629e",
+   "bytes": 65260,
+   "sha256": "7cc5248570fbb9e69c1e97d87e935203fc286b78f064be7b0f25ff0a0f5fb955",
    "counts": {
-    "banks": 8,
-    "questions": 68
+    "banks": 12,
+    "questions": 100
    }
   },
   {
@@ -47,11 +47,11 @@
   {
    "name": "learning-paths",
    "file": "learning-paths.json",
-   "bytes": 1641,
-   "sha256": "e9d9adf0133bbe22bc86dcbd1097ffedbadf70bcdf5b273110acd69e99f4bdc1",
+   "bytes": 1610,
+   "sha256": "88696c49d0efb4ab1d2c5d39f81b0a384c06f997d4439857692dcef301f8763f",
    "counts": {
     "paths": 6,
-    "steps": 29
+    "steps": 28
    }
   }
  ]

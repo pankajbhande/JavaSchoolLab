@@ -15,7 +15,7 @@ const RESERVED = new Set([
 // Courses whose code samples are Java. Others (Angular, Flutter, JS, SQL, Python...) also have
 // `class` and `;`, so they are excluded by course rather than guessed from the code.
 const JAVA_COURSES = new Set([
-  "java", "java-memory-jvm", "collection", "design-patterns", "algorithms", "jdbc", "jsp-servlet",
+  "java", "collection", "design-patterns", "algorithms", "jsp-servlet",
   "hibernate", "spring-mvc", "spring-boot", "microservices", "javafx", "programming-fundamentals",
   "software-foundations",
 ]);

@@ -25,7 +25,7 @@ export const learningPaths: LearningPath[] = [
     id: 'java-backend',
     title: 'Java Backend Developer',
     tagline: 'From core Java to production Spring services.',
-    steps: steps('java', 'collection', 'jdbc', 'hibernate', 'spring-core', 'spring-mvc', 'spring-boot', 'microservices-fundamentals'),
+    steps: steps('java', 'collection', 'hibernate', 'spring-core', 'spring-mvc', 'spring-boot', 'microservices-fundamentals'),
   },
   {
     id: 'full-stack-web',
@@ -43,7 +43,7 @@ export const learningPaths: LearningPath[] = [
     id: 'dsa-interview',
     title: 'DSA & Interview Ready',
     tagline: 'Problem solving, core collections and design patterns.',
-    steps: steps('algorithms', 'collection', 'design-patterns', 'java-memory-jvm'),
+    steps: steps('algorithms', 'collection', 'design-patterns', 'java'),
   },
   {
     id: 'software-architect',

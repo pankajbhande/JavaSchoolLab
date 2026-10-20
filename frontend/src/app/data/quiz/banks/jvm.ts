@@ -1,8 +1,8 @@
 import type { QuizBank } from '../types';
 
-// Course-wide bank: java-memory-jvm (Java Memory & JVM) — covers all five of its modules.
+// Bank for the Java Memory & JVM modules of the Java course (registered once per module in ../index.ts).
 export const jvm: QuizBank = {
-  key: 'java-memory-jvm',
+  key: 'java/jvm',
   label: 'Java Memory & JVM',
   questions: [
     {

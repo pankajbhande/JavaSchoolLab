@@ -12,7 +12,7 @@ import { courseStats } from '../data/courseStats';
 import { useAuth } from '../context/AuthContext';
 import {
   Users, Sparkles, GraduationCap, BookOpen, Award,
-  FileCode2, Coffee, Boxes, Puzzle, Database, Plug, Globe, Link2, Workflow, Rocket, Atom, Network,
+  FileCode2, Coffee, Boxes, Puzzle, Database, Globe, Link2, Workflow, Rocket, Atom, Network,
   Braces, Shield, Wind, AppWindow, Terminal, BrainCircuit, BarChart3, Binary,
   Compass, Cpu, Play, Layers, FileText,
 } from 'lucide-react';
@@ -104,12 +104,12 @@ const courseCards = [
 
   {
     id: 'HTML and CSS',
-    name : 'HTML and CSS',
+    name : 'HTML',
     icon  : FileCode2,
     color: 'from-sky-500 via-blue-500 to-indigo-600',
     glow: 'group-hover:shadow-blue-500/30',
-    description: 'Html and css programming',
-    query: 'html and css programming code',
+    description: 'Build web pages with HTML',
+    query: 'html programming code',
     anim: 'type',
     category: 'Web Development'
   },
@@ -215,17 +215,6 @@ const courseCards = [
     category: 'Java Enterprise & Backend'
   },
   {
-    id: 'jdbc',
-    name: 'JDBC',
-    icon: Plug,
-    color: 'from-teal-500 via-cyan-500 to-sky-600',
-    glow: 'group-hover:shadow-teal-500/30',
-    description: 'Java Database Connectivity',
-    query: 'database connection',
-    anim: 'pulse',
-    category: 'Java Enterprise & Backend'
-  },
-  {
     id: 'jsp-servlet',
     name: 'JSP Servlet',
     icon: Globe,
@@ -291,17 +280,6 @@ const courseCards = [
     query: 'spring core ioc',
     anim: 'stack',
     category: 'Java Enterprise & Backend'
-  },
-  {
-    id: 'java-memory-jvm',
-    name: 'Java Memory & JVM',
-    icon: Cpu,
-    color: 'from-sky-600 via-blue-600 to-indigo-700',
-    glow: 'group-hover:shadow-sky-500/30',
-    description: 'Heap, stack, garbage collection and JVM internals',
-    query: 'jvm memory garbage collection',
-    anim: 'pulse',
-    category: 'Core Java'
   },
   {
     id: 'enterprise-patterns-1',

@@ -12,7 +12,7 @@
  *
  * Bump VERSION to drop every old cache on the next activation.
  */
-const VERSION = 'v3';
+const VERSION = 'v4';
 const SHELL_CACHE = `jsl-shell-${VERSION}`;
 const ASSET_CACHE = `jsl-assets-${VERSION}`;
 const STATIC_CACHE = `jsl-static-${VERSION}`;
@@ -65,6 +65,9 @@ self.addEventListener('fetch', (event) => {
     return;
   }
   if (req.headers.has('range')) return;
+  // Standalone pages (java-compiler.html, html-viewer.html, python-compiler.html...) are real files, not routes of the app:
+  // the browser must load them itself. Answering them with the cached app shell showed "Something went wrong".
+  if (req.mode === 'navigate' && /\.html$/.test(url.pathname) && url.pathname !== '/index.html') return;
 
   if (req.mode === 'navigate') {
     event.respondWith(navigate(req));

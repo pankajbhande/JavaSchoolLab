@@ -44,7 +44,15 @@ interface ContentAreaProps {
   extraBelowNotes?: React.ReactNode;
 }
 
-const handleAction = (code: string) => {
+// Courses whose code samples are Python; Try it opens the in-browser Python runner for them.
+const PYTHON_COURSES = new Set(["python", "data-science", "machine-learning"]);
+
+const handleAction = (code: string, courseId?: string) => {
+  if (courseId && PYTHON_COURSES.has(courseId)) {
+    localStorage.setItem("python_try_code", code);
+    window.open("/python-compiler.html", "_blank");   // served from public/, runs Python in the browser (Pyodide)
+    return;
+  }
   if (looksLikeHtml(code)) {
     localStorage.setItem("html_try_code", code);
     window.open("/html-viewer.html", "_blank");   // served from public/, like the Java compiler
@@ -752,7 +760,7 @@ export function ContentArea({
 
                         {/* ⭐ Your new button */}
                         <button
-                          onClick={() => handleAction(code)}
+                          onClick={() => handleAction(code, course.id)}
                           className="p-2 bg-orange-600 hover:bg-orange-500 rounded-md text-white text-sm font-semibold"
                         >
                         Try it

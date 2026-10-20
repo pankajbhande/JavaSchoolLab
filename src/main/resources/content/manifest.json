@@ -1,16 +1,16 @@
 {
  "generatedBy": "scripts/export-content.mjs",
- "courses": 31,
+ "courses": 29,
  "totals": {
-  "modules": 324,
-  "topics": 3588,
-  "blocks": 26258,
-  "codeExamples": 18654,
+  "modules": 426,
+  "topics": 3441,
+  "blocks": 26645,
+  "codeExamples": 19480,
   "codeExplanations": 558,
-  "interviewQA": 446,
-  "cheatNotes": 975,
-  "interviewQuestions": 3135,
-  "characters": 20171956
+  "interviewQA": 1820,
+  "cheatNotes": 960,
+  "interviewQuestions": 3123,
+  "characters": 21322519
  },
  "items": [
   {
@@ -51,74 +51,56 @@
   },
   {
    "id": "HTML and CSS",
-   "name": "HTML & CSS",
+   "name": "HTML",
    "file": "courses/html-and-css.json",
-   "bytes": 2007086,
-   "sha256": "9d39133008ea227276a56cc3b5e9a0168e5dc5ad7139df2d7ee2163fc801bab3",
+   "bytes": 1504422,
+   "sha256": "07f6ed63e3ad77179b1cddd2bcb76b1019ea8d184d0d26869af634fe9968f1c6",
    "counts": {
-    "modules": 46,
-    "topics": 783,
-    "blocks": 1669,
-    "codeExamples": 1187,
+    "modules": 14,
+    "topics": 275,
+    "blocks": 1007,
+    "codeExamples": 1003,
     "codeExplanations": 0,
     "interviewQA": 0,
-    "cheatNotes": 46,
-    "interviewQuestions": 20,
-    "characters": 1813944
+    "cheatNotes": 31,
+    "interviewQuestions": 8,
+    "characters": 1375356
    }
   },
   {
    "id": "java",
    "name": "Java",
    "file": "courses/java.json",
-   "bytes": 2274749,
-   "sha256": "2a562fad3c32735cc2e6ac5e5c91325f465c6ccd94af71b7d1f03e5168d5653a",
+   "bytes": 2881788,
+   "sha256": "8b887d58d2b0763b68a86c5861704564ddbc7e45f55c53e52e0d75153be30b56",
    "counts": {
-    "modules": 10,
-    "topics": 89,
-    "blocks": 2470,
-    "codeExamples": 1607,
+    "modules": 15,
+    "topics": 125,
+    "blocks": 3249,
+    "codeExamples": 2043,
     "codeExplanations": 0,
-    "interviewQA": 446,
-    "cheatNotes": 98,
-    "interviewQuestions": 2070,
-    "characters": 1994792
-   }
-  },
-  {
-   "id": "jdbc",
-   "name": "JDBC",
-   "file": "courses/jdbc.json",
-   "bytes": 182662,
-   "sha256": "e0cda7c2152c9ae2229ac9730c6610446a4b31c893769e93ab2e39267979e423",
-   "counts": {
-    "modules": 1,
-    "topics": 11,
-    "blocks": 225,
-    "codeExamples": 141,
-    "codeExplanations": 0,
-    "interviewQA": 0,
-    "cheatNotes": 36,
-    "interviewQuestions": 5,
-    "characters": 168950
+    "interviewQA": 716,
+    "cheatNotes": 113,
+    "interviewQuestions": 2080,
+    "characters": 2518078
    }
   },
   {
    "id": "spring-core",
    "name": "Spring Core",
    "file": "courses/spring-core.json",
-   "bytes": 104758,
-   "sha256": "bd69f45eac55da39b83ee4004648eac560146e075f0e17b1bc5bdc5a4d2d1d07",
+   "bytes": 395128,
+   "sha256": "95c4693d6f4ac67f3af83466da0b3fd7285923be02e9ba104dee81d217542be5",
    "counts": {
-    "modules": 2,
-    "topics": 4,
-    "blocks": 93,
-    "codeExamples": 84,
+    "modules": 23,
+    "topics": 58,
+    "blocks": 255,
+    "codeExamples": 228,
     "codeExplanations": 0,
-    "interviewQA": 0,
+    "interviewQA": 178,
     "cheatNotes": 45,
     "interviewQuestions": 10,
-    "characters": 94880
+    "characters": 325826
    }
   },
   {
@@ -155,24 +137,6 @@
     "cheatNotes": 96,
     "interviewQuestions": 5,
     "characters": 2266303
-   }
-  },
-  {
-   "id": "java-memory-jvm",
-   "name": "Java Memory & JVM",
-   "file": "courses/java-memory-jvm.json",
-   "bytes": 602980,
-   "sha256": "f55a3cb7aaf1ac736d12a6fc2e97ab19895174ef7b93b7b721294a696d7b96c7",
-   "counts": {
-    "modules": 5,
-    "topics": 36,
-    "blocks": 815,
-    "codeExamples": 436,
-    "codeExplanations": 0,
-    "interviewQA": 0,
-    "cheatNotes": 15,
-    "interviewQuestions": 10,
-    "characters": 567794
    }
   },
   {
@@ -323,18 +287,18 @@
    "id": "microservices-fundamentals",
    "name": "Microservices",
    "file": "courses/microservices-fundamentals.json",
-   "bytes": 56512,
-   "sha256": "ffa0d9de34037ef1214aa762d2d62d56db43e9d78a9190182f59815738709db8",
+   "bytes": 343415,
+   "sha256": "8380722a2318a5472d8898022d39567809a3c582b9ded44476bdc2bf3b2ef2e8",
    "counts": {
-    "modules": 2,
-    "topics": 14,
-    "blocks": 56,
-    "codeExamples": 14,
+    "modules": 18,
+    "topics": 59,
+    "blocks": 191,
+    "codeExamples": 135,
     "codeExplanations": 0,
-    "interviewQA": 0,
+    "interviewQA": 134,
     "cheatNotes": 8,
     "interviewQuestions": 10,
-    "characters": 51420
+    "characters": 287116
    }
   },
   {
@@ -359,108 +323,108 @@
    "id": "hibernate",
    "name": "Hibernate",
    "file": "courses/hibernate.json",
-   "bytes": 132272,
-   "sha256": "92d79c527988c9946280a1e09e58a081d94839a32704ad231fb2968a4963c0b7",
+   "bytes": 511523,
+   "sha256": "7416db028a2832e8589eef58fa26925cccc5bfc5d7b3f71ae66b412bec026e3d",
    "counts": {
-    "modules": 1,
-    "topics": 10,
-    "blocks": 207,
-    "codeExamples": 152,
+    "modules": 14,
+    "topics": 53,
+    "blocks": 528,
+    "codeExamples": 377,
     "codeExplanations": 0,
-    "interviewQA": 0,
-    "cheatNotes": 42,
-    "interviewQuestions": 5,
-    "characters": 118539
+    "interviewQA": 95,
+    "cheatNotes": 78,
+    "interviewQuestions": 10,
+    "characters": 448422
    }
   },
   {
    "id": "react-js",
    "name": "ReactJS",
    "file": "courses/react-js.json",
-   "bytes": 159917,
-   "sha256": "ef78b1b69cb0a805f10bbbf2a9313b3279525312b8c02588acb39d51e420b8dd",
+   "bytes": 414745,
+   "sha256": "388c3c8e3f5fe9c1d4b6a21c0e5972e22df1d0db796dcced920505dd86f8314e",
    "counts": {
-    "modules": 1,
-    "topics": 15,
-    "blocks": 233,
-    "codeExamples": 189,
+    "modules": 18,
+    "topics": 65,
+    "blocks": 383,
+    "codeExamples": 331,
     "codeExplanations": 0,
-    "interviewQA": 0,
+    "interviewQA": 148,
     "cheatNotes": 39,
     "interviewQuestions": 4,
-    "characters": 144932
+    "characters": 347838
    }
   },
   {
    "id": "javascript",
    "name": "JavaScript",
    "file": "courses/javascript.json",
-   "bytes": 124806,
-   "sha256": "469996dd9bfe913bd3a665568efdd7f25bf7dd57a3c0a3e43c9630ee3bed55f9",
+   "bytes": 328916,
+   "sha256": "f84d233861b53afae4b9385d50f9088edc895ee9820d6883d29c5a098b8a54ab",
    "counts": {
-    "modules": 3,
-    "topics": 16,
-    "blocks": 228,
-    "codeExamples": 175,
+    "modules": 21,
+    "topics": 63,
+    "blocks": 369,
+    "codeExamples": 313,
     "codeExplanations": 0,
-    "interviewQA": 0,
+    "interviewQA": 140,
     "cheatNotes": 22,
     "interviewQuestions": 8,
-    "characters": 111370
+    "characters": 269060
    }
   },
   {
    "id": "angular",
    "name": "Angular",
    "file": "courses/angular.json",
-   "bytes": 32984,
-   "sha256": "1994e536ac5d9d0d31e08eac998d36a5ac0d249aaea013b844c6e2c3eb35ccfb",
+   "bytes": 267364,
+   "sha256": "43929c749b2d2a9a4d722b4164cef84b5cf77e217c45f598f44326eab3c9b4c9",
    "counts": {
-    "modules": 2,
-    "topics": 4,
-    "blocks": 54,
-    "codeExamples": 42,
+    "modules": 16,
+    "topics": 45,
+    "blocks": 177,
+    "codeExamples": 158,
     "codeExplanations": 0,
-    "interviewQA": 0,
+    "interviewQA": 122,
     "cheatNotes": 20,
     "interviewQuestions": 8,
-    "characters": 28251
+    "characters": 219689
    }
   },
   {
    "id": "flutter",
    "name": "Flutter",
    "file": "courses/flutter.json",
-   "bytes": 12738,
-   "sha256": "debcc8c62111a55db1ea1099dd7c01a4eb68d2a59b51685eb74f975edc73a315",
+   "bytes": 390781,
+   "sha256": "97b243c1368bd7258ccbd26313ede486ad0028b1dee95267c89daaeaba7f052c",
    "counts": {
-    "modules": 3,
-    "topics": 5,
-    "blocks": 7,
-    "codeExamples": 7,
+    "modules": 22,
+    "topics": 63,
+    "blocks": 181,
+    "codeExamples": 175,
     "codeExplanations": 0,
-    "interviewQA": 0,
+    "interviewQA": 173,
     "cheatNotes": 24,
     "interviewQuestions": 8,
-    "characters": 9201
+    "characters": 326640
    }
   },
   {
    "id": "javafx",
    "name": "JavaFX",
    "file": "courses/javafx.json",
-   "bytes": 34080,
-   "sha256": "663b12a2c7bea28f817b5f6c61f9683f4c4bcc0fa99fb41d5580140471fc96d6",
+   "bytes": 204880,
+   "sha256": "92b86b07ce230c37f3918d61fab9a5dd223578548151b6c1dd20de65af86d296",
    "counts": {
-    "modules": 2,
-    "topics": 4,
-    "blocks": 53,
-    "codeExamples": 41,
+    "modules": 19,
+    "topics": 38,
+    "blocks": 157,
+    "codeExamples": 138,
     "codeExplanations": 0,
-    "interviewQA": 0,
+    "interviewQA": 114,
     "cheatNotes": 17,
     "interviewQuestions": 6,
-    "characters": 29742
+    "characters": 166353
    }
   },
   {

@@ -2,15 +2,15 @@
  "generatedBy": "scripts/export-content.mjs",
  "courses": 29,
  "totals": {
-  "modules": 434,
-  "topics": 3467,
-  "blocks": 26791,
-  "codeExamples": 19394,
+  "modules": 464,
+  "topics": 3658,
+  "blocks": 28580,
+  "codeExamples": 20978,
   "codeExplanations": 558,
-  "interviewQA": 2050,
+  "interviewQA": 3070,
   "cheatNotes": 960,
   "interviewQuestions": 3181,
-  "characters": 21652865
+  "characters": 24046455
  },
  "items": [
   {
@@ -71,18 +71,18 @@
    "id": "java",
    "name": "Java",
    "file": "courses/java.json",
-   "bytes": 2881788,
-   "sha256": "8b887d58d2b0763b68a86c5861704564ddbc7e45f55c53e52e0d75153be30b56",
+   "bytes": 3021691,
+   "sha256": "9e4d8a89130ba7e6e8fc0579f8746a809f2680919aa74d63a8ec46c10d101595",
    "counts": {
     "modules": 15,
-    "topics": 125,
-    "blocks": 3249,
-    "codeExamples": 2043,
+    "topics": 145,
+    "blocks": 3657,
+    "codeExamples": 2434,
     "codeExplanations": 0,
-    "interviewQA": 716,
+    "interviewQA": 752,
     "cheatNotes": 113,
     "interviewQuestions": 2080,
-    "characters": 2518078
+    "characters": 2632914
    }
   },
   {
@@ -161,36 +161,36 @@
    "id": "collection",
    "name": "Collection Framework",
    "file": "courses/collection.json",
-   "bytes": 788863,
-   "sha256": "3dcb283154c2f6f394a5f3a7411f5e591b3237ec1568b30c8837ebeb6b01a785",
+   "bytes": 1661367,
+   "sha256": "c2de23dab6820c59fa7a01e92473a4dbfb60c81df7fb5d7d432e9134f6f00f6a",
    "counts": {
     "modules": 6,
     "topics": 16,
-    "blocks": 412,
-    "codeExamples": 253,
+    "blocks": 845,
+    "codeExamples": 708,
     "codeExplanations": 0,
     "interviewQA": 178,
     "cheatNotes": 57,
     "interviewQuestions": 138,
-    "characters": 713814
+    "characters": 1553992
    }
   },
   {
    "id": "design-patterns",
    "name": "Design Patterns in Java",
    "file": "courses/design-patterns.json",
-   "bytes": 126094,
-   "sha256": "d1f6c1b83d5b31b627109b6278f5148424fc16ef81ad01d73b11f427a693479b",
+   "bytes": 730327,
+   "sha256": "674c7ea82e01d8ebac4dce053d3b3438f42cd2fbb9b2b5ea57d3dafb03a6dac5",
    "counts": {
     "modules": 3,
     "topics": 23,
-    "blocks": 69,
-    "codeExamples": 43,
+    "blocks": 328,
+    "codeExamples": 245,
     "codeExplanations": 0,
-    "interviewQA": 0,
+    "interviewQA": 156,
     "cheatNotes": 48,
     "interviewQuestions": 25,
-    "characters": 113469
+    "characters": 650618
    }
   },
   {
@@ -377,18 +377,18 @@
    "id": "angular",
    "name": "Angular",
    "file": "courses/angular.json",
-   "bytes": 278858,
-   "sha256": "b14d2564670f1d1e0595e79ed3d1f9fbc12872fb507b5b433f627e635caa8b0c",
+   "bytes": 1399671,
+   "sha256": "ec332b9c03dfd3534cbdedfcf5898f48858c4850539c9ea3b0bae9a28ba6d303",
    "counts": {
-    "modules": 17,
-    "topics": 48,
-    "blocks": 186,
-    "codeExamples": 167,
+    "modules": 47,
+    "topics": 219,
+    "blocks": 875,
+    "codeExamples": 703,
     "codeExplanations": 0,
-    "interviewQA": 128,
+    "interviewQA": 956,
     "cheatNotes": 20,
     "interviewQuestions": 8,
-    "characters": 229044
+    "characters": 1130471
    }
   },
   {

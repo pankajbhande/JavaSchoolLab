@@ -274,9 +274,11 @@ const hasSingleExample = (c: { codeExamples?: unknown[] }) => c.codeExamples?.le
 /**
  * The top-right button only makes sense when the code sits right under it: a short block (heading plus a
  * line or two, no diagram or list in between). A long block just shows its code, with no button.
+ * The block must also open with a heading: the button floats over the first row, so a first row of plain
+ * text would run underneath it. Without a heading the button goes in the title row above the code instead.
  */
 const hasInlineToggle = (c: { content: string; codeExamples?: unknown[] }) =>
-  hasSingleExample(c) && !/<(pre|ul|ol|table)\b/i.test(c.content) && c.content.replace(/<[^>]+>/g, '').length <= 400;
+  hasSingleExample(c) && /^\s*<h[1-6]\b/i.test(c.content) && !/<(pre|ul|ol|table)\b/i.test(c.content) && c.content.replace(/<[^>]+>/g, '').length <= 400;
 
 function ExampleToggle({ open, onClick, className = '' }: { open: boolean; onClick: () => void; className?: string }) {
   return (
@@ -337,6 +339,7 @@ export function ContentArea({
     return () => window.removeEventListener('keydown', onKey);
   }, [focusMode, onToggleFocus]);
   const progressRef = useRef<HTMLDivElement>(null);
+  const progressFrame = useRef(0);
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
   const [showMCQ, setShowMCQ] = useState(false);
   const [openExplanations, setOpenExplanations] = useState<Set<string>>(new Set());
@@ -464,9 +467,14 @@ export function ContentArea({
   return (
     <div
       onScroll={(e) => {
+        // Once per frame: reading scrollHeight on every scroll event forces a layout each time and makes long lessons stutter.
         const el = e.currentTarget;
-        const max = el.scrollHeight - el.clientHeight;
-        if (progressRef.current) progressRef.current.style.transform = `scaleX(${max > 0 ? Math.min(1, el.scrollTop / max) : 0})`;
+        if (progressFrame.current) return;
+        progressFrame.current = requestAnimationFrame(() => {
+          progressFrame.current = 0;
+          const max = el.scrollHeight - el.clientHeight;
+          if (progressRef.current) progressRef.current.style.transform = `scaleX(${max > 0 ? Math.min(1, el.scrollTop / max) : 0})`;
+        });
       }}
       data-tour="notes"
       data-rd-theme={reading.theme}

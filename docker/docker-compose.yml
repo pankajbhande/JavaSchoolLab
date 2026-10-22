@@ -1,146 +1,138 @@
-# JavaSchoolLab: app (Spring Boot serving the React site AND the API) -> db (MySQL)
+# JavaSchoolLab APPLICATION: only the app (Spring Boot serving the React site AND the API).
+# MySQL, Redis and OpenSearch are NOT part of this file: they are the shared stack (docker-compose.shared.yml), started on its own, and they
+# keep running while this application is rebuilt, redeployed or stopped. Prometheus, Grafana, Loki and Tempo are the monitoring stack
+# (docker-compose.monitoring.yml), also separate.
 #
-# Spring serves the built React site, the API and the course content itself, so there is no nginx
-# service here (put your own TLS proxy in front if you need HTTPS). Settings come from docker/.env (copy .env.example).
-#
-#   cd docker && docker compose up -d --build
+#   cd docker
+#   docker compose -f docker-compose.shared.yml up -d       (1. MySQL + Redis + OpenSearch; once, they keep running)
+#   docker compose up -d --build                            (2. the application, uses the shared services)
+#   docker compose -f docker-compose.monitoring.yml up -d   (3. optional: dashboards, logs, traces, alerts)
 #   open http://localhost:8080
 #
-# The mysql-init scripts are deliberately NOT mounted: Spring runs Flyway migrations on startup
-# (baseline-on-migrate), creating the tables on an empty volume and adopting an existing one without
-# touching its data. Running 000_base_schema.sql first would only create tables outside Flyway's history.
-# The database lives in the EXTERNAL volume javaschoollab_db_data, outside this compose project: rebuilding or redeploying the app,
-# "docker compose down" and even "down -v" never delete it. Create it once on a new server:  docker volume create javaschoollab_db_data
+#   docker compose down                                     stops ONLY the application; MySQL, Redis and OpenSearch stay up
+#
+# The application reaches the shared services by name on the shared network "javaschoollab_shared", which docker-compose.shared.yml creates:
+# javaschoollab-db, javaschoollab-redis and javaschoollab-opensearch. Start the shared stack first. If the application starts before MySQL is
+# ready it stops with a connection error and Docker restarts it (restart: unless-stopped) until MySQL answers.
+#
+# Spring serves the built React site, the API and the course content itself, so there is no nginx service here (put your own TLS proxy in
+# front if you need HTTPS). Settings come from docker/.env, the one settings file all three stacks read.
+#
+# Flyway migrations run on startup (baseline-on-migrate), creating the tables on an empty database and adopting an existing one without
+# touching its data.
 name: javaschoollab
 
+# Every container's console log is rotated by Docker: at most 3 files of 10 MB each (30 MB per container). Without this a busy container's log
+# grows until the disk is full. (The logs are also shipped to Loki by Alloy, which keeps them for 14 days.)
+x-logging: &default-logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+
 services:
-  db:
-    image: mysql:8.4
-    restart: unless-stopped
-    environment:
-      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:?set DB_ROOT_PASSWORD in .env}
-      MYSQL_DATABASE: ${DB_NAME:-javaschoollab}
-      MYSQL_USER: ${DB_USER:-jsl}
-      MYSQL_PASSWORD: ${DB_PASSWORD:?set DB_PASSWORD in .env}
-    volumes:
-      - db_data:/var/lib/mysql
-    healthcheck:
-      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p\"$$MYSQL_ROOT_PASSWORD\" --silent"]
-      interval: 10s
-      timeout: 5s
-      retries: 10
-      start_period: 30s
-    networks: [backend]
-
-  # Redis: rate limits shared by every app server, one-time codes that expire by themselves, and a 60-second cache for the
-  # leaderboard. Nothing is persisted (--save ""): it can be wiped at any time without losing user data. Not published to the host.
-  redis:
-    image: redis:7-alpine
-    restart: unless-stopped
-    command: ["redis-server", "--save", "", "--appendonly", "no", "--maxmemory", "128mb", "--maxmemory-policy", "volatile-lru"]
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
-      timeout: 3s
-      retries: 5
-    networks: [backend]
-
-  # OpenSearch: full-text search over every topic (GET /api/search). The index is rebuilt from the course content whenever the
-  # content changes, so the volume only saves a re-index after a restart. Security is off because it is reachable only from the
-  # app on the private "backend" network (no published port). Needs about 1 GB of memory; on a Linux host run once:
-  #   sudo sysctl -w vm.max_map_count=262144      (make it permanent in /etc/sysctl.conf)
-  opensearch:
-    image: opensearchproject/opensearch:2.17.1
-    restart: unless-stopped
-    environment:
-      discovery.type: single-node
-      DISABLE_SECURITY_PLUGIN: "true"
-      DISABLE_INSTALL_DEMO_CONFIG: "true"
-      OPENSEARCH_JAVA_OPTS: "-Xms512m -Xmx512m"
-    ulimits:
-      nofile: { soft: 65536, hard: 65536 }
-    volumes:
-      - opensearch_data:/usr/share/opensearch/data
-    healthcheck:
-      test: ["CMD-SHELL", "curl -sf http://localhost:9200/_cluster/health >/dev/null || exit 1"]
-      interval: 20s
-      timeout: 5s
-      retries: 10
-      start_period: 60s
-    networks: [backend]
-
   app:
     build:
+      # The Dockerfile lives in this docker/ folder; the build context is the project root (..), which holds frontend/, src/ and pom.xml.
       context: ..
-      dockerfile: Dockerfile
+      dockerfile: docker/Dockerfile
       args:
         VITE_API_BASE_URL: ${VITE_API_BASE_URL:-/api}
         VITE_CONTENT_SOURCE: api
-        SITE_URL: ${SITE_URL:-https://javaschoollab.com}
+        SITE_URL: ${SITE_URL:-https://javaschoollab.dhipansoft.in}
+        VITE_ADSENSE_CLIENT: ${VITE_ADSENSE_CLIENT:-}
+        VITE_AD_SLOT_RAIL_TOP: ${VITE_AD_SLOT_RAIL_TOP:-}
+        VITE_AD_SLOT_RAIL_BOTTOM: ${VITE_AD_SLOT_RAIL_BOTTOM:-}
+        VITE_AD_SLOT_CORNER: ${VITE_AD_SLOT_CORNER:-}
+        VITE_CONTACT_EMAIL: ${VITE_CONTACT_EMAIL:-}
+    # A fixed image name (instead of a generated one) so the image can be backed up by name: scripts/backup-images.sh saves it.
+    image: javaschoollab/app:${APP_IMAGE_TAG:-latest}
+    logging: *default-logging
+    container_name: javaschoollab-app
     restart: unless-stopped
-    depends_on:
-      db:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
+    # Container hardening: the JVM runs as a non-root user on a high port, so it needs no Linux capabilities, and nothing in it may gain new privileges.
+    cap_drop: [ALL]
+    security_opt:
+      - no-new-privileges:true
+    # Every setting below is the variable name application-prod.yml reads, and every value comes from docker/.env.
+    # Nothing is hard-coded and nothing secret is stored in this file or in the image.
     environment:
-      SPRING_PROFILES_ACTIVE: prod
-      REDIS_ENABLED: "true"
-      REDIS_HOST: redis
-      CACHE_TYPE: redis
-      # Search starts in the background and the app does not wait for it: until the index is ready the browser uses its own search.
-      SEARCH_URL: http://opensearch:9200
+      # --- Profile and server -------------------------------------------------------------------------------------
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-prod}
       PORT: 3001
-      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/${DB_NAME:-javaschoollab}?createDatabaseIfNotExist=true&useUnicode=true&characterEncoding=utf8&serverTimezone=UTC
-      SPRING_DATASOURCE_USERNAME: ${DB_USER:-jsl}
-      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD:?set DB_PASSWORD in .env}
+      FORWARD_HEADERS_STRATEGY: ${FORWARD_HEADERS_STRATEGY:-native}   # behind a proxy / load balancer: real visitor addresses for the rate limits
+      # --- Database (the shared MySQL, docker-compose.shared.yml) -----------------------------------------------
+      DB_HOST: ${DB_HOST:-javaschoollab-db}     # change in .env to use another MySQL server (for example a managed database)
+      DB_PORT: ${DB_PORT:-3306}
+      DB_NAME: ${DB_NAME:-javaschoollab}
+      DB_USER: ${DB_USER:-supervisor}
+      DB_PASSWORD: ${DB_PASSWORD:?set DB_PASSWORD in .env}
+      DB_POOL_SIZE: ${DB_POOL_SIZE:-20}
+      # --- Security -----------------------------------------------------------------------------------------------
       JWT_SECRET: ${JWT_SECRET:?set JWT_SECRET in .env}
       CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:8080}
-      # Needed behind a proxy / load balancer so rate limits see real visitor addresses.
-      FORWARD_HEADERS_STRATEGY: native
-      # Who may open /admin (analytics). Comma-separated emails.
-      ADMIN_EMAILS: ${ADMIN_EMAILS:-}
-      # Email OTP delivery (Hostinger SMTP). Leave SMTP_HOST empty to disable.
+      CSP_MODE: ${CSP_MODE:-enforce}
+      SITE_URL: ${SITE_URL:-https://javaschoollab.dhipansoft.in}
+      WRITE_RATE_LIMIT: ${WRITE_RATE_LIMIT:-120}
+      LOGIN_RATE_LIMIT: ${LOGIN_RATE_LIMIT:-10}
+      OTP_SEND_RATE_LIMIT: ${OTP_SEND_RATE_LIMIT:-3}
+      OTP_VERIFY_RATE_LIMIT: ${OTP_VERIFY_RATE_LIMIT:-6}
+      ADMIN_EMAILS: ${ADMIN_EMAILS:-}           # who may open /admin (analytics). Comma-separated emails.
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}   # empty = "Continue with Google" is off
+      # --- Operations (Spring Boot Actuator) ----------------------------------------------------------------------
+      # Health probes, info and metrics are served on this separate port. It is published to 127.0.0.1 only (see "ports"),
+      # so it is never reachable from the internet through the website's port. Prometheus scrapes it over the shared network.
+      MANAGEMENT_PORT: ${MANAGEMENT_PORT:-9001}
+      ACTUATOR_USER: ${ACTUATOR_USER:-actuator}        # HTTP Basic account for /actuator/prometheus and /actuator/metrics
+      ACTUATOR_PASSWORD: ${ACTUATOR_PASSWORD:-}        # empty = those two stay closed (health and info still answer)
+      APP_COMMIT: ${APP_COMMIT:-unknown}               # shown in /actuator/info
+      SHUTDOWN_TIMEOUT: 30s                            # graceful shutdown: finish requests in flight (stop_grace_period below is longer)
+      # --- Distributed tracing: spans go over OTLP to Tempo (docker-compose.monitoring.yml) -----------------------
+      TRACING_EXPORT_ENABLED: ${TRACING_EXPORT_ENABLED:-false}      # stack.sh sets it from OBSERVABILITY; a plain "docker compose up" exports no traces
+      OTLP_TRACING_ENDPOINT: ${OTLP_TRACING_ENDPOINT:-http://javaschoollab-tempo:4318/v1/traces}
+      TRACING_SAMPLING_PROBABILITY: ${TRACING_SAMPLING_PROBABILITY:-0.2}   # share of requests traced; 1.0 = all
+      # --- Redis (rate limits, one-time codes, cache): the shared Redis, ACL user + password ---------------------
+      REDIS_ENABLED: ${REDIS_ENABLED:-true}
+      REDIS_HOST: ${REDIS_HOST:-javaschoollab-redis}
+      REDIS_PORT: 6379
+      REDIS_USERNAME: ${REDIS_USERNAME:-supervisor}
+      REDIS_PASSWORD: ${REDIS_PASSWORD:?set REDIS_PASSWORD in .env}
+      CACHE_TYPE: ${CACHE_TYPE:-redis}
+      # --- Search (the shared OpenSearch) -------------------------------------------------------------------------
+      # Starts in the background and the app does not wait for it: until the index is ready the browser uses its own search.
+      SEARCH_URL: ${SEARCH_URL:-http://javaschoollab-opensearch:9200}
+      # --- Email (sign-up and login codes). Leave SMTP_HOST empty to disable: production never echoes a code. ------
       SMTP_HOST: ${SMTP_HOST:-}
       SMTP_PORT: ${SMTP_PORT:-465}
       SMTP_USER: ${SMTP_USER:-}
       SMTP_PASS: ${SMTP_PASS:-}
       SMTP_FROM: ${SMTP_FROM:-}
+      SMTP_SECURE: ${SMTP_SECURE:-}
+    # Readiness probe: "has the app finished starting (Flyway included) and does MySQL answer?" It asks the management port, expects
+    # HTTP 200 on /actuator/health/readiness, and uses bash because the image has no curl.
     healthcheck:
-      test: ["CMD-SHELL", "bash -c 'exec 3<>/dev/tcp/127.0.0.1/3001'"]
+      test: ["CMD", "bash", "-c", 'exec 3<>/dev/tcp/127.0.0.1/${MANAGEMENT_PORT:-9001} && printf "GET /actuator/health/readiness HTTP/1.0\r\n\r\n" >&3 && head -n1 <&3 | grep -q " 200 "']
       interval: 30s
-      timeout: 3s
+      timeout: 5s
       retries: 3
-      start_period: 60s
+      start_period: 90s
+    stop_grace_period: 40s                  # a little longer than SHUTDOWN_TIMEOUT, so Docker waits for the graceful shutdown
     ports:
-      - "${WEB_PORT:-8080}:3001"
-    networks: [backend]
-
-  # Daily dump of the database to ../backups (kept BACKUP_KEEP_DAYS days). Restore steps: docs/backend.md, "Backups".
-  backup:
-    image: mysql:8.4
-    restart: unless-stopped
-    depends_on:
-      db:
-        condition: service_healthy
-    entrypoint: ["/bin/sh", "/backup.sh"]
-    environment:
-      DB_HOST: db
-      DB_NAME: ${DB_NAME:-javaschoollab}
-      DB_USER: root
-      MYSQL_PWD: ${DB_ROOT_PASSWORD:?set DB_ROOT_PASSWORD in .env}
-      BACKUP_EVERY_HOURS: ${BACKUP_EVERY_HOURS:-24}
-      BACKUP_KEEP_DAYS: ${BACKUP_KEEP_DAYS:-14}
-    volumes:
-      - ./backup.sh:/backup.sh:ro
-      - ../backups:/backups
-    networks: [backend]
-
-volumes:
-  opensearch_data:
-  db_data:
-    external: true
-    name: javaschoollab_db_data
+      # The website. Bound to 127.0.0.1 by default: behind nginx only nginx can reach it (docker/nginx/javaschoollab.conf.example). Set
+      # WEB_BIND_ADDRESS=0.0.0.0 only if people must reach this port directly, without a reverse proxy.
+      - "${WEB_BIND_ADDRESS:-127.0.0.1}:${WEB_PORT:-8080}:3001"
+      # Health, info and metrics for this machine only (monitoring agent, curl). Not open to the network.
+      - "127.0.0.1:${MANAGEMENT_PUBLISH_PORT:-9001}:${MANAGEMENT_PORT:-9001}"
+    deploy:
+      resources:
+        limits:
+          memory: ${APP_MEMORY_LIMIT:-768m}
+    networks:
+      shared:
+        aliases: [javaschoollab-app]          # the name Prometheus and the blackbox probes use
 
 networks:
-  backend:
+  # Created by docker-compose.shared.yml, so start that one first.
+  shared:
+    external: true
+    name: javaschoollab_shared

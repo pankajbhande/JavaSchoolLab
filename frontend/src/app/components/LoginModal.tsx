@@ -79,7 +79,8 @@ export function LoginModal({ onClose, message }: LoginModalProps) {
       : loginType === 'mobile' && identifier.replace(/\D/g, '').length < 7
         ? 'Enter a valid mobile number'
         : '';
-  const passwordError = password.length === 0 ? 'Enter your password' : password.length < 4 ? 'Password must be at least 4 characters' : '';
+  // Sign-in never checks the length (accounts made before the 8-character rule keep working); only a NEW password must be long enough.
+  const passwordError = password.length === 0 ? 'Enter your password' : mode === 'register' && password.length < 8 ? 'Password must be at least 8 characters' : '';
   const nameError = fullName.trim() ? '' : 'Full name is required';
   const touch = (k: keyof typeof touched) => setTouched(t => ({ ...t, [k]: true }));
 
@@ -179,7 +180,7 @@ export function LoginModal({ onClose, message }: LoginModalProps) {
 
     try {
       if (mode === 'register') {
-        if (!fullName.trim() || password.length < 4) { setTouched(t => ({ ...t, name: true, password: true })); setLoading(false); return; }
+        if (!fullName.trim() || password.length < 8) { setTouched(t => ({ ...t, name: true, password: true })); setLoading(false); return; }
         if (!otpVerified) { setError('Please verify OTP first'); setLoading(false); return; }
         const otpCode = otp.join('');
         const res = await registerWithOtp({
@@ -377,7 +378,7 @@ export function LoginModal({ onClose, message }: LoginModalProps) {
                   <label htmlFor="reg-password" className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Password</label>
                   <div className="relative">
                     <Lock aria-hidden="true" className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 dark:text-gray-400" />
-                    <input id="reg-password" type={showPassword ? 'text' : 'password'} placeholder="At least 4 characters" autoComplete="new-password" value={password}
+                    <input id="reg-password" type={showPassword ? 'text' : 'password'} placeholder="At least 8 characters" autoComplete="new-password" value={password}
                       onChange={e => setPassword(e.target.value)} onBlur={() => touch('password')}
                       aria-invalid={touched.password && !!passwordError} aria-describedby={touched.password && passwordError ? 'reg-password-err' : undefined}
                       className={`${FIELD} pl-10 pr-12 py-3`} required minLength={4} />
@@ -420,6 +421,10 @@ export function LoginModal({ onClose, message }: LoginModalProps) {
                 </div>
 
                 {error && <p role="alert" className="text-red-700 dark:text-red-300 text-sm bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 p-2.5 rounded-lg">{error}</p>}
+
+                <p className="text-xs text-gray-600 dark:text-gray-300 text-center">
+                  By creating an account you agree to the <a href="/terms" target="_blank" rel="noopener" className="underline">Terms of Use</a> and the <a href="/privacy" target="_blank" rel="noopener" className="underline">Privacy Policy</a>.
+                </p>
 
                 <button type="submit" disabled={loading}
                   className={`w-full py-3 bg-gradient-to-r from-orange-600 to-amber-600 text-white font-semibold rounded-lg hover:from-orange-700 hover:to-amber-700 transition-all disabled:opacity-60 disabled:cursor-not-allowed ${FOCUS}`}>

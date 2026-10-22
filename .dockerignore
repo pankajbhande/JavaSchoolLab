@@ -11,10 +11,9 @@
 docs
 guidelines
 **/*.zip
-Dockerfile*
-docker-compose*.yml
+# The Dockerfile, the compose files and the .env now all live in docker/. The builder reads the Dockerfile itself, so none of it needs to be in the build context.
+docker
 .dockerignore
-docker/.env
 
 # Unfinished file (truncated template literal) that breaks `tsc`; not imported anywhere.
 frontend/src/app/data/topics/ml/RmseEvaluation.tsx

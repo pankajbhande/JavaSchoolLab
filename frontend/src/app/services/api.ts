@@ -141,7 +141,30 @@ export async function removeAvatar(): Promise<void> {
 }
 
 export async function changePassword(data: { currentPassword: string; newPassword: string }): Promise<void> {
-  await jsonOrThrow(await fetch(`${API_BASE}/auth/change-password`, { method: 'POST', headers: authHeaders(), body: JSON.stringify(data) }), 'Failed to change password');
+  const res = await jsonOrThrow<{ token?: string }>(await fetch(`${API_BASE}/auth/change-password`, { method: 'POST', headers: authHeaders(), body: JSON.stringify(data) }), 'Failed to change password');
+  // Every other device was signed out by the change; this device continues with the fresh token.
+  if (res.token) localStorage.setItem('jsl_token', res.token);
+}
+
+/** Signs this account out on every device (this one included: the caller then signs in again). */
+export async function signOutEverywhere(): Promise<void> {
+  await jsonOrThrow(await fetch(`${API_BASE}/auth/logout-all`, { method: 'POST', headers: authHeaders(), body: '{}' }), 'Could not sign out of all devices');
+}
+
+/** Everything the site stores about the signed-in user, as a JSON file the browser saves. */
+export async function downloadMyData(): Promise<void> {
+  const res = await fetch(`${API_BASE}/account/export`, { headers: authHeaders() });
+  if (!res.ok) throw new Error('Could not download your data');
+  const url = URL.createObjectURL(await res.blob());
+  const a = document.createElement('a');
+  a.href = url; a.download = 'javaschoollab-my-data.json';
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+/** Deletes the account and all its data for good. `confirm` is the account's own e-mail address, typed by the user. */
+export async function deleteMyAccount(confirm: string): Promise<void> {
+  await jsonOrThrow(await fetch(`${API_BASE}/account`, { method: 'DELETE', headers: authHeaders(), body: JSON.stringify({ confirm }) }), 'Could not delete the account');
 }
 
 // Bookmarks & notes
@@ -163,6 +186,17 @@ export async function fetchNotes(): Promise<Note[]> {
 }
 export async function saveNote(ref: TopicRef & { body: string }): Promise<void> {
   await jsonOrThrow(await fetch(`${API_BASE}/notes`, { method: 'PUT', headers: authHeaders(), body: JSON.stringify(ref) }), 'Failed to save note');
+}
+
+// Suggestion box
+export type SuggestionCategory = 'idea' | 'content' | 'bug' | 'other';
+export interface MySuggestion { id: number; category: SuggestionCategory; message: string; pagePath: string | null; status: string; createdAt: string }
+
+export async function sendSuggestion(input: { category: SuggestionCategory; message: string; pagePath?: string }): Promise<void> {
+  await jsonOrThrow(await fetch(`${API_BASE}/suggestions`, { method: 'POST', headers: authHeaders(), body: JSON.stringify(input) }), 'Could not send your suggestion');
+}
+export async function fetchMySuggestions(): Promise<MySuggestion[]> {
+  return jsonOrThrow(await fetch(`${API_BASE}/suggestions`, { headers: authHeaders() }), 'Failed to load your suggestions');
 }
 
 // Leaderboard

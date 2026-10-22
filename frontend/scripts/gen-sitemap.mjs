@@ -2,7 +2,7 @@
 //
 //   npm run gen:sitemap
 //
-// Set SITE_URL to your production origin (defaults to https://javaschoollab.com).
+// Set SITE_URL to your production origin (defaults to https://javaschoollab.dhipansoft.in).
 // Vite copies public/ into dist/ verbatim, so both files ship at the site root.
 //
 // Why this matters: the app is a single index.html, so without a sitemap a crawler has
@@ -12,7 +12,7 @@
 import path from 'path';
 import fs from 'fs';
 
-const SITE = (process.env.SITE_URL || 'https://javaschoollab.com').replace(/\/+$/, '');
+const SITE = (process.env.SITE_URL || 'https://javaschoollab.dhipansoft.in').replace(/\/+$/, '');
 const root = process.cwd();
 
 // The course list comes from the JSON copy of the content (written by `npm run export:content`),

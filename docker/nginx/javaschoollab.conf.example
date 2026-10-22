@@ -1,0 +1,152 @@
+# nginx in front of JavaSchoolLab on a server: HTTPS, the domain name, and (optionally) a private address for Grafana.
+#
+#   Browser --HTTPS--> nginx (this file) --HTTP--> 127.0.0.1:8080 (the application container) --> MySQL / Redis / OpenSearch
+#
+# You configure nginx ONCE, with your domain. Nothing inside the application, the compose files or the dashboards depends on the domain name,
+# except the three settings in docker/.env listed at the bottom.
+#
+# In this file  example.com = the application's name, e.g. javaschoollab.dhipansoft.in  and  grafana.example.com = the dashboards' name,
+# e.g. grafana.dhipansoft.in.  Replace them with your real names.
+# Install, the automatic way (Ubuntu): sudo bash docker/scripts/server-setup-ubuntu.sh nginx --domain javaschoollab.dhipansoft.in \
+#                                         --grafana-domain grafana.dhipansoft.in --email you@dhipansoft.in
+# By hand:
+#   sudo cp docker/nginx/javaschoollab.conf.example /etc/nginx/conf.d/javaschoollab.conf      then replace the two names
+#   sudo certbot certonly --webroot -w /var/www/certbot --cert-name example.com -d example.com -d grafana.example.com   (free Let's Encrypt, renews itself;
+#       the HTTP block below must be active first: comment out the two 443 blocks until the certificate exists)
+#   sudo nginx -t && sudo systemctl reload nginx
+#
+# The application port (WEB_PORT, 8080) listens on 127.0.0.1 only (WEB_BIND_ADDRESS in .env), so nothing reaches it except nginx.
+# The monitoring endpoints (/actuator, port 9001) are on a different, private port and are not proxied at all.
+
+server_tokens off;                  # do not announce the nginx version
+
+map $http_upgrade $connection_upgrade {
+    default upgrade;
+    ''      close;
+}
+
+# Sign-in, sign-up and one-time-code requests are limited per visitor address: 60 per minute (plus a burst of 30), generous enough for a
+# classroom sharing one address. The application has tighter per-account limits of its own; this stops a flood before it reaches Java.
+# Every other path (including /api/auth/me, which the site calls on each page load) has an empty key and is never limited.
+map $request_uri $jsl_auth_key {
+    default                                                          "";
+    ~^/api/(auth/(login|register|login-otp|register-otp|google)|otp/) $binary_remote_addr;
+}
+limit_req_zone $jsl_auth_key zone=jsl_auth:10m rate=60r/m;
+
+upstream javaschoollab_app {
+    server 127.0.0.1:8080;          # WEB_PORT
+    keepalive 16;
+}
+
+upstream javaschoollab_grafana {
+    server 127.0.0.1:3000;          # GRAFANA_PORT
+    keepalive 8;
+}
+
+# ---------------------------------------------------------------------------------------------------------------------------------
+#  HTTP: only answers the certificate challenge and sends everyone to HTTPS
+# ---------------------------------------------------------------------------------------------------------------------------------
+server {
+    listen 80;
+    listen [::]:80;
+    server_name example.com grafana.example.com;
+
+    location /.well-known/acme-challenge/ { root /var/www/certbot; }
+    location / { return 301 https://$host$request_uri; }
+}
+
+# ---------------------------------------------------------------------------------------------------------------------------------
+#  The website and the API
+# ---------------------------------------------------------------------------------------------------------------------------------
+server {
+    listen 443 ssl;
+    listen [::]:443 ssl;
+    http2 on;
+    server_name example.com;
+
+    ssl_certificate     /etc/letsencrypt/live/example.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/example.com/privkey.pem;
+    ssl_protocols       TLSv1.2 TLSv1.3;
+    ssl_session_cache   shared:SSL:10m;
+    ssl_session_timeout 1d;
+    ssl_session_tickets off;
+
+    add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+    add_header X-Content-Type-Options    "nosniff" always;
+    add_header Referrer-Policy           "strict-origin-when-cross-origin" always;
+
+    client_max_body_size 256k;      # the largest real request is a profile photo (about 90 KB of text); the application refuses bodies over 300 KB too
+    client_body_timeout   15s;      # slow-request (slowloris) protection: a client must send its headers and body promptly
+    client_header_timeout 15s;
+    send_timeout          30s;
+
+    # defence in depth: the operations endpoints must never be reachable from the internet (they are not on this port anyway)
+    location ^~ /actuator { return 404; }
+
+    location / {
+        limit_req          zone=jsl_auth burst=30 nodelay;
+        limit_req_status   429;
+        proxy_pass         http://javaschoollab_app;
+        proxy_http_version 1.1;
+        proxy_set_header   Connection        "";
+        proxy_set_header   Host              $host;
+        proxy_set_header   X-Real-IP         $remote_addr;
+        proxy_set_header   X-Forwarded-For   $proxy_add_x_forwarded_for;   # the real visitor address, for the rate limits
+        proxy_set_header   X-Forwarded-Proto $scheme;
+        proxy_set_header   X-Forwarded-Host  $host;
+        proxy_set_header   X-Forwarded-Port  $server_port;
+        proxy_connect_timeout 5s;
+        proxy_read_timeout    60s;
+        proxy_send_timeout    60s;
+    }
+}
+
+# ---------------------------------------------------------------------------------------------------------------------------------
+#  Grafana (the observability dashboards). Optional: without this block reach it through an SSH tunnel instead:
+#      ssh -L 3000:127.0.0.1:3000 you@server      then open http://localhost:3000
+#  It has its own login (GRAFANA_ADMIN_USER / GRAFANA_ADMIN_PASSWORD). For more safety also restrict it to your own addresses (below).
+# ---------------------------------------------------------------------------------------------------------------------------------
+server {
+    listen 443 ssl;
+    listen [::]:443 ssl;
+    http2 on;
+    server_name grafana.example.com;
+
+    ssl_certificate     /etc/letsencrypt/live/example.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/example.com/privkey.pem;
+    ssl_protocols       TLSv1.2 TLSv1.3;
+
+    add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+    add_header X-Content-Type-Options    "nosniff" always;
+    add_header Content-Security-Policy   "upgrade-insecure-requests" always;   # any stray http:// sub-resource is upgraded, so the browser keeps the padlock
+
+    # allow 203.0.113.10;           # your office / home address
+    # deny  all;
+
+    location / {
+        proxy_pass         http://javaschoollab_grafana;
+        proxy_http_version 1.1;
+        proxy_set_header   Host              $http_host;
+        proxy_set_header   X-Real-IP         $remote_addr;
+        proxy_set_header   X-Forwarded-For   $proxy_add_x_forwarded_for;
+        proxy_set_header   X-Forwarded-Proto $scheme;
+    }
+
+    # Grafana Live (streaming panels) uses a WebSocket
+    location /api/live/ {
+        proxy_pass         http://javaschoollab_grafana;
+        proxy_http_version 1.1;
+        proxy_set_header   Upgrade           $http_upgrade;
+        proxy_set_header   Connection        $connection_upgrade;
+        proxy_set_header   Host              $http_host;
+    }
+}
+
+# ---------------------------------------------------------------------------------------------------------------------------------
+#  The three settings in docker/.env that name your domain (everything else is independent of it):
+#      CORS_ORIGIN=https://javaschoollab.dhipansoft.in                  which web address the browser may call the API from
+#      SITE_URL=https://javaschoollab.dhipansoft.in                     used in the sitemap (needs "docker compose up -d --build")
+#      GRAFANA_ROOT_URL=https://grafana.dhipansoft.in                   so Grafana builds correct links and cookies
+#  and these must stay as they are:  FORWARD_HEADERS_STRATEGY=native  WEB_BIND_ADDRESS=127.0.0.1
+# ---------------------------------------------------------------------------------------------------------------------------------

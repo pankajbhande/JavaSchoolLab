@@ -1,0 +1,403 @@
+# Alerting rules. Every alert has a severity label:
+#   critical  something is down or users are being hurt right now: act immediately
+#   warning   a problem is building up: look at it during working hours
+# Alertmanager groups, de-duplicates and (when configured) mails them; the Alerts dashboard in Grafana lists them too.
+#
+# Service level objective used below: 99.5% of requests must NOT end in a server error (HTTP 5xx), measured over 30 days.
+# The error budget is therefore 0.5% (0.005). The burn-rate alerts follow the multi-window method of the Google SRE workbook:
+#   burn rate 14.4 for 1 h  = the whole 30-day budget would be gone in 2 days  -> critical
+#   burn rate  6   for 6 h  = the whole budget would be gone in 5 days         -> warning
+groups:
+  # ---------------------------------------------------------------------------------------------------------------------
+  - name: javaschoollab-availability
+    rules:
+      - alert: ApplicationDown
+        expr: up{job="javaschoollab-app"} == 0
+        for: 2m
+        labels: { severity: critical }
+        annotations:
+          summary: "JavaSchoolLab is not answering its metrics endpoint"
+          description: "Prometheus could not scrape {{ $labels.instance }} for 2 minutes. Check: docker compose ps; docker compose logs app; the ACTUATOR_PASSWORD in .env must match on the app and on Prometheus (restart both after changing it)."
+      - alert: SiteProbeFailing
+        expr: probe_success{job="blackbox-http"} == 0
+        for: 3m
+        labels: { severity: critical }
+        annotations:
+          summary: "Synthetic check failing: {{ $labels.instance }}"
+          description: "The blackbox probe of {{ $labels.instance }} has failed for 3 minutes (the site, an API route or a health probe is not returning HTTP 2xx)."
+      - alert: ReadinessNotUp
+        expr: probe_success{job="blackbox-http", instance=~".*health/readiness"} == 0
+        for: 2m
+        labels: { severity: critical }
+        annotations:
+          summary: "The application is not ready to take traffic"
+          description: "/actuator/health/readiness is not returning 200: start-up has not finished or MySQL is not answering. docker compose logs app; docker logs javaschoollab-db."
+      - alert: SlowSiteProbe
+        expr: probe_duration_seconds{job="blackbox-http"} > 2
+        for: 10m
+        labels: { severity: warning }
+        annotations:
+          summary: "Synthetic check slow: {{ $labels.instance }}"
+          description: "{{ $labels.instance }} has taken more than 2 seconds to answer for 10 minutes (now {{ $value | humanizeDuration }})."
+
+  # ---------------------------------------------------------------------------------------------------------------------
+  - name: javaschoollab-traffic-quality
+    rules:
+      - alert: HighErrorRate
+        expr: |
+          jsl:http_error_ratio:rate5m > 0.05
+          and
+          jsl:http_requests:rate5m > 0.05
+        for: 5m
+        labels: { severity: critical }
+        annotations:
+          summary: "More than 5% of requests are failing with a server error"
+          description: "{{ $value | humanizePercentage }} of requests returned HTTP 5xx over the last 5 minutes. Open the Overview dashboard (Errors row) and the Logs & Traces dashboard."
+      - alert: ErrorBudgetBurnFast
+        expr: |
+          jsl:http_error_ratio:rate1h > (14.4 * 0.005)
+          and
+          jsl:http_error_ratio:rate5m > (14.4 * 0.005)
+        labels: { severity: critical }
+        annotations:
+          summary: "Error budget burning very fast (14.4x)"
+          description: "At this rate the 30-day error budget (99.5% SLO) is used up in about 2 days. The 1 hour error ratio is {{ $value | humanizePercentage }}."
+      - alert: ErrorBudgetBurnSlow
+        expr: |
+          jsl:http_error_ratio:rate6h > (6 * 0.005)
+          and
+          jsl:http_error_ratio:rate30m > (6 * 0.005)
+        labels: { severity: warning }
+        annotations:
+          summary: "Error budget burning steadily (6x)"
+          description: "At this rate the 30-day error budget (99.5% SLO) is used up in about 5 days."
+      - alert: HighLatencyP95
+        expr: |
+          jsl:http_request_duration_seconds:p95_5m > 1
+          and
+          jsl:http_requests:rate5m > 0.05
+        for: 10m
+        labels: { severity: warning }
+        annotations:
+          summary: "95% of requests take longer than 1 second"
+          description: "The 95th percentile request time is {{ $value | humanizeDuration }} (5 minute window)."
+      - alert: HighLatencyP99
+        expr: |
+          jsl:http_request_duration_seconds:p99_5m > 3
+          and
+          jsl:http_requests:rate5m > 0.05
+        for: 10m
+        labels: { severity: critical }
+        annotations:
+          summary: "1% of requests take longer than 3 seconds"
+          description: "The 99th percentile request time is {{ $value | humanizeDuration }} (5 minute window)."
+      - alert: SlowBusinessOperation
+        expr: |
+          sum by (service, method) (rate(jsl_service_seconds_sum[5m]))
+            / sum by (service, method) (rate(jsl_service_seconds_count[5m])) > 2
+        for: 10m
+        labels: { severity: warning }
+        annotations:
+          summary: "{{ $labels.service }}.{{ $labels.method }} is slow"
+          description: "On average {{ $labels.service }}.{{ $labels.method }} takes {{ $value | humanizeDuration }}. See the traces of that method on the Logs & Traces dashboard."
+      - alert: ErrorLogsSpike
+        expr: sum(rate(logback_events_total{application="javaschoollab", level="error"}[5m])) > 0.5
+        for: 10m
+        labels: { severity: warning }
+        annotations:
+          summary: "The application is logging many errors"
+          description: "{{ $value | printf \"%.2f\" }} ERROR log lines per second for 10 minutes. Search them in Grafana > Logs & Traces."
+
+  # ---------------------------------------------------------------------------------------------------------------------
+  - name: javaschoollab-runtime
+    rules:
+      - alert: JvmHeapHigh
+        expr: sum(jvm_memory_used_bytes{application="javaschoollab", area="heap"}) / sum(jvm_memory_max_bytes{application="javaschoollab", area="heap"}) > 0.85
+        for: 10m
+        labels: { severity: warning }
+        annotations:
+          summary: "JVM heap is above 85%"
+          description: "The heap is {{ $value | humanizePercentage }} full for 10 minutes: memory pressure, or a leak. Raise APP_MEMORY_LIMIT or look at the JVM dashboard."
+      - alert: HighGcTime
+        expr: sum(rate(jvm_gc_pause_seconds_sum{application="javaschoollab"}[5m])) > 0.1
+        for: 10m
+        labels: { severity: warning }
+        annotations:
+          summary: "The JVM spends more than 10% of its time in garbage collection"
+          description: "GC pauses take {{ $value | humanizePercentage }} of the time."
+      - alert: HighCpu
+        expr: process_cpu_usage{application="javaschoollab"} > 0.85
+        for: 10m
+        labels: { severity: warning }
+        annotations:
+          summary: "The application process uses more than 85% CPU"
+          description: "CPU usage {{ $value | humanizePercentage }} for 10 minutes."
+      - alert: TomcatThreadsSaturated
+        expr: tomcat_threads_busy_threads{application="javaschoollab"} / tomcat_threads_config_max_threads{application="javaschoollab"} > 0.9
+        for: 5m
+        labels: { severity: critical }
+        annotations:
+          summary: "Almost every web server thread is busy"
+          description: "{{ $value | humanizePercentage }} of the Tomcat threads are busy: new requests will queue and time out."
+      - alert: DatabasePoolExhausted
+        expr: hikaricp_connections_pending{application="javaschoollab"} > 0
+        for: 5m
+        labels: { severity: critical }
+        annotations:
+          summary: "Requests are waiting for a database connection"
+          description: "{{ $value }} requests have waited for a free MySQL connection for 5 minutes. Slow queries, or DB_POOL_SIZE is too small."
+      - alert: DatabaseConnectionTimeouts
+        expr: increase(hikaricp_connections_timeout_total{application="javaschoollab"}[10m]) > 0
+        labels: { severity: critical }
+        annotations:
+          summary: "Requests gave up waiting for a database connection"
+          description: "{{ $value }} connection timeouts in the last 10 minutes."
+      - alert: TooManyOpenFiles
+        expr: process_files_open_files{application="javaschoollab"} / process_files_max_files{application="javaschoollab"} > 0.8
+        for: 5m
+        labels: { severity: warning }
+        annotations:
+          summary: "The application has used more than 80% of its file descriptors"
+          description: "{{ $value | humanizePercentage }} used: connections or files are leaking."
+      - alert: SearchNotReady
+        expr: jsl_search_ready{application="javaschoollab"} == 0
+        for: 15m
+        labels: { severity: warning }
+        annotations:
+          summary: "Server-side search is not ready"
+          description: "The OpenSearch index has not been ready for 15 minutes. The site still works (the browser searches by itself). Check OpenSearch and docker compose logs app."
+
+  # ---------------------------------------------------------------------------------------------------------------------
+  - name: javaschoollab-mysql
+    rules:
+      - alert: MySQLDown
+        expr: mysql_up == 0
+        for: 1m
+        labels: { severity: critical }
+        annotations:
+          summary: "MySQL is down"
+          description: "The MySQL exporter cannot reach the database. docker logs javaschoollab-db; docker logs javaschoollab-db-setup (the exporter account)."
+      - alert: MySQLTooManyConnections
+        expr: mysql_global_status_threads_connected / mysql_global_variables_max_connections > 0.8
+        for: 5m
+        labels: { severity: warning }
+        annotations:
+          summary: "MySQL is using more than 80% of its allowed connections"
+          description: "{{ $value | humanizePercentage }} of max_connections in use."
+      - alert: MySQLSlowQueries
+        expr: rate(mysql_global_status_slow_queries[5m]) > 0.1
+        for: 10m
+        labels: { severity: warning }
+        annotations:
+          summary: "MySQL is logging slow queries"
+          description: "{{ $value | printf \"%.2f\" }} slow queries per second for 10 minutes."
+      - alert: MySQLAbortedConnections
+        expr: rate(mysql_global_status_aborted_connects[5m]) > 0.2
+        for: 10m
+        labels: { severity: warning }
+        annotations:
+          summary: "Many failed MySQL logins / dropped connections"
+          description: "{{ $value | printf \"%.2f\" }} aborted connection attempts per second: wrong password, or a network problem."
+
+  # ---------------------------------------------------------------------------------------------------------------------
+  - name: javaschoollab-redis
+    rules:
+      - alert: RedisDown
+        expr: redis_up == 0
+        for: 1m
+        labels: { severity: critical }
+        annotations:
+          summary: "Redis is down"
+          description: "The application keeps working (rate limits are counted in memory, one-time codes use MySQL) but is degraded. docker logs javaschoollab-redis."
+      - alert: RedisMemoryHigh
+        expr: redis_memory_max_bytes > 0 and redis_memory_used_bytes / redis_memory_max_bytes > 0.9
+        for: 10m
+        labels: { severity: warning }
+        annotations:
+          summary: "Redis memory is above 90% of its limit"
+          description: "{{ $value | humanizePercentage }} used. Raise REDIS_MAXMEMORY in .env."
+      - alert: RedisEvictingKeys
+        expr: rate(redis_evicted_keys_total[5m]) > 0
+        for: 10m
+        labels: { severity: warning }
+        annotations:
+          summary: "Redis is evicting keys"
+          description: "Cache entries are being thrown away to make room: Redis is too small for the workload."
+      - alert: RedisRejectingConnections
+        expr: increase(redis_rejected_connections_total[5m]) > 0
+        labels: { severity: warning }
+        annotations:
+          summary: "Redis is rejecting connections"
+          description: "{{ $value }} connections were rejected in the last 5 minutes (maxclients reached)."
+
+  # ---------------------------------------------------------------------------------------------------------------------
+  - name: javaschoollab-opensearch
+    rules:
+      - alert: OpenSearchDown
+        expr: up{job="opensearch"} == 0 or elasticsearch_node_stats_up == 0
+        for: 3m
+        labels: { severity: warning }
+        annotations:
+          summary: "OpenSearch is not reachable"
+          description: "Server-side search is unavailable (the browser falls back to its own search). docker logs javaschoollab-opensearch; on Linux check vm.max_map_count."
+      - alert: OpenSearchClusterRed
+        expr: elasticsearch_cluster_health_status{color="red"} == 1
+        for: 2m
+        labels: { severity: critical }
+        annotations:
+          summary: "The OpenSearch cluster is RED"
+          description: "At least one primary shard is not allocated; search results may be incomplete."
+      - alert: OpenSearchHeapHigh
+        expr: sum by (name) (elasticsearch_jvm_memory_used_bytes{area="heap"}) / sum by (name) (elasticsearch_jvm_memory_max_bytes{area="heap"}) > 0.9
+        for: 10m
+        labels: { severity: warning }
+        annotations:
+          summary: "OpenSearch heap is above 90%"
+          description: "{{ $value | humanizePercentage }} of the OpenSearch heap is in use."
+
+  # ---------------------------------------------------------------------------------------------------------------------
+  - name: javaschoollab-observability
+    rules:
+      - alert: ScrapeTargetDown
+        expr: up == 0
+        for: 5m
+        labels: { severity: warning }
+        annotations:
+          summary: "Prometheus cannot scrape {{ $labels.job }} ({{ $labels.instance }})"
+          description: "The target has been down for 5 minutes. Open Prometheus > Status > Targets for the error."
+      - alert: PrometheusRuleFailures
+        expr: increase(prometheus_rule_evaluation_failures_total[10m]) > 0
+        labels: { severity: warning }
+        annotations:
+          summary: "Some Prometheus rules fail to evaluate"
+          description: "{{ $value }} rule evaluation failures in 10 minutes. Check the rules in Prometheus > Status > Rule health."
+      - alert: PrometheusNotIngestingSamples
+        expr: sum(rate(prometheus_tsdb_head_samples_appended_total[5m])) <= 0
+        for: 10m
+        labels: { severity: critical }
+        annotations:
+          summary: "Prometheus is not ingesting any samples"
+          description: "Nothing has been stored for 10 minutes: all dashboards will be empty."
+      - alert: TracesNotArriving
+        expr: sum(rate(tempo_distributor_spans_received_total[10m])) == 0 and on() (jsl:http_requests:rate5m > 0.05)
+        for: 15m
+        labels: { severity: warning }
+        annotations:
+          summary: "The application serves traffic but Tempo receives no spans"
+          description: "Distributed tracing is broken: check TRACING_EXPORT_ENABLED and OTLP_TRACING_ENDPOINT on the app and docker logs javaschoollab-tempo."
+
+  # ---------------------------------------------------------------------------------------------------------------------
+  - name: javaschoollab-host
+    rules:
+      - alert: HostDiskSpaceLow
+        expr: node_filesystem_avail_bytes{mountpoint="/"} / node_filesystem_size_bytes{mountpoint="/"} < 0.15
+        for: 10m
+        labels: { severity: warning }
+        annotations:
+          summary: "The server disk is more than 85% full"
+          description: "Only {{ $value | humanizePercentage }} of the disk is free. Check: docker system df; du -sh /var/lib/docker/*; the backups folder."
+      - alert: HostDiskSpaceCritical
+        expr: node_filesystem_avail_bytes{mountpoint="/"} / node_filesystem_size_bytes{mountpoint="/"} < 0.05
+        for: 5m
+        labels: { severity: critical }
+        annotations:
+          summary: "The server disk is almost full"
+          description: "Only {{ $value | humanizePercentage }} is free. MySQL and the containers stop working when it reaches zero."
+      - alert: HostDiskFillingUp
+        expr: predict_linear(node_filesystem_avail_bytes{mountpoint="/"}[6h], 24 * 3600) < 0
+        for: 30m
+        labels: { severity: warning }
+        annotations:
+          summary: "The server disk will be full within 24 hours at the current rate"
+          description: "Free space is shrinking fast. Find what is growing before it fills up."
+      - alert: HostMemoryLow
+        expr: node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes < 0.10
+        for: 10m
+        labels: { severity: warning }
+        annotations:
+          summary: "The server has less than 10% memory available"
+          description: "{{ $value | humanizePercentage }} of the memory is available. Containers may be killed (OOM)."
+      - alert: HostHighCpu
+        expr: 100 - (avg(rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 90
+        for: 15m
+        labels: { severity: warning }
+        annotations:
+          summary: "The server CPU is above 90%"
+          description: "CPU use has been {{ $value | printf \"%.0f\" }}% for 15 minutes."
+      - alert: HostOomKill
+        expr: increase(node_vmstat_oom_kill[10m]) > 0
+        labels: { severity: critical }
+        annotations:
+          summary: "The kernel killed a process because the server ran out of memory"
+          description: "{{ $value }} OOM kill(s) in the last 10 minutes: dmesg -T | grep -i 'out of memory'. Add memory or lower the container limits."
+      - alert: HostClockSkew
+        expr: abs(node_timex_offset_seconds) > 0.1
+        for: 10m
+        labels: { severity: warning }
+        annotations:
+          summary: "The server clock is off by more than 0.1 seconds"
+          description: "One-time codes and login tokens depend on the clock. Check time synchronisation: timedatectl status."
+      - alert: ContainerOomKilled
+        expr: increase(container_oom_events_total{name=~"javaschoollab-.+"}[10m]) > 0
+        labels: { severity: critical }
+        annotations:
+          summary: "{{ $labels.name }} was killed for using more memory than its limit"
+          description: "Raise the memory limit of that container in its compose file (deploy.resources.limits.memory)."
+      - alert: ContainerRestarting
+        expr: changes(container_start_time_seconds{name=~"javaschoollab-.+"}[30m]) > 2
+        labels: { severity: warning }
+        annotations:
+          summary: "{{ $labels.name }} restarted {{ $value }} times in 30 minutes"
+          description: "A container that keeps restarting is crashing: docker logs {{ $labels.name }}."
+      - alert: ContainerMemoryNearLimit
+        expr: container_memory_working_set_bytes{name=~"javaschoollab-.+"} / (container_spec_memory_limit_bytes{name=~"javaschoollab-.+"} > 0) > 0.9
+        for: 10m
+        labels: { severity: warning }
+        annotations:
+          summary: "{{ $labels.name }} uses more than 90% of its memory limit"
+          description: "{{ $value | humanizePercentage }} of the limit is in use: it will be killed when it reaches 100%."
+
+  # ---------------------------------------------------------------------------------------------------------------------
+  # The backup scripts publish their status as metrics (backups/metrics/*.prom, read by node-exporter), so a missed or failed backup alerts.
+  - name: javaschoollab-backup
+    rules:
+      - alert: DatabaseBackupTooOld
+        expr: time() - jsl_backup_last_success_timestamp_seconds{kind="database"} > 26 * 3600
+        for: 10m
+        labels: { severity: critical }
+        annotations:
+          summary: "No successful database backup for more than 26 hours"
+          description: "The last good backup was {{ $value | humanizeDuration }} ago. docker logs javaschoollab-db-backup"
+      - alert: DatabaseBackupFailed
+        expr: jsl_backup_last_run_success{kind="database"} == 0
+        for: 5m
+        labels: { severity: critical }
+        annotations:
+          summary: "The last database backup run failed"
+          description: "The previous good backups are untouched. docker logs javaschoollab-db-backup shows the reason."
+      - alert: ImageBackupTooOld
+        expr: time() - jsl_backup_last_success_timestamp_seconds{kind="images"} > 26 * 3600
+        for: 10m
+        labels: { severity: warning }
+        annotations:
+          summary: "No successful image / configuration backup for more than 26 hours"
+          description: "Is the schedule installed? sudo bash scripts/install-backup-schedule.sh ; run: bash scripts/backup-images.sh"
+      - alert: BackupStatusMissing
+        expr: absent(jsl_backup_last_success_timestamp_seconds{kind="database"})
+        for: 3h
+        labels: { severity: warning }
+        annotations:
+          summary: "The monitoring cannot see any database backup status"
+          description: "No backup has reported yet, or node-exporter cannot read ../backups/metrics. A new server reports after its first backup."
+
+
+  # scripts/auto-deploy.sh publishes the result of every automatic deploy (backups/metrics/jsl_deploy.prom).
+  - name: javaschoollab-deploy
+    rules:
+      - alert: AutoDeployFailed
+        expr: jsl_deploy_last_run_success == 0
+        for: 1m
+        labels: { severity: warning }
+        annotations:
+          summary: "The last automatic deploy failed; the previous version is still running"
+          description: "The newest commit was not deployed (its health check failed or the build broke). See: journalctl -u javaschoollab-auto-deploy -n 100 ; bash docker/scripts/auto-deploy.sh --status"

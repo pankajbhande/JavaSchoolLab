@@ -1,0 +1,78 @@
+# Grafana data sources, created automatically at start (nothing to click). They are wired together so you can jump between the
+# three signals:   metric spike  ->  the traces behind it   ->  the logs of that request   ->  and back.
+apiVersion: 1
+
+datasources:
+  - name: Prometheus
+    uid: prometheus
+    type: prometheus
+    access: proxy
+    url: http://javaschoollab-prometheus:9090
+    isDefault: true
+    editable: false
+    jsonData:
+      httpMethod: POST
+      timeInterval: 15s                  # the scrape interval, so $__rate_interval is always at least 4 scrapes
+      manageAlerts: true
+      exemplarTraceIdDestinations:       # an exemplar (a dot on a latency graph) links to its trace in Tempo
+        - name: trace_id
+          datasourceUid: tempo
+
+  - name: Loki
+    uid: loki
+    type: loki
+    access: proxy
+    url: http://javaschoollab-loki:3100
+    editable: false
+    jsonData:
+      maxLines: 1000
+      derivedFields:                     # a log line that contains "traceId":"..." gets a link to that trace
+        - name: TraceID
+          matcherRegex: '"traceId":"(\w+)"'
+          url: '$${__value.raw}'
+          datasourceUid: tempo
+          urlDisplayLabel: View trace
+
+  - name: Tempo
+    uid: tempo
+    type: tempo
+    access: proxy
+    url: http://javaschoollab-tempo:3200
+    editable: false
+    jsonData:
+      nodeGraph:
+        enabled: true
+      serviceMap:
+        datasourceUid: prometheus        # the service map is drawn from the span metrics Tempo wrote to Prometheus
+      tracesToLogsV2:                    # from a span to the application logs of that request
+        datasourceUid: loki
+        spanStartTimeShift: '-1m'
+        spanEndTimeShift: '1m'
+        filterByTraceID: false
+        filterBySpanID: false
+        customQuery: true
+        query: '{container="javaschoollab-app"} |= "$${__trace.traceId}"'
+      tracesToMetrics:                   # from a span to the request rate of that service
+        datasourceUid: prometheus
+        spanStartTimeShift: '-1h'
+        spanEndTimeShift: '1h'
+        tags:
+          - key: service.name
+            value: application
+        queries:
+          - name: Request rate
+            query: 'sum(rate(http_server_requests_seconds_count{$$__tags}[5m]))'
+      search:
+        hide: false
+      lokiSearch:
+        datasourceUid: loki
+
+  - name: Alertmanager
+    uid: alertmanager
+    type: alertmanager
+    access: proxy
+    url: http://javaschoollab-alertmanager:9093
+    editable: false
+    jsonData:
+      implementation: prometheus
+      handleGrafanaManagedAlerts: false

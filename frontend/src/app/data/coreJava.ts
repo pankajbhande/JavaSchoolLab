@@ -117,6 +117,12 @@ import { optionalClassJava8 } from './topics/OptionalClassJava8';
 import { stringJoinerJava8 } from './topics/StringJoinerJava8';
 import { streamApiJava8 } from './topics/StreamApiJava8';
 import { java8PlatformEnhancements } from './topics/Java8PlatformEnhancements';
+import { java8FeaturesAtAGlance } from './topics/Java8FeaturesAtAGlance';
+import { java8Lambda, java8FunctionalInterfaces } from './topics/java8/lambda';
+import { java8Streams } from './topics/java8/streams';
+import { java8MethodRefs, java8DefaultStatic, java8Optional, java8DateTime, java8CollectionApi, java8Comparator } from './topics/java8/core';
+import { java8Concurrency, java8Base64, java8StringEnhancements, java8Arrays, java8Annotations, java8Reflection, java8Nashorn, java8Spliterator, java8Other } from './topics/java8/more';
+import { java8PracticeQuestions } from './topics/java8/practice';
 
 // Spring Core (classic XML-era Spring) and the Spring Boot topics built from the
 // July classroom material.
@@ -262,7 +268,12 @@ export const coreJava: Course[] = [
                     optionalClassJava8,
                     stringJoinerJava8,
                     streamApiJava8,
-                    java8PlatformEnhancements
+                    java8PlatformEnhancements,
+                    java8FeaturesAtAGlance,
+                    java8Lambda, java8FunctionalInterfaces, java8Streams, java8MethodRefs, java8DefaultStatic, java8Optional,
+                    java8DateTime, java8CollectionApi, java8Comparator, java8Concurrency, java8Base64, java8StringEnhancements,
+                    java8Arrays, java8Annotations, java8Reflection, java8Nashorn, java8Spliterator, java8Other,
+                    java8PracticeQuestions
                 ]
             },
 

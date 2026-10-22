@@ -90,213 +90,421 @@ INTERMEDIATE = [
         'add(E e) and addAll(Collection c)', 'boolean add(E e);  boolean addAll(Collection<? extends E> c)', '<code>true</code> if the element was new', 'O(log n)',
         'Inserts the element at the position that keeps the set sorted. If an element that compares as <strong>equal (compareTo returns 0)</strong> is already present, nothing is added.',
         'The tree walks from the root comparing with <code>compareTo</code> (or the comparator), so the cost is the height of the tree: O(log n). Because uniqueness is decided by the comparison, a comparator that ignores a field also treats elements that differ in that field as duplicates (see the trap below).',
-        r'''// TreeSet add / addAll: always sorted, duplicates ignored
-import java.util.List;
+        r'''// TreeSet add(E e): keeps the set sorted, ignores duplicates
 import java.util.Set;
 import java.util.TreeSet;
 
 public class TreeSetAddDemo {
     public static void main(String[] args) {
-        Set<String> forts = new TreeSet<>();
+        Set<String> cities = new TreeSet<>();
 
-        System.out.println("add Torna    : " + forts.add("Torna"));
-        System.out.println("add Raigad   : " + forts.add("Raigad"));
-        System.out.println("add Sinhagad : " + forts.add("Sinhagad"));
-        System.out.println("add Raigad   : " + forts.add("Raigad"));   // duplicate
-        System.out.println("Sorted       : " + forts);
+        cities.add("Pune");
+        cities.add("Agra");
+        cities.add("Pune");   // duplicate, ignored
 
-        forts.addAll(List.of("Lohagad", "Purandar", "Torna"));
-        System.out.println("After addAll : " + forts);
-
-        Set<Integer> hours = new TreeSet<>(List.of(6, 2, 9, 4, 2));    // numbers sort numerically
-        System.out.println("Numbers      : " + hours);
+        System.out.println(cities);   // sorted A to Z
     }
 }
-''' + OUT),
+''' + OUT, extra_codes=(r'''// TreeSet addAll(Collection c): adds many at once
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
+
+public class TreeSetAddAllDemo {
+    public static void main(String[] args) {
+        Set<String> cities = new TreeSet<>();
+
+        cities.addAll(List.of("Pune", "Agra", "Nashik"));
+
+        System.out.println(cities);
+    }
+}
+''' + OUT,)),
     method(
         'remove, contains, size, isEmpty and clear', 'boolean remove(Object o);  boolean contains(Object o);  int size();  boolean isEmpty();  void clear()', '<code>true</code> / <code>false</code> / count', 'O(log n)',
         'Remove and look up by value, count the elements, or remove all. The set stays sorted after every change.',
         'Lookups use the same comparison as <code>add</code>, so they need a comparable argument; <code>contains(null)</code> throws <code>NullPointerException</code> with natural ordering.',
-        r'''// TreeSet remove / contains / size / isEmpty / clear
-import java.util.List;
+        r'''// TreeSet contains(Object o): is the value present?
+import java.util.TreeSet;
+
+public class TreeSetContainsDemo {
+    public static void main(String[] args) {
+        TreeSet<Integer> numbers = new TreeSet<>();
+        numbers.add(10);
+        numbers.add(20);
+        numbers.add(30);
+        numbers.add(40);
+
+        System.out.println(numbers.contains(20));   // true
+    }
+}
+''' + OUT, extra_codes=(r'''// TreeSet remove(Object o): removes one element
 import java.util.TreeSet;
 
 public class TreeSetRemoveDemo {
     public static void main(String[] args) {
-        TreeSet<String> forts = new TreeSet<>(List.of("Raigad", "Sinhagad", "Torna", "Purandar"));
+        TreeSet<Integer> numbers = new TreeSet<>();
+        numbers.add(10);
+        numbers.add(20);
+        numbers.add(30);
+        numbers.add(40);
 
-        System.out.println("contains(Torna) : " + forts.contains("Torna"));
-        System.out.println("remove(Torna)   : " + forts.remove("Torna"));
-        System.out.println("remove(Panhala) : " + forts.remove("Panhala"));
-        System.out.println("Now             : " + forts + " size " + forts.size());
+        numbers.remove(20);
 
-        forts.removeIf(f -> f.startsWith("S"));
-        System.out.println("removeIf S*     : " + forts);
-
-        forts.clear();
-        System.out.println("After clear     : " + forts.isEmpty());
+        System.out.println(numbers);
     }
 }
-''' + OUT),
+''' + OUT, r'''// TreeSet size() and isEmpty()
+import java.util.TreeSet;
+
+public class TreeSetSizeDemo {
+    public static void main(String[] args) {
+        TreeSet<Integer> numbers = new TreeSet<>();
+        numbers.add(10);
+        numbers.add(20);
+        numbers.add(30);
+        numbers.add(40);
+
+        System.out.println(numbers.size());       // 4
+        System.out.println(numbers.isEmpty());    // false
+    }
+}
+''' + OUT, r'''// TreeSet clear(): removes everything
+import java.util.TreeSet;
+
+public class TreeSetClearDemo {
+    public static void main(String[] args) {
+        TreeSet<Integer> numbers = new TreeSet<>();
+        numbers.add(10);
+        numbers.add(20);
+        numbers.add(30);
+        numbers.add(40);
+
+        numbers.clear();
+
+        System.out.println(numbers);
+    }
+}
+''' + OUT,)),
 
     section('The ends: first, last, pollFirst and pollLast', 'Because the set is sorted, the smallest and the largest elements are always easy to reach.'),
     method(
         'first() and last()', 'E first();  E last()', 'the smallest / the largest element', 'O(log n)',
         'Return the smallest and the largest element <strong>without removing</strong> them. On an empty set they throw <code>NoSuchElementException</code>.',
         'In Java 21, <code>getFirst()</code> and <code>getLast()</code> are the equivalent sequenced-collection names. Both walk down the left-most or right-most branch of the tree.',
-        r'''// TreeSet first() / last()
-import java.util.List;
-import java.util.NoSuchElementException;
+        r'''// TreeSet first(): the smallest element
 import java.util.TreeSet;
 
-public class TreeSetFirstLastDemo {
+public class TreeSetFirstDemo {
     public static void main(String[] args) {
-        TreeSet<String> forts = new TreeSet<>(List.of("Torna", "Raigad", "Sinhagad", "Purandar"));
+        TreeSet<Integer> numbers = new TreeSet<>();
+        numbers.add(10);
+        numbers.add(20);
+        numbers.add(30);
+        numbers.add(40);
 
-        System.out.println("first : " + forts.first());     // smallest: alphabetically first
-        System.out.println("last  : " + forts.last());      // largest
-        System.out.println("set   : " + forts);
-
-        try {
-            new TreeSet<String>().first();
-        } catch (NoSuchElementException e) {
-            System.out.println("Empty set -> NoSuchElementException");
-        }
+        System.out.println(numbers.first());   // 10
     }
 }
-''' + OUT),
+''' + OUT, extra_codes=(r'''// TreeSet last(): the biggest element
+import java.util.TreeSet;
+
+public class TreeSetLastDemo {
+    public static void main(String[] args) {
+        TreeSet<Integer> numbers = new TreeSet<>();
+        numbers.add(10);
+        numbers.add(20);
+        numbers.add(30);
+        numbers.add(40);
+
+        System.out.println(numbers.last());   // 40
+    }
+}
+''' + OUT,)),
     method(
         'pollFirst() and pollLast()', 'E pollFirst();  E pollLast()', 'the removed element, or <code>null</code> if empty', 'O(log n)',
         'Remove and return the smallest or the largest element. Use them to treat a TreeSet like a <strong>priority queue</strong> that has no duplicates: repeat <code>pollFirst</code> until it returns <code>null</code>.',
         'Safe for empty sets (they return <code>null</code>), unlike <code>removeFirst</code> in Java 21 which throws. Because a TreeSet cannot contain <code>null</code>, a null result is unambiguous here.',
-        r'''// TreeSet pollFirst / pollLast
-import java.util.List;
+        r'''// TreeSet pollFirst(): removes and returns the smallest
 import java.util.TreeSet;
 
-public class TreeSetPollDemo {
+public class TreeSetPollFirstDemo {
     public static void main(String[] args) {
-        TreeSet<Integer> trekHours = new TreeSet<>(List.of(6, 2, 9, 4));
+        TreeSet<Integer> numbers = new TreeSet<>();
+        numbers.add(10);
+        numbers.add(20);
+        numbers.add(30);
+        numbers.add(40);
 
-        System.out.println("pollFirst : " + trekHours.pollFirst());    // 2
-        System.out.println("pollLast  : " + trekHours.pollLast());     // 9
-        System.out.println("Left      : " + trekHours);
-
-        Integer next;
-        while ((next = trekHours.pollFirst()) != null) {               // drain in sorted order
-            System.out.println("Processing " + next);
-        }
-        System.out.println("Empty poll: " + trekHours.pollFirst());
+        System.out.println(numbers.pollFirst());   // 10
+        System.out.println(numbers);
     }
 }
-''' + OUT),
+''' + OUT, extra_codes=(r'''// TreeSet pollLast(): removes and returns the biggest
+import java.util.TreeSet;
+
+public class TreeSetPollLastDemo {
+    public static void main(String[] args) {
+        TreeSet<Integer> numbers = new TreeSet<>();
+        numbers.add(10);
+        numbers.add(20);
+        numbers.add(30);
+        numbers.add(40);
+
+        System.out.println(numbers.pollLast());   // 40
+        System.out.println(numbers);
+    }
+}
+''' + OUT,)),
 
     section('Neighbours: lower, floor, ceiling and higher', 'The reason people choose a TreeSet over a HashSet. Given a value, find the closest elements <strong>even if the value itself is not in the set</strong>.'),
     method(
         'lower, floor, ceiling and higher', 'E lower(E e);  E floor(E e);  E ceiling(E e);  E higher(E e)', 'the neighbour, or <code>null</code> if there is none', 'O(log n)',
         'Four "nearest element" questions: <code>lower(e)</code> = the greatest element <strong>strictly below</strong> e; <code>floor(e)</code> = the greatest element <strong>below or equal</strong>; <code>ceiling(e)</code> = the smallest element <strong>above or equal</strong>; <code>higher(e)</code> = the smallest element <strong>strictly above</strong>. Memory trick: <em>floor</em> and <em>lower</em> look down; <em>ceiling</em> and <em>higher</em> look up; <em>floor/ceiling</em> may return e itself.',
         'Each is one root-to-leaf walk. They are what make TreeSet useful for "find the next time slot", "nearest price", "which range does this value fall in". e does not have to be in the set.',
-        r'''// TreeSet lower / floor / ceiling / higher
-import java.util.List;
+        r'''// TreeSet lower(E e): the element just smaller than e
 import java.util.TreeSet;
 
-public class TreeSetNeighboursDemo {
+public class TreeSetLowerDemo {
     public static void main(String[] args) {
-        TreeSet<Integer> altitudes = new TreeSet<>(List.of(100, 250, 400, 650, 900));
+        TreeSet<Integer> numbers = new TreeSet<>();
+        numbers.add(10);
+        numbers.add(20);
+        numbers.add(30);
+        numbers.add(40);
 
-        int probe = 400;                                   // present in the set
-        System.out.println("For " + probe + ": lower=" + altitudes.lower(probe) + " floor=" + altitudes.floor(probe)
-                + " ceiling=" + altitudes.ceiling(probe) + " higher=" + altitudes.higher(probe));
-
-        probe = 500;                                       // NOT in the set
-        System.out.println("For " + probe + ": lower=" + altitudes.lower(probe) + " floor=" + altitudes.floor(probe)
-                + " ceiling=" + altitudes.ceiling(probe) + " higher=" + altitudes.higher(probe));
-
-        System.out.println("Below the smallest: " + altitudes.lower(100));      // null: nothing smaller
-        System.out.println("Above the largest : " + altitudes.higher(900));     // null: nothing bigger
+        System.out.println(numbers.lower(20));   // 10
     }
 }
-''' + OUT),
+''' + OUT, extra_codes=(r'''// TreeSet floor(E e): smaller than or equal to e
+import java.util.TreeSet;
+
+public class TreeSetFloorDemo {
+    public static void main(String[] args) {
+        TreeSet<Integer> numbers = new TreeSet<>();
+        numbers.add(10);
+        numbers.add(20);
+        numbers.add(30);
+        numbers.add(40);
+
+        System.out.println(numbers.floor(25));   // 20
+    }
+}
+''' + OUT, r'''// TreeSet ceiling(E e): bigger than or equal to e
+import java.util.TreeSet;
+
+public class TreeSetCeilingDemo {
+    public static void main(String[] args) {
+        TreeSet<Integer> numbers = new TreeSet<>();
+        numbers.add(10);
+        numbers.add(20);
+        numbers.add(30);
+        numbers.add(40);
+
+        System.out.println(numbers.ceiling(25));   // 30
+    }
+}
+''' + OUT, r'''// TreeSet higher(E e): the element just bigger than e
+import java.util.TreeSet;
+
+public class TreeSetHigherDemo {
+    public static void main(String[] args) {
+        TreeSet<Integer> numbers = new TreeSet<>();
+        numbers.add(10);
+        numbers.add(20);
+        numbers.add(30);
+        numbers.add(40);
+
+        System.out.println(numbers.higher(40));   // null: nothing bigger
+    }
+}
+''' + OUT,)),
 
     section('Range views: headSet, tailSet and subSet', 'Take a part of the set by value. The result is a <strong>live view</strong> of the same data.'),
     method(
         'headSet, tailSet and subSet', 'SortedSet<E> headSet(E to);  NavigableSet<E> headSet(E to, boolean inclusive);  tailSet(from[, inclusive]);  subSet(from, to) / subSet(from, fromInc, to, toInc)', 'a view of that range', 'O(log n) to create',
         '<code>headSet(to)</code> = everything <strong>before</strong> to; <code>tailSet(from)</code> = everything <strong>from</strong> from onwards; <code>subSet(from, to)</code> = from (included) up to to (<strong>excluded</strong>). The longer forms let you choose whether each end is included.',
         'These are <strong>views</strong>, not copies: changing the view changes the set and vice versa, and adding an element outside the range to the view throws <code>IllegalArgumentException</code>. Wrap in <code>new TreeSet&lt;&gt;(view)</code> for an independent copy.',
-        r'''// TreeSet headSet / tailSet / subSet: range views
-import java.util.List;
-import java.util.NavigableSet;
+        r'''// TreeSet headSet(E to): elements smaller than "to"
 import java.util.TreeSet;
 
-public class TreeSetRangeDemo {
+public class TreeSetHeadSetDemo {
     public static void main(String[] args) {
-        NavigableSet<String> forts = new TreeSet<>(List.of("Lohagad", "Panhala", "Purandar", "Raigad", "Sinhagad", "Torna"));
+        TreeSet<Integer> numbers = new TreeSet<>();
+        numbers.add(10);
+        numbers.add(20);
+        numbers.add(30);
+        numbers.add(40);
 
-        System.out.println("headSet(Raigad)           : " + forts.headSet("Raigad"));              // before Raigad
-        System.out.println("headSet(Raigad, true)     : " + forts.headSet("Raigad", true));        // including Raigad
-        System.out.println("tailSet(Raigad)           : " + forts.tailSet("Raigad"));              // Raigad and after
-        System.out.println("subSet(Panhala, Sinhagad) : " + forts.subSet("Panhala", "Sinhagad"));  // from included, to excluded
-
-        forts.subSet("Panhala", "Raigad").clear();                  // removing through the view changes the set
-        System.out.println("After clearing the range  : " + forts);
+        System.out.println(numbers.headSet(30));   // [10, 20]
     }
 }
-''' + OUT),
+''' + OUT, extra_codes=(r'''// TreeSet tailSet(E from): elements from "from" and bigger
+import java.util.TreeSet;
+
+public class TreeSetTailSetDemo {
+    public static void main(String[] args) {
+        TreeSet<Integer> numbers = new TreeSet<>();
+        numbers.add(10);
+        numbers.add(20);
+        numbers.add(30);
+        numbers.add(40);
+
+        System.out.println(numbers.tailSet(30));   // [30, 40]
+    }
+}
+''' + OUT, r'''// TreeSet subSet(E from, E to): from "from" up to (not including) "to"
+import java.util.TreeSet;
+
+public class TreeSetSubSetDemo {
+    public static void main(String[] args) {
+        TreeSet<Integer> numbers = new TreeSet<>();
+        numbers.add(10);
+        numbers.add(20);
+        numbers.add(30);
+        numbers.add(40);
+
+        System.out.println(numbers.subSet(20, 40));   // [20, 30]
+    }
+}
+''' + OUT,)),
 
     section('Reverse order and iteration', 'Walk the set from the end, or look at it upside down.'),
     method(
         'descendingSet(), descendingIterator() and reversed()', 'NavigableSet<E> descendingSet();  Iterator<E> descendingIterator();  NavigableSet<E> reversed()', 'a reversed view / iterator', 'O(1)',
         '<code>descendingSet()</code> shows the same elements from largest to smallest, as a live view. <code>descendingIterator()</code> walks them that way. In Java 21 <code>reversed()</code> does the same as <code>descendingSet()</code>.',
         'Views are free (no copying). Because it is a <code>NavigableSet</code> itself, you can chain operations, for example <code>set.descendingSet().headSet(x)</code>.',
-        r'''// TreeSet descendingSet / descendingIterator / reversed
-import java.util.Iterator;
-import java.util.List;
+        r'''// TreeSet descendingSet(): the set in reverse order
 import java.util.TreeSet;
 
-public class TreeSetDescendingDemo {
+public class TreeSetDescendingSetDemo {
     public static void main(String[] args) {
-        TreeSet<String> forts = new TreeSet<>(List.of("Raigad", "Sinhagad", "Torna", "Purandar"));
+        TreeSet<Integer> numbers = new TreeSet<>();
+        numbers.add(10);
+        numbers.add(20);
+        numbers.add(30);
+        numbers.add(40);
 
-        System.out.println("ascending     : " + forts);
-        System.out.println("descendingSet : " + forts.descendingSet());
-        System.out.println("reversed (21) : " + forts.reversed());
-
-        Iterator<String> it = forts.descendingIterator();
-        System.out.print("iterator      : ");
-        while (it.hasNext()) {
-            System.out.print(it.next() + " ");
-        }
-        System.out.println();
-
-        forts.add("Lohagad");                                      // views are live
-        System.out.println("view updated  : " + forts.descendingSet());
+        System.out.println(numbers.descendingSet());
     }
 }
-''' + OUT),
+''' + OUT, extra_codes=(r'''// TreeSet descendingIterator(): loop from big to small
+import java.util.Iterator;
+import java.util.TreeSet;
+
+public class TreeSetDescendingIteratorDemo {
+    public static void main(String[] args) {
+        TreeSet<Integer> numbers = new TreeSet<>();
+        numbers.add(10);
+        numbers.add(20);
+        numbers.add(30);
+        numbers.add(40);
+
+        Iterator<Integer> it = numbers.descendingIterator();
+        while (it.hasNext()) {
+            System.out.println(it.next());
+        }
+    }
+}
+''' + OUT, r'''// TreeSet reversed() (Java 21): the set in reverse order
+import java.util.TreeSet;
+
+public class TreeSetReversedDemo {
+    public static void main(String[] args) {
+        TreeSet<Integer> numbers = new TreeSet<>();
+        numbers.add(10);
+        numbers.add(20);
+        numbers.add(30);
+        numbers.add(40);
+
+        System.out.println(numbers.reversed());
+    }
+}
+''' + OUT,)),
     method(
         'iterator, forEach, stream and comparator()', 'Iterator<E> iterator();  void forEach(Consumer);  Stream<E> stream();  Comparator<? super E> comparator()', 'elements in sorted order / the ordering in use', 'O(n)',
         'Iteration, <code>forEach</code> and streams all visit the elements in <strong>sorted order</strong>. <code>comparator()</code> returns the Comparator that defines the order, or <code>null</code> when natural ordering is used.',
         'Streams from a TreeSet are <code>SORTED</code> and <code>DISTINCT</code>, so <code>stream().sorted()</code> is free and <code>distinct()</code> is redundant. The iterator is fail-fast.',
-        r'''// TreeSet iteration is sorted; comparator() reveals the ordering
+        r'''// TreeSet iteration is sorted; a Comparator changes the order
 import java.util.Comparator;
-import java.util.List;
 import java.util.TreeSet;
 
-public class TreeSetIterationDemo {
+public class TreeSetOrderDemo {
     public static void main(String[] args) {
-        TreeSet<String> natural = new TreeSet<>(List.of("Torna", "Raigad", "Sinhagad"));
-        TreeSet<String> byLength = new TreeSet<>(Comparator.comparing(String::length).thenComparing(Comparator.naturalOrder()));
-        byLength.addAll(natural);
+        TreeSet<String> cities = new TreeSet<>();
+        cities.add("Pune");
+        cities.add("Agra");
+        for (String c : cities) {
+            System.out.println(c);                     // Agra, Pune (A to Z)
+        }
 
-        natural.forEach(f -> System.out.print(f + " "));
-        System.out.println();
-        System.out.println("stream upper : " + natural.stream().map(String::toUpperCase).toList());
-
-        System.out.println("natural.comparator()  : " + natural.comparator());              // null means natural ordering
-        System.out.println("byLength.comparator() is set: " + (byLength.comparator() != null));
-        System.out.println("byLength order        : " + byLength);
+        TreeSet<String> reverse = new TreeSet<>(Comparator.reverseOrder());   // Z to A
+        reverse.add("Pune");
+        reverse.add("Agra");
+        System.out.println(reverse);
     }
 }
 ''' + OUT),
+    (
+        '<h3>Master program: every TreeSet method in one place</h3>\n'
+        '<p>One single program that uses all the TreeSet methods you learned above, step by step. Read the numbered comments from top to bottom, run it, and match each output line with its step.</p>',
+        [r'''// MASTER PROGRAM: all important TreeSet methods in one program
+import java.util.Comparator;
+import java.util.Set;
+import java.util.TreeSet;
+
+public class TreeSetMasterDemo {
+    public static void main(String[] args) {
+        // 1. Create an empty TreeSet (always sorted)
+        TreeSet<Integer> numbers = new TreeSet<>();
+
+        // 2. add and addAll: sorted, duplicates ignored
+        numbers.add(30);
+        numbers.add(10);
+        numbers.add(30);                               // ignored
+        numbers.addAll(Set.of(20, 40, 50));
+        System.out.println("2. After adds    : " + numbers);
+
+        // 3. size, isEmpty, contains
+        System.out.println("3. size/contains : " + numbers.size() + " / " + numbers.contains(20));
+
+        // 4. first and last
+        System.out.println("4. first / last  : " + numbers.first() + " / " + numbers.last());
+
+        // 5. Nearest values: lower, floor, ceiling, higher
+        System.out.println("5. lower(30)     : " + numbers.lower(30));
+        System.out.println("   floor(30)     : " + numbers.floor(30));
+        System.out.println("   ceiling(35)   : " + numbers.ceiling(35));
+        System.out.println("   higher(50)    : " + numbers.higher(50));
+
+        // 6. Range views: headSet, tailSet, subSet
+        System.out.println("6. headSet(30)   : " + numbers.headSet(30));
+        System.out.println("   tailSet(30)   : " + numbers.tailSet(30));
+        System.out.println("   subSet(20, 40): " + numbers.subSet(20, 40));
+
+        // 7. Reverse order: descendingSet, reversed
+        System.out.println("7. descending    : " + numbers.descendingSet());
+        System.out.println("   reversed      : " + numbers.reversed());
+
+        // 8. Remove: remove, pollFirst, pollLast
+        numbers.remove(30);
+        System.out.println("8. pollFirst     : " + numbers.pollFirst());
+        System.out.println("   pollLast      : " + numbers.pollLast());
+        System.out.println("   Left          : " + numbers);
+
+        // 9. A custom order with a Comparator
+        TreeSet<String> cities = new TreeSet<>(Comparator.reverseOrder());
+        cities.add("Pune");
+        cities.add("Agra");
+        System.out.println("9. Z to A        : " + cities);
+
+        // 10. clear
+        numbers.clear();
+        System.out.println("10. After clear  : " + numbers);
+    }
+}
+''' + OUT],
+    ),
 ]
 
 EXPERT = [

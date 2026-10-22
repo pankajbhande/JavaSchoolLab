@@ -15,6 +15,8 @@ interface ImportMetaEnv {
   readonly VITE_AD_SLOT_RAIL_TOP?: string;
   readonly VITE_AD_SLOT_RAIL_BOTTOM?: string;
   readonly VITE_AD_SLOT_CORNER?: string;
+  /** Contact address printed on the Privacy Policy and Terms pages. */
+  readonly VITE_CONTACT_EMAIL?: string;
 }
 
 interface ImportMeta {

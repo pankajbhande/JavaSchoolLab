@@ -9,7 +9,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public record AppProperties(Jwt jwt, Cors cors, Otp otp, Mail mail, RateLimit rateLimit) {
 
     /** Requests per minute per client address on public routes that need no login. */
-    public record RateLimit(int verifyPerMinute, int profilePerMinute, int handleCheckPerMinute) {}
+    public record RateLimit(int verifyPerMinute, int profilePerMinute, int handleCheckPerMinute,
+                            int loginPerMinute, int otpSendPerMinute, int otpVerifyPerMinute) {}
 
     public record Jwt(String secret, int expiresDays) {}
 

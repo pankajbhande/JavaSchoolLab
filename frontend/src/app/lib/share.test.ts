@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { CHANNELS, canonicalCourseUrl, canonicalTopicUrl, shareLink, shareText } from './share';
+import { CHANNELS, canonicalCourseUrl, canonicalTopicUrl, shareLink, shareText, whatsappText } from './share';
 
 const p = { url: 'https://javaschoollab.com/course/java/basics/constructor-chaining', topicName: 'Constructor Chaining', courseName: 'Java' };
 
@@ -25,7 +25,8 @@ describe('share links', () => {
   it('puts the message and the link together for WhatsApp', () => {
     const link = shareLink('whatsapp', p);
     expect(link.startsWith('https://wa.me/?text=')).toBe(true);
-    expect(decodeURIComponent(link.slice('https://wa.me/?text='.length))).toBe(`${shareText(p)}\n${p.url}`);
+    expect(decodeURIComponent(link.slice('https://wa.me/?text='.length))).toBe(whatsappText(p));
+    expect(whatsappText(p).endsWith(`\n${p.url}`)).toBe(true);
   });
 
   it('encodes characters that would break the link', () => {
@@ -42,7 +43,7 @@ describe('share links', () => {
     expect(canonicalCourseUrl('https://javaschoollab.com/', 'javafx')).toBe('https://javaschoollab.com/course/javafx');
     expect(canonicalCourseUrl('https://javaschoollab.com', 'HTML and CSS')).toBe('https://javaschoollab.com/course/HTML_and_CSS');
     const c = { url: 'https://javaschoollab.com/course/javafx', topicName: 'JavaFX', courseName: 'JavaFX', kind: 'course' as const };
-    expect(shareText(c)).toContain('Learn JavaFX on JavaSchoolLab');
+    expect(shareText(c)).toContain('JavaFX: a complete free course on JavaSchoolLab');
     expect(shareLink('email', c)).toContain(encodeURIComponent('JavaFX on JavaSchoolLab'));
     expect(shareLink('whatsapp', c)).toContain(encodeURIComponent('https://javaschoollab.com/course/javafx'));
   });

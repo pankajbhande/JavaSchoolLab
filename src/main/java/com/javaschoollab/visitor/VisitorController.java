@@ -1,5 +1,8 @@
 package com.javaschoollab.visitor;
 
+import com.javaschoollab.common.RateLimiter;
+import com.javaschoollab.common.RateLimiters;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.Map;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,13 +15,20 @@ import org.springframework.web.bind.annotation.RestController;
 public class VisitorController {
 
     private final VisitorService visitors;
+    private final RateLimiter incrementLimiter;
 
-    public VisitorController(VisitorService visitors) {
+    public VisitorController(VisitorService visitors, RateLimiters limiters) {
         this.visitors = visitors;
+        this.incrementLimiter = limiters.perMinute("visitor-increment", 120);
     }
 
+    /**
+     * Counts one page load. From an address that is flooding it, the count is simply not raised (and nothing is written): the answer stays
+     * a normal 200, so a shared school address never sees an error, but the counter cannot be inflated by a script.
+     */
     @PostMapping("/increment")
-    public Map<String, Object> increment() {
+    public Map<String, Object> increment(HttpServletRequest request) {
+        if (incrementLimiter.check(request.getRemoteAddr()).isPresent()) return Map.of("count", visitors.count());
         return Map.of("count", visitors.increment());
     }
 

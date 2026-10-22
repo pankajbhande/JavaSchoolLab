@@ -15,6 +15,8 @@ import org.springframework.stereotype.Service;
 public class QuizService {
 
     static final int PASS_PERCENTAGE = 70;
+    /** No real test is longer; a bigger number would overflow the INT column and is a sign of a hand-made request. */
+    static final int MAX_QUESTIONS = 1000;
 
     private final QuizRepository repo;
 
@@ -34,14 +36,17 @@ public class QuizService {
         if (!Double.isFinite(totalRaw) || !Double.isFinite(scoreRaw)) {
             throw ApiException.badRequest("score and totalQuestions must be numbers");
         }
+        if (totalRaw > MAX_QUESTIONS) throw ApiException.badRequest("totalQuestions must be at most " + MAX_QUESTIONS);
         long total = Math.max(1, Math.round(totalRaw));
         long got = Math.max(0, Math.min(Math.round(scoreRaw), total));
         // Recomputed here rather than trusted from the client, so the stored percentage and pass flag always agree with the stored score.
         int percentage = (int) Math.round(got * 100.0 / total);
         boolean passed = percentage >= PASS_PERCENTAGE;
 
-        String moduleName = JsonInput.truthy(body.get("moduleName")) ? body.get("moduleName").asText() : moduleId.asText();
-        long id = repo.insertAttempt(userId, courseId.asText(), moduleId.asText(), moduleName, (int) got, (int) total, percentage, passed);
+        String course = JsonInput.bounded(courseId, "courseId", 120);
+        String module = JsonInput.bounded(moduleId, "moduleId", 120);
+        String moduleName = JsonInput.truthy(body.get("moduleName")) ? JsonInput.bounded(body.get("moduleName"), "moduleName", 150) : module;
+        long id = repo.insertAttempt(userId, course, module, moduleName, (int) got, (int) total, percentage, passed);
         return new AttemptResult(id, percentage, passed);
     }
 

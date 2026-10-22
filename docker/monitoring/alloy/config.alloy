@@ -1,0 +1,69 @@
+// Grafana Alloy: collects the console logs of the Docker containers on this machine and ships them to Loki.
+//
+//   container name      -> label "container"        (javaschoollab-app, javaschoollab-db, ...)
+//   compose service     -> label "service"
+//   compose project     -> label "compose_project"  (javaschoollab, javaschoollab-shared, javaschoollab-monitoring)
+//   JSON field "level"  -> label "level"            (application logs only: INFO, WARN, ERROR ...)
+// The trace id of a request stays inside the log line ("traceId":"..."), where Grafana turns it into a link to the trace.
+
+discovery.docker "containers" {
+  host = "unix:///var/run/docker.sock"
+}
+
+discovery.relabel "containers" {
+  targets = discovery.docker.containers.targets
+
+  // only the containers named by LOG_CONTAINER_REGEX (docker/.env; default ".+" = every container on this machine, so a second
+  // application on the same server is logged without any change here). The log collector itself is left out.
+  rule {
+    source_labels = ["__meta_docker_container_name"]
+    regex         = "/(" + sys.env("LOG_CONTAINER_REGEX") + ")"
+    action        = "keep"
+  }
+  rule {
+    source_labels = ["__meta_docker_container_name"]
+    regex         = "/javaschoollab-alloy"
+    action        = "drop"
+  }
+  rule {
+    source_labels = ["__meta_docker_container_name"]
+    regex         = "/(.*)"
+    target_label  = "container"
+  }
+  rule {
+    source_labels = ["__meta_docker_container_label_com_docker_compose_service"]
+    target_label  = "service"
+  }
+  rule {
+    source_labels = ["__meta_docker_container_label_com_docker_compose_project"]
+    target_label  = "compose_project"
+  }
+}
+
+loki.source.docker "containers" {
+  host       = "unix:///var/run/docker.sock"
+  targets    = discovery.relabel.containers.output
+  forward_to = [loki.process.containers.receiver]
+}
+
+loki.process "containers" {
+  forward_to = [loki.write.loki.receiver]
+
+  // The application writes one JSON object per line (production profile): read its log level into a label.
+  stage.match {
+    selector = "{container=\"javaschoollab-app\"}"
+
+    stage.json {
+      expressions = { level = "level" }
+    }
+    stage.labels {
+      values = { level = "" }
+    }
+  }
+}
+
+loki.write "loki" {
+  endpoint {
+    url = "http://javaschoollab-loki:3100/loki/api/v1/push"
+  }
+}

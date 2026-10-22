@@ -1,16 +1,23 @@
 package com.javaschoollab.security;
 
+import com.javaschoollab.common.RateLimiters;
 import com.javaschoollab.config.AppProperties;
 import java.util.List;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.actuate.autoconfigure.security.servlet.EndpointRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.MediaType;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
@@ -33,8 +40,47 @@ public class SecurityConfig {
             "/api/search/**",                         // topic search (needs no login; rate limited)
     };
 
+    /**
+     * The operations endpoints (Spring Boot Actuator), a chain of their own that is checked before the API chain below.
+     * {@code /actuator/health} (with its liveness and readiness probes) and {@code /actuator/info} are public: a load balancer, Docker or
+     * Kubernetes must be able to call them, and anonymous callers only ever get the status, never details. Everything else that is
+     * exposed (metrics, prometheus) needs HTTP Basic with the ACTUATOR account. With no ACTUATOR_PASSWORD configured the account
+     * does not exist, so those endpoints stay closed. In production they are also on a separate port that is not published to the internet.
+     */
     @Bean
-    SecurityFilterChain filterChain(HttpSecurity http, JwtService jwtService) throws Exception {
+    @Order(1)
+    SecurityFilterChain actuatorFilterChain(HttpSecurity http, PasswordEncoder encoder,
+                                            @Value("${app.actuator.user:actuator}") String user,
+                                            @Value("${app.actuator.password:}") String password) throws Exception {
+        UserDetailsService accounts = password == null || password.isBlank()
+                ? new InMemoryUserDetailsManager()
+                : new InMemoryUserDetailsManager(User.withUsername(user).password(encoder.encode(password)).roles("ACTUATOR").build());
+        http
+                .securityMatcher(EndpointRequest.toAnyEndpoint())
+                .csrf(AbstractHttpConfigurer::disable)
+                .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(a -> a
+                        .requestMatchers(EndpointRequest.to("health", "info")).permitAll()
+                        .anyRequest().hasRole("ACTUATOR"))
+                .userDetailsService(accounts)
+                .httpBasic(Customizer.withDefaults());
+        return http.build();
+    }
+
+    /**
+     * An explicit, empty user store. Without it Spring Boot creates a default "user" account with a random password and prints it in the
+     * log at start-up ("Using generated security password..."). Sign-in here uses JWTs and the ACTUATOR account has its own store, so
+     * no such account should exist.
+     */
+    @Bean
+    UserDetailsService noDefaultUser() {
+        return new InMemoryUserDetailsManager();
+    }
+
+    @Bean
+    SecurityFilterChain filterChain(HttpSecurity http, JwtService jwtService, TokenRevocation revocation, RateLimiters limiters,
+                                    @Value("${app.rate-limit.writes-per-minute:120}") int writesPerMinute) throws Exception {
+        JwtAuthFilter jwtFilter = new JwtAuthFilter(jwtService, revocation);
         http
                 .csrf(AbstractHttpConfigurer::disable)            // token in a header, no cookies, so no CSRF surface
                 .cors(Customizer.withDefaults())
@@ -51,7 +97,8 @@ public class SecurityConfig {
                             ? "{\"error\":\"Invalid or expired token\"}"
                             : "{\"error\":\"Login required\"}");
                 }))
-                .addFilterBefore(new JwtAuthFilter(jwtService), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterAfter(new ApiWriteGuardFilter(limiters.perMinute("api-write", writesPerMinute)), JwtAuthFilter.class);
         return http.build();
     }
 

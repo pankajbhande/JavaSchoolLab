@@ -3,6 +3,7 @@ import { useState, useEffect, lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route, useNavigate, useParams, useSearchParams, useLocation, Navigate } from 'react-router-dom';
 import { trackPageView } from './services/analytics';
 import { AchievementWatcher } from './components/AchievementWatcher';
+import { ConsentBanner } from './components/ConsentBanner';
 import { ErrorBoundary } from './components/study/ErrorBoundary';
 import { Header } from './components/Header';
 import { Dashboard } from './components/Dashboard';
@@ -26,7 +27,9 @@ const ProfilePage = lazy(() => import('./pages/ProfilePage'));
 const FlashcardsPage = lazy(() => import('./pages/FlashcardsPage'));
 const InterviewPracticePage = lazy(() => import('./pages/InterviewPracticePage'));
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
+const LegalPage = lazy(() => import('./pages/LegalPage'));
 const AdminAnalyticsPage = lazy(() => import('./pages/AdminAnalyticsPage'));
+const AdminSuggestionsPage = lazy(() => import('./pages/AdminSuggestionsPage'));
 const AchievementsPage = lazy(() => import('./pages/AchievementsPage'));
 
 // Starts the same dynamic import ahead of the click. The browser and the module cache
@@ -228,6 +231,7 @@ export default function App() {
           <ProgressProvider>
           <AppToaster />
           <AchievementWatcher />
+          <ConsentBanner />
           <AuthGate>
             <AppRoutes />
           </AuthGate>
@@ -256,7 +260,10 @@ function AppRoutes() {
               <Route path="/account" element={<AccountRoute />} />
               <Route path="/achievements" element={<Suspense fallback={<WorkspaceFallback />}><AchievementsPage /></Suspense>} />
               <Route path="/admin" element={<Suspense fallback={<WorkspaceFallback />}><AdminAnalyticsPage /></Suspense>} />
+              <Route path="/admin/suggestions" element={<Suspense fallback={<WorkspaceFallback />}><AdminSuggestionsPage /></Suspense>} />
               <Route path="/signup" element={<SignupPage />} />
+              <Route path="/privacy" element={<Suspense fallback={<WorkspaceFallback />}><LegalPage kind="privacy" /></Suspense>} />
+              <Route path="/terms" element={<Suspense fallback={<WorkspaceFallback />}><LegalPage kind="terms" /></Suspense>} />
               <Route path="/verify" element={<Suspense fallback={<WorkspaceFallback />}><VerifyCertificate /></Suspense>} />
               <Route path="/verify/:uid" element={<Suspense fallback={<WorkspaceFallback />}><VerifyCertificate /></Suspense>} />
               <Route path="/u/:handle" element={<Suspense fallback={<WorkspaceFallback />}><ProfilePage /></Suspense>} />

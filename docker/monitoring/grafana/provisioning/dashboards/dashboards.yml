@@ -1,0 +1,16 @@
+# Loads every dashboard JSON file below /var/lib/grafana/dashboards (docker/monitoring/grafana/dashboards) into Grafana.
+# Each SUB-FOLDER becomes a Grafana folder of the same name: JavaSchoolLab/ holds this application's dashboards, and another application
+# adds its own folder next to it (dashboards/<AppName>/*.json). Edit a file and Grafana picks the change up within 30 seconds.
+# Dashboards can also be changed in the browser (allowUiUpdates).
+apiVersion: 1
+
+providers:
+  - name: dashboards
+    orgId: 1
+    type: file
+    disableDeletion: false
+    allowUiUpdates: true
+    updateIntervalSeconds: 30
+    options:
+      path: /var/lib/grafana/dashboards
+      foldersFromFilesStructure: true

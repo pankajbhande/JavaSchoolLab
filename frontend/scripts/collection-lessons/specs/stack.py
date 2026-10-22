@@ -80,15 +80,12 @@ import java.util.Stack;
 
 public class StackPushDemo {
     public static void main(String[] args) {
-        Stack<String> cities = new Stack<>();
+        Stack<String> plates = new Stack<>();
 
-        String pushed = cities.push("Pune");     // push returns the item
-        cities.push("Nashik");
-        cities.push("Nagpur");
+        plates.push("Plate 1");   // goes on the bottom
+        plates.push("Plate 2");   // goes on top of Plate 1
 
-        System.out.println("push returned : " + pushed);
-        System.out.println("Stack         : " + cities);          // bottom -> top
-        System.out.println("Size          : " + cities.size());
+        System.out.println(plates);
     }
 }
 ''' + OUT),
@@ -102,18 +99,17 @@ import java.util.Stack;
 
 public class StackPopDemo {
     public static void main(String[] args) {
-        Stack<String> forts = new Stack<>();
-        forts.push("Raigad");
-        forts.push("Torna");
+        Stack<String> plates = new Stack<>();
+        plates.push("Plate 1");
+        plates.push("Plate 2");
 
-        while (!forts.empty()) {                  // safe loop: stop when empty
-            System.out.println("popped " + forts.pop());
-        }
+        System.out.println(plates.pop());   // Plate 2: the top one comes out first
+        System.out.println(plates.pop());   // Plate 1
 
         try {
-            forts.pop();                          // nothing left
+            plates.pop();                   // nothing left to pop
         } catch (EmptyStackException e) {
-            System.out.println("pop on an empty stack -> EmptyStackException");
+            System.out.println("Stack is empty");
         }
     }
 }
@@ -127,18 +123,12 @@ import java.util.Stack;
 
 public class StackPeekDemo {
     public static void main(String[] args) {
-        Stack<Integer> trekHours = new Stack<>();
-        trekHours.push(4);
-        trekHours.push(2);
-        trekHours.push(6);
+        Stack<String> plates = new Stack<>();
+        plates.push("Plate 1");
+        plates.push("Plate 2");
 
-        System.out.println("Top is " + trekHours.peek());
-        System.out.println("Size still " + trekHours.size());
-
-        if (trekHours.peek() > 5) {                   // decide first ...
-            System.out.println("Too long, removing " + trekHours.pop());   // ... then pop
-        }
-        System.out.println("Now " + trekHours);
+        System.out.println(plates.peek());   // Plate 2: only looks
+        System.out.println(plates.size());   // still 2: nothing removed
     }
 }
 ''' + OUT),
@@ -146,19 +136,29 @@ public class StackPeekDemo {
         'empty()', 'boolean empty()', '<code>true</code> if the stack has no elements', 'O(1)',
         'Tells whether the stack is empty. It is the classic Stack name; <code>isEmpty()</code> (inherited from Vector) does exactly the same.',
         'The two names exist for historical reasons. Prefer <code>isEmpty()</code> in new code so the call works with any collection.',
-        r'''// Stack empty() and isEmpty()
+        r'''// Stack empty(): is the stack empty?
 import java.util.Stack;
 
 public class StackEmptyDemo {
     public static void main(String[] args) {
-        Stack<String> forts = new Stack<>();
-        System.out.println("New stack  : empty()=" + forts.empty() + " isEmpty()=" + forts.isEmpty());
+        Stack<String> plates = new Stack<>();
 
-        forts.push("Raigad");
-        System.out.println("After push : empty()=" + forts.empty() + " isEmpty()=" + forts.isEmpty());
+        System.out.println(plates.empty());   // true
+        plates.push("Plate 1");
+        System.out.println(plates.empty());   // false
     }
 }
-''' + OUT),
+''' + OUT, extra_codes=(r'''// Stack isEmpty(): same as empty() (from Vector)
+import java.util.Stack;
+
+public class StackIsEmptyDemo {
+    public static void main(String[] args) {
+        Stack<String> plates = new Stack<>();
+
+        System.out.println(plates.isEmpty());   // true
+    }
+}
+''' + OUT,)),
     method(
         'search(Object o)', 'int search(Object o)', 'the 1-based distance from the top, or <code>-1</code>', 'O(n)',
         'Finds an element and tells how far it is from the <strong>top</strong>: the top element is at position <strong>1</strong>, the next at 2, and so on. If the element is not there you get <strong>-1</strong>. If it appears several times, the one <strong>closest to the top</strong> is reported.',
@@ -168,17 +168,14 @@ import java.util.Stack;
 
 public class StackSearchDemo {
     public static void main(String[] args) {
-        Stack<String> forts = new Stack<>();
-        forts.push("Raigad");       // bottom
-        forts.push("Sinhagad");
-        forts.push("Torna");
-        forts.push("Sinhagad");     // top (a duplicate)
+        Stack<String> plates = new Stack<>();
+        plates.push("Plate 1");
+        plates.push("Plate 2");
+        plates.push("Plate 3");
 
-        System.out.println("Stack            : " + forts);
-        System.out.println("search(Sinhagad) : " + forts.search("Sinhagad"));   // the one nearest the top
-        System.out.println("search(Raigad)   : " + forts.search("Raigad"));     // the bottom element
-        System.out.println("search(Purandar) : " + forts.search("Purandar"));   // not found
-        System.out.println("indexOf(Raigad)  : " + forts.indexOf("Raigad"));    // Vector method: 0-based from the bottom
+        System.out.println(plates.search("Plate 3"));   // 1: it is on top
+        System.out.println(plates.search("Plate 1"));   // 3: third from the top
+        System.out.println(plates.search("Plate 9"));   // -1: not found
     }
 }
 ''' + OUT),
@@ -189,36 +186,22 @@ public class StackSearchDemo {
         'Iterating a Stack visits the elements from the <strong>bottom</strong> up (insertion order), which is the opposite of the order <code>pop</code> would return them. To print "top first" iterate backwards or use a <code>ListIterator</code>.',
         'This surprises people who switch to <code>ArrayDeque</code> or <code>LinkedList</code> used as a stack, where iteration goes from the <strong>top</strong> down. Do not rely on iteration order when you change the class.',
         r'''// Iterating a Stack goes bottom to top; popping goes top to bottom
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.ListIterator;
 import java.util.Stack;
 
-public class StackIterationDemo {
+public class StackIterateDemo {
     public static void main(String[] args) {
-        Stack<String> stack = new Stack<>();
-        stack.push("Raigad");
-        stack.push("Sinhagad");
-        stack.push("Torna");
+        Stack<String> plates = new Stack<>();
+        plates.push("Plate 1");
+        plates.push("Plate 2");
+        plates.push("Plate 3");
 
-        System.out.print("for-each (bottom to top): ");
-        for (String fort : stack) {
-            System.out.print(fort + " ");
+        for (String plate : plates) {          // loop starts from the bottom
+            System.out.println(plate);
         }
-        System.out.println();
 
-        System.out.print("top to bottom           : ");
-        ListIterator<String> it = stack.listIterator(stack.size());   // start at the end
-        while (it.hasPrevious()) {
-            System.out.print(it.previous() + " ");
+        while (!plates.isEmpty()) {            // popping starts from the top
+            System.out.println(plates.pop());
         }
-        System.out.println();
-
-        Deque<String> modern = new ArrayDeque<>();
-        modern.push("Raigad");
-        modern.push("Sinhagad");
-        modern.push("Torna");
-        System.out.println("ArrayDeque used as stack iterates top first: " + modern);
     }
 }
 ''' + OUT),
@@ -226,21 +209,18 @@ public class StackIterationDemo {
         'Methods that break the LIFO rule', 'get(i), add(i, e), remove(i), set(i, e), insertElementAt(e, i)', 'work on any position', 'O(1) / O(n)',
         'Because Stack inherits the Vector (List) methods, nothing stops you from reading or removing in the <strong>middle</strong>. That is legal, but then it is no longer a true stack.',
         'This is a design flaw of <code>java.util.Stack</code> (inheritance instead of composition) and a main reason that <code>Deque</code>/<code>ArrayDeque</code> is recommended: it exposes only the end operations.',
-        r'''// Stack inherits List methods, so the LIFO rule can be broken
+        r'''// Stack also has List methods
 import java.util.Stack;
 
-public class StackBreakRuleDemo {
+public class StackListMethodsDemo {
     public static void main(String[] args) {
-        Stack<String> forts = new Stack<>();
-        forts.push("Raigad");
-        forts.push("Sinhagad");
-        forts.push("Torna");
+        Stack<String> plates = new Stack<>();
+        plates.push("Plate 1");
+        plates.push("Plate 2");
+        plates.push("Plate 3");
 
-        System.out.println("get(0) reads the BOTTOM : " + forts.get(0));
-        forts.remove(1);                                         // removes from the middle
-        forts.add(0, "Purandar");                                // inserts at the bottom
-        System.out.println("After middle operations  : " + forts);
-        System.out.println("pop still takes the top  : " + forts.pop());
+        System.out.println(plates.get(0));   // List method: reads the bottom plate
+        System.out.println(plates.size());   // 3 plates
     }
 }
 ''' + OUT),
@@ -252,23 +232,69 @@ public class StackBreakRuleDemo {
 import java.util.ArrayDeque;
 import java.util.Deque;
 
-public class StackAsDequeDemo {
+public class ModernStackDemo {
     public static void main(String[] args) {
-        Deque<String> stack = new ArrayDeque<>();
+        Deque<String> plates = new ArrayDeque<>();
 
-        stack.push("Raigad");
-        stack.push("Sinhagad");
-        stack.push("Torna");
+        plates.push("Plate 1");               // add on top
+        plates.push("Plate 2");
 
-        System.out.println("peek : " + stack.peek());
-        System.out.println("pop  : " + stack.pop());
-        System.out.println("Left : " + stack);
-
-        Deque<String> empty = new ArrayDeque<>();
-        System.out.println("peek on empty returns: " + empty.peek());   // null, no exception
+        System.out.println(plates.peek());    // Plate 2: look at the top
+        System.out.println(plates.pop());     // Plate 2: remove the top
     }
 }
 ''' + OUT),
+    (
+        '<h3>Master program: every Stack method in one place</h3>\n'
+        '<p>One single program that uses all the Stack methods you learned above, step by step. Read the numbered comments from top to bottom, run it, and match each output line with its step.</p>',
+        [r'''// MASTER PROGRAM: all important Stack methods in one program
+import java.util.EmptyStackException;
+import java.util.Stack;
+
+public class StackMasterDemo {
+    public static void main(String[] args) {
+        // 1. Create an empty stack
+        Stack<String> plates = new Stack<>();
+        System.out.println("1. empty()   : " + plates.empty());   // true
+
+        // 2. push: add on top
+        plates.push("Plate 1");
+        plates.push("Plate 2");
+        plates.push("Plate 3");
+        System.out.println("2. After push: " + plates);
+
+        // 3. peek: look at the top, nothing is removed
+        System.out.println("3. peek      : " + plates.peek());
+
+        // 4. search: position from the top, starting at 1
+        System.out.println("4. search    : " + plates.search("Plate 3") + " and " + plates.search("Plate 1"));
+
+        // 5. List methods also work: size, get, isEmpty, contains
+        System.out.println("5. size/get  : " + plates.size() + " / " + plates.get(0));
+        System.out.println("   isEmpty   : " + plates.isEmpty());
+        System.out.println("   contains  : " + plates.contains("Plate 2"));
+
+        // 6. Loop: for-each starts from the bottom
+        for (String plate : plates) {
+            System.out.print(plate + " | ");
+        }
+        System.out.println();
+
+        // 7. pop: remove from the top until the stack is empty
+        while (!plates.empty()) {
+            System.out.println("7. pop       : " + plates.pop());
+        }
+
+        // 8. pop on an empty stack throws an exception
+        try {
+            plates.pop();
+        } catch (EmptyStackException e) {
+            System.out.println("8. Stack is empty, cannot pop");
+        }
+    }
+}
+''' + OUT],
+    ),
 ]
 
 EXPERT = [

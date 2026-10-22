@@ -5,7 +5,7 @@ A learning site for Java, Spring, SQL, web and more: 31 courses, quizzes, certif
 ```
 pom.xml, src/   Spring Boot (Maven) project: the API, the course content and the web hosting.  <- import THIS folder into STS
 frontend/        React + TypeScript site (Vite). Built and served by the Spring Boot app, or run on its own while developing
-docker/          docker-compose.yml (Spring Boot app + MySQL) and its .env.example
+docker/          Dockerfile, three compose stacks (docker-compose.shared.yml: MySQL/Redis/OpenSearch/backup; docker-compose.yml: the app; docker-compose.monitoring.yml: Prometheus/Grafana/Loki/Tempo/Alertmanager), scripts/ (stack.sh, backups, Ubuntu server setup), nginx/ and the one settings file `.env` (git-ignored, copied to the server)
 docs/            authoring notes and backend details (docs/backend.md)
 ```
 
@@ -36,7 +36,7 @@ Sign-up, sign-in and one-time codes are **email only**; mobile numbers are rejec
 **Continue with Google** is optional: set `app.google.client-id` (local) or `GOOGLE_CLIENT_ID` (production) to an OAuth "Web application"
 client id from Google Cloud Console and the button appears on the login form. Leave it empty and the button stays hidden.
 
-**Redis and OpenSearch** are optional. `docker/docker-compose.yml` starts both (shared rate limits, expiring sign-up codes, leaderboard cache, and
+**Redis and OpenSearch** are optional. `docker/docker-compose.yml` (the application stack) starts both (shared rate limits, expiring sign-up codes, leaderboard cache, and
 server-side topic search at `/api/search`). In STS they are off by default; see `docs/backend.md` ("Redis and OpenSearch") to switch them on.
 
 **Levels and badges:** learners climb six fort-named levels (Torna to Raigad) and earn 15 badges, celebrated with a pop-up and a share button; see `/achievements`.
@@ -50,11 +50,18 @@ server-side topic search at `/api/search`). In STS they are off by default; see 
 | What | Where | Command |
 |---|---|---|
 | Run the API | repository root | `mvn spring-boot:run` |
-| Backend tests (153, H2) | repository root | `mvn test` |
+| Backend tests (181, in-memory H2, no Docker needed) | repository root | `mvn test` |
 | One jar with the site inside | repository root | `mvn -Pwith-site -DskipTests package`, then `java -jar target/javaschoollab-server-0.1.0.jar` |
 | React dev server | `frontend/` | `npm install`, then `npm run dev` (needs the backend on :3001) |
 | Front-end tests and type check | `frontend/` | `npm test`, `npm run typecheck` |
 | Re-export the course content | `frontend/` | `npm run export:content` (writes into `src/main/resources`) |
-| Spring + MySQL in Docker | repository root | `cd docker && docker compose up -d --build` |
+| Whole platform in Docker (shared infra, app, monitoring) | `docker/` | `docker volume create javaschoollab_db_data` (once), then `bash scripts/stack.sh up all` (`status`, `down`, `up shared|app|monitoring`) |
+| Fresh Ubuntu VPS | `docker/` | `sudo bash scripts/server-setup-ubuntu.sh base`, then see `docker/help.txt` ("PUTTING IT ON AN UBUNTU SERVER") |
+
+**Monitoring:** Spring Boot Actuator serves `/actuator/health` (with `/liveness` and `/readiness` probes), `/actuator/info` and `/actuator/prometheus`. In Docker they are on a private management port (127.0.0.1:9001); see `docs/backend.md` ("Monitoring").
+
+Security fixes and what still needs your action: `docs/issues-and-resolutions.md`.
+
+Go-live check: `bash docker/scripts/preflight.sh`; fresh secrets: `bash docker/scripts/generate-secrets.sh`. Monitoring is optional: `OBSERVABILITY=true|false` in `docker/.env` (see `docker/help.txt`). Deploy on merge with automatic roll-back (no Jenkins needed): `docs/auto-deploy.md`. CI/CD with Jenkins (pipeline ready, install later): `docs/jenkins.md`.
 
 More detail: `docs/backend.md` (API, architecture, deployment) and `frontend/README.md` (the React app).

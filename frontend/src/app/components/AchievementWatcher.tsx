@@ -3,6 +3,7 @@ import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import { X, Share2 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { Announcement, PROGRESS_EVENT, refreshAchievements, resetAchievements, subscribeAchievements, takeNewBadges, winText } from '../services/achievements';
+import { whatsappGeneric } from '../lib/share';
 import { track } from '../services/analytics';
 import { BadgeIcon } from './BadgeIcon';
 
@@ -76,7 +77,7 @@ export function AchievementWatcher() {
     if (typeof navigator.share === 'function' && window.matchMedia?.('(pointer: coarse)').matches) {
       try { await navigator.share({ title: 'JavaSchoolLab', text, url }); } catch { /* closed */ }
     } else {
-      window.open(`https://wa.me/?text=${encodeURIComponent(`${text}\n${url}`)}`, '_blank', 'noopener,noreferrer');
+      window.open(`https://wa.me/?text=${encodeURIComponent(whatsappGeneric('I just hit a new milestone on JavaSchoolLab! 🎉', text, url, 'Learn with me'))}`, '_blank', 'noopener,noreferrer');
     }
   };
 

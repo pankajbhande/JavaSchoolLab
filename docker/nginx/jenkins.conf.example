@@ -1,0 +1,59 @@
+# nginx in front of Jenkins (jenkins.dhipansoft.in). Add it NEXT TO javaschoollab.conf, after Jenkins is installed (docs/jenkins.md).
+#
+#   Browser --HTTPS--> nginx --HTTP--> 127.0.0.1:8081 (Jenkins; 8080 is the application)
+#
+# Install:  sudo cp docker/nginx/jenkins.conf.example /etc/nginx/conf.d/jenkins.conf   then replace the two names below if yours differ
+# Certificate: the one certificate of the site is widened to cover this name too (the application and Grafana keep working):
+#   sudo certbot certonly --webroot -w /var/www/certbot --cert-name javaschoollab.dhipansoft.in --expand \
+#        -d javaschoollab.dhipansoft.in -d grafana.dhipansoft.in -d jenkins.dhipansoft.in
+#   sudo nginx -t && sudo systemctl reload nginx
+# Jenkins can run any command on your server: ALWAYS keep its own login on, and strongly consider the "allow" lines below (your office / home address only).
+
+upstream jenkins_backend {
+    server 127.0.0.1:8081;
+    keepalive 8;
+}
+
+server {
+    listen 80;
+    listen [::]:80;
+    server_name jenkins.dhipansoft.in;
+
+    location /.well-known/acme-challenge/ { root /var/www/certbot; }
+    location / { return 301 https://$host$request_uri; }
+}
+
+server {
+    listen 443 ssl;
+    listen [::]:443 ssl;
+    http2 on;
+    server_name jenkins.dhipansoft.in;
+
+    ssl_certificate     /etc/letsencrypt/live/javaschoollab.dhipansoft.in/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/javaschoollab.dhipansoft.in/privkey.pem;
+    ssl_protocols       TLSv1.2 TLSv1.3;
+
+    add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+    add_header X-Content-Type-Options    "nosniff" always;
+    add_header X-Frame-Options           "SAMEORIGIN" always;
+
+    # allow 203.0.113.10;           # your office / home address; GitHub/GitLab webhook addresses too if you use webhooks
+    # deny  all;
+
+    client_max_body_size 50m;       # plugin uploads
+
+    location / {
+        proxy_pass         http://jenkins_backend;
+        proxy_http_version 1.1;
+        proxy_set_header   Connection        "";
+        proxy_set_header   Host              $http_host;
+        proxy_set_header   X-Real-IP         $remote_addr;
+        proxy_set_header   X-Forwarded-For   $proxy_add_x_forwarded_for;
+        proxy_set_header   X-Forwarded-Proto $scheme;
+        proxy_set_header   X-Forwarded-Port  $server_port;
+        proxy_redirect     http:// https://;
+        proxy_request_buffering off;    # lets large uploads and the build log stream
+        proxy_buffering         off;
+        proxy_read_timeout 90s;
+    }
+}

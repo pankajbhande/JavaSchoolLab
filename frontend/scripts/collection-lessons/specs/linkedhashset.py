@@ -81,76 +81,98 @@ INTERMEDIATE = [
         'add(E e) and addAll(Collection c)', 'boolean add(E e);  boolean addAll(Collection<? extends E> c)', '<code>true</code> if something was added', 'O(1) / O(m)',
         'Adds an element at the <strong>end</strong> of the order if it is new. If it is already present nothing changes, and it <strong>keeps its old position</strong> (re-adding does not move it).',
         'Internally each entry is a <code>LinkedHashMap.Entry</code> with <code>before</code> and <code>after</code> links in addition to the HashMap bucket link. Insertion order is <strong>not</strong> affected by re-insertion; this is different from <code>addFirst</code>/<code>addLast</code> (Java 21) which do move.',
-        r'''// LinkedHashSet add / addAll: order of first insertion, duplicates ignored
+        r'''// LinkedHashSet add(E e): keeps insertion order, ignores duplicates
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Set;
 
 public class LinkedHashSetAddDemo {
     public static void main(String[] args) {
-        Set<String> cities = new LinkedHashSet<>();
+        Set<String> forts = new LinkedHashSet<>();
 
-        cities.add("Pune");
-        cities.add("Nashik");
-        cities.add("Pune");                // duplicate: ignored, Pune keeps its first position
-        cities.add("Nagpur");
-        System.out.println("After adds : " + cities);
+        forts.add("Torna");
+        forts.add("Raigad");
+        forts.add("Torna");   // duplicate, ignored
 
-        boolean changed = cities.addAll(List.of("Indore", "Nashik", "Jaipur"));   // Nashik is ignored
-        System.out.println("addAll     : " + changed + " -> " + cities);
+        System.out.println(forts);
     }
 }
-''' + OUT),
+''' + OUT, extra_codes=(r'''// LinkedHashSet addAll(Collection c): adds many at the end
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
+
+public class LinkedHashSetAddAllDemo {
+    public static void main(String[] args) {
+        Set<String> forts = new LinkedHashSet<>(List.of("Torna"));
+
+        forts.addAll(List.of("Raigad", "Sinhagad"));
+
+        System.out.println(forts);
+    }
+}
+''' + OUT,)),
     method(
         'contains, remove and the order of the rest', 'boolean contains(Object o);  boolean remove(Object o)', '<code>true</code> / <code>false</code>', 'O(1)',
         'Look up or remove an element by value, like a HashSet. After a removal the <strong>remaining elements keep their relative order</strong>.',
         'Removing unlinks the entry from both the bucket chain and the doubly linked order list, which is O(1) because it already has both neighbours.',
-        r'''// LinkedHashSet contains / remove: the rest keeps its order
+        r'''// LinkedHashSet contains(Object o): is the value present?
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
+
+public class LinkedHashSetContainsDemo {
+    public static void main(String[] args) {
+        LinkedHashSet<String> forts = new LinkedHashSet<>(List.of("Torna", "Raigad", "Sinhagad"));
+
+        System.out.println(forts.contains("Raigad"));   // true
+    }
+}
+''' + OUT, extra_codes=(r'''// LinkedHashSet remove(Object o): removes one element, the rest keep their order
+import java.util.LinkedHashSet;
+import java.util.List;
 
 public class LinkedHashSetRemoveDemo {
     public static void main(String[] args) {
-        Set<String> forts = new LinkedHashSet<>(List.of("Raigad", "Sinhagad", "Torna", "Purandar", "Lohagad"));
+        LinkedHashSet<String> forts = new LinkedHashSet<>(List.of("Torna", "Raigad", "Sinhagad"));
 
-        System.out.println("contains(Torna)  : " + forts.contains("Torna"));
-        System.out.println("remove(Sinhagad) : " + forts.remove("Sinhagad"));
-        System.out.println("remove(Panhala)  : " + forts.remove("Panhala"));
-        System.out.println("Order kept       : " + forts);
+        forts.remove("Raigad");
 
-        forts.removeIf(f -> f.startsWith("P"));
-        System.out.println("removeIf P*      : " + forts);
+        System.out.println(forts);
     }
 }
-''' + OUT),
+''' + OUT,)),
     method(
         'removeAll, retainAll and clear', 'boolean removeAll(Collection<?> c);  boolean retainAll(Collection<?> c);  void clear()', '<code>true</code> if changed / nothing', 'O(n)',
         'Subtract a group, keep only a group, or remove everything. Unlike HashSet, the result keeps the <strong>insertion order</strong> of what is left, so printed results are the same every time.',
         'These are the same inherited methods as HashSet; the benefit of LinkedHashSet is the predictable output, which makes it very good for logs, reports and unit tests.',
-        r'''// LinkedHashSet removeAll / retainAll: results stay in insertion order
+        r'''// LinkedHashSet removeAll(Collection c): removes every element found in c
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-public class LinkedHashSetBulkDemo {
+public class LinkedHashSetRemoveAllDemo {
     public static void main(String[] args) {
-        Set<String> forts = new LinkedHashSet<>(List.of("Raigad", "Sinhagad", "Torna", "Purandar", "Lohagad"));
-        List<String> closed = List.of("Torna", "Lohagad");
+        LinkedHashSet<String> forts = new LinkedHashSet<>(List.of("Torna", "Raigad", "Sinhagad"));
 
-        Set<String> open = new LinkedHashSet<>(forts);
-        open.removeAll(closed);
-        System.out.println("open   : " + open);
+        forts.removeAll(Set.of("Raigad"));
 
-        Set<String> shut = new LinkedHashSet<>(forts);
-        shut.retainAll(closed);
-        System.out.println("closed : " + shut);
-
-        shut.clear();
-        System.out.println("cleared: " + shut);
+        System.out.println(forts);
     }
 }
-''' + OUT),
+''' + OUT, extra_codes=(r'''// LinkedHashSet retainAll(Collection c): keeps only elements found in c
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
+
+public class LinkedHashSetRetainAllDemo {
+    public static void main(String[] args) {
+        LinkedHashSet<String> forts = new LinkedHashSet<>(List.of("Torna", "Raigad", "Sinhagad"));
+
+        forts.retainAll(Set.of("Raigad", "Torna"));
+
+        System.out.println(forts);
+    }
+}
+''' + OUT,)),
 
     section('Walking and converting', 'Every way of visiting the elements follows the insertion order.'),
     method(
@@ -158,27 +180,19 @@ public class LinkedHashSetBulkDemo {
         'All of them visit the elements in the order they were first added. Because the elements are also linked in a chain, iterating costs O(size), not O(capacity + size) as in HashSet.',
         'This makes LinkedHashSet <strong>faster to iterate</strong> than HashSet when the set is large but sparse. Streams over it are <strong>ordered</strong> streams.',
         r'''// LinkedHashSet iteration is in insertion order
-import java.util.Arrays;
-import java.util.Iterator;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Set;
 
-public class LinkedHashSetWalkDemo {
+public class LinkedHashSetLoopDemo {
     public static void main(String[] args) {
-        Set<String> route = new LinkedHashSet<>(List.of("Pune", "Nashik", "Nagpur", "Indore"));
+        Set<String> forts = new LinkedHashSet<>();
+        forts.add("Torna");
+        forts.add("Raigad");
+        forts.add("Sinhagad");
 
-        for (String stop : route) {
-            System.out.println("Stop: " + stop);
+        for (String fort : forts) {          // same order as we added
+            System.out.println(fort);
         }
-
-        Iterator<String> it = route.iterator();
-        it.next();
-        it.remove();                                          // remove the first stop through the iterator
-        System.out.println("After removing first: " + route);
-
-        System.out.println("stream : " + route.stream().map(String::toUpperCase).toList());
-        System.out.println("array  : " + Arrays.toString(route.toArray(new String[0])));
     }
 }
 ''' + OUT),
@@ -188,73 +202,188 @@ public class LinkedHashSetWalkDemo {
         'getFirst, getLast, removeFirst, removeLast and reversed', 'E getFirst();  E getLast();  E removeFirst();  E removeLast();  SequencedSet<E> reversed()', 'the element / a reversed view', 'O(1)',
         'Read or remove the <strong>first</strong> or <strong>last</strong> element without writing a loop. On an empty set they throw <code>NoSuchElementException</code>. <code>reversed()</code> gives a view that walks from the last element to the first.',
         'Before Java 21 you had to iterate to the end to find the last element. <code>reversed()</code> is a live view, not a copy.',
-        r'''// LinkedHashSet getFirst / getLast / removeFirst / removeLast / reversed (Java 21)
+        r'''// LinkedHashSet getFirst() (Java 21): reads the first element
 import java.util.LinkedHashSet;
 import java.util.List;
 
-public class LinkedHashSetEndsDemo {
+public class LinkedHashSetGetFirstDemo {
     public static void main(String[] args) {
-        LinkedHashSet<String> forts = new LinkedHashSet<>(List.of("Raigad", "Sinhagad", "Torna", "Purandar"));
+        LinkedHashSet<String> forts = new LinkedHashSet<>(List.of("Torna", "Raigad", "Sinhagad"));
 
-        System.out.println("getFirst : " + forts.getFirst());
-        System.out.println("getLast  : " + forts.getLast());
-        System.out.println("reversed : " + forts.reversed());
-
-        System.out.println("removeFirst : " + forts.removeFirst());
-        System.out.println("removeLast  : " + forts.removeLast());
-        System.out.println("Remaining   : " + forts);
+        System.out.println(forts.getFirst());   // Torna
     }
 }
-''' + OUT),
+''' + OUT, extra_codes=(r'''// LinkedHashSet getLast() (Java 21): reads the last element
+import java.util.LinkedHashSet;
+import java.util.List;
+
+public class LinkedHashSetGetLastDemo {
+    public static void main(String[] args) {
+        LinkedHashSet<String> forts = new LinkedHashSet<>(List.of("Torna", "Raigad", "Sinhagad"));
+
+        System.out.println(forts.getLast());   // Sinhagad
+    }
+}
+''' + OUT, r'''// LinkedHashSet removeFirst() (Java 21): removes the first element
+import java.util.LinkedHashSet;
+import java.util.List;
+
+public class LinkedHashSetRemoveFirstDemo {
+    public static void main(String[] args) {
+        LinkedHashSet<String> forts = new LinkedHashSet<>(List.of("Torna", "Raigad", "Sinhagad"));
+
+        forts.removeFirst();
+
+        System.out.println(forts);
+    }
+}
+''' + OUT, r'''// LinkedHashSet removeLast() (Java 21): removes the last element
+import java.util.LinkedHashSet;
+import java.util.List;
+
+public class LinkedHashSetRemoveLastDemo {
+    public static void main(String[] args) {
+        LinkedHashSet<String> forts = new LinkedHashSet<>(List.of("Torna", "Raigad", "Sinhagad"));
+
+        forts.removeLast();
+
+        System.out.println(forts);
+    }
+}
+''' + OUT, r'''// LinkedHashSet reversed() (Java 21): the set in reverse order
+import java.util.LinkedHashSet;
+import java.util.List;
+
+public class LinkedHashSetReversedDemo {
+    public static void main(String[] args) {
+        LinkedHashSet<String> forts = new LinkedHashSet<>(List.of("Torna", "Raigad", "Sinhagad"));
+
+        System.out.println(forts.reversed());
+    }
+}
+''' + OUT,)),
     method(
         'addFirst(E) and addLast(E)  (Java 21)', 'void addFirst(E e);  void addLast(E e)', 'nothing (void)', 'O(1)',
         'Add an element at the <strong>front</strong> or the <strong>end</strong>. If the element is <strong>already in the set it is moved</strong> to that position. This is the first way to re-order a LinkedHashSet without rebuilding it.',
         'This is different from <code>add</code>, which never moves an existing element. It makes <code>LinkedHashSet</code> usable as a simple "move to front" structure.',
-        r'''// LinkedHashSet addFirst / addLast move existing elements (Java 21)
+        r'''// LinkedHashSet addFirst(E e) (Java 21): puts an element at the front
 import java.util.LinkedHashSet;
 import java.util.List;
 
-public class LinkedHashSetMoveDemo {
+public class LinkedHashSetAddFirstDemo {
     public static void main(String[] args) {
-        LinkedHashSet<String> forts = new LinkedHashSet<>(List.of("Raigad", "Sinhagad", "Torna"));
+        LinkedHashSet<String> forts = new LinkedHashSet<>(List.of("Torna", "Raigad", "Sinhagad"));
 
-        forts.add("Raigad");            // plain add: no change, Raigad stays first
-        System.out.println("add       : " + forts);
+        forts.addFirst("Sinhagad");   // already exists, so it moves to the front
 
-        forts.addLast("Raigad");        // moves Raigad to the end
-        System.out.println("addLast   : " + forts);
-
-        forts.addFirst("Torna");        // moves Torna to the front
-        forts.addFirst("Purandar");     // a new element goes to the front
-        System.out.println("addFirst  : " + forts);
+        System.out.println(forts);
     }
 }
-''' + OUT),
+''' + OUT, extra_codes=(r'''// LinkedHashSet addLast(E e) (Java 21): puts an element at the end
+import java.util.LinkedHashSet;
+import java.util.List;
+
+public class LinkedHashSetAddLastDemo {
+    public static void main(String[] args) {
+        LinkedHashSet<String> forts = new LinkedHashSet<>(List.of("Torna", "Raigad", "Sinhagad"));
+
+        forts.addLast("Torna");   // already exists, so it moves to the end
+
+        System.out.println(forts);
+    }
+}
+''' + OUT,)),
     method(
         'clone, equals, hashCode and toString', 'Object clone();  boolean equals(Object);  int hashCode();  String toString()', 'copy / comparison / hash / text', 'O(n)',
         '<code>clone</code> makes a shallow copy that keeps the order. <code>equals</code> follows the <code>Set</code> rule: same elements means equal, and <strong>order is ignored</strong>. <code>toString</code> prints the elements in insertion order.',
         'Even though it is ordered, <code>LinkedHashSet.equals</code> does <strong>not</strong> compare the order (a <code>List</code> would). Two sets with the same elements in different order are equal and have the same hash code.',
-        r'''// LinkedHashSet clone / equals: order is ignored by equals()
+        r'''// LinkedHashSet clone(): makes a copy
+import java.util.LinkedHashSet;
+import java.util.List;
+
+public class LinkedHashSetCloneDemo {
+    public static void main(String[] args) {
+        LinkedHashSet<String> forts = new LinkedHashSet<>(List.of("Torna", "Raigad", "Sinhagad"));
+
+        Object copy = forts.clone();
+
+        System.out.println(copy);
+    }
+}
+''' + OUT, extra_codes=(r'''// LinkedHashSet equals(): ignores the order
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
 public class LinkedHashSetEqualsDemo {
     public static void main(String[] args) {
-        LinkedHashSet<String> a = new LinkedHashSet<>(List.of("Raigad", "Torna", "Purandar"));
-        Set<String> b = new LinkedHashSet<>(List.of("Purandar", "Raigad", "Torna"));   // other order
+        Set<String> a = new LinkedHashSet<>(List.of("Torna", "Raigad"));
+        Set<String> b = new LinkedHashSet<>(List.of("Raigad", "Torna"));
 
-        System.out.println("a          : " + a);
-        System.out.println("b          : " + b);
-        System.out.println("a.equals(b): " + a.equals(b));                // same elements -> equal
-
-        @SuppressWarnings("unchecked")
-        LinkedHashSet<String> copy = (LinkedHashSet<String>) a.clone();
-        copy.add("Lohagad");
-        System.out.println("clone      : " + copy + " (original " + a + ")");
+        System.out.println(a.equals(b));   // true
     }
 }
-''' + OUT),
+''' + OUT,)),
+    (
+        '<h3>Master program: every LinkedHashSet method in one place</h3>\n'
+        '<p>One single program that uses all the LinkedHashSet methods you learned above, step by step. Read the numbered comments from top to bottom, run it, and match each output line with its step.</p>',
+        [r'''// MASTER PROGRAM: all important LinkedHashSet methods in one program
+import java.util.LinkedHashSet;
+import java.util.Set;
+
+public class LinkedHashSetMasterDemo {
+    public static void main(String[] args) {
+        // 1. Create an empty set (it remembers insertion order)
+        LinkedHashSet<String> forts = new LinkedHashSet<>();
+
+        // 2. add and addAll: duplicates are ignored
+        forts.add("Torna");
+        forts.add("Raigad");
+        forts.add("Torna");                          // ignored
+        forts.addAll(Set.of("Sinhagad"));
+        System.out.println("2. After adds   : " + forts);
+
+        // 3. size, isEmpty, contains
+        System.out.println("3. size/isEmpty : " + forts.size() + " / " + forts.isEmpty());
+        System.out.println("   contains     : " + forts.contains("Raigad"));
+
+        // 4. Java 21: getFirst, getLast, reversed
+        System.out.println("4. first / last : " + forts.getFirst() + " / " + forts.getLast());
+        System.out.println("   reversed     : " + forts.reversed());
+
+        // 5. Java 21: addFirst / addLast move an existing element
+        forts.addFirst("Sinhagad");                  // moves to the front
+        forts.addLast("Purandar");                   // new, added at the end
+        System.out.println("5. After moves  : " + forts);
+
+        // 6. Loop: always in insertion order
+        for (String fort : forts) {
+            System.out.print(fort + " ");
+        }
+        System.out.println();
+
+        // 7. Remove: remove, removeFirst, removeLast, removeAll, retainAll, removeIf
+        forts.remove("Raigad");
+        forts.removeFirst();
+        forts.removeLast();
+        System.out.println("7. After removes: " + forts);
+        forts.addAll(Set.of("Lohagad"));
+        forts.retainAll(Set.of("Torna", "Lohagad"));
+        forts.removeAll(Set.of("Lohagad"));
+        forts.removeIf(f -> f.startsWith("Z"));
+
+        // 8. Copy and compare: equals ignores the order
+        LinkedHashSet<String> a = new LinkedHashSet<>(java.util.List.of("A", "B"));
+        LinkedHashSet<String> b = new LinkedHashSet<>(java.util.List.of("B", "A"));
+        System.out.println("8. equals       : " + a.equals(b));
+
+        // 9. clear
+        forts.clear();
+        System.out.println("9. After clear  : " + forts);
+    }
+}
+''' + OUT],
+    ),
 ]
 
 EXPERT = [

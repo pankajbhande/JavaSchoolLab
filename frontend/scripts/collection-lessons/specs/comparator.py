@@ -52,24 +52,22 @@ import java.util.Comparator;
 import java.util.List;
 
 public class ComparatorFirstDemo {
-''' + FORT + r'''
     public static void main(String[] args) {
-        List<Fort> a = sample();
-        a.sort(new Comparator<Fort>() {                               // 1. anonymous class
-            @Override
-            public int compare(Fort x, Fort y) {
-                return x.name().compareTo(y.name());
+        List<String> a = new ArrayList<>(List.of("Torna", "Raigad", "Lohagad"));
+        a.sort(new Comparator<String>() {                             // 1. anonymous class
+            public int compare(String x, String y) {
+                return x.compareTo(y);
             }
         });
+        System.out.println("anonymous class : " + a);
 
-        List<Fort> b = sample();
-        b.sort((x, y) -> x.name().compareTo(y.name()));              // 2. lambda
+        List<String> b = new ArrayList<>(List.of("Torna", "Raigad", "Lohagad"));
+        b.sort((x, y) -> x.compareTo(y));                            // 2. lambda
+        System.out.println("lambda          : " + b);
 
-        List<Fort> c = sample();
-        c.sort(Comparator.comparing(Fort::name));                    // 3. helper method
-
-        System.out.println("Same result: " + (a.equals(b) && b.equals(c)));
-        c.forEach(f -> System.out.println(f.name()));
+        List<String> c = new ArrayList<>(List.of("Torna", "Raigad", "Lohagad"));
+        c.sort(Comparator.naturalOrder());                           // 3. helper method
+        System.out.println("helper method   : " + c);
     }
 }
 ''' + OUT],

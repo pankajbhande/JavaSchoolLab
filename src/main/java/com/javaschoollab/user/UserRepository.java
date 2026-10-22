@@ -73,6 +73,16 @@ public class UserRepository {
         jdbc.update("UPDATE users SET avatar = ? WHERE id = ?", dataUrl, id);
     }
 
+    /** Tokens issued before this instant are refused; empty when none has been revoked. */
+    public Optional<Instant> tokensValidFrom(long id) {
+        return jdbc.query("SELECT tokens_valid_from FROM users WHERE id = ?",
+                (rs, n) -> rs.getTimestamp(1) == null ? Instant.EPOCH : rs.getTimestamp(1).toInstant(), id).stream().findFirst();
+    }
+
+    public void revokeTokens(long id, Instant from) {
+        jdbc.update("UPDATE users SET tokens_valid_from = ? WHERE id = ?", java.sql.Timestamp.from(from), id);
+    }
+
     public void updatePasswordHash(long id, String hash) {
         jdbc.update("UPDATE users SET password_hash = ? WHERE id = ?", hash, id);
     }

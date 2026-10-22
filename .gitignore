@@ -27,3 +27,6 @@ target/
 .settings/
 bin/
 .factorypath
+
+# Written by docker/scripts/auto-deploy.sh on the server (deployed commit, last good image, lock)
+.deploy/

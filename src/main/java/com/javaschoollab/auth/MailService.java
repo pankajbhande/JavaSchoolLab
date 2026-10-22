@@ -47,6 +47,17 @@ public class MailService {
         sender.send(message);
     }
 
+    /** Tells the site admins a learner sent a suggestion. Plain text only: the message is the learner's own words, so it is never put in HTML. */
+    public void sendSuggestionNotice(java.util.Collection<String> to, String from, String category, String message, String pagePath) throws MessagingException {
+        MimeMessage mail = sender.createMimeMessage();
+        MimeMessageHelper h = new MimeMessageHelper(mail, false, "UTF-8");
+        h.setFrom(cfg.fromAddress());
+        h.setTo(to.toArray(String[]::new));
+        h.setSubject("New JavaSchoolLab suggestion (" + category + ")");
+        h.setText("From: " + from + "\nCategory: " + category + "\nPage: " + (pagePath == null ? "-" : pagePath) + "\n\n" + message);
+        sender.send(mail);
+    }
+
     private static JavaMailSenderImpl build(AppProperties.Mail cfg) {
         JavaMailSenderImpl s = new JavaMailSenderImpl();
         s.setHost(cfg.host());

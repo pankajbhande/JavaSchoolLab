@@ -173,22 +173,18 @@ INTERMEDIATE = [
         'add(E e)', 'boolean add(E e)', '<code>true</code> (always, for ArrayList)', 'O(1) amortised',
         'Puts the element at the <strong>end</strong> of the list. The list grows by one. You do not have to check the size first.',
         'Normally just writes into the next free slot of the internal array. When the array is full it allocates a bigger one (about 1.5 times) and copies, which is why the cost is called <em>amortised</em> O(1): rare expensive growths are spread over many cheap adds. Every structural change also increases <code>modCount</code>, which makes running iterators fail fast.',
-        r'''// ArrayList add(E e): adds one element at the end
+        r'''// add(E e): adds one element at the end
 import java.util.ArrayList;
 import java.util.List;
 
 public class ArrayListAddDemo {
     public static void main(String[] args) {
-        List<String> forts = new ArrayList<>();
+        List<String> forts = new ArrayList<>();   // empty list
 
-        boolean added = forts.add("Raigad");   // add returns true
-        forts.add("Sinhagad");
-        forts.add("Raigad");                   // duplicates are fine
-        forts.add(null);                       // null is allowed too
+        forts.add("Raigad");                      // goes to the end
+        forts.add("Sinhagad");                    // goes after Raigad
 
-        System.out.println("add returned : " + added);
-        System.out.println("List         : " + forts);
-        System.out.println("Size         : " + forts.size());
+        System.out.println(forts);
     }
 }
 ''' + OUT),
@@ -196,25 +192,19 @@ public class ArrayListAddDemo {
         'add(int index, E e)', 'void add(int index, E element)', 'nothing (void)', 'O(n): later elements shift right',
         'Inserts the element <strong>at the position you choose</strong>. The element that was there, and everything after it, moves one step to the right. Valid indexes are <code>0</code> to <code>size()</code> (adding at <code>size()</code> is the same as adding at the end).',
         'Uses <code>System.arraycopy</code> to shift the tail, so inserting near the front of a big list is expensive. If you insert at the front very often, an <code>ArrayDeque</code> or <code>LinkedList</code> may suit better.',
-        r'''// ArrayList add(int index, E e): inserts at a position
+        r'''// add(int index, E e): inserts at a position
 import java.util.ArrayList;
 import java.util.List;
 
 public class ArrayListAddAtIndexDemo {
     public static void main(String[] args) {
-        List<String> cities = new ArrayList<>(List.of("Pune", "Nashik", "Nagpur"));
-        System.out.println("Before        : " + cities);
+        List<String> cities = new ArrayList<>();
+        cities.add("Pune");
+        cities.add("Nagpur");
 
-        cities.add(1, "Mumbai");               // goes to index 1; Nashik and Nagpur shift right
-        cities.add(0, "Delhi");                // insert at the very front
-        cities.add(cities.size(), "Jaipur");   // index == size() means "at the end"
-        System.out.println("After inserts : " + cities);
+        cities.add(1, "Mumbai");   // insert at index 1; Nagpur moves to the right
 
-        try {
-            cities.add(10, "Kochi");           // 10 is beyond size(): not allowed
-        } catch (IndexOutOfBoundsException e) {
-            System.out.println("Error         : " + e.getMessage());
-        }
+        System.out.println(cities);
     }
 }
 ''' + OUT,
@@ -223,27 +213,20 @@ public class ArrayListAddAtIndexDemo {
         'addAll(Collection c)', 'boolean addAll(Collection<? extends E> c)', '<code>true</code> if the list changed', 'O(m), m = size of c',
         'Adds <strong>every element</strong> of another collection (a list, a set, even a queue) to the <strong>end</strong>, in that collection\'s order. It returns <code>false</code> only when you add an empty collection.',
         'Converts the argument to an array once and copies it in a single block, so it is much faster than calling <code>add</code> in a loop. The argument may hold subtypes of the element type (<code>? extends E</code>).',
-        r'''// ArrayList addAll(Collection c): adds a whole collection at the end
+        r'''// addAll(Collection c): adds a whole list at the end
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 
 public class ArrayListAddAllDemo {
     public static void main(String[] args) {
-        List<String> forts = new ArrayList<>(List.of("Raigad", "Sinhagad"));
-        List<String> moreForts = List.of("Torna", "Purandar");
-        Set<String> sortedForts = new TreeSet<>(List.of("Rajgad", "Lohagad"));   // a Set works too
+        List<String> forts = new ArrayList<>();
+        forts.add("Raigad");
 
-        boolean changed = forts.addAll(moreForts);
-        System.out.println("addAll returned : " + changed);
-        System.out.println("After list      : " + forts);
+        List<String> more = List.of("Torna", "Purandar");   // another list
 
-        forts.addAll(sortedForts);                    // a TreeSet hands over its elements in sorted order
-        System.out.println("After set       : " + forts);
+        forts.addAll(more);                                 // add all of them at the end
 
-        boolean empty = forts.addAll(List.of());      // nothing to add
-        System.out.println("Adding empty    : " + empty);
+        System.out.println(forts);
     }
 }
 ''' + OUT),
@@ -251,17 +234,18 @@ public class ArrayListAddAllDemo {
         'addAll(int index, Collection c)', 'boolean addAll(int index, Collection<? extends E> c)', '<code>true</code> if the list changed', 'O(n + m)',
         'Inserts a whole collection <strong>in the middle</strong>: the new elements go in at <code>index</code> (in their own order) and the old elements after it shift to the right.',
         'One shift of the tail plus one copy of the new block. Prefer it over a loop of <code>add(i, e)</code> calls, which would shift the tail once per element.',
-        r'''// ArrayList addAll(int index, Collection c): inserts a collection at a position
+        r'''// addAll(int index, Collection c): inserts a list in the middle
 import java.util.ArrayList;
 import java.util.List;
 
 public class ArrayListAddAllAtIndexDemo {
     public static void main(String[] args) {
-        List<String> route = new ArrayList<>(List.of("Pune", "Nagpur", "Kochi"));
+        List<String> route = new ArrayList<>(List.of("Pune", "Kochi"));
         List<String> detour = List.of("Nashik", "Indore");
 
-        route.addAll(1, detour);       // goes in at index 1, before Nagpur
-        System.out.println("Route: " + route);
+        route.addAll(1, detour);   // insert both at index 1
+
+        System.out.println(route);
     }
 }
 ''' + OUT),
@@ -269,44 +253,49 @@ public class ArrayListAddAllAtIndexDemo {
         'addFirst(E) and addLast(E)  (Java 21)', 'void addFirst(E e);  void addLast(E e)', 'nothing (void)', 'addFirst O(n), addLast O(1) amortised',
         'Two readable shortcuts: <code>addFirst(x)</code> means <code>add(0, x)</code> and <code>addLast(x)</code> means <code>add(x)</code>. They arrived in <strong>Java 21</strong> with the new <code>SequencedCollection</code> interface.',
         'They are default methods that every <code>List</code> now has, so code that needs "first/last" semantics can accept any sequenced collection. On an ArrayList, <code>addFirst</code> still shifts every element.',
-        r'''// ArrayList addFirst / addLast (Java 21)
+        r'''// ArrayList addFirst(E e) (Java 21): adds at the front
 import java.util.ArrayList;
 import java.util.List;
 
-public class ArrayListAddFirstLastDemo {
+public class ArrayListAddFirstDemo {
     public static void main(String[] args) {
-        List<String> forts = new ArrayList<>(List.of("Sinhagad", "Pratapgad"));
+        List<String> forts = new ArrayList<>(List.of("Sinhagad"));
 
-        forts.addFirst("Raigad");     // same as add(0, "Raigad")
-        forts.addLast("Torna");       // same as add("Torna")
+        forts.addFirst("Raigad");   // goes to the front
 
         System.out.println(forts);
     }
 }
-''' + OUT),
+''' + OUT, extra_codes=(r'''// ArrayList addLast(E e) (Java 21): adds at the end
+import java.util.ArrayList;
+import java.util.List;
+
+public class ArrayListAddLastDemo {
+    public static void main(String[] args) {
+        List<String> forts = new ArrayList<>(List.of("Sinhagad"));
+
+        forts.addLast("Torna");   // goes to the end
+
+        System.out.println(forts);
+    }
+}
+''' + OUT,)),
 
     section('Reading elements', 'Reading never changes the list. Use <code>get</code> for a position, <code>indexOf</code> to find a value, and <code>contains</code> to ask "is it there?".'),
     method(
         'get(int index)', 'E get(int index)', 'the element at that index', 'O(1)',
         'Returns the element at the given index. Indexes start at <strong>0</strong>, so the third fort is <code>get(2)</code>. An index below 0 or at/above <code>size()</code> throws <code>IndexOutOfBoundsException</code>.',
         'Direct array access after a bounds check: this is why ArrayList is the default list. It is also why a <code>for (int i...)</code> loop with <code>get(i)</code> is perfectly fine on an ArrayList but slow (O(n&sup2;)) on a <code>LinkedList</code>.',
-        r'''// ArrayList get(int index): reads an element by position
+        r'''// get(int index): reads an element by position
 import java.util.ArrayList;
 import java.util.List;
 
 public class ArrayListGetDemo {
     public static void main(String[] args) {
-        List<String> forts = new ArrayList<>(List.of("Raigad", "Sinhagad", "Pratapgad"));
+        List<String> forts = new ArrayList<>(List.of("Raigad", "Sinhagad", "Torna"));
 
-        System.out.println("get(0)            : " + forts.get(0));
-        System.out.println("get(2)            : " + forts.get(2));
-        System.out.println("Last element      : " + forts.get(forts.size() - 1));
-
-        try {
-            forts.get(3);                         // valid indexes are 0, 1 and 2
-        } catch (IndexOutOfBoundsException e) {
-            System.out.println("get(3) fails      : " + e.getMessage());
-        }
+        System.out.println(forts.get(0));   // first element: index starts at 0
+        System.out.println(forts.get(2));   // third element
     }
 }
 ''' + OUT),
@@ -314,68 +303,72 @@ public class ArrayListGetDemo {
         'getFirst() and getLast()  (Java 21)', 'E getFirst();  E getLast()', 'the first / last element', 'O(1)',
         'Read the first or the last element without writing <code>get(0)</code> or <code>get(size() - 1)</code>. On an <strong>empty</strong> list they throw <code>NoSuchElementException</code> (unlike <code>get(0)</code>, which throws <code>IndexOutOfBoundsException</code>).',
         'Part of <code>SequencedCollection</code>. They make the intent obvious and avoid the classic off-by-one mistake in <code>size() - 1</code>.',
-        r'''// ArrayList getFirst / getLast (Java 21)
+        r'''// ArrayList getFirst() (Java 21): reads the first element
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
 
-public class ArrayListGetFirstLastDemo {
+public class ArrayListGetFirstDemo {
     public static void main(String[] args) {
-        List<String> cities = new ArrayList<>(List.of("Pune", "Nashik", "Nagpur"));
-        System.out.println("First: " + cities.getFirst());
-        System.out.println("Last : " + cities.getLast());
+        List<String> forts = new ArrayList<>(List.of("Raigad", "Sinhagad", "Torna"));
 
-        List<String> empty = new ArrayList<>();
-        try {
-            empty.getFirst();                    // nothing to return
-        } catch (NoSuchElementException e) {
-            System.out.println("Empty list -> NoSuchElementException");
-        }
+        System.out.println(forts.getFirst());   // Raigad
     }
 }
-''' + OUT),
+''' + OUT, extra_codes=(r'''// ArrayList getLast() (Java 21): reads the last element
+import java.util.ArrayList;
+import java.util.List;
+
+public class ArrayListGetLastDemo {
+    public static void main(String[] args) {
+        List<String> forts = new ArrayList<>(List.of("Raigad", "Sinhagad", "Torna"));
+
+        System.out.println(forts.getLast());   // Torna
+    }
+}
+''' + OUT,)),
     method(
         'size() and isEmpty()', 'int size();  boolean isEmpty()', 'the number of elements / whether it has none', 'O(1)',
         '<code>size()</code> counts the elements that are really stored (not the capacity). <code>isEmpty()</code> is simply <code>size() == 0</code>; prefer it because it reads better.',
         '<code>size</code> is a plain <code>int</code> field, so both calls are free. Remember that <code>size()</code> is the number of elements, <strong>not</strong> the size of the internal array (that is the capacity).',
-        r'''// ArrayList size() and isEmpty()
+        r'''// ArrayList size(): how many elements
 import java.util.ArrayList;
 import java.util.List;
 
 public class ArrayListSizeDemo {
     public static void main(String[] args) {
-        List<String> forts = new ArrayList<>();
-        System.out.println("New list    -> size " + forts.size() + ", empty? " + forts.isEmpty());
+        List<String> forts = new ArrayList<>(List.of("Raigad", "Sinhagad", "Torna"));
 
-        forts.add("Raigad");
-        forts.add("Torna");
-        System.out.println("After adds  -> size " + forts.size() + ", empty? " + forts.isEmpty());
-
-        forts.clear();
-        System.out.println("After clear -> size " + forts.size() + ", empty? " + forts.isEmpty());
+        System.out.println(forts.size());   // 3
     }
 }
-''' + OUT),
+''' + OUT, extra_codes=(r'''// ArrayList isEmpty(): is the list empty?
+import java.util.ArrayList;
+import java.util.List;
+
+public class ArrayListIsEmptyDemo {
+    public static void main(String[] args) {
+        List<String> forts = new ArrayList<>();
+
+        System.out.println(forts.isEmpty());   // true
+        forts.add("Raigad");
+        System.out.println(forts.isEmpty());   // false
+    }
+}
+''' + OUT,)),
     method(
         'contains(Object o)', 'boolean contains(Object o)', '<code>true</code> if an equal element exists', 'O(n)',
         'Answers "is this value in the list?". It checks the elements one by one from the start until it finds a match.',
         'Matching uses <code>equals()</code>, not <code>==</code>, so your own classes must override <code>equals</code> (and <code>hashCode</code>) to be found. If you call <code>contains</code> often on a big list, use a <code>HashSet</code> instead (O(1)).',
-        r'''// ArrayList contains(Object o): is the value present?
+        r'''// contains(Object o): is the value present?
 import java.util.ArrayList;
 import java.util.List;
 
 public class ArrayListContainsDemo {
     public static void main(String[] args) {
-        List<String> forts = new ArrayList<>(List.of("Raigad", "Sinhagad", "Pratapgad"));
+        List<String> forts = new ArrayList<>(List.of("Raigad", "Sinhagad"));
 
-        System.out.println("Contains Raigad?   " + forts.contains("Raigad"));
-        System.out.println("Contains Torna?    " + forts.contains("Torna"));
-        System.out.println("Case matters:      " + forts.contains("raigad"));   // equals() is case-sensitive
-
-        if (!forts.contains("Torna")) {          // a common guard before adding, to avoid duplicates
-            forts.add("Torna");
-        }
-        System.out.println("After guard add:   " + forts);
+        System.out.println(forts.contains("Raigad"));   // true
+        System.out.println(forts.contains("Torna"));    // false
     }
 }
 ''' + OUT),
@@ -383,19 +376,16 @@ public class ArrayListContainsDemo {
         'containsAll(Collection c)', 'boolean containsAll(Collection<?> c)', '<code>true</code> if every element of c is present', 'O(n*m)',
         'Checks that <strong>all</strong> of the given elements are in the list. Handy to test "does this route cover all the forts I want?".',
         'Implemented in <code>AbstractCollection</code> as a loop of <code>contains</code> calls, hence O(n*m). For big inputs, copy into a <code>HashSet</code> first.',
-        r'''// ArrayList containsAll(Collection c): are all of these present?
+        r'''// containsAll(Collection c): are all of these present?
 import java.util.ArrayList;
 import java.util.List;
 
 public class ArrayListContainsAllDemo {
     public static void main(String[] args) {
-        List<String> visited = new ArrayList<>(List.of("Raigad", "Sinhagad", "Torna", "Purandar"));
+        List<String> forts = new ArrayList<>(List.of("Raigad", "Sinhagad", "Torna"));
 
-        List<String> wishlist = List.of("Raigad", "Torna");
-        List<String> bigWishlist = List.of("Raigad", "Lohagad");
-
-        System.out.println("Visited all of wishlist?     " + visited.containsAll(wishlist));
-        System.out.println("Visited all of bigWishlist?  " + visited.containsAll(bigWishlist));
+        System.out.println(forts.containsAll(List.of("Raigad", "Torna")));      // true: both are there
+        System.out.println(forts.containsAll(List.of("Raigad", "Purandar")));   // false: Purandar is missing
     }
 }
 ''' + OUT),
@@ -403,44 +393,48 @@ public class ArrayListContainsAllDemo {
         'indexOf(Object o) and lastIndexOf(Object o)', 'int indexOf(Object o);  int lastIndexOf(Object o)', 'the index, or <code>-1</code> if not found', 'O(n)',
         '<code>indexOf</code> gives the position of the <strong>first</strong> match, <code>lastIndexOf</code> the position of the <strong>last</strong> match. Because the list may contain duplicates, these can differ. If the value is missing you get <code>-1</code>.',
         'Both use <code>equals()</code>. A negative result is not an exception, so always test for <code>-1</code> before using it as an index.',
-        r'''// ArrayList indexOf / lastIndexOf
+        r'''// ArrayList indexOf(Object o): first position of a value
 import java.util.ArrayList;
 import java.util.List;
 
 public class ArrayListIndexOfDemo {
     public static void main(String[] args) {
-        List<String> cities = new ArrayList<>(List.of("Pune", "Nashik", "Pune", "Nagpur", "Pune"));
+        List<String> cities = new ArrayList<>(List.of("Pune", "Nashik", "Pune"));
 
-        System.out.println("indexOf(Pune)      : " + cities.indexOf("Pune"));        // first match
-        System.out.println("lastIndexOf(Pune)  : " + cities.lastIndexOf("Pune"));    // last match
-        System.out.println("indexOf(Nagpur)    : " + cities.indexOf("Nagpur"));
-        System.out.println("indexOf(Kochi)     : " + cities.indexOf("Kochi"));      // not present
-
-        int position = cities.indexOf("Nashik");
-        if (position != -1) {                        // always check for -1
-            System.out.println("Nashik is at index " + position);
-        }
+        System.out.println(cities.indexOf("Pune"));    // 0
+        System.out.println(cities.indexOf("Delhi"));   // -1 means not found
     }
 }
-''' + OUT),
+''' + OUT, extra_codes=(r'''// ArrayList lastIndexOf(Object o): last position of a value
+import java.util.ArrayList;
+import java.util.List;
+
+public class ArrayListLastIndexOfDemo {
+    public static void main(String[] args) {
+        List<String> cities = new ArrayList<>(List.of("Pune", "Nashik", "Pune"));
+
+        System.out.println(cities.lastIndexOf("Pune"));   // 2
+    }
+}
+''' + OUT,)),
 
     section('Changing elements', 'Replace one element, transform all elements, or put them in a new order. None of these change the <strong>size</strong> of the list.'),
     method(
         'set(int index, E e)', 'E set(int index, E element)', 'the element that was replaced', 'O(1)',
         'Overwrites the element at <code>index</code> with a new one and gives you the <strong>old</strong> element back. The size does not change (unlike <code>add(i, e)</code>, which inserts).',
         'A plain array store after a bounds check; it does <strong>not</strong> increase <code>modCount</code>, so it is allowed while you iterate (it is not a structural change).',
-        r'''// ArrayList set(int index, E e): replaces an element
+        r'''// set(int index, E e): replaces an element
 import java.util.ArrayList;
 import java.util.List;
 
 public class ArrayListSetDemo {
     public static void main(String[] args) {
-        List<String> forts = new ArrayList<>(List.of("Raigad", "Sinhagad", "Pratapgad"));
+        List<String> forts = new ArrayList<>(List.of("Raigad", "Sinhagad"));
 
-        String old = forts.set(1, "Rajgad");    // replaces Sinhagad and returns it
-        System.out.println("Replaced   : " + old);
-        System.out.println("List now   : " + forts);
-        System.out.println("Size       : " + forts.size());   // unchanged
+        String old = forts.set(1, "Torna");   // replace index 1, returns the old value
+
+        System.out.println(old);     // Sinhagad
+        System.out.println(forts);   // [Raigad, Torna]
     }
 }
 ''' + OUT),
@@ -448,20 +442,17 @@ public class ArrayListSetDemo {
         'replaceAll(UnaryOperator op)', 'void replaceAll(UnaryOperator<E> operator)', 'nothing (void)', 'O(n)',
         'Applies a function to <strong>every</strong> element and stores the result back in the same position, for example "make every name upper case". Write the function as a lambda: <code>s -&gt; s.toUpperCase()</code>.',
         'Runs in place and does not create a second list. The operator must return the same type (<code>UnaryOperator&lt;E&gt;</code>). It is a cleaner alternative to a <code>for</code> loop that calls <code>set</code> for each index.',
-        r'''// ArrayList replaceAll(UnaryOperator): transforms every element in place
+        r'''// replaceAll(UnaryOperator): changes every element
 import java.util.ArrayList;
 import java.util.List;
 
 public class ArrayListReplaceAllDemo {
     public static void main(String[] args) {
-        List<String> forts = new ArrayList<>(List.of("Raigad", "Sinhagad", "Torna"));
+        List<String> cities = new ArrayList<>(List.of("pune", "nashik"));
 
-        forts.replaceAll(name -> name.toUpperCase());      // lambda: every element becomes upper case
-        System.out.println(forts);
+        cities.replaceAll(c -> c.toUpperCase());   // apply to every element
 
-        List<Integer> hours = new ArrayList<>(List.of(2, 4, 6));
-        hours.replaceAll(h -> h * 2);                       // works for numbers too
-        System.out.println(hours);
+        System.out.println(cities);
     }
 }
 ''' + OUT),
@@ -469,27 +460,19 @@ public class ArrayListReplaceAllDemo {
         'sort(Comparator c)', 'void sort(Comparator<? super E> c)', 'nothing (void)', 'O(n log n)',
         'Sorts the list <strong>in place</strong>. Pass <code>null</code> (or <code>Comparator.naturalOrder()</code>) for natural order: A to Z for text, small to large for numbers. Pass your own comparator for any other order, for example by length.',
         'Uses TimSort, which is <strong>stable</strong> (equal elements keep their relative order) and very fast on partly sorted data. <code>Collections.sort(list)</code> simply calls <code>list.sort(null)</code>. Elements must be mutually comparable or you must supply a comparator, otherwise <code>ClassCastException</code>.',
-        r'''// ArrayList sort(Comparator): sorts the list in place
+        r'''// sort(Comparator): sorts the list in place
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 public class ArrayListSortDemo {
     public static void main(String[] args) {
-        List<String> forts = new ArrayList<>(List.of("Torna", "Raigad", "Sinhagad", "Lohagad"));
+        List<String> cities = new ArrayList<>(List.of("Pune", "Agra", "Nashik"));
 
-        forts.sort(null);                                   // natural order: alphabetical
-        System.out.println("Natural        : " + forts);
+        cities.sort(null);   // null means natural order (A to Z)
+        System.out.println(cities);
 
-        forts.sort(Comparator.reverseOrder());              // Z to A
-        System.out.println("Reverse        : " + forts);
-
-        forts.sort(Comparator.comparing(String::length));   // shortest name first (stable for equal lengths)
-        System.out.println("By length      : " + forts);
-
-        Collections.sort(forts);                            // the older style, same result as sort(null)
-        System.out.println("Collections    : " + forts);
+        cities.sort((a, b) -> b.compareTo(a));   // reverse order (Z to A)
+        System.out.println(cities);
     }
 }
 ''' + OUT),
@@ -497,102 +480,117 @@ public class ArrayListSortDemo {
         'Collections.reverse, swap and shuffle', 'Collections.reverse(List);  Collections.swap(List, int, int);  Collections.shuffle(List)', 'nothing (void)', 'O(n)',
         'The <code>Collections</code> helper class (note the <strong>s</strong>) works on any list: <code>reverse</code> flips the order, <code>swap</code> exchanges two positions, <code>shuffle</code> randomises the order.',
         'They change the list in place. <code>shuffle</code> accepts a <code>Random</code>; passing a seeded <code>new Random(42)</code> makes the shuffle repeatable, which is what you want in tests. In Java 21 <code>list.reversed()</code> gives a reversed <em>view</em> without copying.',
-        r'''// Collections.reverse / swap / shuffle on an ArrayList
+        r'''// ArrayList Collections.reverse(): reverses the list
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Random;
 
-public class ArrayListReorderDemo {
+public class ArrayListReverseDemo {
     public static void main(String[] args) {
-        List<String> cities = new ArrayList<>(List.of("Pune", "Nashik", "Nagpur", "Indore"));
+        List<String> forts = new ArrayList<>(List.of("Raigad", "Sinhagad", "Torna"));
 
-        Collections.reverse(cities);
-        System.out.println("reverse : " + cities);
+        Collections.reverse(forts);
 
-        Collections.swap(cities, 0, 3);                    // exchange the first and the last
-        System.out.println("swap    : " + cities);
-
-        Collections.shuffle(cities, new Random(7));       // seeded: same order on every run
-        System.out.println("shuffle : " + cities);
-
-        System.out.println("reversed view (Java 21): " + cities.reversed());
+        System.out.println(forts);
     }
 }
-''' + OUT),
+''' + OUT, extra_codes=(r'''// ArrayList Collections.swap(): swaps two positions
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+public class ArrayListSwapDemo {
+    public static void main(String[] args) {
+        List<String> forts = new ArrayList<>(List.of("Raigad", "Sinhagad", "Torna"));
+
+        Collections.swap(forts, 0, 2);   // swap index 0 and index 2
+
+        System.out.println(forts);
+    }
+}
+''' + OUT,)),
 
     section('Removing elements', 'There are many ways to remove. Pick by what you know: the <strong>position</strong>, the <strong>value</strong>, a <strong>group</strong> of values, or a <strong>rule</strong>.'),
     method(
         'remove(int index) and remove(Object o)', 'E remove(int index);  boolean remove(Object o)', 'the removed element / <code>true</code> if something was removed', 'O(n): later elements shift left',
         '<code>remove(index)</code> removes <strong>by position</strong> and returns the removed element. <code>remove(value)</code> removes the <strong>first element equal to the value</strong> and returns <code>true</code> or <code>false</code>. After a removal the elements after it move one step left, so their indexes change.',
         'With <code>List&lt;Integer&gt;</code> the call <code>list.remove(2)</code> is <strong>remove by index</strong>, because <code>int</code> matches <code>remove(int)</code> exactly. To remove the <em>value</em> 2 you must write <code>list.remove(Integer.valueOf(2))</code>. This trap catches many developers (see the example).',
-        r'''// ArrayList remove(int index) and remove(Object o)
+        r'''// ArrayList remove(int index): removes by position
 import java.util.ArrayList;
 import java.util.List;
 
-public class ArrayListRemoveDemo {
+public class ArrayListRemoveAtIndexDemo {
     public static void main(String[] args) {
-        List<String> forts = new ArrayList<>(List.of("Raigad", "Sinhagad", "Torna", "Sinhagad"));
+        List<String> forts = new ArrayList<>(List.of("Raigad", "Sinhagad", "Torna"));
 
-        String gone = forts.remove(0);                 // by index: returns the removed element
-        System.out.println("remove(0)          : " + gone + " -> " + forts);
+        String removed = forts.remove(0);   // removes Raigad
 
-        boolean removed = forts.remove("Sinhagad");    // by value: removes only the FIRST match
-        System.out.println("remove(\"Sinhagad\") : " + removed + " -> " + forts);
-
-        boolean missing = forts.remove("Panhala");     // not present: false, list unchanged
-        System.out.println("remove(\"Panhala\")  : " + missing + " -> " + forts);
-
-        // The Integer trap: an int argument means "index", an Integer object means "value"
-        List<Integer> numbers = new ArrayList<>(List.of(10, 20, 30, 2));
-        numbers.remove(2);                              // index 2 -> removes 30, NOT the value 2
-        System.out.println("remove(2) on ints  : " + numbers);
-        numbers.remove(Integer.valueOf(2));             // value 2
-        System.out.println("remove(Integer 2)  : " + numbers);
+        System.out.println(removed);
+        System.out.println(forts);
     }
 }
-''' + OUT,
+''' + OUT, extra_codes=(r'''// ArrayList remove(Object o): removes by value
+import java.util.ArrayList;
+import java.util.List;
+
+public class ArrayListRemoveByValueDemo {
+    public static void main(String[] args) {
+        List<String> forts = new ArrayList<>(List.of("Raigad", "Sinhagad", "Torna"));
+
+        boolean found = forts.remove("Torna");   // true if it was there
+
+        System.out.println(found);
+        System.out.println(forts);
+    }
+}
+''' + OUT,),
         watch='Removing inside a plain <code>for</code> or <em>for-each</em> loop skips elements or throws <code>ConcurrentModificationException</code>. Use <code>removeIf</code> or an <code>Iterator</code> (shown below).'),
     method(
         'removeAll(Collection c) and retainAll(Collection c)', 'boolean removeAll(Collection<?> c);  boolean retainAll(Collection<?> c)', '<code>true</code> if the list changed', 'O(n*m)',
         '<code>removeAll(c)</code> deletes every element that <strong>is</strong> in c (a "subtract"). <code>retainAll(c)</code> keeps only the elements that <strong>are</strong> in c and deletes the rest (an "intersection").',
         'Both run a single pass over the list, calling <code>c.contains(...)</code> for each element. Make <code>c</code> a <code>HashSet</code> when it is large, otherwise the cost is O(n*m).',
-        r'''// ArrayList removeAll / retainAll: set-like subtract and intersect
+        r'''// ArrayList removeAll(Collection c): removes every element found in c
 import java.util.ArrayList;
 import java.util.List;
 
-public class ArrayListRemoveAllRetainAllDemo {
+public class ArrayListRemoveAllDemo {
     public static void main(String[] args) {
-        List<String> forts = new ArrayList<>(List.of("Raigad", "Sinhagad", "Torna", "Purandar", "Raigad"));
-        List<String> closed = List.of("Torna", "Raigad");
+        List<String> forts = new ArrayList<>(List.of("Raigad", "Sinhagad", "Torna"));
 
-        List<String> open = new ArrayList<>(forts);
-        open.removeAll(closed);                      // removes EVERY Torna and Raigad
-        System.out.println("removeAll : " + open);
+        forts.removeAll(List.of("Raigad", "Torna"));
 
-        List<String> closedOnly = new ArrayList<>(forts);
-        closedOnly.retainAll(closed);                // keeps only Torna and Raigad
-        System.out.println("retainAll : " + closedOnly);
+        System.out.println(forts);
     }
 }
-''' + OUT),
+''' + OUT, extra_codes=(r'''// ArrayList retainAll(Collection c): keeps only elements found in c
+import java.util.ArrayList;
+import java.util.List;
+
+public class ArrayListRetainAllDemo {
+    public static void main(String[] args) {
+        List<String> forts = new ArrayList<>(List.of("Raigad", "Sinhagad", "Torna"));
+
+        forts.retainAll(List.of("Raigad", "Torna"));
+
+        System.out.println(forts);
+    }
+}
+''' + OUT,)),
     method(
         'removeIf(Predicate p)', 'boolean removeIf(Predicate<? super E> filter)', '<code>true</code> if anything was removed', 'O(n)',
         'Removes <strong>every element that matches a rule</strong>. The rule is a lambda that returns <code>true</code> for the elements to delete, e.g. <code>n -&gt; n % 2 == 0</code> for "all even numbers". It is the <strong>safe and short</strong> way to remove while looping.',
         'ArrayList overrides it with a one-pass bit-set algorithm: it first marks the elements to delete, then compacts the array once, so it is O(n) instead of O(n&sup2;) for repeated <code>remove</code> calls. It also checks <code>modCount</code> and throws <code>ConcurrentModificationException</code> if the predicate itself modifies the list.',
-        r'''// ArrayList removeIf(Predicate): removes by a rule
+        r'''// removeIf(Predicate): removes by a rule
 import java.util.ArrayList;
 import java.util.List;
 
 public class ArrayListRemoveIfDemo {
     public static void main(String[] args) {
-        List<Integer> trekHours = new ArrayList<>(List.of(5, 9, 8, 6, 1, 12));
-        trekHours.removeIf(h -> h % 2 == 0);             // delete every even number
-        System.out.println("Odd hours only : " + trekHours);
+        List<Integer> numbers = new ArrayList<>(List.of(1, 2, 3, 4, 5, 6));
 
-        List<String> cities = new ArrayList<>(List.of("Pune", "Nashik", "Nagpur", "Indore"));
-        boolean changed = cities.removeIf(c -> c.startsWith("N"));   // delete names starting with N
-        System.out.println("Removed N*     : " + cities + " (changed: " + changed + ")");
+        numbers.removeIf(n -> n % 2 == 0);   // remove all even numbers
+
+        System.out.println(numbers);
     }
 }
 ''' + OUT),
@@ -600,41 +598,49 @@ public class ArrayListRemoveIfDemo {
         'removeFirst() and removeLast()  (Java 21)', 'E removeFirst();  E removeLast()', 'the removed element', 'removeFirst O(n), removeLast O(1)',
         'Take the first or last element <strong>out of the list and return it</strong>. On an empty list they throw <code>NoSuchElementException</code>.',
         'Together with <code>addLast</code> they let an ArrayList act as a stack (use the end) efficiently. For a queue (taking from the front) the shifting makes it O(n); use <code>ArrayDeque</code> for that.',
-        r'''// ArrayList removeFirst / removeLast (Java 21)
+        r'''// ArrayList removeFirst() (Java 21): removes the first element
 import java.util.ArrayList;
 import java.util.List;
 
-public class ArrayListRemoveFirstLastDemo {
+public class ArrayListRemoveFirstDemo {
     public static void main(String[] args) {
-        List<String> forts = new ArrayList<>(List.of("Raigad", "Sinhagad", "Pratapgad", "Torna"));
+        List<String> forts = new ArrayList<>(List.of("Raigad", "Sinhagad", "Torna"));
 
-        String first = forts.removeFirst();
-        String last = forts.removeLast();
+        forts.removeFirst();   // removes Raigad
 
-        System.out.println("Removed first : " + first);
-        System.out.println("Removed last  : " + last);
-        System.out.println("Remaining     : " + forts);
+        System.out.println(forts);
     }
 }
-''' + OUT),
+''' + OUT, extra_codes=(r'''// ArrayList removeLast() (Java 21): removes the last element
+import java.util.ArrayList;
+import java.util.List;
+
+public class ArrayListRemoveLastDemo {
+    public static void main(String[] args) {
+        List<String> forts = new ArrayList<>(List.of("Raigad", "Sinhagad", "Torna"));
+
+        forts.removeLast();   // removes Torna
+
+        System.out.println(forts);
+    }
+}
+''' + OUT,)),
     method(
         'clear()', 'void clear()', 'nothing (void)', 'O(n)',
         'Removes <strong>all</strong> elements. The list object is still there and still usable; its size becomes 0.',
         'It sets every slot to <code>null</code> so the removed objects can be garbage collected, but it <strong>keeps</strong> the internal array, so the capacity stays. To release the memory too, call <code>trimToSize()</code> afterwards or drop the list.',
-        r'''// ArrayList clear(): removes everything
+        r'''// clear(): removes everything
 import java.util.ArrayList;
 import java.util.List;
 
 public class ArrayListClearDemo {
     public static void main(String[] args) {
-        List<String> forts = new ArrayList<>(List.of("Raigad", "Torna", "Purandar"));
-        System.out.println("Before clear: " + forts + " size " + forts.size());
+        List<String> forts = new ArrayList<>(List.of("Raigad", "Sinhagad"));
 
-        forts.clear();
-        System.out.println("After clear : " + forts + " size " + forts.size());
+        forts.clear();   // list becomes empty
 
-        forts.add("Lohagad");                       // the same list can be reused
-        System.out.println("Reused      : " + forts);
+        System.out.println(forts);
+        System.out.println(forts.size());
     }
 }
 ''' + OUT),
@@ -644,26 +650,17 @@ public class ArrayListClearDemo {
         'subList(int from, int to)', 'List<E> subList(int fromIndex, int toIndex)', 'a <strong>view</strong> of that range', 'O(1)',
         'Gives you the part of the list from <code>from</code> (included) up to <code>to</code> (<strong>excluded</strong>). It is not a copy: it is a <strong>window</strong> onto the original list, so changing the window changes the list and the other way round.',
         'The view keeps a reference to its parent. If you change the <em>parent\'s size</em> (add or remove) after creating the view and then use the view, you get <code>ConcurrentModificationException</code>. Clearing a sub-list is a neat way to delete a range in one call: <code>list.subList(2, 5).clear()</code>. Wrap it in <code>new ArrayList&lt;&gt;(list.subList(...))</code> when you want an independent copy.',
-        r'''// ArrayList subList(from, to): a live view of a range
+        r'''// subList(from, to): a part of the list
 import java.util.ArrayList;
 import java.util.List;
 
 public class ArrayListSubListDemo {
     public static void main(String[] args) {
-        List<String> forts = new ArrayList<>(List.of("Raigad", "Sinhagad", "Pratapgad", "Torna", "Purandar"));
+        List<String> forts = new ArrayList<>(List.of("Raigad", "Sinhagad", "Torna", "Purandar"));
 
-        List<String> middle = forts.subList(1, 4);          // indexes 1, 2, 3 (4 is excluded)
-        System.out.println("subList(1, 4)     : " + middle);
+        List<String> part = forts.subList(1, 3);   // from index 1 up to (not including) 3
 
-        middle.set(0, "Rajgad");                            // writing through the view changes the parent
-        System.out.println("Parent after set  : " + forts);
-
-        forts.subList(0, 2).clear();                        // delete a whole range in one call
-        System.out.println("After range clear : " + forts);
-
-        List<String> copy = new ArrayList<>(forts.subList(0, 2));   // an independent copy
-        copy.add("Lohagad");
-        System.out.println("Copy              : " + copy + "   Parent: " + forts);
+        System.out.println(part);
     }
 }
 ''' + OUT),
@@ -671,23 +668,18 @@ public class ArrayListSubListDemo {
         'toArray()', 'Object[] toArray();  <T> T[] toArray(T[] a)', 'an array holding the elements', 'O(n)',
         'Copies the list into an array, for old APIs that need an array. <code>toArray()</code> returns an <code>Object[]</code>. To get a <code>String[]</code> pass an empty array of that type: <code>list.toArray(new String[0])</code>.',
         'The copy is independent of the list (changing one does not change the other); the elements themselves are the same objects. Since Java 11 you can also write <code>list.toArray(String[]::new)</code>. Passing a zero-length array is the recommended style: it is as fast as pre-sizing and safer.',
-        r'''// ArrayList toArray(): copies the list into an array
+        r'''// toArray(): copies the list into an array
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class ArrayListToArrayDemo {
     public static void main(String[] args) {
-        List<String> forts = new ArrayList<>(List.of("Raigad", "Sinhagad", "Torna"));
+        List<String> forts = new ArrayList<>(List.of("Raigad", "Sinhagad"));
 
-        Object[] objects = forts.toArray();                  // always Object[]
-        String[] names = forts.toArray(new String[0]);       // typed array: the usual way
-        String[] viaRef = forts.toArray(String[]::new);      // Java 11+ shortcut
+        String[] array = forts.toArray(new String[0]);   // list -> array
 
-        names[0] = "Rajgad";                                 // changing the array does not touch the list
-        System.out.println("Array  : " + Arrays.toString(names));
-        System.out.println("List   : " + forts);
-        System.out.println("Object[] length: " + objects.length + ", String[] length: " + viaRef.length);
+        System.out.println(array[0]);
+        System.out.println(array.length);
     }
 }
 ''' + OUT),
@@ -695,27 +687,19 @@ public class ArrayListToArrayDemo {
         'stream()', 'Stream<E> stream()', 'a stream over the elements', 'O(1) to create; O(n) to process',
         'Starts a <strong>pipeline</strong> to filter, change, count or collect the elements without writing loops: <code>list.stream().filter(...).map(...).toList()</code>. The original list is not changed.',
         'The stream is lazy and single-use. Because ArrayList is <code>RandomAccess</code> and sized, its spliterator splits evenly, so <code>parallelStream()</code> can be effective for large, CPU-heavy work (but measure first).',
-        r'''// ArrayList stream(): filter, transform and collect without loops
+        r'''// stream(): filter and collect without loops
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class ArrayListStreamDemo {
     public static void main(String[] args) {
-        List<String> forts = new ArrayList<>(List.of("Raigad", "Sinhagad", "Pratapgad", "Torna", "Purandar"));
+        List<String> cities = new ArrayList<>(List.of("Pune", "Nashik", "Nagpur"));
 
-        List<String> longNames = forts.stream()
-                .filter(name -> name.length() > 6)           // keep long names
-                .map(String::toUpperCase)                    // transform each one
-                .collect(Collectors.toList());               // collect into a new list
-        System.out.println("Long names : " + longNames);
+        List<String> result = cities.stream()
+                .filter(c -> c.startsWith("N"))   // keep names starting with N
+                .toList();                        // collect into a list
 
-        long count = forts.stream().filter(name -> name.startsWith("P")).count();
-        System.out.println("Start with P: " + count);
-
-        String joined = forts.stream().collect(Collectors.joining(" | "));
-        System.out.println("Joined     : " + joined);
-        System.out.println("Original   : " + forts);         // unchanged
+        System.out.println(result);
     }
 }
 ''' + OUT),
@@ -723,33 +707,23 @@ public class ArrayListStreamDemo {
         'List.of, List.copyOf and Arrays.asList', 'List.of(E...);  List.copyOf(Collection);  Arrays.asList(T...)', 'a read-only or fixed-size list (not an ArrayList)', 'O(n)',
         'Three quick ways to create a list from values. <code>List.of(...)</code> and <code>List.copyOf(...)</code> give an <strong>immutable</strong> list (no add, remove or set at all, and no <code>null</code>). <code>Arrays.asList(...)</code> gives a <strong>fixed-size</strong> list: you may <code>set</code> but not add or remove.',
         'None of them is a <code>java.util.ArrayList</code> (<code>Arrays.asList</code> returns a private inner class that writes through to the array). Wrap in <code>new ArrayList&lt;&gt;(...)</code> when you need a normal mutable list.',
-        r'''// List.of / List.copyOf / Arrays.asList versus a real ArrayList
+        r'''// List.of is fixed; copy it into an ArrayList to change it
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-public class ArrayListFactoryDemo {
+public class ArrayListFixedSizeDemo {
     public static void main(String[] args) {
-        List<String> immutable = List.of("Raigad", "Torna");
-        List<String> fixedSize = Arrays.asList("Raigad", "Torna");
-        List<String> mutable = new ArrayList<>(immutable);     // a real, growable copy
+        List<String> fixed = List.of("Raigad", "Torna");   // cannot be changed at all
 
         try {
-            immutable.add("Purandar");
+            fixed.add("Sinhagad");                         // not allowed
         } catch (UnsupportedOperationException e) {
-            System.out.println("List.of      : add is not supported");
+            System.out.println("List.of cannot be changed");
         }
 
-        fixedSize.set(0, "Rajgad");                            // set is allowed on asList
-        System.out.println("Arrays.asList: set worked -> " + fixedSize);
-        try {
-            fixedSize.add("Purandar");                         // but size cannot change
-        } catch (UnsupportedOperationException e) {
-            System.out.println("Arrays.asList: add is not supported");
-        }
-
-        mutable.add("Purandar");
-        System.out.println("new ArrayList : " + mutable);
+        List<String> editable = new ArrayList<>(fixed);    // copy into a real ArrayList
+        editable.add("Sinhagad");                          // now it works
+        System.out.println(editable);
     }
 }
 ''' + OUT,
@@ -758,31 +732,24 @@ public class ArrayListFactoryDemo {
         'Collections.unmodifiableList and synchronizedList', 'Collections.unmodifiableList(List);  Collections.synchronizedList(List)', 'a wrapper view of the same list', 'O(1)',
         '<code>unmodifiableList</code> hands out a <strong>read-only</strong> view (safe to give to other code). <code>synchronizedList</code> wraps the list so that each single method call is thread-safe.',
         'Both are <strong>views</strong>: the unmodifiable view still shows later changes made through the original list, so it is not an immutable snapshot (use <code>List.copyOf</code> for that). A synchronized list still needs a manual <code>synchronized (list) { ... }</code> block while iterating.',
-        r'''// Collections.unmodifiableList / synchronizedList: wrapper views
+        r'''// Collections.unmodifiableList: a read-only view
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class ArrayListWrappersDemo {
+public class ArrayListUnmodifiableDemo {
     public static void main(String[] args) {
         List<String> forts = new ArrayList<>(List.of("Raigad", "Torna"));
+        List<String> readOnly = Collections.unmodifiableList(forts);   // read-only view
 
-        List<String> readOnly = Collections.unmodifiableList(forts);
         try {
-            readOnly.add("Purandar");
+            readOnly.add("Sinhagad");                                  // not allowed
         } catch (UnsupportedOperationException e) {
-            System.out.println("Read-only view blocks add()");
+            System.out.println("Read-only list cannot be changed");
         }
 
-        forts.add("Lohagad");                                   // change through the ORIGINAL list
-        System.out.println("The view sees it : " + readOnly);
-
-        List<String> safe = Collections.synchronizedList(new ArrayList<>(forts));
-        synchronized (safe) {                                   // required while iterating a synchronized list
-            for (String name : safe) {
-                System.out.println("Safe loop        : " + name);
-            }
-        }
+        forts.add("Sinhagad");              // the original can still change
+        System.out.println(readOnly);       // the view shows the change too
     }
 }
 ''' + OUT),
@@ -790,109 +757,130 @@ public class ArrayListWrappersDemo {
         'clone() and the copy constructor', 'Object clone();  new ArrayList<>(Collection)', 'a <strong>shallow</strong> copy of the list', 'O(n)',
         'Both create a <strong>new list with the same elements</strong>. Adding or removing in the copy does not affect the original. But the elements are <strong>shared</strong>: a shallow copy does not duplicate the objects inside.',
         'Prefer the copy constructor: it needs no cast and no <code>@SuppressWarnings</code>. If the elements are mutable objects and you need independent data, you must copy each element yourself (a deep copy).',
-        r'''// ArrayList clone() and copy constructor: shallow copies
+        r'''// ArrayList copy constructor: makes a copy
+import java.util.ArrayList;
+import java.util.List;
+
+public class ArrayListCopyDemo {
+    public static void main(String[] args) {
+        List<String> forts = new ArrayList<>(List.of("Raigad", "Torna"));
+
+        List<String> copy = new ArrayList<>(forts);
+        copy.add("Sinhagad");   // change only the copy
+
+        System.out.println(forts);
+        System.out.println(copy);
+    }
+}
+''' + OUT, extra_codes=(r'''// ArrayList clone(): makes a copy
 import java.util.ArrayList;
 import java.util.List;
 
 public class ArrayListCloneDemo {
     public static void main(String[] args) {
-        ArrayList<StringBuilder> forts = new ArrayList<>();
-        forts.add(new StringBuilder("Raigad"));
-        forts.add(new StringBuilder("Torna"));
+        ArrayList<String> forts = new ArrayList<>(List.of("Raigad", "Torna"));
 
-        @SuppressWarnings("unchecked")
-        ArrayList<StringBuilder> viaClone = (ArrayList<StringBuilder>) forts.clone();
-        List<StringBuilder> viaConstructor = new ArrayList<>(forts);
+        Object copy = forts.clone();
 
-        forts.add(new StringBuilder("Purandar"));       // structure change: copies are NOT affected
-        System.out.println("Original size   : " + forts.size());
-        System.out.println("Clone size      : " + viaClone.size());
-        System.out.println("Constructor size: " + viaConstructor.size());
-
-        forts.get(0).append(" (fort)");                  // but the element object is SHARED
-        System.out.println("Clone element   : " + viaClone.get(0));
-        System.out.println("Same object?    : " + (forts.get(0) == viaClone.get(0)));
+        System.out.println(copy);
     }
 }
-''' + OUT),
+''' + OUT,)),
     method(
         'equals, hashCode and toString', 'boolean equals(Object o);  int hashCode();  String toString()', 'content-based comparison, hash and text', 'O(n)',
         'Two lists are <strong>equal</strong> when they have the same elements <strong>in the same order</strong>. <code>toString()</code> prints <code>[a, b, c]</code>. <code>hashCode()</code> is computed from the elements, so equal lists have equal hash codes.',
         'Because the hash depends on the contents, <strong>never use a mutable list as a key</strong> in a <code>HashMap</code> or as an element of a <code>HashSet</code> if you will change it afterwards. A list is equal to any other <code>List</code> implementation with the same contents (an <code>ArrayList</code> equals a <code>LinkedList</code> holding the same elements).',
-        r'''// ArrayList equals / hashCode / toString
+        r'''// ArrayList equals(): same elements in the same order?
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 public class ArrayListEqualsDemo {
     public static void main(String[] args) {
         List<String> a = new ArrayList<>(List.of("Raigad", "Torna"));
         List<String> b = new ArrayList<>(List.of("Raigad", "Torna"));
-        List<String> c = new ArrayList<>(List.of("Torna", "Raigad"));      // same elements, other order
-        List<String> d = new LinkedList<>(List.of("Raigad", "Torna"));    // other List class
 
-        System.out.println("a.equals(b)      : " + a.equals(b));
-        System.out.println("a == b           : " + (a == b));              // different objects
-        System.out.println("a.equals(c)      : " + a.equals(c));           // order matters
-        System.out.println("a.equals(d)      : " + a.equals(d));           // class does not matter
-        System.out.println("hash equal       : " + (a.hashCode() == b.hashCode()));
-        System.out.println("toString         : " + a);
+        System.out.println(a.equals(b));   // true
     }
 }
-''' + OUT),
+''' + OUT, extra_codes=(r'''// ArrayList hashCode(): equal lists give equal numbers
+import java.util.ArrayList;
+import java.util.List;
+
+public class ArrayListHashCodeDemo {
+    public static void main(String[] args) {
+        List<String> a = new ArrayList<>(List.of("Raigad", "Torna"));
+        List<String> b = new ArrayList<>(List.of("Raigad", "Torna"));
+
+        System.out.println(a.hashCode() == b.hashCode());   // true
+    }
+}
+''' + OUT, r'''// ArrayList toString(): prints the list as text
+import java.util.ArrayList;
+import java.util.List;
+
+public class ArrayListToStringDemo {
+    public static void main(String[] args) {
+        List<String> forts = new ArrayList<>(List.of("Raigad", "Torna"));
+
+        System.out.println(forts);   // [Raigad, Torna]
+    }
+}
+''' + OUT,)),
 
     section('Walking through the list (iteration)', 'There are five common ways to visit every element. Each has a best use.'),
     method(
         'for loop and for-each loop', 'for (int i = 0; i < list.size(); i++) ...;  for (E e : list) ...', 'one element per step', 'O(n)',
         'Use the <strong>for-each</strong> loop when you just need to read every element: it is short and cannot go out of range. Use the <strong>index loop</strong> when you need the position, or need to change elements with <code>set</code>.',
         'The for-each loop is compiled to an <code>Iterator</code>, so it is fail-fast. The index loop has no such check, which is why removing inside it silently skips the element after each removed one.',
-        r'''// for loop and for-each loop over an ArrayList
+        r'''// ArrayList for loop: uses the index
 import java.util.ArrayList;
 import java.util.List;
 
-public class ArrayListLoopDemo {
+public class ArrayListForLoopDemo {
     public static void main(String[] args) {
         List<String> forts = new ArrayList<>(List.of("Raigad", "Sinhagad", "Torna"));
 
-        System.out.println("-- for-each (read only) --");
+        for (int i = 0; i < forts.size(); i++) {
+            System.out.println(i + " " + forts.get(i));
+        }
+    }
+}
+''' + OUT, extra_codes=(r'''// ArrayList for-each loop: simpler, no index
+import java.util.ArrayList;
+import java.util.List;
+
+public class ArrayListForEachLoopDemo {
+    public static void main(String[] args) {
+        List<String> forts = new ArrayList<>(List.of("Raigad", "Sinhagad", "Torna"));
+
         for (String fort : forts) {
             System.out.println(fort);
         }
-
-        System.out.println("-- index loop (position needed) --");
-        for (int i = 0; i < forts.size(); i++) {
-            System.out.println(i + " -> " + forts.get(i));
-        }
-
-        System.out.println("-- index loop that changes elements --");
-        for (int i = 0; i < forts.size(); i++) {
-            forts.set(i, forts.get(i).toUpperCase());
-        }
-        System.out.println(forts);
     }
 }
-''' + OUT),
+''' + OUT,)),
     method(
         'iterator()', 'Iterator<E> iterator()', 'an iterator (hasNext, next, remove)', 'O(1) per step',
         'An <strong>Iterator</strong> is a bookmark that walks the list one element at a time. <code>hasNext()</code> asks "is there another element?", <code>next()</code> returns it, and <code>remove()</code> deletes the element that <code>next()</code> just returned. It is the classic way to <strong>remove while looping</strong>.',
         'The ArrayList iterator is fail-fast: it remembers <code>modCount</code> and throws <code>ConcurrentModificationException</code> if the list is changed by anything other than the iterator\'s own <code>remove()</code>. <code>remove()</code> may be called only once per <code>next()</code>.',
-        r'''// ArrayList iterator(): walk and remove safely
+        r'''// iterator(): walk and remove safely
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 public class ArrayListIteratorDemo {
     public static void main(String[] args) {
-        List<String> cities = new ArrayList<>(List.of("Pune", "Nashik", "Nagpur", "Indore", "Jaipur"));
+        List<String> forts = new ArrayList<>(List.of("Raigad", "Sinhagad", "Torna"));
 
-        Iterator<String> it = cities.iterator();
-        while (it.hasNext()) {                    // is there another element?
-            String city = it.next();              // move forward and read it
-            if (city.startsWith("N")) {
-                it.remove();                      // the only SAFE way to remove during iteration
+        Iterator<String> it = forts.iterator();
+        while (it.hasNext()) {                  // is there a next element?
+            String fort = it.next();            // take it
+            if (fort.equals("Sinhagad")) {
+                it.remove();                    // safe way to remove while looping
             }
         }
-        System.out.println(cities);
+
+        System.out.println(forts);
     }
 }
 ''' + OUT),
@@ -900,7 +888,7 @@ public class ArrayListIteratorDemo {
         'listIterator() and listIterator(int index)', 'ListIterator<E> listIterator();  ListIterator<E> listIterator(int index)', 'an iterator that moves both ways', 'O(1) per step',
         'A <strong>ListIterator</strong> is an Iterator that can also go <strong>backwards</strong> (<code>hasPrevious</code>, <code>previous</code>), tell the index (<code>nextIndex</code>, <code>previousIndex</code>), <strong>replace</strong> the last returned element (<code>set</code>) and <strong>insert</strong> a new element at the cursor (<code>add</code>).',
         'It is the only tool that lets you insert or replace safely while walking a list. <code>listIterator(size())</code> starts at the end for a reverse walk.',
-        r'''// ArrayList listIterator(): forward, backward, set and add
+        r'''// listIterator(): forward and backward
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
@@ -909,22 +897,10 @@ public class ArrayListListIteratorDemo {
     public static void main(String[] args) {
         List<String> forts = new ArrayList<>(List.of("Raigad", "Sinhagad", "Torna"));
 
-        ListIterator<String> it = forts.listIterator();
-        while (it.hasNext()) {
-            String name = it.next();
-            if (name.equals("Sinhagad")) {
-                it.set("Rajgad");              // replace the element just returned
-                it.add("Purandar");            // insert right after it
-            }
+        ListIterator<String> it = forts.listIterator(forts.size());   // start at the end
+        while (it.hasPrevious()) {                                    // go backward
+            System.out.println(it.previous());
         }
-        System.out.println("After set/add : " + forts);
-
-        System.out.print("Backwards     : ");
-        ListIterator<String> back = forts.listIterator(forts.size());   // start at the end
-        while (back.hasPrevious()) {
-            System.out.print(back.previous() + " ");
-        }
-        System.out.println();
     }
 }
 ''' + OUT),
@@ -932,20 +908,16 @@ public class ArrayListListIteratorDemo {
         'forEach(Consumer)', 'void forEach(Consumer<? super E> action)', 'nothing (void)', 'O(n)',
         'Runs one action for every element, written as a lambda or a method reference: <code>forts.forEach(System.out::println)</code>. It is short and reads well for simple tasks.',
         'ArrayList\'s version loops over the internal array directly and checks <code>modCount</code> once at the end, so it is slightly faster than an iterator. You cannot use <code>break</code> or <code>continue</code> inside it; use a normal loop when you need them.',
-        r'''// ArrayList forEach(Consumer): lambda and method reference
+        r'''// forEach(Consumer): lambda and method reference
 import java.util.ArrayList;
 import java.util.List;
 
 public class ArrayListForEachDemo {
     public static void main(String[] args) {
-        List<String> cities = new ArrayList<>(List.of("Pune", "Nashik", "Nagpur"));
+        List<String> forts = new ArrayList<>(List.of("Raigad", "Sinhagad"));
 
-        cities.forEach(city -> System.out.println("City: " + city));    // lambda
-        cities.forEach(System.out::println);                              // method reference
-
-        List<Integer> total = new ArrayList<>(List.of(0));                // a one-element holder (lambdas need effectively final)
-        List.of(4, 2, 6).forEach(h -> total.set(0, total.get(0) + h));
-        System.out.println("Total hours: " + total.get(0));
+        forts.forEach(f -> System.out.println(f));   // lambda
+        forts.forEach(System.out::println);          // shorter: method reference
     }
 }
 ''' + OUT),
@@ -953,46 +925,25 @@ public class ArrayListForEachDemo {
         'Fail-fast: ConcurrentModificationException', 'modCount check inside Iterator / for-each', 'throws <code>ConcurrentModificationException</code>', '-',
         'If you <strong>add or remove</strong> elements while a for-each loop is running, Java stops with <code>ConcurrentModificationException</code>. It protects you from a half-updated loop. The fix is to remove with an <code>Iterator</code>, with <code>removeIf</code>, or to loop over a <strong>copy</strong>.',
         'Fail-fast is best-effort (a debugging aid), not a guarantee for multi-threaded use. Quirk: removing the <em>second last</em> element in a for-each loop ends the loop without an error because <code>hasNext()</code> becomes false first. Do not rely on that.',
-        r'''// ConcurrentModificationException and the three safe fixes
+        r'''// ConcurrentModificationException and the safe fix
 import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
-import java.util.Iterator;
 import java.util.List;
 
-public class ArrayListFailFastDemo {
+public class ArrayListConcurrentDemo {
     public static void main(String[] args) {
-        List<String> forts = new ArrayList<>(List.of("Raigad", "Sinhagad", "Torna", "Purandar"));
+        List<String> forts = new ArrayList<>(List.of("Raigad", "Sinhagad", "Torna"));
 
         try {
             for (String fort : forts) {
-                if (fort.equals("Sinhagad")) {
-                    forts.remove(fort);                // BAD: structure changed during iteration
-                }
+                forts.remove(fort);    // wrong: removing inside a for-each loop
             }
         } catch (ConcurrentModificationException e) {
-            System.out.println("BAD way failed: ConcurrentModificationException");
+            System.out.println("Cannot remove inside for-each");
         }
 
-        List<String> a = new ArrayList<>(List.of("Raigad", "Sinhagad", "Torna", "Purandar"));
-        a.removeIf(name -> name.equals("Sinhagad"));               // fix 1: removeIf
-        System.out.println("removeIf        : " + a);
-
-        List<String> b = new ArrayList<>(List.of("Raigad", "Sinhagad", "Torna", "Purandar"));
-        Iterator<String> it = b.iterator();                          // fix 2: Iterator.remove
-        while (it.hasNext()) {
-            if (it.next().equals("Sinhagad")) {
-                it.remove();
-            }
-        }
-        System.out.println("Iterator.remove : " + b);
-
-        List<String> c = new ArrayList<>(List.of("Raigad", "Sinhagad", "Torna", "Purandar"));
-        for (String name : new ArrayList<>(c)) {                     // fix 3: loop over a copy, change the original
-            if (name.equals("Sinhagad")) {
-                c.remove(name);
-            }
-        }
-        System.out.println("loop over copy  : " + c);
+        forts.removeIf(f -> f.equals("Torna"));   // safe fix
+        System.out.println(forts);
     }
 }
 ''' + OUT),
@@ -1002,32 +953,121 @@ public class ArrayListFailFastDemo {
         'ensureCapacity(int) and trimToSize()', 'void ensureCapacity(int minCapacity);  void trimToSize()', 'nothing (void)', 'O(n)',
         '<code>ensureCapacity(n)</code> makes room for at least <code>n</code> elements <strong>in one go</strong>, which is faster if you are about to add many elements. <code>trimToSize()</code> cuts the unused room so the list uses the least memory. Neither changes <code>size()</code> or the elements.',
         'They exist only on <code>ArrayList</code> (not on the <code>List</code> interface). Use <code>ensureCapacity</code> before a big bulk load, and <code>trimToSize</code> after a list has become final and long-lived. The capacity cannot be read through the public API; the program below shows the growth rule with arithmetic.',
-        r'''// ArrayList ensureCapacity / trimToSize and how capacity grows
+        r'''// ArrayList ensureCapacity(int n): reserves room in advance
 import java.util.ArrayList;
 
-public class ArrayListCapacityDemo {
+public class ArrayListEnsureCapacityDemo {
     public static void main(String[] args) {
-        ArrayList<Integer> trekHours = new ArrayList<>();
-        trekHours.ensureCapacity(1000);          // room for 1000 elements, but size is still 0
-        System.out.println("size after ensureCapacity: " + trekHours.size());
+        ArrayList<String> forts = new ArrayList<>();
 
-        for (int i = 1; i <= 5; i++) {
-            trekHours.add(i);
-        }
-        trekHours.trimToSize();                   // drop the unused room (capacity becomes 5)
-        System.out.println("size after trimToSize   : " + trekHours.size());
+        forts.ensureCapacity(100);   // room for 100 elements, but size is still 0
 
-        // The growth rule inside ArrayList: newCapacity = oldCapacity + oldCapacity / 2 (about 1.5 times)
-        int capacity = 10;                        // the first add allocates 10
-        StringBuilder steps = new StringBuilder("capacity growth: " + capacity);
-        for (int i = 0; i < 6; i++) {
-            capacity = capacity + (capacity >> 1);
-            steps.append(" -> ").append(capacity);
-        }
-        System.out.println(steps);
+        System.out.println(forts.size());
     }
 }
-''' + OUT),
+''' + OUT, extra_codes=(r'''// ArrayList trimToSize(): removes the extra room
+import java.util.ArrayList;
+
+public class ArrayListTrimToSizeDemo {
+    public static void main(String[] args) {
+        ArrayList<String> forts = new ArrayList<>(100);
+        forts.add("Raigad");
+
+        forts.trimToSize();   // room now equals the size
+
+        System.out.println(forts.size());
+    }
+}
+''' + OUT,)),
+    (
+        '<h3>Master program: every ArrayList method in one place</h3>\n'
+        '<p>One single program that uses all the ArrayList methods you learned above, step by step. Read the numbered comments from top to bottom, run it, and match each output line with its step.</p>',
+        [r'''// MASTER PROGRAM: all important ArrayList methods in one program
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+
+public class ArrayListMasterDemo {
+    public static void main(String[] args) {
+        // 1. Create an empty list
+        ArrayList<String> forts = new ArrayList<>();
+
+        // 2. Add elements: add, add at index, addAll, addFirst, addLast
+        forts.add("Raigad");
+        forts.add("Torna");
+        forts.add(1, "Sinhagad");                      // insert at index 1
+        forts.addAll(List.of("Purandar", "Lohagad"));  // add a whole list
+        forts.addFirst("Panhala");                     // Java 21
+        forts.addLast("Rajgad");                       // Java 21
+        System.out.println("2. After adds     : " + forts);
+
+        // 3. Read elements: get, getFirst, getLast, size, isEmpty
+        System.out.println("3. get(2)         : " + forts.get(2));
+        System.out.println("   first / last   : " + forts.getFirst() + " / " + forts.getLast());
+        System.out.println("   size / isEmpty : " + forts.size() + " / " + forts.isEmpty());
+
+        // 4. Search: contains, containsAll, indexOf, lastIndexOf
+        System.out.println("4. contains Torna : " + forts.contains("Torna"));
+        System.out.println("   containsAll    : " + forts.containsAll(List.of("Torna", "Raigad")));
+        System.out.println("   indexOf Torna  : " + forts.indexOf("Torna"));
+        System.out.println("   lastIndexOf    : " + forts.lastIndexOf("Torna"));
+
+        // 5. Change: set and replaceAll
+        forts.set(0, "Panhalgad");                     // replace index 0
+        forts.replaceAll(f -> f.toUpperCase());        // change every element
+        System.out.println("5. After changes : " + forts);
+
+        // 6. Sort and reorder: sort, reverse, swap
+        forts.sort(null);                              // A to Z
+        System.out.println("6. Sorted         : " + forts);
+        Collections.reverse(forts);
+        Collections.swap(forts, 0, 1);
+        System.out.println("   Reversed+swap  : " + forts);
+
+        // 7. Part of the list and conversions: subList, toArray, stream
+        System.out.println("7. subList(0, 2)  : " + forts.subList(0, 2));
+        String[] array = forts.toArray(new String[0]);
+        System.out.println("   array length   : " + array.length);
+        System.out.println("   starts with R  : " + forts.stream().filter(f -> f.startsWith("R")).toList());
+
+        // 8. Loop: for-each, iterator (safe remove), forEach
+        for (String fort : forts) {
+            System.out.print(fort + " ");
+        }
+        System.out.println();
+        Iterator<String> it = forts.iterator();
+        while (it.hasNext()) {
+            if (it.next().startsWith("P")) {
+                it.remove();                           // safe removal while looping
+            }
+        }
+        forts.forEach(f -> System.out.print(f.charAt(0)));
+        System.out.println();
+
+        // 9. Remove: remove by index, remove by value, removeIf, removeFirst, removeLast
+        forts.remove(0);
+        forts.remove("TORNA");
+        forts.removeIf(f -> f.startsWith("L"));
+        System.out.println("9. After removes  : " + forts);
+        if (!forts.isEmpty()) {
+            forts.removeFirst();
+        }
+        if (!forts.isEmpty()) {
+            forts.removeLast();
+        }
+
+        // 10. Copy and compare: copy constructor, equals
+        List<String> copy = new ArrayList<>(forts);
+        System.out.println("10. copy equals   : " + copy.equals(forts));
+
+        // 11. Clear everything
+        forts.clear();
+        System.out.println("11. After clear   : " + forts + " size=" + forts.size());
+    }
+}
+''' + OUT],
+    ),
 ]
 
 # ------------------------------------------------------------------ expert

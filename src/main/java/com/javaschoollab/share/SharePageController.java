@@ -18,8 +18,11 @@ public class SharePageController {
 
     private final SharePageService pages;
 
-    public SharePageController(SharePageService pages) {
+    private final String siteUrl;
+
+    public SharePageController(SharePageService pages, @org.springframework.beans.factory.annotation.Value("${app.site-url:}") String siteUrl) {
         this.pages = pages;
+        this.siteUrl = siteUrl == null ? "" : siteUrl.trim().replaceAll("/+$", "");
     }
 
     @GetMapping("/course/{courseId}")
@@ -37,11 +40,35 @@ public class SharePageController {
         return respond(courseId, topicId, request);
     }
 
+    @GetMapping("/share-image/{courseId}")
+    public ResponseEntity<byte[]> courseImage(@PathVariable String courseId) {
+        return png(pages.courseImage(courseId));
+    }
+
+    @GetMapping("/share-image/{courseId}/{topicId}")
+    public ResponseEntity<byte[]> topicImage(@PathVariable String courseId, @PathVariable String topicId) {
+        return png(pages.topicImage(courseId, topicId));
+    }
+
+    private static ResponseEntity<byte[]> png(java.util.Optional<byte[]> image) {
+        return image
+                .map(bytes -> ResponseEntity.ok()
+                        .contentType(MediaType.IMAGE_PNG)
+                        .cacheControl(CacheControl.maxAge(java.time.Duration.ofDays(1)).cachePublic())
+                        .body(bytes))
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
     private ResponseEntity<byte[]> respond(String courseId, String topicId, HttpServletRequest request) {
         return html(pages.page(courseId, topicId, origin(request), request.getRequestURI()));
     }
 
-    private static String origin(HttpServletRequest request) {
+    /**
+     * The address written into og:url. SITE_URL when it is set, because the Host header is sent by the caller and a spoofed one must never end up
+     * in a page that WhatsApp, LinkedIn or a cache may keep. Without SITE_URL (development) it falls back to the request.
+     */
+    private String origin(HttpServletRequest request) {
+        if (!siteUrl.isEmpty()) return siteUrl;
         return request.getScheme() + "://" + request.getServerName()
                 + ((request.getServerPort() == 80 || request.getServerPort() == 443) ? "" : ":" + request.getServerPort());
     }

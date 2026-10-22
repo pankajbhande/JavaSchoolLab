@@ -47,7 +47,7 @@ class ShareLinkPreviewTest {
     @Test
     void theTopicsOwnTitleAndDescriptionReplaceTheGenericOnes() {
         var topic = new SharePageService.Topic("Java", "Java Basics", "Constructor Chaining");
-        String html = SharePageService.withTags(HEAD, topic, "https://javaschoollab.com/course/java/basics/constructor-chaining");
+        String html = SharePageService.withTags(HEAD, topic, "https://javaschoollab.com/course/java/basics/constructor-chaining", "https://javaschoollab.com/share-image/java/constructor-chaining");
         assertThat(html).contains("<title>Constructor Chaining | Java | JavaSchoolLab</title>");
         assertThat(html).contains("property=\"og:title\" content=\"Constructor Chaining | Java | JavaSchoolLab\"");
         assertThat(html).contains("property=\"og:url\" content=\"https://javaschoollab.com/course/java/basics/constructor-chaining\"");
@@ -55,13 +55,13 @@ class ShareLinkPreviewTest {
         assertThat(html).contains("name=\"twitter:title\" content=\"Constructor Chaining | Java | JavaSchoolLab\"");
         assertThat(html.split("Learn Constructor Chaining \\(Java Basics, Java\\)", -1).length - 1).as("description in meta, og and twitter").isEqualTo(3);
         assertThat(html).doesNotContain("31 courses, 3,588 topics").doesNotContain("Learn Java across 31 courses");
-        assertThat(html).contains("og-image.png");   // the preview picture is left alone
+        assertThat(html).contains("property=\"og:image\" content=\"https://javaschoollab.com/share-image/java/constructor-chaining\"").doesNotContain("og-image.png");
     }
 
     @Test
     void namesWithQuotesAndAnglesCannotBreakOutOfTheTag() {
         var topic = new SharePageService.Topic("C&C++", "Pointers", "Q&A \"x\" <script>alert(1)</script>");
-        String html = SharePageService.withTags(HEAD, topic, "https://x.test/course/c/q");
+        String html = SharePageService.withTags(HEAD, topic, "https://x.test/course/c/q", "https://x.test/share-image/c/q");
         assertThat(html).doesNotContain("<script>");
         assertThat(html).contains("&lt;script&gt;").contains("&quot;x&quot;").contains("Q&amp;A");
     }
@@ -97,7 +97,7 @@ class ShareLinkPreviewTest {
     @Test
     void theCoursesOwnTitleAndCountsReplaceTheGenericOnes() {
         var course = new SharePageService.Course("JavaFX", 18, 120);
-        String html = SharePageService.withCourseTags(HEAD, course, "https://javaschoollab.com/course/javafx");
+        String html = SharePageService.withCourseTags(HEAD, course, "https://javaschoollab.com/course/javafx", "https://javaschoollab.com/share-image/javafx");
         assertThat(html).contains("<title>JavaFX course | JavaSchoolLab</title>");
         assertThat(html).contains("property=\"og:url\" content=\"https://javaschoollab.com/course/javafx\"");
         assertThat(html).contains("120 lessons in 18 modules");

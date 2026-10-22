@@ -23,4 +23,7 @@ interface OtpStore {
     void markUsed(long id);
 
     void delete(long id);
+
+    /** Removes codes that expired before {@code cutoff}. The MySQL table needs this; Redis expires its keys by itself. */
+    default void purgeExpired(LocalDateTime cutoff) {}
 }

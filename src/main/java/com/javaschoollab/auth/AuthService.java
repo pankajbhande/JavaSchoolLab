@@ -3,6 +3,7 @@ package com.javaschoollab.auth;
 import com.javaschoollab.common.ApiException;
 import com.javaschoollab.security.AuthUser;
 import com.javaschoollab.security.JwtService;
+import com.javaschoollab.security.TokenRevocation;
 import com.javaschoollab.user.Identifier;
 import com.javaschoollab.user.UserRow;
 import com.javaschoollab.user.UserService;
@@ -20,8 +21,15 @@ public class AuthService {
     private final JwtService jwt;
     private final PasswordEncoder encoder;
     private final GoogleTokenVerifier google;
+    private final String dummyHash;
+    private final TokenRevocation revocation;
 
-    public AuthService(UserService users, OtpService otp, JwtService jwt, PasswordEncoder encoder, GoogleTokenVerifier google) {
+    static final String INVALID_LOGIN = "Invalid email or password";
+
+    public AuthService(UserService users, OtpService otp, JwtService jwt, PasswordEncoder encoder, GoogleTokenVerifier google,
+                       TokenRevocation revocation) {
+        this.revocation = revocation;
+        this.dummyHash = encoder.encode(java.util.UUID.randomUUID().toString());
         this.google = google;
         this.users = users;
         this.otp = otp;
@@ -69,10 +77,12 @@ public class AuthService {
         String value = by == Identifier.EMAIL ? r.email() : r.mobile();
         if (isEmpty(value)) throw ApiException.badRequest(by.wire() + " is required");
 
-        UserRow user = users.findBy(by, value)
-                .orElseThrow(() -> ApiException.unauthorized("User not found. Please register first."));
-        if (!encoder.matches(r.password(), user.passwordHash())) {
-            throw ApiException.unauthorized("Invalid password");
+        // One answer for "no such account" and "wrong password", and the same amount of work for both, so neither the message nor the
+        // response time tells an attacker which e-mail addresses are registered.
+        UserRow user = users.findBy(by, value).orElse(null);
+        boolean ok = encoder.matches(r.password(), user == null ? dummyHash : user.passwordHash());
+        if (user == null || !ok) {
+            throw ApiException.unauthorized(INVALID_LOGIN);
         }
         return sessionFor(user);
     }
@@ -114,21 +124,31 @@ public class AuthService {
         return users.findById(id).orElseThrow(() -> ApiException.notFound("User not found"));
     }
 
-    public void changePassword(long id, ChangePasswordRequest r) {
-        if (r.newPassword() == null || r.newPassword().length() < 6) {
-            throw ApiException.badRequest("New password must be at least 6 characters");
-        }
+    /** Changes the password, signs the account out everywhere else, and returns a fresh token for the device that made the change. */
+    public String changePassword(long id, ChangePasswordRequest r) {
+        String weak = Validation.passwordError(r.newPassword());
+        if (weak != null) throw ApiException.badRequest(weak.replaceFirst("^Password", "New password"));
         UserRow user = currentUser(id);
         String current = r.currentPassword() == null ? "" : r.currentPassword();
         if (!encoder.matches(current, user.passwordHash())) {
             throw ApiException.badRequest("Current password is incorrect");
         }
         users.updatePasswordHash(user.id(), encoder.encode(r.newPassword()));
+        revocation.revokeAll(user.id());   // every older token (a stolen one, a forgotten device) stops working
+        return jwt.issue(new AuthUser(user.id(), user.fullName(), user.email(), user.mobile()));
+    }
+
+    /** "Sign out of all devices": every token issued so far stops working; the caller signs in again. */
+    public void signOutEverywhere(long id) {
+        currentUser(id);
+        revocation.revokeAll(id);
     }
 
     private AuthSession create(String fullName, String email, String mobile, String password,
                                String loginType, String gender, String dob, String organization) {
         LocalDate birth = Validation.dateOfBirth(dob).orElse(null);
+        gender = Validation.cut(gender, 20);
+        organization = Validation.cut(organization, 150);
         long id = users.insert(fullName, Validation.emptyToNull(email), Validation.emptyToNull(mobile),
                 encoder.encode(password), loginType, Validation.emptyToNull(gender), birth, Validation.emptyToNull(organization));
         String token = jwt.issue(new AuthUser(id, fullName, email, mobile));

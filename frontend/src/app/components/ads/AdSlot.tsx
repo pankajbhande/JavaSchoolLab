@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { ADSENSE_CLIENT, adsEnabled, loadAdSense } from './adsense';
+import { useConsent } from '../../lib/consent';
 
 interface AdSlotProps {
   /** Numeric ad unit id from the AdSense dashboard. */
@@ -35,12 +36,13 @@ export function AdSlot({ slot, width, height, format = 'rectangle', className = 
   const hostRef = useRef<HTMLDivElement>(null);
   const [status, setStatus] = useState<Status>('idle');
   const { pathname } = useLocation();
+  const consent = useConsent();
 
   // Only request an ad once the slot is near the viewport. An impression that is never
   // seen drags the unit's viewability down, and viewability is what sets the CPM
   // advertisers are willing to pay — so this raises earnings rather than lowering them.
   useEffect(() => {
-    if (!adsEnabled || !slot) return;
+    if (!adsEnabled || !slot || consent !== 'granted') return;
     const host = hostRef.current;
     if (!host) return;
 
@@ -57,7 +59,7 @@ export function AdSlot({ slot, width, height, format = 'rectangle', className = 
     observer.observe(host);
     return () => observer.disconnect();
     // pathname is a dependency on purpose: a topic change must re-arm the whole cycle.
-  }, [slot, pathname]);
+  }, [slot, pathname, consent]);
 
   useEffect(() => {
     if (status !== 'requested') return;
@@ -107,7 +109,7 @@ export function AdSlot({ slot, width, height, format = 'rectangle', className = 
     };
   }, [status, slot, width, height, format]);
 
-  if (!adsEnabled || !slot || status === 'empty') return null;
+  if (!adsEnabled || !slot || consent !== 'granted' || status === 'empty') return null;
 
   return (
     <div className={`flex flex-col items-center ${className}`}>

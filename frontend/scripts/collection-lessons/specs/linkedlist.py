@@ -107,57 +107,107 @@ INTERMEDIATE = [
         'add, addLast and offer', 'boolean add(E e);  void addLast(E e);  boolean offer(E e)', '<code>add</code> and <code>offer</code> return <code>true</code>; <code>addLast</code> returns nothing', 'O(1)',
         'All three put the element at the <strong>end</strong> of the list. Use <code>add</code> when you think "list", <code>offer</code> when you think "queue", and <code>addLast</code> when you think "deque".',
         'They all call the same internal <code>linkLast</code>: create a node, point the old last node\'s <code>next</code> at it, and update <code>last</code>. A LinkedList has no capacity limit, so <code>offer</code> never returns <code>false</code> here (it can for bounded queues).',
-        r'''// LinkedList add / addLast / offer: three names for "append"
+        r'''// LinkedList add(E e): adds at the end
 import java.util.LinkedList;
 
 public class LinkedListAddDemo {
     public static void main(String[] args) {
         LinkedList<String> forts = new LinkedList<>();
 
-        forts.add("Raigad");           // list style
-        forts.addLast("Sinhagad");     // deque style
-        boolean accepted = forts.offer("Torna");   // queue style, returns true when accepted
+        forts.add("Raigad");      // goes to the end
+        forts.add("Sinhagad");    // goes after Raigad
 
-        System.out.println("offer returned : " + accepted);
-        System.out.println("List           : " + forts);
+        System.out.println(forts);
     }
 }
-''' + OUT),
+''' + OUT, extra_codes=(r'''// LinkedList addLast(E e): adds at the end (same as add, clearer name)
+import java.util.LinkedList;
+
+public class LinkedListAddLastDemo {
+    public static void main(String[] args) {
+        LinkedList<String> forts = new LinkedList<>();
+
+        forts.addLast("Raigad");
+        forts.addLast("Sinhagad");   // always goes to the end
+
+        System.out.println(forts);
+    }
+}
+''' + OUT, r'''// LinkedList offer(E e): adds at the end (queue style, returns true)
+import java.util.LinkedList;
+
+public class LinkedListOfferDemo {
+    public static void main(String[] args) {
+        LinkedList<String> queue = new LinkedList<>();
+
+        boolean added = queue.offer("Asha");   // returns true
+        queue.offer("Ravi");
+
+        System.out.println(added);
+        System.out.println(queue);
+    }
+}
+''' + OUT,)),
     method(
         'addFirst, push and offerFirst', 'void addFirst(E e);  void push(E e);  boolean offerFirst(E e)', 'nothing / nothing / <code>true</code>', 'O(1)',
         'These put the element at the <strong>front</strong>. Adding at the front is where LinkedList beats ArrayList: no shifting. <code>push</code> is the name used when the list acts like a <strong>stack</strong> (last in, first out).',
         '<code>push(e)</code> is just <code>addFirst(e)</code>. Together with <code>pop()</code> (which removes the first element) you get a stack that is consistent with the <code>Deque</code> contract. Note: the legacy <code>Stack</code> class works at the other end and is synchronized.',
-        r'''// LinkedList addFirst / push / offerFirst: add at the front
+        r'''// LinkedList addFirst(E e): adds at the front
 import java.util.LinkedList;
+import java.util.List;
 
 public class LinkedListAddFirstDemo {
     public static void main(String[] args) {
-        LinkedList<String> cities = new LinkedList<>();
-        cities.add("Nagpur");
+        LinkedList<String> forts = new LinkedList<>(List.of("Torna"));
 
-        cities.addFirst("Nashik");          // front
-        cities.push("Pune");                // push == addFirst
-        cities.offerFirst("Mumbai");        // returns true
+        forts.addFirst("Raigad");   // goes to the front
 
-        System.out.println(cities);         // the last one added is first
+        System.out.println(forts);
     }
 }
-''' + OUT),
+''' + OUT, extra_codes=(r'''// LinkedList push(E e): adds at the front (stack style)
+import java.util.LinkedList;
+
+public class LinkedListPushDemo {
+    public static void main(String[] args) {
+        LinkedList<String> stack = new LinkedList<>();
+
+        stack.push("Plate 1");
+        stack.push("Plate 2");   // the newest is always at the front
+
+        System.out.println(stack);
+    }
+}
+''' + OUT, r'''// LinkedList offerFirst(E e): adds at the front and returns true
+import java.util.LinkedList;
+import java.util.List;
+
+public class LinkedListOfferFirstDemo {
+    public static void main(String[] args) {
+        LinkedList<String> forts = new LinkedList<>(List.of("Torna"));
+
+        boolean added = forts.offerFirst("Raigad");
+
+        System.out.println(added);
+        System.out.println(forts);
+    }
+}
+''' + OUT,)),
     method(
         'add(int index, E e)', 'void add(int index, E element)', 'nothing (void)', 'O(n) to reach the index',
         'Inserts the element at a position. Linking the new node is instant, but Java must first <strong>walk</strong> to that position, one node at a time.',
         'The walk starts from whichever end is closer (<code>index &lt; size/2</code> goes from the front, otherwise from the back), so the average cost is about n/4 steps. For an insertion that is far from both ends an ArrayList is usually still faster because its shifting is a native block copy.',
-        r'''// LinkedList add(int index, E e): insert in the middle
+        r'''// LinkedList add(int index, E e): inserts at a position
 import java.util.LinkedList;
 import java.util.List;
 
 public class LinkedListAddAtIndexDemo {
     public static void main(String[] args) {
-        LinkedList<String> route = new LinkedList<>(List.of("Pune", "Nagpur", "Kochi"));
+        LinkedList<String> cities = new LinkedList<>(List.of("Pune", "Nagpur"));
 
-        route.add(1, "Nashik");            // goes between Pune and Nagpur
-        route.add(route.size(), "Delhi");  // index == size() adds at the end
-        System.out.println(route);
+        cities.add(1, "Mumbai");   // goes to index 1, Nagpur moves back
+
+        System.out.println(cities);
     }
 }
 ''' + OUT),
@@ -165,227 +215,407 @@ public class LinkedListAddAtIndexDemo {
         'addAll(Collection c) and addAll(int index, Collection c)', 'boolean addAll(Collection<? extends E> c);  boolean addAll(int index, Collection<? extends E> c)', '<code>true</code> if the list changed', 'O(m) / O(index + m)',
         'Adds all elements of another collection, at the end or starting at an index, keeping their order.',
         'It converts the argument to an array, then links the new nodes in one pass, so it is efficient even for the indexed version (only one walk to the index).',
-        r'''// LinkedList addAll: add a whole collection
+        r'''// LinkedList addAll(Collection c): adds many at the end
 import java.util.LinkedList;
 import java.util.List;
 
 public class LinkedListAddAllDemo {
     public static void main(String[] args) {
-        LinkedList<String> forts = new LinkedList<>(List.of("Raigad", "Torna"));
+        LinkedList<String> forts = new LinkedList<>(List.of("Raigad"));
 
-        forts.addAll(List.of("Purandar", "Lohagad"));        // at the end
-        System.out.println("At end    : " + forts);
+        forts.addAll(List.of("Torna", "Purandar"));   // all go to the end
 
-        forts.addAll(1, List.of("Sinhagad", "Rajgad"));      // starting at index 1
-        System.out.println("At index 1: " + forts);
+        System.out.println(forts);
     }
 }
-''' + OUT),
+''' + OUT, extra_codes=(r'''// LinkedList addAll(int index, Collection c): adds many at a position
+import java.util.LinkedList;
+import java.util.List;
+
+public class LinkedListAddAllAtIndexDemo {
+    public static void main(String[] args) {
+        LinkedList<String> route = new LinkedList<>(List.of("Pune", "Kochi"));
+
+        route.addAll(1, List.of("Nashik", "Indore"));   // both go in at index 1
+
+        System.out.println(route);
+    }
+}
+''' + OUT,)),
 
     section('Reading elements', 'Reading the ends is O(1). Reading in the middle walks the chain. Pick the variant by what you want when the list is empty: an <strong>exception</strong> or <strong>null</strong>.'),
     method(
         'getFirst, getLast and element', 'E getFirst();  E getLast();  E element()', 'the element at that end', 'O(1)',
         'Read the first or last element <strong>without removing</strong> it. On an empty list they throw <code>NoSuchElementException</code>. <code>element()</code> is the queue name for <code>getFirst()</code>.',
         'They read the <code>first</code> / <code>last</code> pointers directly. If an empty list is normal in your program, use the <code>peek</code> family (next card), which returns <code>null</code> instead of throwing.',
-        r'''// LinkedList getFirst / getLast / element
+        r'''// LinkedList getFirst(): reads the first element
 import java.util.LinkedList;
 import java.util.List;
-import java.util.NoSuchElementException;
 
-public class LinkedListGetEndsDemo {
+public class LinkedListGetFirstDemo {
     public static void main(String[] args) {
         LinkedList<String> forts = new LinkedList<>(List.of("Raigad", "Sinhagad", "Torna"));
 
-        System.out.println("getFirst : " + forts.getFirst());
-        System.out.println("getLast  : " + forts.getLast());
-        System.out.println("element  : " + forts.element());      // same as getFirst
-
-        try {
-            new LinkedList<String>().getFirst();                  // empty list
-        } catch (NoSuchElementException e) {
-            System.out.println("Empty list throws NoSuchElementException");
-        }
+        System.out.println(forts.getFirst());   // Raigad
     }
 }
-''' + OUT),
+''' + OUT, extra_codes=(r'''// LinkedList getLast(): reads the last element
+import java.util.LinkedList;
+import java.util.List;
+
+public class LinkedListGetLastDemo {
+    public static void main(String[] args) {
+        LinkedList<String> forts = new LinkedList<>(List.of("Raigad", "Sinhagad", "Torna"));
+
+        System.out.println(forts.getLast());   // Torna
+    }
+}
+''' + OUT, r'''// LinkedList element(): reads the first element (queue style)
+import java.util.LinkedList;
+import java.util.List;
+
+public class LinkedListElementDemo {
+    public static void main(String[] args) {
+        LinkedList<String> forts = new LinkedList<>(List.of("Raigad", "Sinhagad", "Torna"));
+
+        System.out.println(forts.element());   // Raigad
+    }
+}
+''' + OUT,)),
     method(
         'peek, peekFirst and peekLast', 'E peek();  E peekFirst();  E peekLast()', 'the element, or <code>null</code> if the list is empty', 'O(1)',
         'Look at an end <strong>without removing it</strong>; if the list is empty you get <code>null</code>, not an exception. <code>peek()</code> and <code>peekFirst()</code> look at the front, <code>peekLast()</code> at the back.',
         'These are the "safe" counterparts of <code>getFirst</code>/<code>getLast</code>. Because LinkedList allows <code>null</code> elements, a <code>null</code> result is ambiguous: it could be "empty" or "the element is null". Check <code>isEmpty()</code> if you store nulls.',
-        r'''// LinkedList peek / peekFirst / peekLast: look without removing
+        r'''// LinkedList peek(): looks at the first element, or null if empty
 import java.util.LinkedList;
 import java.util.List;
 
 public class LinkedListPeekDemo {
     public static void main(String[] args) {
         LinkedList<String> forts = new LinkedList<>(List.of("Raigad", "Sinhagad", "Torna"));
+        LinkedList<String> empty = new LinkedList<>();
 
-        System.out.println("peek      : " + forts.peek());
-        System.out.println("peekFirst : " + forts.peekFirst());
-        System.out.println("peekLast  : " + forts.peekLast());
-        System.out.println("Still     : " + forts);               // nothing was removed
-
-        System.out.println("Empty peek: " + new LinkedList<String>().peek());   // null, no exception
+        System.out.println(forts.peek());   // Raigad (not removed)
+        System.out.println(empty.peek());   // null, no error
     }
 }
-''' + OUT),
+''' + OUT, extra_codes=(r'''// LinkedList peekFirst(): same as peek()
+import java.util.LinkedList;
+import java.util.List;
+
+public class LinkedListPeekFirstDemo {
+    public static void main(String[] args) {
+        LinkedList<String> forts = new LinkedList<>(List.of("Raigad", "Sinhagad", "Torna"));
+
+        System.out.println(forts.peekFirst());   // Raigad
+        System.out.println(forts);                // list is unchanged
+    }
+}
+''' + OUT, r'''// LinkedList peekLast(): looks at the last element
+import java.util.LinkedList;
+import java.util.List;
+
+public class LinkedListPeekLastDemo {
+    public static void main(String[] args) {
+        LinkedList<String> forts = new LinkedList<>(List.of("Raigad", "Sinhagad", "Torna"));
+
+        System.out.println(forts.peekLast());   // Torna (not removed)
+    }
+}
+''' + OUT,)),
     method(
         'get(int index) and set(int index, E e)', 'E get(int index);  E set(int index, E element)', 'the element / the replaced element', 'O(n)',
         'Read or replace by position. It works, but remember the list has to <strong>walk</strong> to the index: reading the 500th element touches up to 250 nodes.',
         'The cost is why a <code>for (int i...) list.get(i)</code> loop over a LinkedList is O(n&sup2;). Use a for-each loop or an iterator instead: they move from one node to the next in O(1) per step.',
-        r'''// LinkedList get(index) and set(index): works, but walks the chain
+        r'''// LinkedList get(int index): reads by position
 import java.util.LinkedList;
 import java.util.List;
 
-public class LinkedListGetSetDemo {
+public class LinkedListGetDemo {
     public static void main(String[] args) {
-        LinkedList<String> cities = new LinkedList<>(List.of("Pune", "Nashik", "Nagpur", "Indore"));
+        LinkedList<String> forts = new LinkedList<>(List.of("Raigad", "Sinhagad", "Torna"));
 
-        System.out.println("get(2)        : " + cities.get(2));
-        String old = cities.set(1, "Mumbai");
-        System.out.println("set(1) old    : " + old);
-        System.out.println("List now      : " + cities);
-
-        // For visiting every element prefer for-each: it follows the links without searching
-        for (String city : cities) {
-            System.out.print(city + " ");
-        }
-        System.out.println();
+        System.out.println(forts.get(0));   // Raigad
+        System.out.println(forts.get(2));   // Torna
     }
 }
-''' + OUT),
+''' + OUT, extra_codes=(r'''// LinkedList set(int index, E e): replaces by position
+import java.util.LinkedList;
+import java.util.List;
+
+public class LinkedListSetDemo {
+    public static void main(String[] args) {
+        LinkedList<String> forts = new LinkedList<>(List.of("Raigad", "Sinhagad", "Torna"));
+
+        String old = forts.set(1, "Purandar");   // replaces Sinhagad
+
+        System.out.println(old);
+        System.out.println(forts);
+    }
+}
+''' + OUT,)),
     method(
         'contains, indexOf and lastIndexOf', 'boolean contains(Object o);  int indexOf(Object o);  int lastIndexOf(Object o)', '<code>true</code> / the index / the index (or <code>-1</code>)', 'O(n)',
         'Search by value from the front (<code>indexOf</code>, <code>contains</code>) or from the back (<code>lastIndexOf</code>). Matching uses <code>equals()</code>.',
         'Linear scans, identical in behaviour to ArrayList. Override <code>equals</code> in your element class (or use a <code>record</code>) so the search works for your objects.',
-        r'''// LinkedList contains / indexOf / lastIndexOf
+        r'''// LinkedList contains(Object o): is the value present?
 import java.util.LinkedList;
 import java.util.List;
 
-public class LinkedListSearchDemo {
+public class LinkedListContainsDemo {
     public static void main(String[] args) {
-        LinkedList<String> cities = new LinkedList<>(List.of("Pune", "Nashik", "Pune", "Nagpur"));
+        LinkedList<String> cities = new LinkedList<>(List.of("Pune", "Nashik", "Pune"));
 
-        System.out.println("contains(Nashik)   : " + cities.contains("Nashik"));
-        System.out.println("indexOf(Pune)      : " + cities.indexOf("Pune"));
-        System.out.println("lastIndexOf(Pune)  : " + cities.lastIndexOf("Pune"));
-        System.out.println("indexOf(Kochi)     : " + cities.indexOf("Kochi"));
+        System.out.println(cities.contains("Nashik"));   // true
+        System.out.println(cities.contains("Delhi"));    // false
     }
 }
-''' + OUT),
+''' + OUT, extra_codes=(r'''// LinkedList indexOf(Object o): first position of a value
+import java.util.LinkedList;
+import java.util.List;
+
+public class LinkedListIndexOfDemo {
+    public static void main(String[] args) {
+        LinkedList<String> cities = new LinkedList<>(List.of("Pune", "Nashik", "Pune"));
+
+        System.out.println(cities.indexOf("Pune"));    // 0
+        System.out.println(cities.indexOf("Delhi"));   // -1 means not found
+    }
+}
+''' + OUT, r'''// LinkedList lastIndexOf(Object o): last position of a value
+import java.util.LinkedList;
+import java.util.List;
+
+public class LinkedListLastIndexOfDemo {
+    public static void main(String[] args) {
+        LinkedList<String> cities = new LinkedList<>(List.of("Pune", "Nashik", "Pune"));
+
+        System.out.println(cities.lastIndexOf("Pune"));   // 2
+    }
+}
+''' + OUT,)),
 
     section('Removing elements', 'Removing an end is O(1). The names differ again by what happens on an empty list.'),
     method(
         'remove(), removeFirst, pop and removeLast', 'E remove();  E removeFirst();  E pop();  E removeLast()', 'the removed element (throws on an empty list)', 'O(1)',
         '<code>remove()</code>, <code>removeFirst()</code> and <code>pop()</code> all take the <strong>first</strong> element out and return it; <code>removeLast()</code> takes the last. If the list is empty they throw <code>NoSuchElementException</code>.',
         'The no-argument <code>remove()</code> is the <code>Queue</code> method and must not be confused with <code>remove(int)</code> / <code>remove(Object)</code>. Removing an end only updates one or two links, with no shifting.',
-        r'''// LinkedList remove() / removeFirst / pop / removeLast
-import java.util.LinkedList;
-import java.util.List;
-
-public class LinkedListRemoveEndsDemo {
-    public static void main(String[] args) {
-        LinkedList<String> forts = new LinkedList<>(List.of("Raigad", "Sinhagad", "Torna", "Purandar", "Lohagad"));
-
-        System.out.println("remove()      : " + forts.remove());        // front
-        System.out.println("removeFirst() : " + forts.removeFirst());   // front
-        System.out.println("pop()         : " + forts.pop());          // front (stack name)
-        System.out.println("removeLast()  : " + forts.removeLast());    // back
-        System.out.println("Remaining     : " + forts);
-    }
-}
-''' + OUT),
-    method(
-        'poll, pollFirst and pollLast', 'E poll();  E pollFirst();  E pollLast()', 'the removed element, or <code>null</code> if empty', 'O(1)',
-        'Like <code>remove</code>, but safe: when the list is empty you get <code>null</code> instead of an exception. <code>poll()</code> is the standard way to take the next item from a queue in a loop: <code>while ((x = queue.poll()) != null)</code>.',
-        'Prefer <code>poll</code> in queue-style code and <code>removeFirst</code> when an empty list would be a bug that you want to see as an exception.',
-        r'''// LinkedList poll / pollFirst / pollLast: remove or get null
-import java.util.LinkedList;
-import java.util.List;
-
-public class LinkedListPollDemo {
-    public static void main(String[] args) {
-        LinkedList<String> queue = new LinkedList<>(List.of("Pune", "Nashik", "Nagpur"));
-
-        String next;
-        while ((next = queue.poll()) != null) {          // keep going until the queue is empty
-            System.out.println("Serving " + next);
-        }
-        System.out.println("poll on empty : " + queue.poll());
-        System.out.println("pollLast empty: " + queue.pollLast());
-    }
-}
-''' + OUT),
-    method(
-        'remove(int index) and remove(Object o)', 'E remove(int index);  boolean remove(Object o)', 'the removed element / <code>true</code> if found', 'O(n)',
-        'Remove by position or by value (the first equal element). Both have to walk the chain to find the node, then unlink it.',
-        'The same overload trap exists as in ArrayList: on a <code>LinkedList&lt;Integer&gt;</code>, <code>remove(2)</code> removes <strong>index</strong> 2; use <code>remove(Integer.valueOf(2))</code> for the value. <code>removeFirstOccurrence</code> and <code>removeLastOccurrence</code> (next card) make the direction explicit.',
-        r'''// LinkedList remove(int index) and remove(Object o)
+        r'''// LinkedList remove(): removes the first element
 import java.util.LinkedList;
 import java.util.List;
 
 public class LinkedListRemoveDemo {
     public static void main(String[] args) {
-        LinkedList<String> cities = new LinkedList<>(List.of("Pune", "Nashik", "Nagpur", "Nashik"));
+        LinkedList<String> forts = new LinkedList<>(List.of("Raigad", "Sinhagad", "Torna"));
 
-        System.out.println("remove(1)         : " + cities.remove(1) + " -> " + cities);
-        System.out.println("remove(\"Nashik\")  : " + cities.remove("Nashik") + " -> " + cities);
-        System.out.println("remove(\"Kochi\")   : " + cities.remove("Kochi") + " -> " + cities);
+        String removed = forts.remove();   // removes Raigad
 
-        LinkedList<Integer> hours = new LinkedList<>(List.of(10, 20, 30, 2));
-        hours.remove(2);                                    // index 2 -> the value 30
-        hours.remove(Integer.valueOf(2));                   // the VALUE 2
-        System.out.println("numbers           : " + hours);
+        System.out.println(removed);
+        System.out.println(forts);
     }
 }
-''' + OUT),
+''' + OUT, extra_codes=(r'''// LinkedList removeFirst(): removes the first element
+import java.util.LinkedList;
+import java.util.List;
+
+public class LinkedListRemoveFirstDemo {
+    public static void main(String[] args) {
+        LinkedList<String> forts = new LinkedList<>(List.of("Raigad", "Sinhagad", "Torna"));
+
+        forts.removeFirst();   // removes Raigad
+
+        System.out.println(forts);
+    }
+}
+''' + OUT, r'''// LinkedList pop(): removes the first element (stack style)
+import java.util.LinkedList;
+
+public class LinkedListPopDemo {
+    public static void main(String[] args) {
+        LinkedList<String> stack = new LinkedList<>();
+        stack.push("Plate 1");
+        stack.push("Plate 2");
+
+        System.out.println(stack.pop());   // Plate 2: the newest comes out first
+    }
+}
+''' + OUT, r'''// LinkedList removeLast(): removes the last element
+import java.util.LinkedList;
+import java.util.List;
+
+public class LinkedListRemoveLastDemo {
+    public static void main(String[] args) {
+        LinkedList<String> forts = new LinkedList<>(List.of("Raigad", "Sinhagad", "Torna"));
+
+        forts.removeLast();   // removes Torna
+
+        System.out.println(forts);
+    }
+}
+''' + OUT,)),
+    method(
+        'poll, pollFirst and pollLast', 'E poll();  E pollFirst();  E pollLast()', 'the removed element, or <code>null</code> if empty', 'O(1)',
+        'Like <code>remove</code>, but safe: when the list is empty you get <code>null</code> instead of an exception. <code>poll()</code> is the standard way to take the next item from a queue in a loop: <code>while ((x = queue.poll()) != null)</code>.',
+        'Prefer <code>poll</code> in queue-style code and <code>removeFirst</code> when an empty list would be a bug that you want to see as an exception.',
+        r'''// LinkedList poll(): removes the first element, or null if empty
+import java.util.LinkedList;
+import java.util.List;
+
+public class LinkedListPollDemo {
+    public static void main(String[] args) {
+        LinkedList<String> queue = new LinkedList<>(List.of("Asha"));
+
+        System.out.println(queue.poll());   // Asha
+        System.out.println(queue.poll());   // null: empty, but no error
+    }
+}
+''' + OUT, extra_codes=(r'''// LinkedList pollFirst(): same as poll()
+import java.util.LinkedList;
+import java.util.List;
+
+public class LinkedListPollFirstDemo {
+    public static void main(String[] args) {
+        LinkedList<String> forts = new LinkedList<>(List.of("Raigad", "Sinhagad", "Torna"));
+
+        System.out.println(forts.pollFirst());   // Raigad
+        System.out.println(forts);
+    }
+}
+''' + OUT, r'''// LinkedList pollLast(): removes the last element, or null if empty
+import java.util.LinkedList;
+import java.util.List;
+
+public class LinkedListPollLastDemo {
+    public static void main(String[] args) {
+        LinkedList<String> forts = new LinkedList<>(List.of("Raigad", "Sinhagad", "Torna"));
+
+        System.out.println(forts.pollLast());   // Torna
+        System.out.println(forts);
+    }
+}
+''' + OUT,)),
+    method(
+        'remove(int index) and remove(Object o)', 'E remove(int index);  boolean remove(Object o)', 'the removed element / <code>true</code> if found', 'O(n)',
+        'Remove by position or by value (the first equal element). Both have to walk the chain to find the node, then unlink it.',
+        'The same overload trap exists as in ArrayList: on a <code>LinkedList&lt;Integer&gt;</code>, <code>remove(2)</code> removes <strong>index</strong> 2; use <code>remove(Integer.valueOf(2))</code> for the value. <code>removeFirstOccurrence</code> and <code>removeLastOccurrence</code> (next card) make the direction explicit.',
+        r'''// LinkedList remove(int index): removes by position
+import java.util.LinkedList;
+import java.util.List;
+
+public class LinkedListRemoveAtIndexDemo {
+    public static void main(String[] args) {
+        LinkedList<String> forts = new LinkedList<>(List.of("Raigad", "Sinhagad", "Torna"));
+
+        String removed = forts.remove(1);   // removes Sinhagad
+
+        System.out.println(removed);
+        System.out.println(forts);
+    }
+}
+''' + OUT, extra_codes=(r'''// LinkedList remove(Object o): removes by value
+import java.util.LinkedList;
+import java.util.List;
+
+public class LinkedListRemoveByValueDemo {
+    public static void main(String[] args) {
+        LinkedList<String> forts = new LinkedList<>(List.of("Raigad", "Sinhagad", "Torna"));
+
+        boolean found = forts.remove("Torna");   // true if it was there
+
+        System.out.println(found);
+        System.out.println(forts);
+    }
+}
+''' + OUT,)),
     method(
         'removeFirstOccurrence and removeLastOccurrence', 'boolean removeFirstOccurrence(Object o);  boolean removeLastOccurrence(Object o)', '<code>true</code> if an element was removed', 'O(n)',
         'Remove the <strong>first</strong> or the <strong>last</strong> element equal to the value, when the list holds duplicates.',
         '<code>removeFirstOccurrence</code> is the same as <code>remove(Object)</code>. <code>removeLastOccurrence</code> scans from the back, which is the only direct way to remove the last match in a list.',
-        r'''// LinkedList removeFirstOccurrence / removeLastOccurrence
+        r'''// LinkedList removeFirstOccurrence(Object o): removes the first match
 import java.util.LinkedList;
 import java.util.List;
 
-public class LinkedListOccurrenceDemo {
+public class LinkedListRemoveFirstOccurrenceDemo {
     public static void main(String[] args) {
-        LinkedList<String> cities = new LinkedList<>(List.of("Pune", "Nashik", "Pune", "Nagpur", "Pune"));
+        LinkedList<String> cities = new LinkedList<>(List.of("Pune", "Nashik", "Pune"));
 
-        cities.removeFirstOccurrence("Pune");
-        System.out.println("After first : " + cities);
+        cities.removeFirstOccurrence("Pune");   // removes the first Pune
 
-        cities.removeLastOccurrence("Pune");
-        System.out.println("After last  : " + cities);
+        System.out.println(cities);
     }
 }
-''' + OUT),
+''' + OUT, extra_codes=(r'''// LinkedList removeLastOccurrence(Object o): removes the last match
+import java.util.LinkedList;
+import java.util.List;
+
+public class LinkedListRemoveLastOccurrenceDemo {
+    public static void main(String[] args) {
+        LinkedList<String> cities = new LinkedList<>(List.of("Pune", "Nashik", "Pune"));
+
+        cities.removeLastOccurrence("Pune");   // removes the last Pune
+
+        System.out.println(cities);
+    }
+}
+''' + OUT,)),
     method(
         'removeIf, removeAll, retainAll and clear', 'boolean removeIf(Predicate);  boolean removeAll(Collection);  boolean retainAll(Collection);  void clear()', '<code>true</code> if changed / nothing', 'O(n)',
         'Remove by a <strong>rule</strong>, remove everything found in another collection, keep only what is found in another collection, or remove everything.',
         'These are inherited from <code>Collection</code>; they work with an iterator, unlinking nodes as they go. <code>clear()</code> unlinks every node (setting their fields to <code>null</code> to help the garbage collector).',
-        r'''// LinkedList removeIf / removeAll / retainAll / clear
+        r'''// LinkedList removeIf(Predicate): removes by a rule
 import java.util.LinkedList;
 import java.util.List;
 
-public class LinkedListBulkRemoveDemo {
+public class LinkedListRemoveIfDemo {
     public static void main(String[] args) {
-        LinkedList<String> cities = new LinkedList<>(List.of("Pune", "Nashik", "Nagpur", "Indore", "Jaipur"));
+        LinkedList<Integer> numbers = new LinkedList<>(List.of(1, 2, 3, 4, 5, 6));
 
-        cities.removeIf(c -> c.startsWith("N"));
-        System.out.println("removeIf N* : " + cities);
+        numbers.removeIf(n -> n % 2 == 0);   // remove all even numbers
 
-        cities.removeAll(List.of("Jaipur"));
-        System.out.println("removeAll   : " + cities);
-
-        cities.add("Kochi");
-        cities.retainAll(List.of("Kochi", "Delhi"));
-        System.out.println("retainAll   : " + cities);
-
-        cities.clear();
-        System.out.println("clear       : " + cities + " size " + cities.size());
+        System.out.println(numbers);
     }
 }
-''' + OUT),
+''' + OUT, extra_codes=(r'''// LinkedList removeAll(Collection c): removes every element found in c
+import java.util.LinkedList;
+import java.util.List;
+
+public class LinkedListRemoveAllDemo {
+    public static void main(String[] args) {
+        LinkedList<String> forts = new LinkedList<>(List.of("Raigad", "Sinhagad", "Torna"));
+
+        forts.removeAll(List.of("Raigad", "Torna"));
+
+        System.out.println(forts);
+    }
+}
+''' + OUT, r'''// LinkedList retainAll(Collection c): keeps only elements found in c
+import java.util.LinkedList;
+import java.util.List;
+
+public class LinkedListRetainAllDemo {
+    public static void main(String[] args) {
+        LinkedList<String> forts = new LinkedList<>(List.of("Raigad", "Sinhagad", "Torna"));
+
+        forts.retainAll(List.of("Raigad", "Torna"));
+
+        System.out.println(forts);
+    }
+}
+''' + OUT, r'''// LinkedList clear(): removes everything
+import java.util.LinkedList;
+import java.util.List;
+
+public class LinkedListClearDemo {
+    public static void main(String[] args) {
+        LinkedList<String> forts = new LinkedList<>(List.of("Raigad", "Sinhagad", "Torna"));
+
+        forts.clear();
+
+        System.out.println(forts);
+        System.out.println(forts.size());
+    }
+}
+''' + OUT,)),
 
     section('Using LinkedList as a Queue, a Stack and a Deque', 'Because LinkedList is also a <code>Deque</code>, the same object can be used three ways. Choose the interface type that matches your use so the code says what you mean.'),
     (
@@ -396,33 +626,20 @@ public class LinkedListBulkRemoveDemo {
             ['<strong>Deque</strong> (both ends)', '<code>offerFirst</code> / <code>offerLast</code>', '<code>pollFirst</code> / <code>pollLast</code>', '<code>peekFirst</code> / <code>peekLast</code>', 'Both ends'],
         ])
         + '\n<p>For pure queue or stack work, <code>ArrayDeque</code> is usually even faster (no node objects), but it does not allow <code>null</code> and has no index methods.</p>',
-        [r'''// LinkedList used as a Queue (FIFO), a Stack (LIFO) and a Deque
-import java.util.Deque;
+        [r'''// LinkedList as a Queue (first in, first out) and a Stack (last in, first out)
 import java.util.LinkedList;
-import java.util.Queue;
 
-public class LinkedListRolesDemo {
+public class LinkedListQueueStackDemo {
     public static void main(String[] args) {
-        // Queue: first in, first out
-        Queue<String> ticketLine = new LinkedList<>();
-        ticketLine.offer("Pune");
-        ticketLine.offer("Nashik");
-        ticketLine.offer("Nagpur");
-        System.out.println("Queue serves : " + ticketLine.poll() + ", then " + ticketLine.poll());
+        LinkedList<String> queue = new LinkedList<>();
+        queue.offer("Asha");
+        queue.offer("Ravi");
+        System.out.println(queue.poll());   // Asha: first in, first out
 
-        // Stack: last in, first out
-        Deque<String> plates = new LinkedList<>();
-        plates.push("Raigad");
-        plates.push("Sinhagad");
-        plates.push("Torna");
-        System.out.println("Stack pops   : " + plates.pop() + ", then " + plates.pop());
-
-        // Deque: work at both ends
-        Deque<String> both = new LinkedList<>();
-        both.offerFirst("Mumbai");
-        both.offerLast("Delhi");
-        both.offerFirst("Kochi");
-        System.out.println("Deque        : " + both + " first=" + both.peekFirst() + " last=" + both.peekLast());
+        LinkedList<String> stack = new LinkedList<>();
+        stack.push("Asha");
+        stack.push("Ravi");
+        System.out.println(stack.pop());    // Ravi: last in, first out
     }
 }
 ''' + OUT],
@@ -433,95 +650,268 @@ public class LinkedListRolesDemo {
         'iterator, listIterator and descendingIterator', 'Iterator<E> iterator();  ListIterator<E> listIterator();  Iterator<E> descendingIterator()', 'an iterator', 'O(1) per step',
         'Walk the list element by element. <code>iterator()</code> goes forward, <code>listIterator()</code> also goes backward and can add or replace, and <code>descendingIterator()</code> walks from the <strong>last</strong> element to the first. Iterators are the right way to loop a LinkedList because each step is O(1).',
         'The iterators are fail-fast (they check <code>modCount</code>). A <code>ListIterator</code> can insert in the middle in <strong>O(1)</strong> at the cursor: this is the one case where LinkedList truly beats ArrayList for middle insertion, because you are already standing on the node.',
-        r'''// LinkedList iterator / listIterator / descendingIterator
+        r'''// LinkedList iterator(): walk from front to back
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+
+public class LinkedListIteratorDemo {
+    public static void main(String[] args) {
+        LinkedList<String> forts = new LinkedList<>(List.of("Raigad", "Sinhagad", "Torna"));
+
+        Iterator<String> it = forts.iterator();
+        while (it.hasNext()) {              // is there a next element?
+            System.out.println(it.next());  // take it
+        }
+    }
+}
+''' + OUT, extra_codes=(r'''// LinkedList listIterator(): walk and change elements
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 
-public class LinkedListIteratorDemo {
+public class LinkedListListIteratorDemo {
     public static void main(String[] args) {
-        LinkedList<String> forts = new LinkedList<>(List.of("Raigad", "Sinhagad", "Torna", "Purandar"));
+        LinkedList<String> forts = new LinkedList<>(List.of("Raigad", "Sinhagad", "Torna"));
 
-        Iterator<String> back = forts.descendingIterator();      // last to first
-        System.out.print("Backwards : ");
+        ListIterator<String> it = forts.listIterator();
+        while (it.hasNext()) {
+            String fort = it.next();
+            it.set(fort.toUpperCase());     // replace the element just read
+        }
+
+        System.out.println(forts);
+    }
+}
+''' + OUT, r'''// LinkedList descendingIterator(): walk from back to front
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+
+public class LinkedListDescendingIteratorDemo {
+    public static void main(String[] args) {
+        LinkedList<String> forts = new LinkedList<>(List.of("Raigad", "Sinhagad", "Torna"));
+
+        Iterator<String> it = forts.descendingIterator();
+        while (it.hasNext()) {
+            System.out.println(it.next());
+        }
+    }
+}
+''' + OUT,)),
+    method(
+        'sort, replaceAll, forEach, stream, toArray, subList', 'inherited from List and Collection', 'as for ArrayList', 'O(n) or O(n log n)',
+        'These work just like on an ArrayList: <code>sort</code> orders the list, <code>replaceAll</code> changes every element, <code>forEach</code> runs an action, <code>stream</code> starts a pipeline, <code>toArray</code> copies into an array and <code>subList</code> gives a range view.',
+        '<code>sort</code> copies the nodes into an array, sorts it with TimSort and writes the values back, so there is no benefit from being a linked list. If you sort a lot, you probably wanted an ArrayList.',
+        r'''// LinkedList sort(): sorts the list
+import java.util.LinkedList;
+import java.util.List;
+
+public class LinkedListSortDemo {
+    public static void main(String[] args) {
+        LinkedList<String> cities = new LinkedList<>(List.of("Pune", "Agra", "Nashik"));
+
+        cities.sort(null);   // null means natural order (A to Z)
+
+        System.out.println(cities);
+    }
+}
+''' + OUT, extra_codes=(r'''// LinkedList replaceAll(): changes every element
+import java.util.LinkedList;
+import java.util.List;
+
+public class LinkedListReplaceAllDemo {
+    public static void main(String[] args) {
+        LinkedList<String> cities = new LinkedList<>(List.of("pune", "agra"));
+
+        cities.replaceAll(c -> c.toUpperCase());
+
+        System.out.println(cities);
+    }
+}
+''' + OUT, r'''// LinkedList forEach(): does something with every element
+import java.util.LinkedList;
+import java.util.List;
+
+public class LinkedListForEachDemo {
+    public static void main(String[] args) {
+        LinkedList<String> forts = new LinkedList<>(List.of("Raigad", "Sinhagad", "Torna"));
+
+        forts.forEach(f -> System.out.println(f));
+    }
+}
+''' + OUT, r'''// LinkedList stream(): filter without loops
+import java.util.LinkedList;
+import java.util.List;
+
+public class LinkedListStreamDemo {
+    public static void main(String[] args) {
+        LinkedList<String> cities = new LinkedList<>(List.of("Pune", "Nashik", "Nagpur"));
+
+        List<String> result = cities.stream()
+                .filter(c -> c.startsWith("N"))   // keep names starting with N
+                .toList();
+
+        System.out.println(result);
+    }
+}
+''' + OUT, r'''// LinkedList toArray(): copies the list into an array
+import java.util.LinkedList;
+import java.util.List;
+
+public class LinkedListToArrayDemo {
+    public static void main(String[] args) {
+        LinkedList<String> forts = new LinkedList<>(List.of("Raigad", "Sinhagad", "Torna"));
+
+        String[] array = forts.toArray(new String[0]);
+
+        System.out.println(array.length);
+        System.out.println(array[0]);
+    }
+}
+''' + OUT, r'''// LinkedList subList(from, to): a part of the list
+import java.util.LinkedList;
+import java.util.List;
+
+public class LinkedListSubListDemo {
+    public static void main(String[] args) {
+        LinkedList<String> forts = new LinkedList<>(List.of("Raigad", "Sinhagad", "Torna"));
+
+        System.out.println(forts.subList(0, 2));   // index 0 and 1
+    }
+}
+''' + OUT,)),
+    method(
+        'clone, equals, hashCode, toString and reversed', 'Object clone();  boolean equals(Object);  String toString();  LinkedList reversed()', 'a shallow copy / comparisons / text / a reversed view', 'O(n) / O(1)',
+        '<code>clone()</code> makes a shallow copy (the new list has its own nodes but shares the elements). Two lists are <code>equals</code> when they have the same elements in the same order, whatever the list class. In Java 21 <code>reversed()</code> gives a view that walks from the back.',
+        'Prefer the copy constructor over <code>clone()</code>. A reversed view is not a copy: changes through it change the original.',
+        r'''// LinkedList clone(): makes a copy
+import java.util.LinkedList;
+import java.util.List;
+
+public class LinkedListCloneDemo {
+    public static void main(String[] args) {
+        LinkedList<String> forts = new LinkedList<>(List.of("Raigad", "Torna"));
+
+        Object copy = forts.clone();
+
+        System.out.println(copy);
+    }
+}
+''' + OUT, extra_codes=(r'''// LinkedList equals(): same elements in the same order?
+import java.util.LinkedList;
+import java.util.List;
+
+public class LinkedListEqualsDemo {
+    public static void main(String[] args) {
+        LinkedList<String> a = new LinkedList<>(List.of("Raigad", "Torna"));
+        LinkedList<String> b = new LinkedList<>(List.of("Raigad", "Torna"));
+
+        System.out.println(a.equals(b));   // true
+    }
+}
+''' + OUT, r'''// LinkedList toString(): prints the list as text
+import java.util.LinkedList;
+import java.util.List;
+
+public class LinkedListToStringDemo {
+    public static void main(String[] args) {
+        LinkedList<String> forts = new LinkedList<>(List.of("Raigad", "Torna"));
+
+        System.out.println(forts);   // [Raigad, Torna]
+    }
+}
+''' + OUT, r'''// LinkedList reversed() (Java 21): the list in reverse order
+import java.util.LinkedList;
+import java.util.List;
+
+public class LinkedListReversedDemo {
+    public static void main(String[] args) {
+        LinkedList<String> forts = new LinkedList<>(List.of("Raigad", "Sinhagad", "Torna"));
+
+        System.out.println(forts.reversed());
+    }
+}
+''' + OUT,)),
+    (
+        '<h3>Master program: every LinkedList method in one place</h3>\n'
+        '<p>One single program that uses all the LinkedList methods you learned above, step by step. Read the numbered comments from top to bottom, run it, and match each output line with its step.</p>',
+        [r'''// MASTER PROGRAM: all important LinkedList methods in one program
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+
+public class LinkedListMasterDemo {
+    public static void main(String[] args) {
+        // 1. Create an empty list
+        LinkedList<String> forts = new LinkedList<>();
+
+        // 2. Add at the end: add, addLast, offer
+        forts.add("Raigad");
+        forts.addLast("Torna");
+        forts.offer("Purandar");
+
+        // 3. Add at the front: addFirst, push, offerFirst
+        forts.addFirst("Sinhagad");
+        forts.push("Panhala");
+        forts.offerFirst("Lohagad");
+
+        // 4. Add in the middle and add many: add(index), addAll
+        forts.add(2, "Rajgad");
+        forts.addAll(List.of("Pratapgad", "Vishalgad"));
+        System.out.println("4. After adds      : " + forts);
+
+        // 5. Look without removing: getFirst, getLast, element, peek, peekFirst, peekLast
+        System.out.println("5. first / last    : " + forts.getFirst() + " / " + forts.getLast());
+        System.out.println("   element / peek  : " + forts.element() + " / " + forts.peek());
+        System.out.println("   peekFirst/Last  : " + forts.peekFirst() + " / " + forts.peekLast());
+
+        // 6. By index: get, set
+        System.out.println("6. get(3)          : " + forts.get(3));
+        forts.set(3, "Karnala");
+
+        // 7. Search: contains, indexOf, lastIndexOf
+        System.out.println("7. contains Torna  : " + forts.contains("Torna"));
+        System.out.println("   indexOf Torna   : " + forts.indexOf("Torna"));
+        System.out.println("   lastIndexOf     : " + forts.lastIndexOf("Torna"));
+
+        // 8. Loop: iterator and descendingIterator
+        Iterator<String> back = forts.descendingIterator();
+        System.out.print("8. Backward        : ");
         while (back.hasNext()) {
             System.out.print(back.next() + " ");
         }
         System.out.println();
 
-        ListIterator<String> it = forts.listIterator();
-        while (it.hasNext()) {
-            String name = it.next();
-            if (name.equals("Torna")) {
-                it.add("Lohagad");                // O(1) insert right at the cursor
-            }
-            if (name.equals("Raigad")) {
-                it.remove();                       // O(1) remove at the cursor
-            }
-        }
-        System.out.println("After edits: " + forts);
+        // 9. Remove from the ends (throws if empty): remove, removeFirst, removeLast, pop
+        forts.remove();
+        forts.removeFirst();
+        forts.removeLast();
+        forts.pop();
+
+        // 10. Remove from the ends (returns null if empty): poll, pollFirst, pollLast
+        System.out.println("10. poll           : " + forts.poll());
+        System.out.println("    pollFirst/Last : " + forts.pollFirst() + " / " + forts.pollLast());
+
+        // 11. Remove by value or index: remove(Object), remove(int), removeFirstOccurrence, removeIf
+        forts.remove("Torna");
+        forts.remove(0);
+        forts.removeFirstOccurrence("Raigad");
+        forts.removeIf(f -> f.startsWith("V"));
+        System.out.println("11. After removes  : " + forts);
+
+        // 12. Copy and reverse: clone, reversed
+        Object copy = forts.clone();
+        System.out.println("12. clone equals   : " + forts.equals(copy));
+        System.out.println("    reversed       : " + forts.reversed());
+
+        // 13. Clear everything
+        forts.clear();
+        System.out.println("13. After clear    : " + forts);
     }
 }
-''' + OUT),
-    method(
-        'sort, replaceAll, forEach, stream, toArray, subList', 'inherited from List and Collection', 'as for ArrayList', 'O(n) or O(n log n)',
-        'These work just like on an ArrayList: <code>sort</code> orders the list, <code>replaceAll</code> changes every element, <code>forEach</code> runs an action, <code>stream</code> starts a pipeline, <code>toArray</code> copies into an array and <code>subList</code> gives a range view.',
-        '<code>sort</code> copies the nodes into an array, sorts it with TimSort and writes the values back, so there is no benefit from being a linked list. If you sort a lot, you probably wanted an ArrayList.',
-        r'''// Inherited List methods on a LinkedList
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.LinkedList;
-import java.util.List;
-
-public class LinkedListInheritedDemo {
-    public static void main(String[] args) {
-        LinkedList<String> forts = new LinkedList<>(List.of("Torna", "Raigad", "Sinhagad", "Lohagad"));
-
-        forts.sort(Comparator.naturalOrder());                    // sort
-        System.out.println("sorted       : " + forts);
-
-        forts.replaceAll(String::toUpperCase);                    // replaceAll
-        System.out.println("upper case   : " + forts);
-
-        forts.forEach(f -> System.out.print(f.charAt(0)));        // forEach: first letters
-        System.out.println();
-
-        String[] array = forts.toArray(new String[0]);            // toArray
-        System.out.println("array        : " + Arrays.toString(array));
-
-        List<String> middle = forts.subList(1, 3);                 // subList (a view)
-        System.out.println("subList(1,3) : " + middle);
-        System.out.println("long names   : " + forts.stream().filter(f -> f.length() > 5).count());
-    }
-}
-''' + OUT),
-    method(
-        'clone, equals, hashCode, toString and reversed', 'Object clone();  boolean equals(Object);  String toString();  LinkedList reversed()', 'a shallow copy / comparisons / text / a reversed view', 'O(n) / O(1)',
-        '<code>clone()</code> makes a shallow copy (the new list has its own nodes but shares the elements). Two lists are <code>equals</code> when they have the same elements in the same order, whatever the list class. In Java 21 <code>reversed()</code> gives a view that walks from the back.',
-        'Prefer the copy constructor over <code>clone()</code>. A reversed view is not a copy: changes through it change the original.',
-        r'''// LinkedList clone / equals / reversed
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-
-public class LinkedListCopyDemo {
-    public static void main(String[] args) {
-        LinkedList<String> forts = new LinkedList<>(List.of("Raigad", "Sinhagad", "Torna"));
-
-        @SuppressWarnings("unchecked")
-        LinkedList<String> copy = (LinkedList<String>) forts.clone();
-        copy.addFirst("Purandar");
-        System.out.println("Original : " + forts);
-        System.out.println("Copy     : " + copy);
-
-        List<String> asArrayList = new ArrayList<>(List.of("Raigad", "Sinhagad", "Torna"));
-        System.out.println("Equals an ArrayList with the same elements? " + forts.equals(asArrayList));
-
-        System.out.println("Reversed view (Java 21): " + forts.reversed());
-    }
-}
-''' + OUT),
+''' + OUT],
+    ),
 ]
 
 EXPERT = [

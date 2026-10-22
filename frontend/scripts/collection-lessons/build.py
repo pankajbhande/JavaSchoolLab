@@ -19,6 +19,8 @@ import tempfile
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT_DIR = os.path.normpath(os.path.join(HERE, '..', '..', 'src', 'app', 'data', 'collection'))
 AUTO = '// OUTPUT: @auto'
+INTRO = ('<h3>Practice questions</h3>\n<p>Now test yourself. Each question is harder than the examples above: read the problem, '
+         'write your own solution, then compare it with the one shown. Every solution was compiled and run, and its output is real.</p>')
 
 
 def run_java(code: str, name: str) -> str:
@@ -57,7 +59,7 @@ def number_headings(blocks):
             content = content.replace('<h3 class="mcard">', f'<h3>{m}. ', 1)
         elif '<h3 class="practice">' in content:
             p += 1
-            content = content.replace('<h3 class="practice">', f'<h3>Real-time practice {p}: ', 1)
+            content = content.replace('<h3 class="practice">', f'<h3>Practice question {p}: ', 1)
         out.append((content, *b[1:]))
     return out
 
@@ -74,6 +76,23 @@ def process_blocks(blocks, name):
     return done
 
 
+def load_extras():
+    """Merges every specs/_extras_*.py: each defines EXTRAS = {topic_id: {'beginner': [...], 'intermediate': [...], 'expert': [...]}}
+    whose blocks are appended after the topic's own blocks (expert extras come before the practice questions)."""
+    sys.path.insert(0, os.path.join(HERE, 'specs'))
+    merged = {}
+    specs_dir = os.path.join(HERE, 'specs')
+    for fn in sorted(os.listdir(specs_dir)):
+        if fn.startswith('_extras_') and fn.endswith('.py'):
+            s = importlib.util.spec_from_file_location(fn[:-3], os.path.join(specs_dir, fn))
+            m = importlib.util.module_from_spec(s)
+            s.loader.exec_module(m)
+            for tid, tiers in m.EXTRAS.items():
+                for tier, blocks in tiers.items():
+                    merged.setdefault(tid, {}).setdefault(tier, []).extend(blocks)
+    return merged
+
+
 def build(spec_name: str):
     spec_path = os.path.join(HERE, 'specs', spec_name + '.py')
     mod_spec = importlib.util.spec_from_file_location('spec_' + spec_name, spec_path)
@@ -83,10 +102,16 @@ def build(spec_name: str):
     topic = {'id': t['id'], 'name': t['name']}
     sys.path.insert(0, os.path.join(HERE, 'specs'))
     from _practice import PRACTICE
-    expert = list(t.get('expert', []))
-    extra = PRACTICE.get(t['id'], [])
+    ex = load_extras().get(t['id'], {})
+    t = {**t, 'beginner': list(t.get('beginner', [])) + ex.get('beginner', []),
+         'intermediate': list(t.get('intermediate', [])) + ex.get('intermediate', [])}
+    new_expert = ex.get('expert', [])
+    new_practice = [b for b in new_expert if 'class="practice"' in b[0]]     # extra practice questions join the practice section
+    expert = list(t.get('expert', [])) + [b for b in new_expert if b not in new_practice]
+    extra = list(PRACTICE.get(t['id'], [])) + new_practice
     if extra:
-        expert[-1:-1] = extra                      # practice programs go just before "Best practices"
+        expert.append((INTRO,))
+        expert.extend(extra)                       # practice questions come last in the lesson
     t = {**t, 'expert': expert}
     for tier in ('beginner', 'intermediate', 'expert'):
         topic[tier] = process_blocks(t.get(tier, []), f"{t['id']}/{tier}")

@@ -16,6 +16,16 @@ public final class JsonInput {
         return true;
     }
 
+    /**
+     * The text of a request field, refused with 400 when longer than {@code max}. The database columns are fixed-size VARCHARs; an oversized value would
+     * otherwise reach MySQL and come back as a 500 ("Data too long"), and a client could keep rewriting multi-kilobyte ids.
+     */
+    public static String bounded(JsonNode n, String field, int max) {
+        String text = n == null || n.isNull() ? "" : n.asText();
+        if (text.length() > max) throw ApiException.badRequest(field + " is too long (at most " + max + " characters)");
+        return text;
+    }
+
     /** Number(value) for a JSON scalar: numbers as-is, numeric text parsed, anything else NaN. */
     public static double number(JsonNode n) {
         if (n.isNumber()) return n.asDouble();

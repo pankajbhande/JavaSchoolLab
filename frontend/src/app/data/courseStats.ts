@@ -2,7 +2,7 @@
 //
 // Per-course totals for the dashboard's completion rings. Kept separate from coursesData
 // so the landing page can show progress without downloading every topic.
-// 29 courses, 3467 topics.
+// 29 courses, 3658 topics.
 
 export interface CourseStat {
   topics: number;
@@ -11,7 +11,7 @@ export interface CourseStat {
 
 export const courseStats: Record<string, CourseStat> = {
   "algorithms": { topics: 327, modules: 23 },
-  "angular": { topics: 48, modules: 17 },
+  "angular": { topics: 219, modules: 47 },
   "architectural-patterns": { topics: 12, modules: 1 },
   "cloud-native-patterns": { topics: 10, modules: 1 },
   "collection": { topics: 16, modules: 6 },
@@ -22,7 +22,7 @@ export const courseStats: Record<string, CourseStat> = {
   "flutter": { topics: 66, modules: 23 },
   "hibernate": { topics: 56, modules: 15 },
   "HTML and CSS": { topics: 275, modules: 14 },
-  "java": { topics: 125, modules: 15 },
+  "java": { topics: 145, modules: 15 },
   "javafx": { topics: 42, modules: 20 },
   "javascript": { topics: 66, modules: 22 },
   "jsp-servlet": { topics: 43, modules: 10 },
@@ -42,4 +42,4 @@ export const courseStats: Record<string, CourseStat> = {
 };
 
 /** Total topics across every course. */
-export const TOTAL_TOPICS = 3467;
+export const TOTAL_TOPICS = 3658;

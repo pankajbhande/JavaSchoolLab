@@ -17,3 +17,10 @@ logging:
   level:
     com.javaschoollab: DEBUG
     org.flywaydb: INFO
+
+# Local convenience: the health details are visible without signing in, so http://localhost:3001/actuator/health shows MySQL, disk, etc.
+management:
+  endpoint:
+    health:
+      show-details: always
+      show-components: always

@@ -1,4 +1,4 @@
 # Authorised Digital Sellers. Google will not serve ads until this file is reachable at
-# https://javaschoollab.com/ads.txt — replace pub-0000000000000000 with your publisher id
+# https://javaschoollab.dhipansoft.in/ads.txt — replace pub-0000000000000000 with your publisher id
 # (the digits from your ca-pub-... value, without the "ca-" prefix).
 google.com, pub-0000000000000000, DIRECT, f08c47fec0942fa0

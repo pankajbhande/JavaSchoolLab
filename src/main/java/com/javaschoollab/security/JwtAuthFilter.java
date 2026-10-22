@@ -20,9 +20,11 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     public static final String INVALID_TOKEN = "jsl.invalidToken";
 
     private final JwtService jwt;
+    private final TokenRevocation revocation;
 
-    public JwtAuthFilter(JwtService jwt) {
+    public JwtAuthFilter(JwtService jwt, TokenRevocation revocation) {
         this.jwt = jwt;
+        this.revocation = revocation;
     }
 
     @Override
@@ -32,7 +34,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         String[] parts = header == null ? new String[0] : header.split(" ");
         String token = parts.length > 1 ? parts[1] : null;
         if (token != null && !token.isEmpty()) {
-            jwt.parse(token).ifPresentOrElse(
+            jwt.parse(token).filter(u -> !revocation.isRevoked(u)).ifPresentOrElse(
                     user -> SecurityContextHolder.getContext()
                             .setAuthentication(new UsernamePasswordAuthenticationToken(user, null, List.of())),
                     () -> request.setAttribute(INVALID_TOKEN, Boolean.TRUE));

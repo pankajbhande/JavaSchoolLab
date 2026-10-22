@@ -1,0 +1,219 @@
+# JavaSchoolLab SHARED INFRASTRUCTURE: MySQL + Redis + OpenSearch (and the MySQL backup job) in ONE compose file.
+# Started and stopped on its own, separately from the application and from the monitoring stack, so it keeps running while the
+# application is rebuilt, redeployed or stopped.
+#
+#   cd docker
+#   docker volume create javaschoollab_db_data                       (once per machine: the volume that keeps the database)
+#   docker compose -f docker-compose.shared.yml up -d                (start MySQL + Redis + OpenSearch; start this FIRST)
+#   docker compose -f docker-compose.shared.yml stop                 (stop all three, data stays)
+#   docker compose -f docker-compose.shared.yml down                 (remove the containers; the data volumes stay)
+#
+# The stacks meet on the shared network "javaschoollab_shared", which THIS file creates. Other containers reach the services by name:
+#   javaschoollab-db (MySQL 3306)   javaschoollab-redis (Redis 6379)   javaschoollab-opensearch (OpenSearch 9200)
+# Settings and passwords come from docker/.env (the same file the other stacks read).
+#
+# Data:
+#   - MySQL lives in the EXTERNAL volume javaschoollab_db_data, outside every compose project: rebuilding the app, "down" and even "down -v"
+#     never delete it. Only "docker volume rm javaschoollab_db_data" does. This is the ONLY data that matters.
+#   - Redis keeps nothing on disk (rate limits, one-time codes and cache all expire by themselves).
+#   - OpenSearch keeps a search index in javaschoollab_opensearch_data; it is rebuilt from the course content, so losing it costs only a re-index.
+#
+# Accounts: MySQL "root" and the application account (DB_USER) are created / refreshed from .env on EVERY start by the one-shot
+# "db-setup" container (docker/mysql/setup-accounts.sh), so .env stays the single source of truth. Redis runs with an ACL: the built-in
+# "default" user is switched off and only REDIS_USERNAME / REDIS_PASSWORD can log in.
+name: javaschoollab-shared
+
+# Every container's console log is rotated by Docker: at most 3 files of 10 MB each (30 MB per container). Without this a busy container's log
+# grows until the disk is full. (The logs are also shipped to Loki by Alloy, which keeps them for 14 days.)
+x-logging: &default-logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+
+services:
+  # ------------------------------------------------------------------------------------------------------------------
+  #  MySQL
+  # ------------------------------------------------------------------------------------------------------------------
+  db:
+    image: mysql:8.4
+    logging: *default-logging
+    container_name: javaschoollab-db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:?set DB_ROOT_PASSWORD in .env}
+      MYSQL_DATABASE: ${DB_NAME:-javaschoollab}
+      MYSQL_USER: ${DB_USER:-supervisor}
+      MYSQL_PASSWORD: ${DB_PASSWORD:?set DB_PASSWORD in .env}
+    volumes:
+      - db_data:/var/lib/mysql
+    # Server settings, passed as flags (not a config file: MySQL silently ignores a config file whose permissions are too open).
+    #   max-connections          the application pool is 20; monitoring and backups use a few more
+    #   slow-query-log / 1 s     the monitoring counts slow queries (alert MySQLSlowQueries) only when this is ON
+    #   binlog-expire (2 days)   binary logs are ON by default in MySQL 8 and keep 30 days: on a small server they quietly eat the disk.
+    #                            This database is protected by the nightly dump, not by replication, so 2 days are plenty.
+    command:
+      - mysqld
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_0900_ai_ci
+      - --max-connections=200
+      - --slow-query-log=ON
+      - --long-query-time=1
+      - --slow-query-log-file=/var/lib/mysql/slow.log
+      - --binlog-expire-logs-seconds=172800
+    # Reachable from this machine (MySQL Workbench, mysql CLI) at 127.0.0.1:DB_PUBLISH_PORT. Bound to 127.0.0.1 only, so it is NOT open to
+    # the network. The standard MySQL port 3306 by default; on a PC that already runs MySQL start with  DB_PUBLISH_PORT=3307 bash scripts/stack.sh up shared.
+    ports:
+      - "127.0.0.1:${DB_PUBLISH_PORT:-3306}:3306"
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p\"$$MYSQL_ROOT_PASSWORD\" --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    networks:
+      shared:
+        aliases: [javaschoollab-db]
+
+  # One-shot: after MySQL is healthy, makes the accounts match .env (root password, the application account DB_USER, the read-only
+  # "exporter" account used by monitoring) and removes the old account named in DB_USER_PREVIOUS. Safe to run again and again.
+  # Check the result:  docker logs javaschoollab-db-setup   (it ends with "accounts ready")
+  db-setup:
+    image: mysql:8.4
+    logging: *default-logging
+    container_name: javaschoollab-db-setup
+    restart: "no"
+    depends_on:
+      db:
+        condition: service_healthy
+    entrypoint: ["/bin/bash", "/setup-accounts.sh"]
+    environment:
+      DB_HOST: db
+      DB_NAME: ${DB_NAME:-javaschoollab}
+      DB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:?set DB_ROOT_PASSWORD in .env}
+      DB_ROOT_PASSWORD_PREVIOUS: ${DB_ROOT_PASSWORD_PREVIOUS:-}
+      DB_USER: ${DB_USER:-supervisor}
+      DB_PASSWORD: ${DB_PASSWORD:?set DB_PASSWORD in .env}
+      DB_USER_PREVIOUS: ${DB_USER_PREVIOUS:-}
+      EXPORTER_USER: ${EXPORTER_USER:-exporter}
+      EXPORTER_PASSWORD: ${EXPORTER_PASSWORD:?set EXPORTER_PASSWORD in .env}
+    volumes:
+      - ./mysql/setup-accounts.sh:/setup-accounts.sh:ro
+    networks: [shared]
+
+  # Nightly backup of the database: every day at BACKUP_AT (default 00:00, midnight, in the time zone TZ) a verified, compressed dump is written to
+  #   ../backups/database/<YYYY-MM-DD>/<db>_<date>_<time>.sql.gz   (with a .sha256 next to it)
+  # and only the newest BACKUP_KEEP_COUNT (default 3) are kept; older ones are deleted, but only after a new verified one exists.
+  # A backup is also taken at start-up when none exists yet. Details: docker/backup.sh. Restore: docker/scripts/restore-db.sh.
+  # Look at what it did:  docker logs javaschoollab-db-backup
+  backup:
+    image: mysql:8.4
+    logging: *default-logging
+    container_name: javaschoollab-db-backup
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    entrypoint: ["/bin/bash", "/backup.sh"]
+    environment:
+      TZ: ${BACKUP_TIMEZONE:-Asia/Kolkata}              # "00:00" means midnight in THIS time zone
+      DB_HOST: db
+      DB_NAME: ${DB_NAME:-javaschoollab}
+      DB_USER: root
+      MYSQL_PWD: ${DB_ROOT_PASSWORD:?set DB_ROOT_PASSWORD in .env}
+      BACKUP_AT: ${BACKUP_AT:-00:00}
+      BACKUP_KEEP_COUNT: ${BACKUP_KEEP_COUNT:-3}
+      BACKUP_ON_START: ${BACKUP_ON_START:-true}
+    volumes:
+      - ./backup.sh:/backup.sh:ro
+      - ../backups:/backups
+    networks: [shared]
+
+  # ------------------------------------------------------------------------------------------------------------------
+  #  Redis: rate limits shared by every app server, one-time codes that expire by themselves, and a 60-second cache.
+  # ------------------------------------------------------------------------------------------------------------------
+  # Nothing is persisted (--save ""): it can be wiped at any time without losing user data (users live in MySQL). Protected by an ACL:
+  # the "default" user is OFF and only REDIS_USERNAME / REDIS_PASSWORD can log in (the password must not contain spaces or quotes).
+  # Every key the app writes has an expiry, so "volatile-lru" can only ever evict cache entries.
+  redis:
+    image: redis:7-alpine
+    logging: *default-logging
+    container_name: javaschoollab-redis
+    restart: unless-stopped
+    environment:
+      REDIS_USERNAME: ${REDIS_USERNAME:-supervisor}
+      REDIS_PASSWORD: ${REDIS_PASSWORD:?set REDIS_PASSWORD in .env}
+      REDISCLI_AUTH: ${REDIS_PASSWORD:?set REDIS_PASSWORD in .env}     # lets the health check run redis-cli without the password on its command line
+      REDIS_MAXMEMORY: ${REDIS_MAXMEMORY:-128mb}
+    command:
+      - sh
+      - -c
+      - |
+        printf 'user default off\nuser %s on >%s ~* &* +@all\n' "$$REDIS_USERNAME" "$$REDIS_PASSWORD" > /tmp/users.acl
+        exec redis-server --aclfile /tmp/users.acl --save "" --appendonly no --maxmemory "$$REDIS_MAXMEMORY" --maxmemory-policy volatile-lru
+    # Reachable from this machine only (redis-cli, a locally run app): 127.0.0.1:REDIS_PUBLISH_PORT. The standard port 6379 by default; use REDIS_PUBLISH_PORT=6380 on a PC that has a Redis on 6379.
+    ports:
+      - "127.0.0.1:${REDIS_PUBLISH_PORT:-6379}:6379"
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli --user \"$$REDIS_USERNAME\" --no-auth-warning ping | grep -q PONG"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          memory: 192m
+    networks:
+      shared:
+        aliases: [javaschoollab-redis]
+
+  # ------------------------------------------------------------------------------------------------------------------
+  #  OpenSearch: full-text search over every topic (GET /api/search). Needs about 1 GB of memory.
+  # ------------------------------------------------------------------------------------------------------------------
+  # On a Linux host run once:  sudo sysctl -w vm.max_map_count=262144   (make it permanent in /etc/sysctl.conf)
+  # The security plugin is OFF on purpose: the service is reachable only from containers on the private shared network and from
+  # 127.0.0.1 on this machine, never from the internet, so it has no username and password. Turn it on (TLS + users) before you ever
+  # publish this port beyond localhost.
+  opensearch:
+    image: opensearchproject/opensearch:2.17.1
+    logging: *default-logging
+    container_name: javaschoollab-opensearch
+    restart: unless-stopped
+    environment:
+      discovery.type: single-node
+      DISABLE_SECURITY_PLUGIN: "true"
+      DISABLE_INSTALL_DEMO_CONFIG: "true"
+      OPENSEARCH_JAVA_OPTS: "-Xms512m -Xmx512m"     # heap fixed (min = max); the container limit below leaves room for off-heap memory
+      bootstrap.memory_lock: "true"                 # keep the heap out of swap
+    ulimits:
+      nofile: { soft: 65536, hard: 65536 }
+      memlock: { soft: -1, hard: -1 }
+    volumes:
+      - opensearch_data:/usr/share/opensearch/data
+    ports:
+      - "127.0.0.1:${OPENSEARCH_PUBLISH_PORT:-9200}:9200"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:9200/_cluster/health >/dev/null || exit 1"]
+      interval: 20s
+      timeout: 5s
+      retries: 10
+      start_period: 60s
+    deploy:
+      resources:
+        limits:
+          memory: 1g
+    networks:
+      shared:
+        aliases: [javaschoollab-opensearch]
+
+volumes:
+  db_data:
+    external: true
+    name: javaschoollab_db_data
+  opensearch_data:
+    name: javaschoollab_opensearch_data
+
+networks:
+  # Created by this stack, joined by the application and the monitoring stacks (declared "external" there). A fixed name so every file agrees.
+  shared:
+    name: javaschoollab_shared

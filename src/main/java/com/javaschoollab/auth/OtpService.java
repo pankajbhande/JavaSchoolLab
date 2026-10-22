@@ -39,10 +39,17 @@ public class OtpService {
         this.devEcho = !production && props.otp().devEcho();   // can never leak the code in production
     }
 
+    /** Used and expired codes are of no use to anyone; clear them out every hour so the table does not grow for ever. */
+    @org.springframework.scheduling.annotation.Scheduled(cron = "0 17 * * * *")
+    void purgeExpired() {
+        otps.purgeExpired(LocalDateTime.now().minusHours(1));
+    }
+
     public Map<String, Object> send(String identifier, String identifierType, String purpose) {
         if (isBlank(identifier) || isBlank(identifierType) || isBlank(purpose)) {
             throw ApiException.badRequest("Identifier, type, and purpose are required");
         }
+        requireKnownPurpose(purpose);
         Identifier type = Identifier.emailOnly(identifierType);
         String bad = Validation.identifierError(type, identifier);
         if (bad != null) throw ApiException.badRequest(bad);
@@ -51,7 +58,8 @@ public class OtpService {
             throw ApiException.conflict("User with this " + identifierType + " already exists. Please login instead.");
         }
         if ("login".equals(purpose) && !users.exists(type, identifier)) {
-            throw ApiException.notFound("User not found. Please register first.");
+            // Answer exactly as if a code had been sent (nothing is stored or mailed): "no such account" must not be visible from outside.
+            return sentBody(null);
         }
 
         otps.invalidateUnused(identifier, identifierType);
@@ -77,10 +85,15 @@ public class OtpService {
             log.info("[OTP] {}: {} => OTP: {} (purpose: {})", identifierType, identifier, otp, purpose);
         }
 
+        Map<String, Object> body = sentBody(devEcho ? otp : null);
+        return body;
+    }
+
+    private Map<String, Object> sentBody(String devOtp) {
         Map<String, Object> body = new LinkedHashMap<>();
-        body.put("message", "OTP sent to your " + identifierType);
+        body.put("message", "OTP sent to your email");
         body.put("expiresIn", EXPIRES_MINUTES * 60);
-        if (devEcho) body.put("_dev_otp", otp);
+        if (devOtp != null) body.put("_dev_otp", devOtp);
         return body;
     }
 
@@ -88,6 +101,7 @@ public class OtpService {
         if (isBlank(identifier) || isBlank(identifierType) || isBlank(otp) || isBlank(purpose)) {
             throw ApiException.badRequest("All fields are required");
         }
+        requireKnownPurpose(purpose);
         Identifier.emailOnly(identifierType);
         long id = otps.findUnused(identifier, identifierType, otp, purpose, LocalDateTime.now())
                 .orElseThrow(() -> ApiException.unauthorized("Invalid or expired OTP. Please try again."));
@@ -103,6 +117,11 @@ public class OtpService {
 
     void spend(long id) {
         otps.delete(id);
+    }
+
+    /** Only the two flows that exist; anything else is a hand-made request (and would not fit the column). */
+    private static void requireKnownPurpose(String purpose) {
+        if (!"register".equals(purpose) && !"login".equals(purpose)) throw ApiException.badRequest("Invalid purpose");
     }
 
     private static boolean isBlank(String s) {

@@ -120,17 +120,17 @@ React route such as `/course/java/basics/Constructor_in_java` loads the app (any
 file extension gets `index.html`); a missing `.js`/`.png` is a real 404. Hashed files under `/assets` are cached for
 a year, everything else is revalidated so a new deploy shows up immediately.
 
-Build the React app with `VITE_API_BASE_URL=/api` (the Dockerfile does) so the browser calls its own origin.
+Build the React app with `VITE_API_BASE_URL=/api` (`docker/Dockerfile` does) so the browser calls its own origin.
 
 ## Docker
 
 ```
-# from the repository root
-docker build -f backend/Dockerfile -t javaschoollab .
+# from the repository root (the Dockerfile lives in docker/, the build context is the root)
+docker build -f docker/Dockerfile -t javaschoollab .
 docker run -p 3001:3001 --env-file /srv/javaschoollab/.env javaschoollab
 ```
 
-The image contains no user data. Keep MySQL outside it (managed MySQL, or the `db_data` volume in `../docker`) and the
+The image contains no user data. Keep MySQL outside it (managed MySQL, or the shared stack `docker/docker-compose.shared.yml`) and the
 `.env` outside the code folder, so replacing the code never touches users, visitor count or secrets.
 
 ## Course content
@@ -149,8 +149,12 @@ They are public, send a strong `ETag` and `Cache-Control: no-cache`, so a client
 `mvn test` runs 153 tests (including the 7 architecture rules): validation rules, Node-token and bcrypt compatibility, the streak/XP/review maths
 (the same cases as the original Node server's `progress.test.js`), and the whole flow against the real Spring context: sign-in
 (OTP, register, password and OTP login, change password, 401/403 rules), progress (topics, import, study time clamps,
-summary, weekly goal, quiz grading, review queue), profile and avatar checks, bookmarks and notes, certificate issuing and public verification, public profiles (opt-in, privacy, handle rules and ownership), the leaderboard, the 429 limits, the visitor counter, the course content API (every course checked against its manifest hash and counts), and site hosting with the React-route fallback. The tests use H2 in MySQL mode; the
-MySQL-only Flyway scripts have **not** been run in CI yet, so run the app once against a real MySQL before relying on them.
+summary, weekly goal, quiz grading, review queue), profile and avatar checks, bookmarks and notes, certificate issuing and public verification, public profiles (opt-in, privacy, handle rules and ownership), the leaderboard, the 429 limits, the visitor counter, the course content API (every course checked against its manifest hash and counts), and site hosting with the React-route fallback. The tests use H2 in MySQL mode (tests only); the MySQL-only Flyway scripts are checked by starting the app against a real MySQL (see "Testing against a real MySQL").
+
+**H2 is used by the automated tests only** (scope `test` in `pom.xml`): an in-memory database in MySQL mode, with a hand-written schema in
+`src/test/resources/test-schema.sql`, so `mvn test` needs no Docker and starts nothing. The running application and the Docker image always use MySQL and contain no H2.
+Because H2 is not MySQL, the real Flyway migrations are checked separately: before a release start the app once against a throw-away MySQL (see the next section).
+When you add a column in a migration, add it to `test-schema.sql` too.
 
 ## Testing against a real MySQL
 
@@ -201,9 +205,75 @@ topics studied, a visitor-to-certificate funnel, daily charts, the most visited 
   attached only when the learner is signed in. Browsers that send "Do Not Track" are not tracked. Events older than 400 days are deleted every night.
 - **Not counted:** the admin page itself, and any event with an unknown type (the server only accepts page views and searches).
 
+## Security
+
+- **Brute-force limits** (`auth/AuthGuard`): password sign-in / sign-up, sending a one-time code and checking one are limited per account and per client address
+  (`LOGIN_RATE_LIMIT`, `OTP_SEND_RATE_LIMIT`, `OTP_VERIFY_RATE_LIMIT`, per minute per account; the address limit is 10x). Answer: 429 with `Retry-After`.
+- **No account enumeration:** a wrong password and an unknown account give the same answer (`Invalid email or password`) in the same time; sending a login code
+  for an unknown account looks like a normal send.
+- **Passwords:** new passwords need 8+ characters and must not be a very common one. Sign-in never checks the length, so older accounts keep working.
+- **Token revocation:** `users.tokens_valid_from` (migration V10). Changing the password or `POST /api/auth/logout-all` refuses every token issued before that moment
+  (`security/TokenRevocation`, cached 15 seconds). `POST /api/auth/change-password` returns `{ok, token}`: the fresh token for the device that changed it.
+- **Your data:** `GET /api/account/export` (JSON download) and `DELETE /api/account` with `{"confirm": "<your e-mail>"}` (package `account`).
+- **Browser headers** (`web/SecurityHeadersFilter`): Referrer-Policy, Permissions-Policy and a Content-Security-Policy. Its script allow-list is `report-only` by default
+  (`CSP_MODE`); set `CSP_MODE=enforce` once the browser console shows no "[Report Only]" messages for ads and Google sign-in.
+- **Housekeeping:** expired one-time codes are deleted hourly, analytics events older than 400 days nightly.
+
+> **Optional observability.** The Prometheus / Grafana / Loki / Tempo stack only runs when `OBSERVABILITY=true` in `docker/.env`; `stack.sh up all` honours it (and removes the monitoring containers when it is not true, keeping their volumes). The application's health endpoints and `/actuator/prometheus` stay on either way.
+
+## Monitoring (Spring Boot Actuator)
+
+The server exposes the standard operations endpoints, and only those. Everything else Actuator can do (`env`, `beans`, `heapdump`, `loggers`,
+`shutdown`...) is switched off and answers 404.
+
+| Endpoint | Who may call it | What it answers |
+|---|---|---|
+| `/actuator/health/liveness` | anyone | "Is the process alive?" Only the JVM state, never the database, so an outage cannot cause a restart loop. Restart the container when it fails. |
+| `/actuator/health/readiness` | anyone | "Can it take traffic?" Start-up finished (Flyway included) and MySQL answers. The Docker health check uses it. Stop sending traffic when it fails. |
+| `/actuator/health` | anyone (status only); the ACTUATOR account sees every component | Overall status: `db`, `diskSpace`, `redis` (only when `REDIS_ENABLED=true`) and `search` (UP / DEGRADED / UNKNOWN, never DOWN). |
+| `/actuator/info` | anyone | Application name, description, version and build time (from `build-info`), Java version, and the commit (`APP_COMMIT`). |
+| `/actuator/metrics`, `/actuator/prometheus` | the ACTUATOR account (HTTP Basic) | JVM, Tomcat, HikariCP (database pool), HTTP request counts and latency histograms (p95 / p99), cache and Redis metrics, plus `jsl_search_ready` and `jsl_search_topics_indexed`. Every metric carries the tag `application="javaschoollab"`. |
+
+**Production setup (`application-prod.yml`, `docker/docker-compose.yml`)**
+- The endpoints run on a **separate management port** (`MANAGEMENT_PORT`, default 9001), not on the website port, and Docker publishes it on
+  `127.0.0.1` only (`MANAGEMENT_PUBLISH_PORT`). The internet only ever reaches the website port, so `/actuator/**` is not reachable there.
+  Locally (no `MANAGEMENT_PORT`) the endpoints share port 3001 and the health details are shown without signing in.
+- Metrics need the account `ACTUATOR_USER` / `ACTUATOR_PASSWORD` (HTTP Basic). With an empty password the account does not exist and those
+  two endpoints stay closed; health and info still answer.
+- **Graceful shutdown** is on (`server.shutdown: graceful`, 30 s): when the container is stopped or redeployed, requests in flight finish first.
+  Compose gives it 40 s (`stop_grace_period`).
+- Readiness deliberately leaves Redis and search out: the application keeps working without them (it counts rate limits in memory and the browser
+  searches by itself), so their outage must not pull the application out of rotation. They still show in `/actuator/health` for the operator.
+
+**Checks from the machine that runs Docker**
+```
+curl http://127.0.0.1:9001/actuator/health/readiness
+curl http://127.0.0.1:9001/actuator/info
+curl -u actuator:<ACTUATOR_PASSWORD> http://127.0.0.1:9001/actuator/health
+curl -u actuator:<ACTUATOR_PASSWORD> http://127.0.0.1:9001/actuator/prometheus
+docker compose ps        # the "app" container shows (healthy) once readiness is UP
+```
+
+**Prometheus** (scrape the management port from inside the same Docker network, or from the host):
+```
+scrape_configs:
+  - job_name: javaschoollab
+    metrics_path: /actuator/prometheus
+    basic_auth:
+      username: actuator
+      password_file: /etc/prometheus/actuator_password
+    static_configs:
+      - targets: ["127.0.0.1:9001"]
+```
+Useful alerts: `up == 0` (cannot scrape), `jsl_search_ready == 0` for 15 minutes, HikariCP `hikaricp_connections_pending > 0` for 5 minutes,
+`histogram_quantile(0.95, sum(rate(http_server_requests_seconds_bucket[5m])) by (le)) > 1`, JVM heap above 85 %, `disk_free_bytes` low.
+
+**Kubernetes** (if you move there later): `livenessProbe` on `/actuator/health/liveness`, `readinessProbe` and `startupProbe` on
+`/actuator/health/readiness`, all against the management port.
+
 ## Redis and OpenSearch (both optional)
 
-The site works with neither. In Docker both are started by `docker/docker-compose.yml`; from STS they are off until you start them.
+The site works with neither. In Docker both are started by `docker/docker-compose.yml` (the application stack); from STS they are off until you start them.
 
 **Redis** (`app.redis.enabled` / `REDIS_ENABLED=true`, `REDIS_HOST`, `REDIS_PORT`)
 - *Rate limits* for the public routes (certificate verification, public profiles, handle check, search) are counted in Redis, so they are shared by every
@@ -228,33 +298,42 @@ The site works with neither. In Docker both are started by `docker/docker-compos
 Users, progress, certificates and notes live in MySQL, never in the application files. A new version of the code replaces only the app
 container (or the jar); the database is untouched:
 
-- **Data location:** the Docker volume `javaschoollab_db_data`. It is declared `external` in `docker/docker-compose.yml`, so it belongs to Docker,
-  not to the compose project: `docker compose up --build`, `down` and even `down -v` leave it alone. On a brand-new server create it once with
-  `docker volume create javaschoollab_db_data`. Only `docker volume rm javaschoollab_db_data` deletes the data.
-- **Schema changes** come only from new Flyway files in `src/main/resources/db/migration` (`V8__...`, `V9__...`). They run once at start-up, in order,
-  and keep existing rows. **Never edit a migration that has already run**: Flyway stops the app if its checksum changes. Add a new file instead.
-- **Secrets and connection settings** (password, JWT secret) come from `docker/.env` or `application.properties`, both git-ignored, so a code
-  update never overwrites them.
+- **Separate stack:** MySQL, Redis, OpenSearch and the nightly backup run from `docker/docker-compose.shared.yml` (project `javaschoollab-shared`) and are
+  started and stopped on their own. The application (`docker/docker-compose.yml`, project `javaschoollab`) has no database service, so `docker compose down`
+  there stops only the app. They meet on the network `javaschoollab_shared`; the app reaches MySQL at the host name `javaschoollab-db`.
+  `bash docker/scripts/stack.sh up all` starts the stacks in the right order and waits until each is healthy.
+- **Data location:** the Docker volume `javaschoollab_db_data`, declared `external`, so it belongs to Docker and not to a compose project: rebuilding the app,
+  `down` and even `down -v` leave it alone. On a brand-new machine create it once with `docker volume create javaschoollab_db_data`.
+  Only `docker volume rm javaschoollab_db_data` deletes the data.
+- **Reaching the database from this machine** (MySQL Workbench, the `mysql` CLI): `127.0.0.1:3306` (`DB_PUBLISH_PORT` in `docker/.env`; on a PC that already runs MySQL use `DB_PUBLISH_PORT=3307`), bound to 127.0.0.1 only.
+- **Schema changes** come only from new Flyway files in `src/main/resources/db/migration` (currently up to `V11__...`). They run once at start-up, in order,
+  and keep existing rows. **Never edit a migration that has already run**: Flyway stops the app if its checksum changes. Add a new file instead, and add
+  the new column or table to `src/test/resources/test-schema.sql` (the H2 copy the tests use).
+- **Secrets and connection settings** come from `docker/.env` or `application.properties`, both git-ignored, so a code update never overwrites them.
+  `bash docker/scripts/generate-secrets.sh` creates strong values.
 - **Backups** (next section) are the safety net if the server or the volume itself is lost.
 
 ## Backups
 
-Users, progress and certificates live only in MySQL, so back it up.
+Users, progress and certificates live only in MySQL, so back it up. Everything is described in `docker/help.txt`; in short:
 
-- **Server (Docker):** the `backup` service in `docker/docker-compose.yml` writes a gzipped `mysqldump` to `backups/` (next to `docker/`) every
-  `BACKUP_EVERY_HOURS` (default 24) and deletes backups older than `BACKUP_KEEP_DAYS` (default 14). A failed dump never replaces or removes
-  a good backup. **Copy `backups/` off the server regularly** (another disk or cloud storage): a backup on the same machine does not survive losing it.
-- **Local MySQL (STS):** `powershell -ExecutionPolicy Bypass -File scripts\backup-local.ps1` backs up the database named in `application.properties`.
-  Run it before risky changes, or schedule it with Windows Task Scheduler (daily).
-- **Restore (Docker):** stop the app, then run
-  `gunzip -c backups/javaschoollab-<date>.sql.gz | docker compose exec -T db sh -c 'mysql -uroot -p"$MYSQL_ROOT_PASSWORD" javaschoollab'`
-  and start the app again.
-- **Restore (local):** `scripts\backup-local.ps1 -Restore` loads the newest backup into the database in `application.properties`, replacing its contents.
+- **Database:** the `backup` service in the shared stack writes a verified, checksummed `mysqldump` every night at midnight (`BACKUP_AT`, time zone `TZ`) to
+  `backups/database/<date>/` and keeps the newest 3 (`BACKUP_KEEP_COUNT`). A failed dump never replaces or removes a good backup, and a missed or failed backup raises an alert.
+  `deploy.sh` takes an extra one before every deploy.
+- **Images and configuration:** `bash docker/scripts/backup-images.sh` (scheduled by `install-backup-schedule.sh`) keeps the newest 3 versions of the application image and
+  the configuration; `deploy.sh` also keeps an image archive of every deployed version in `backups/images/deploy/`.
+- **Off the server:** set `BACKUP_REMOTE` in `docker/.env` (a mounted disk, `user@host:/path` over SSH, or an rclone remote) and `scripts/sync-backups-offsite.sh` copies `backups/` there.
+  A backup on the same machine does not survive losing it.
+- **Restore:** `bash docker/scripts/restore-db.sh <backup.sql.gz> [target-database] [--yes]` verifies the file, saves a safety copy of the current state, then loads the backup.
+  Try a backup out first with a scratch database name (`restore_check`).
+- **Local MySQL (STS):** `powershell -ExecutionPolicy Bypass -File scriptsackup-local.ps1` backs up the database named in `application.properties`; `-Restore` loads the newest backup.
 - `backups/` is git-ignored: the files contain user data and password hashes, so never commit or share them.
 
 ## Deploying
 
-1. Run `mvn test`, then `node scripts/smoke.mjs` against **your own** MySQL.
-2. Keep the same `JWT_SECRET` the site already uses, so nobody is logged out.
-3. `cd docker && docker compose up -d --build` runs the app and MySQL. It reuses the `db_data` volume, so users and progress stay
-   (Flyway adopts the existing tables without changing data). The volume is external, so `down -v` cannot delete it.
+1. Run `mvn test`, and the frontend checks (`npm run verify` in `frontend/`).
+2. Keep the same `JWT_SECRET` the site already uses if you want nobody logged out (a changed secret signs everyone out once).
+3. On a server, follow `docker/help.txt` ("PUTTING IT ON AN UBUNTU SERVER"): `server-setup-ubuntu.sh base`, clone the repository, `generate-secrets.sh`, fill in `docker/.env`,
+   `docker volume create javaschoollab_db_data`, `bash scripts/stack.sh up all`, `install-backup-schedule.sh`, then `server-setup-ubuntu.sh nginx ...`. Run `bash scripts/preflight.sh` before real users arrive.
+4. Later releases: merge into the deployment branch and `auto-deploy.sh` (see `docs/auto-deploy.md`) builds, backs up, deploys and rolls back by itself, or use the `Jenkinsfile` (`docs/jenkins.md`).
+   By hand: `bash docker/scripts/stack.sh up app` rebuilds and restarts only the application; the database is never restarted by it.

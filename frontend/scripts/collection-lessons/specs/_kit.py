@@ -54,8 +54,12 @@ def hierarchy(chain):
 
 
 
-def practice(title, intro, steps, code):
-    """A real-time practice block: a story, what the program does step by step, and one complete runnable program."""
-    html = (f'<h3 class="practice">{title}</h3>\n<p>{intro}</p>\n'
-            '<p><strong>What the program does:</strong></p>\n<ol>\n' + '\n'.join(f'<li>{x}</li>' for x in steps) + '\n</ol>')
+
+def practice(title, intro, steps, code, level='Medium', hints=None):
+    """A practice QUESTION: a problem statement, the tasks, optional hints, and one complete verified solution (with its real output)."""
+    html = (f'<h3 class="practice">{title}</h3>\n<p><strong>Level:</strong> {level}</p>\n<p><strong>Problem:</strong> {intro}</p>\n'
+            '<p><strong>Your task:</strong></p>\n<ol>\n' + '\n'.join(f'<li>{x}</li>' for x in steps) + '\n</ol>')
+    if hints:
+        html += '\n<p><strong>Hints:</strong></p>\n' + ul(hints)
+    html += '\n<p><em>Try it on your own first. The program below is one complete solution, with the real output it prints.</em></p>'
     return (html, [code])

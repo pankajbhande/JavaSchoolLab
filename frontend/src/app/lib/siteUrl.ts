@@ -7,7 +7,7 @@
 
 export function siteUrl(): string {
   const configured = (import.meta.env.VITE_SITE_URL as string | undefined)?.trim();
-  const base = configured || (typeof window !== 'undefined' ? window.location.origin : 'https://javaschoollab.com');
+  const base = configured || (typeof window !== 'undefined' ? window.location.origin : 'https://javaschoollab.dhipansoft.in');
   return base.replace(/\/+$/, '');
 }
 

@@ -21,7 +21,9 @@ public class ApiExceptionHandler {
 
     @ExceptionHandler(ApiException.class)
     ResponseEntity<Map<String, String>> expected(ApiException e) {
-        return ResponseEntity.status(e.status()).body(Map.of("error", e.getMessage()));
+        ResponseEntity.BodyBuilder response = ResponseEntity.status(e.status());
+        if (e.retryAfterSeconds() > 0) response.header("Retry-After", String.valueOf(e.retryAfterSeconds()));
+        return response.body(Map.of("error", e.getMessage()));
     }
 
     /** A body that isn't valid JSON is the caller's mistake, not a server fault. */

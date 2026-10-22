@@ -4,7 +4,7 @@
 // a course is missing or loads differently from the eager list.
 
 import type { Course } from './types';
-import { withJvm, withJdbc, withJsRoadmap, withReactRoadmap, withAngularRoadmap, withFlutterRoadmap, withHibernateRoadmap, withMicroservicesRoadmap, withSpringCoreRoadmap, withJavaFxRoadmap } from './courseMerges';
+import { withJvm, withJdbc, withJsRoadmap, withReactRoadmap, withAngularRoadmap, withAngularSyllabus, withDesignPatternExtras, withFlutterRoadmap, withHibernateRoadmap, withMicroservicesRoadmap, withSpringCoreRoadmap, withJavaFxRoadmap } from './courseMerges';
 
 type Loader = () => Promise<Course[]>;
 
@@ -20,7 +20,8 @@ export const courseModules: Record<string, Loader> = {
     .then(([a, b, r1, r2, r3, r4]) => withSpringCoreRoadmap(withJvm(a.coreJava, b.JavaMemoryJVM), r1.springCoreRoadmap1.slice(0, 1), [...r1.springCoreRoadmap1.slice(1), ...r2.springCoreRoadmap2, ...r3.springCoreRoadmap3, ...r4.springCoreRoadmap4])),
   JSPServlets: () => import('./JSPServlet').then(m => m.JSPServlets),
   CollectionFramework: () => import('./CollectionFramework').then(m => m.CollectionFramework),
-  designPattern: () => import('./designPattern').then(m => m.designPattern),
+  designPattern: () => Promise.all([import('./designPattern'), import('./DesignPatternExtras1'), import('./DesignPatternExtras2'), import('./DesignPatternExtras3'), import('./DesignPatternExtras4')])
+    .then(([d, e1, e2, e3, e4]) => withDesignPatternExtras(d.designPattern, { ...e1.designPatternExtras1, ...e2.designPatternExtras2, ...e3.designPatternExtras3, ...e4.designPatternExtras4 })),
   enterprisePatterns: () => Promise.all([import('./EnterprisePatternsPart1'), import('./EnterprisePatternsPart2')])
     .then(([a, b]) => merged(a.enterprisePatternsPart1, b.enterprisePatternsPart2)),
   microservicesPatterns: () => Promise.all([import('./MicroservicesPatternsPart1'), import('./MicroservicesPatternsPart2')])
@@ -39,8 +40,10 @@ export const courseModules: Record<string, Loader> = {
     .then(([a, r1, r2, r3]) => withReactRoadmap(a.Reactjs, r1.reactRoadmap1.slice(0, 1), [...r1.reactRoadmap1.slice(1), ...r2.reactRoadmap2, ...r3.reactRoadmap3])),
   JavaScriptCourse: () => Promise.all([import('./JavaScriptCourse'), import('./JavaScriptRoadmap1'), import('./JavaScriptRoadmap2'), import('./JavaScriptRoadmap3'), import('./JavaScriptRoadmap4')])
     .then(([a, r1, r2, r3, r4]) => withJsRoadmap(a.JavaScriptCourse, r1.jsRoadmap1.slice(0, 1), [...r1.jsRoadmap1.slice(1), ...r2.jsRoadmap2, ...r3.jsRoadmap3, ...r4.jsRoadmap4])),
-  AngularCourse: () => Promise.all([import('./AngularCourse'), import('./AngularRoadmap1'), import('./AngularRoadmap2'), import('./AngularRoadmap3')])
-    .then(([a, r1, r2, r3]) => withAngularRoadmap(a.AngularCourse, r1.angularRoadmap1.slice(0, 1), [...r1.angularRoadmap1.slice(1), ...r2.angularRoadmap2, ...r3.angularRoadmap3])),
+  AngularCourse: () => Promise.all([import('./AngularCourse'), import('./AngularRoadmap1'), import('./AngularRoadmap2'), import('./AngularRoadmap3'), import('./AngularSyllabus0'), import('./AngularSyllabus1'), import('./AngularSyllabus2'), import('./AngularSyllabus3'), import('./AngularSyllabus4')])
+    .then(([a, r1, r2, r3, s0, s1, s2, s3, s4]) => withAngularSyllabus(
+      withAngularRoadmap(a.AngularCourse, r1.angularRoadmap1.slice(0, 1), [...r1.angularRoadmap1.slice(1), ...r2.angularRoadmap2, ...r3.angularRoadmap3]),
+      s0.angularSyllabus0, [...s1.angularSyllabus1, ...s2.angularSyllabus2, ...s3.angularSyllabus3, ...s4.angularSyllabus4])),
   Flutter: () => Promise.all([import('./Flutter'), import('./FlutterRoadmap1'), import('./FlutterRoadmap2'), import('./FlutterRoadmap3'), import('./FlutterRoadmap4')])
     .then(([a, r1, r2, r3, r4]) => withFlutterRoadmap(a.Flutter, r1.flutterRoadmap1.slice(0, 1), [...r1.flutterRoadmap1.slice(1), ...r2.flutterRoadmap2, ...r3.flutterRoadmap3, ...r4.flutterRoadmap4])),
   JavaFXCourse: () => Promise.all([import('./JavaFXCourse'), import('./JavaFXRoadmap1'), import('./JavaFXRoadmap2'), import('./JavaFXRoadmap3')])

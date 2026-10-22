@@ -92,7 +92,6 @@ public class CertificateController {
     }
 
     private static String text(JsonNode body, String field) {
-        JsonNode n = body.get(field);
-        return n == null || n.isNull() ? "" : n.asText();
+        return com.javaschoollab.common.JsonInput.bounded(body.get(field), field, 255);   // the VARCHAR(255) columns
     }
 }

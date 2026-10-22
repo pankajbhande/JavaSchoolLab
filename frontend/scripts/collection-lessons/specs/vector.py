@@ -89,98 +89,190 @@ INTERMEDIATE = [
         'addElement, insertElementAt and add', 'void addElement(E obj);  void insertElementAt(E obj, int index);  boolean add(E e)', 'nothing / nothing / <code>true</code>', 'O(1) amortised / O(n)',
         '<code>addElement(x)</code> and <code>add(x)</code> both append at the end. <code>insertElementAt(x, i)</code> puts x at index i and shifts the rest right. Note the <strong>argument order</strong>: element first, then index (the opposite of <code>add(int, E)</code>).',
         '<code>addElement</code> is the original method; <code>add</code> was added for the List interface and simply calls the same code. Each call takes the vector\'s lock, so a loop of a million adds pays for a million lock operations (the JVM can often optimise this away, but the lock is still part of the contract).',
-        r'''// Vector addElement / insertElementAt / add
+        r'''// Vector add(E e): adds at the end
 import java.util.Vector;
 
 public class VectorAddDemo {
     public static void main(String[] args) {
         Vector<String> forts = new Vector<>();
 
-        forts.addElement("Raigad");              // classic name
-        forts.add("Sinhagad");                   // List name, same effect
-        forts.insertElementAt("Torna", 1);       // (element, index): note the order
-        forts.add(0, "Purandar");                // List style insert: (index, element)
+        forts.add("Raigad");
+        forts.add("Torna");
 
         System.out.println(forts);
     }
 }
-''' + OUT),
+''' + OUT, extra_codes=(r'''// Vector addElement(E e): old name for add
+import java.util.Vector;
+
+public class VectorAddElementDemo {
+    public static void main(String[] args) {
+        Vector<String> forts = new Vector<>();
+
+        forts.addElement("Raigad");   // same result as add
+
+        System.out.println(forts);
+    }
+}
+''' + OUT, r'''// Vector insertElementAt(E e, int index): inserts at a position
+import java.util.Vector;
+
+public class VectorInsertElementAtDemo {
+    public static void main(String[] args) {
+        Vector<String> forts = new Vector<>();
+        forts.add("Raigad");
+        forts.add("Torna");
+
+        forts.insertElementAt("Sinhagad", 1);   // note: element first, index second
+
+        System.out.println(forts);
+    }
+}
+''' + OUT,)),
     method(
         'elementAt, firstElement, lastElement and get', 'E elementAt(int index);  E firstElement();  E lastElement();  E get(int index)', 'the element', 'O(1)',
         'Read an element by position (<code>elementAt</code> = <code>get</code>) or read the first or last. <code>firstElement()</code> and <code>lastElement()</code> throw <code>NoSuchElementException</code> on an empty vector; a bad index throws <code>ArrayIndexOutOfBoundsException</code>.',
         'Note the exception type: Vector throws <code>ArrayIndexOutOfBoundsException</code> (a subclass of <code>IndexOutOfBoundsException</code>), while ArrayList throws a plain <code>IndexOutOfBoundsException</code>.',
-        r'''// Vector elementAt / firstElement / lastElement / get
-import java.util.List;
-import java.util.NoSuchElementException;
+        r'''// Vector get(int index): reads by position
 import java.util.Vector;
 
-public class VectorReadDemo {
+public class VectorGetDemo {
     public static void main(String[] args) {
-        Vector<String> cities = new Vector<>(List.of("Pune", "Nashik", "Nagpur"));
+        Vector<String> forts = new Vector<>();
+        forts.add("Raigad");
+        forts.add("Sinhagad");
+        forts.add("Torna");
 
-        System.out.println("elementAt(1)  : " + cities.elementAt(1));
-        System.out.println("get(1)        : " + cities.get(1));
-        System.out.println("firstElement  : " + cities.firstElement());
-        System.out.println("lastElement   : " + cities.lastElement());
-
-        try {
-            cities.elementAt(5);
-        } catch (ArrayIndexOutOfBoundsException e) {
-            System.out.println("elementAt(5)  : " + e.getMessage());
-        }
-        try {
-            new Vector<String>().firstElement();
-        } catch (NoSuchElementException e) {
-            System.out.println("Empty vector  : NoSuchElementException");
-        }
+        System.out.println(forts.get(1));   // Sinhagad
     }
 }
-''' + OUT),
+''' + OUT, extra_codes=(r'''// Vector elementAt(int index): old name for get
+import java.util.Vector;
+
+public class VectorElementAtDemo {
+    public static void main(String[] args) {
+        Vector<String> forts = new Vector<>();
+        forts.add("Raigad");
+        forts.add("Sinhagad");
+        forts.add("Torna");
+
+        System.out.println(forts.elementAt(1));   // Sinhagad
+    }
+}
+''' + OUT, r'''// Vector firstElement(): reads the first element
+import java.util.Vector;
+
+public class VectorFirstElementDemo {
+    public static void main(String[] args) {
+        Vector<String> forts = new Vector<>();
+        forts.add("Raigad");
+        forts.add("Sinhagad");
+        forts.add("Torna");
+
+        System.out.println(forts.firstElement());   // Raigad
+    }
+}
+''' + OUT, r'''// Vector lastElement(): reads the last element
+import java.util.Vector;
+
+public class VectorLastElementDemo {
+    public static void main(String[] args) {
+        Vector<String> forts = new Vector<>();
+        forts.add("Raigad");
+        forts.add("Sinhagad");
+        forts.add("Torna");
+
+        System.out.println(forts.lastElement());   // Torna
+    }
+}
+''' + OUT,)),
     method(
         'setElementAt and set', 'void setElementAt(E obj, int index);  E set(int index, E element)', 'nothing / the old element', 'O(1)',
         'Replace the element at an index. <code>setElementAt(element, index)</code> returns nothing; <code>set(index, element)</code> returns the element it replaced.',
         'Again the classic method has the argument order <em>(element, index)</em>, while the List method has <em>(index, element)</em>. Mixing them up compiles when both are <code>int</code> and <code>Integer</code>-compatible types are used: be careful with <code>Vector&lt;Integer&gt;</code>.',
-        r'''// Vector setElementAt / set
-import java.util.List;
+        r'''// Vector set(int index, E e): replaces by position
 import java.util.Vector;
 
 public class VectorSetDemo {
     public static void main(String[] args) {
-        Vector<String> forts = new Vector<>(List.of("Raigad", "Sinhagad", "Torna"));
+        Vector<String> forts = new Vector<>();
+        forts.add("Raigad");
+        forts.add("Sinhagad");
+        forts.add("Torna");
 
-        forts.setElementAt("Rajgad", 0);          // (element, index)
-        String old = forts.set(2, "Purandar");     // (index, element) returns the old value
+        forts.set(0, "Purandar");
 
-        System.out.println("Replaced by set: " + old);
-        System.out.println("Vector now     : " + forts);
+        System.out.println(forts);
     }
 }
-''' + OUT),
+''' + OUT, extra_codes=(r'''// Vector setElementAt(E e, int index): old name for set
+import java.util.Vector;
+
+public class VectorSetElementAtDemo {
+    public static void main(String[] args) {
+        Vector<String> forts = new Vector<>();
+        forts.add("Raigad");
+        forts.add("Sinhagad");
+        forts.add("Torna");
+
+        forts.setElementAt("Purandar", 0);   // note: element first, index second
+
+        System.out.println(forts);
+    }
+}
+''' + OUT,)),
 
     section('Removing elements', 'Remove by value, by index, or everything.'),
     method(
         'removeElement, removeElementAt and removeAllElements', 'boolean removeElement(Object obj);  void removeElementAt(int index);  void removeAllElements()', '<code>true</code> if found / nothing / nothing', 'O(n)',
         '<code>removeElement(x)</code> removes the <strong>first</strong> element equal to x and says whether it found one. <code>removeElementAt(i)</code> removes by index. <code>removeAllElements()</code> empties the vector (same as <code>clear()</code>).',
         '<code>removeElement</code> is the same as <code>remove(Object)</code>. Later elements shift left. An invalid index throws <code>ArrayIndexOutOfBoundsException</code>.',
-        r'''// Vector removeElement / removeElementAt / removeAllElements
-import java.util.List;
+        r'''// Vector removeElement(Object o): removes by value
 import java.util.Vector;
 
-public class VectorRemoveDemo {
+public class VectorRemoveElementDemo {
     public static void main(String[] args) {
-        Vector<String> forts = new Vector<>(List.of("Raigad", "Sinhagad", "Torna", "Sinhagad", "Purandar"));
+        Vector<String> forts = new Vector<>();
+        forts.add("Raigad");
+        forts.add("Sinhagad");
+        forts.add("Torna");
 
-        boolean found = forts.removeElement("Sinhagad");     // first match only
-        System.out.println("removeElement      : " + found + " -> " + forts);
+        forts.removeElement("Sinhagad");
 
-        forts.removeElementAt(0);                              // by index
-        System.out.println("removeElementAt(0) : " + forts);
-
-        forts.removeAllElements();                             // everything
-        System.out.println("removeAllElements  : " + forts + " size " + forts.size());
+        System.out.println(forts);
     }
 }
-''' + OUT),
+''' + OUT, extra_codes=(r'''// Vector removeElementAt(int index): removes by position
+import java.util.Vector;
+
+public class VectorRemoveElementAtDemo {
+    public static void main(String[] args) {
+        Vector<String> forts = new Vector<>();
+        forts.add("Raigad");
+        forts.add("Sinhagad");
+        forts.add("Torna");
+
+        forts.removeElementAt(0);   // removes Raigad
+
+        System.out.println(forts);
+    }
+}
+''' + OUT, r'''// Vector removeAllElements(): removes everything
+import java.util.Vector;
+
+public class VectorRemoveAllElementsDemo {
+    public static void main(String[] args) {
+        Vector<String> forts = new Vector<>();
+        forts.add("Raigad");
+        forts.add("Sinhagad");
+        forts.add("Torna");
+
+        forts.removeAllElements();
+
+        System.out.println(forts);
+    }
+}
+''' + OUT,)),
 
     section('Capacity', 'A Vector has a <strong>size</strong> (elements stored) and a <strong>capacity</strong> (room available). Unlike ArrayList, Vector lets you <strong>read</strong> the capacity.'),
     method(
@@ -192,24 +284,13 @@ import java.util.Vector;
 
 public class VectorCapacityDemo {
     public static void main(String[] args) {
-        Vector<String> forts = new Vector<>();                 // capacity 10
-        System.out.println("start            : size " + forts.size() + ", capacity " + forts.capacity());
+        Vector<String> forts = new Vector<>();
 
-        for (int i = 1; i <= 11; i++) {
-            forts.add("fort" + i);                              // the 11th add makes it grow
-        }
-        System.out.println("after 11 adds    : size " + forts.size() + ", capacity " + forts.capacity());   // doubled to 20
+        System.out.println(forts.capacity());   // 10: default room
+        System.out.println(forts.size());       // 0: no elements yet
 
-        forts.trimToSize();
-        System.out.println("after trimToSize : size " + forts.size() + ", capacity " + forts.capacity());
-
-        forts.ensureCapacity(50);
-        System.out.println("ensureCapacity(50): capacity " + forts.capacity());
-
-        forts.setSize(13);                                      // pads with null
-        System.out.println("setSize(13)      : " + forts.subList(10, 13));
-        forts.setSize(3);                                       // truncates
-        System.out.println("setSize(3)       : " + forts);
+        forts.add("Raigad");
+        System.out.println(forts.size());       // 1 element
     }
 }
 ''' + OUT),
@@ -219,116 +300,237 @@ public class VectorCapacityDemo {
         'indexOf(o, from), lastIndexOf(o, from) and contains', 'int indexOf(Object o, int index);  int lastIndexOf(Object o, int index);  boolean contains(Object o)', 'the index (or <code>-1</code>) / <code>true</code> or <code>false</code>', 'O(n)',
         'Search for a value starting at a position you choose: <code>indexOf("Pune", 2)</code> looks for Pune from index 2 onwards; <code>lastIndexOf("Pune", 3)</code> looks backwards from index 3.',
         'These two-argument searches exist only on Vector (not on ArrayList). Matching uses <code>equals()</code>.',
-        r'''// Vector indexOf(o, from) / lastIndexOf(o, from) / contains
-import java.util.List;
+        r'''// Vector contains(Object o): is the value present?
 import java.util.Vector;
 
-public class VectorSearchDemo {
+public class VectorContainsDemo {
     public static void main(String[] args) {
-        Vector<String> cities = new Vector<>(List.of("Pune", "Nashik", "Pune", "Nagpur", "Pune"));
+        Vector<String> cities = new Vector<>();
+        cities.add("Pune");
+        cities.add("Nashik");
+        cities.add("Pune");
 
-        System.out.println("indexOf(Pune)       : " + cities.indexOf("Pune"));
-        System.out.println("indexOf(Pune, 1)    : " + cities.indexOf("Pune", 1));       // search from index 1
-        System.out.println("lastIndexOf(Pune)   : " + cities.lastIndexOf("Pune"));
-        System.out.println("lastIndexOf(Pune, 3): " + cities.lastIndexOf("Pune", 3));   // search backwards from index 3
-        System.out.println("contains(Nagpur)    : " + cities.contains("Nagpur"));
+        System.out.println(cities.contains("Nashik"));   // true
     }
 }
-''' + OUT),
+''' + OUT, extra_codes=(r'''// Vector indexOf(Object o, int from): searches from a position
+import java.util.Vector;
+
+public class VectorIndexOfDemo {
+    public static void main(String[] args) {
+        Vector<String> cities = new Vector<>();
+        cities.add("Pune");
+        cities.add("Nashik");
+        cities.add("Pune");
+
+        System.out.println(cities.indexOf("Pune"));      // 0
+        System.out.println(cities.indexOf("Pune", 1));   // 2: search starts at index 1
+    }
+}
+''' + OUT, r'''// Vector lastIndexOf(Object o): last position of a value
+import java.util.Vector;
+
+public class VectorLastIndexOfDemo {
+    public static void main(String[] args) {
+        Vector<String> cities = new Vector<>();
+        cities.add("Pune");
+        cities.add("Nashik");
+        cities.add("Pune");
+
+        System.out.println(cities.lastIndexOf("Pune"));   // 2
+    }
+}
+''' + OUT,)),
 
     section('Walking through a Vector', 'Vector has two ways to walk that ArrayList does not mix: the old <strong>Enumeration</strong> and the modern <strong>Iterator</strong>.'),
     method(
         'elements() (Enumeration) versus iterator()', 'Enumeration<E> elements();  Iterator<E> iterator()', 'an Enumeration / an Iterator', 'O(1) per step',
         'An <strong>Enumeration</strong> is the old way: <code>hasMoreElements()</code> and <code>nextElement()</code>. An <strong>Iterator</strong> is the new way: <code>hasNext()</code>, <code>next()</code> and <code>remove()</code>. Prefer Iterator (or for-each).',
         'The Vector <code>Iterator</code> is <strong>fail-fast</strong> (throws <code>ConcurrentModificationException</code> if the vector changes), but the <code>Enumeration</code> is <strong>not</strong> fail-fast and cannot remove. Both individual calls are synchronized, but a whole loop is not atomic: to iterate safely across threads you must synchronize on the vector yourself.',
-        r'''// Vector: Enumeration (old) and Iterator (new)
+        r'''// Vector elements(): the old Enumeration loop
 import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Vector;
 
-public class VectorWalkDemo {
+public class VectorEnumerationDemo {
     public static void main(String[] args) {
-        Vector<String> forts = new Vector<>(List.of("Raigad", "Sinhagad", "Torna"));
+        Vector<String> forts = new Vector<>();
+        forts.add("Raigad");
+        forts.add("Sinhagad");
+        forts.add("Torna");
 
-        Enumeration<String> e = forts.elements();               // old style
-        System.out.print("Enumeration: ");
+        Enumeration<String> e = forts.elements();
         while (e.hasMoreElements()) {
-            System.out.print(e.nextElement() + " ");
-        }
-        System.out.println();
-
-        Iterator<String> it = forts.iterator();                 // new style, can remove
-        while (it.hasNext()) {
-            if (it.next().startsWith("S")) {
-                it.remove();
-            }
-        }
-        System.out.println("Iterator remove S*: " + forts);
-
-        synchronized (forts) {                                   // lock for a whole loop across threads
-            for (String fort : forts) {
-                System.out.println("Locked loop: " + fort);
-            }
+            System.out.println(e.nextElement());
         }
     }
 }
-''' + OUT),
+''' + OUT, extra_codes=(r'''// Vector iterator(): the modern loop
+import java.util.Iterator;
+import java.util.Vector;
+
+public class VectorIteratorDemo {
+    public static void main(String[] args) {
+        Vector<String> forts = new Vector<>();
+        forts.add("Raigad");
+        forts.add("Sinhagad");
+        forts.add("Torna");
+
+        Iterator<String> it = forts.iterator();
+        while (it.hasNext()) {
+            System.out.println(it.next());
+        }
+    }
+}
+''' + OUT,)),
     method(
         'copyInto, toArray and clone', 'void copyInto(Object[] anArray);  Object[] toArray();  Object clone()', 'nothing / an array / a shallow copy', 'O(n)',
         '<code>copyInto(array)</code> copies the elements into an array you provide (it must be big enough). <code>toArray()</code> creates a new array. <code>clone()</code> makes a shallow copy of the vector.',
         '<code>copyInto</code> is the classic method; <code>toArray(new String[0])</code> is the modern equivalent that allocates the right array for you.',
-        r'''// Vector copyInto / toArray / clone
-import java.util.Arrays;
-import java.util.List;
+        r'''// Vector copyInto(Object[] array): copies into an array
 import java.util.Vector;
 
-public class VectorCopyDemo {
+public class VectorCopyIntoDemo {
     public static void main(String[] args) {
-        Vector<String> forts = new Vector<>(List.of("Raigad", "Sinhagad", "Torna"));
+        Vector<String> forts = new Vector<>();
+        forts.add("Raigad");
+        forts.add("Sinhagad");
+        forts.add("Torna");
 
-        String[] target = new String[3];
-        forts.copyInto(target);                                  // fills the array you give
-        System.out.println("copyInto : " + Arrays.toString(target));
+        String[] array = new String[3];
+        forts.copyInto(array);
 
-        String[] fresh = forts.toArray(new String[0]);           // modern, allocates the array
-        System.out.println("toArray  : " + Arrays.toString(fresh));
-
-        @SuppressWarnings("unchecked")
-        Vector<String> copy = (Vector<String>) forts.clone();    // shallow copy
-        copy.add("Purandar");
-        System.out.println("original : " + forts);
-        System.out.println("clone    : " + copy);
+        System.out.println(array[0]);
     }
 }
-''' + OUT),
+''' + OUT, extra_codes=(r'''// Vector toArray(): converts to an array
+import java.util.Vector;
+
+public class VectorToArrayDemo {
+    public static void main(String[] args) {
+        Vector<String> forts = new Vector<>();
+        forts.add("Raigad");
+        forts.add("Sinhagad");
+        forts.add("Torna");
+
+        String[] array = forts.toArray(new String[0]);
+
+        System.out.println(array.length);
+    }
+}
+''' + OUT, r'''// Vector clone(): makes a copy
+import java.util.Vector;
+
+public class VectorCloneDemo {
+    public static void main(String[] args) {
+        Vector<String> forts = new Vector<>();
+        forts.add("Raigad");
+        forts.add("Sinhagad");
+        forts.add("Torna");
+
+        Object copy = forts.clone();
+
+        System.out.println(copy);
+    }
+}
+''' + OUT,)),
     method(
         'The inherited List methods', 'add, get, remove, contains, addAll, removeAll, retainAll, removeIf, replaceAll, sort, forEach, stream, subList, listIterator', 'as ArrayList', 'as ArrayList',
         'Everything you learned for ArrayList also works on Vector: the same names, the same results. The only difference is that each call is synchronized.',
         'Because <code>Vector</code> implements <code>List</code>, you can swap <code>new Vector&lt;&gt;()</code> for <code>new ArrayList&lt;&gt;()</code> in most code by changing one word, provided you only used List methods (declare the variable as <code>List</code> to make that easy).',
         r'''// The ordinary List methods work the same on Vector
-import java.util.Comparator;
-import java.util.List;
+import java.util.Collections;
 import java.util.Vector;
 
-public class VectorListApiDemo {
+public class VectorListMethodsDemo {
     public static void main(String[] args) {
-        List<String> forts = new Vector<>(List.of("Torna", "Raigad", "Sinhagad", "Lohagad"));
+        Vector<String> cities = new Vector<>();
+        cities.add("Pune");
+        cities.add("Agra");
 
-        forts.sort(Comparator.naturalOrder());
-        System.out.println("sorted      : " + forts);
+        Collections.sort(cities);                  // sort A to Z
+        System.out.println(cities);
 
-        forts.removeIf(f -> f.length() > 6);
-        System.out.println("removeIf    : " + forts);
-
-        forts.replaceAll(String::toUpperCase);
-        System.out.println("replaceAll  : " + forts);
-
-        System.out.println("subList     : " + forts.subList(0, 2));
-        System.out.println("contains    : " + forts.contains("TORNA"));
+        cities.removeIf(c -> c.startsWith("A"));   // remove by a rule
+        System.out.println(cities);
     }
 }
 ''' + OUT),
+    (
+        '<h3>Master program: every Vector method in one place</h3>\n'
+        '<p>One single program that uses all the Vector methods you learned above, step by step. Read the numbered comments from top to bottom, run it, and match each output line with its step.</p>',
+        [r'''// MASTER PROGRAM: all important Vector methods in one program
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.Vector;
+
+public class VectorMasterDemo {
+    public static void main(String[] args) {
+        // 1. Create an empty Vector
+        Vector<String> forts = new Vector<>();
+
+        // 2. Add: add, addElement, insertElementAt
+        forts.add("Raigad");
+        forts.addElement("Torna");
+        forts.insertElementAt("Sinhagad", 1);
+        forts.add("Purandar");
+        System.out.println("2. After adds     : " + forts);
+
+        // 3. Read: get, elementAt, firstElement, lastElement
+        System.out.println("3. get(1)         : " + forts.get(1));
+        System.out.println("   elementAt(1)   : " + forts.elementAt(1));
+        System.out.println("   first / last   : " + forts.firstElement() + " / " + forts.lastElement());
+
+        // 4. Size and capacity: size, capacity, isEmpty
+        System.out.println("4. size/capacity  : " + forts.size() + " / " + forts.capacity());
+        System.out.println("   isEmpty        : " + forts.isEmpty());
+
+        // 5. Search: contains, indexOf, indexOf from a position, lastIndexOf
+        System.out.println("5. contains Torna : " + forts.contains("Torna"));
+        System.out.println("   indexOf Torna  : " + forts.indexOf("Torna"));
+        System.out.println("   indexOf from 2 : " + forts.indexOf("Torna", 2));
+        System.out.println("   lastIndexOf    : " + forts.lastIndexOf("Torna"));
+
+        // 6. Change: set, setElementAt
+        forts.set(0, "Lohagad");
+        forts.setElementAt("Rajgad", 1);
+        System.out.println("6. After changes  : " + forts);
+
+        // 7. Sort (a List method works on Vector too)
+        Collections.sort(forts);
+        System.out.println("7. Sorted         : " + forts);
+
+        // 8. Loop: Enumeration (old) and Iterator (new)
+        Enumeration<String> old = forts.elements();
+        System.out.print("8. Enumeration    : ");
+        while (old.hasMoreElements()) {
+            System.out.print(old.nextElement() + " ");
+        }
+        System.out.println();
+        Iterator<String> it = forts.iterator();
+        while (it.hasNext()) {
+            if (it.next().startsWith("L")) {
+                it.remove();
+            }
+        }
+
+        // 9. Copy: copyInto, toArray, clone
+        String[] array = new String[forts.size()];
+        forts.copyInto(array);
+        System.out.println("9. array length   : " + array.length);
+        Object copy = forts.clone();
+        System.out.println("   clone equals   : " + forts.equals(copy));
+
+        // 10. Remove: removeElement, removeElementAt, remove(index), removeIf, removeAllElements
+        forts.removeElement("Rajgad");
+        forts.removeElementAt(0);
+        System.out.println("10. After removes : " + forts);
+        forts.removeAllElements();
+        System.out.println("    After clear   : " + forts);
+    }
+}
+''' + OUT],
+    ),
 ]
 
 EXPERT = [

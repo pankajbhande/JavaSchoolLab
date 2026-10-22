@@ -56,7 +56,8 @@ public class JwtService {
             Number id = c.get("id", Number.class);
             if (id == null) return Optional.empty();
             return Optional.of(new AuthUser(id.longValue(), c.get("fullName", String.class),
-                    c.get("email", String.class), c.get("mobile", String.class)));
+                    c.get("email", String.class), c.get("mobile", String.class),
+                    c.getIssuedAt() == null ? null : c.getIssuedAt().toInstant()));
         } catch (JwtException | IllegalArgumentException e) {
             return Optional.empty();
         }

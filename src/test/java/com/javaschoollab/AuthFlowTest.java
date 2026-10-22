@@ -147,7 +147,7 @@ class AuthFlowTest {
                 .andExpect(status().isConflict());
         send("/api/otp/send", """
                 {"identifier":"%s","identifierType":"email","purpose":"login"}""".formatted(uniqueEmail()))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isOk());   // an unknown account looks exactly like a known one: nothing is sent, nothing is revealed
     }
 
     @Test
@@ -163,11 +163,11 @@ class AuthFlowTest {
         send("/api/auth/login", """
                 {"email":"%s","password":"wrong","loginType":"email"}""".formatted(email))
                 .andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("$.error").value("Invalid password"));
+                .andExpect(jsonPath("$.error").value("Invalid email or password"));
         send("/api/auth/login", """
                 {"email":"%s","password":"secret123","loginType":"email"}""".formatted(uniqueEmail()))
                 .andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("$.error").value("User not found. Please register first."));
+                .andExpect(jsonPath("$.error").value("Invalid email or password"));   // same answer as a wrong password: no account enumeration
         send("/api/auth/login", """
                 {"loginType":"email"}""").andExpect(status().isBadRequest());
     }
@@ -194,7 +194,7 @@ class AuthFlowTest {
         send("/api/auth/register", """
                 {"fullName":"Yesaji Kank","email":"%s","password":"abc","loginType":"email"}""".formatted(uniqueEmail()))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.error").value("Password must be at least 4 characters"));
+                .andExpect(jsonPath("$.error").value("Password must be at least 8 characters"));
     }
 
     @Test

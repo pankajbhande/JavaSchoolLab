@@ -30,9 +30,10 @@ class ValidationTest {
 
     @Test
     void password() {
-        assertThat(Validation.passwordError("abcd")).isNull();
-        assertThat(Validation.passwordError("abc")).contains("at least 4");
-        assertThat(Validation.passwordError(null)).contains("at least 4");
+        assertThat(Validation.passwordError("abcd1234")).isNull();
+        assertThat(Validation.passwordError("abcdefg")).contains("at least 8");
+        assertThat(Validation.passwordError(null)).contains("at least 8");
+        assertThat(Validation.passwordError("Password123")).contains("too common");
         assertThat(Validation.passwordError("x".repeat(129))).contains("at most 128");
     }
 

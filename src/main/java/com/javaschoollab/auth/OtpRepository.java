@@ -62,6 +62,11 @@ class OtpRepository implements OtpStore {
     }
 
     @Override
+    public void purgeExpired(LocalDateTime cutoff) {
+        jdbc.update("DELETE FROM otp_codes WHERE expires_at < ?", cutoff);
+    }
+
+    @Override
     public void delete(long id) {
         jdbc.update("DELETE FROM otp_codes WHERE id = ?", id);
     }

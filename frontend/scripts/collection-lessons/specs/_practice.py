@@ -758,3 +758,9 @@ public class FortSortMenu {
 }
 ''' + OUT),
 ]
+
+
+from _practice2 import MORE  # noqa: E402
+
+for _k, _v in MORE.items():
+    PRACTICE.setdefault(_k, []).extend(_v)

@@ -28,7 +28,7 @@ npm run dev               # http://localhost:5173
 ```
 
 No front-end `.env` is needed locally; the API base defaults to `http://localhost:3001/api`.
-For a deployed build set `VITE_API_BASE_URL` (see `.env.example`).
+For a deployed build set `VITE_API_BASE_URL` (see `frontend/.env.example`).
 
 ### Course content from the API (optional)
 
@@ -242,8 +242,8 @@ Already prepared, with no change in behaviour:
 - `npm run check:content` fails if the JSON has drifted from the TypeScript (it is the same as `verify:content`, and a no-op
   once the TypeScript is gone). Run it, or `npm run export:content`, after editing the TypeScript.
 - The text helper `highlight` lives in `src/app/lib/highlight.ts`, not inside the course-data folder.
-- `../Dockerfile` builds the site with `VITE_CONTENT_SOURCE=api`; `docker/docker-compose.yml` runs
-  Spring + MySQL as one stack.
+- `../docker/Dockerfile` builds the site with `VITE_CONTENT_SOURCE=api`; `docker/docker-compose.yml` runs the
+  application stack, which uses the separate shared MySQL stack in `docker/docker-compose.db.yml`.
 
 Still to do before a deletion would be safe: remove the bundled branch of `courseLoader.ts`; port or drop the five tests that
 compare against the TypeScript (`courseLoader.test.ts`, `courseStats.test.ts`, `studyPacks.test.ts`, `slug.test.ts`,

@@ -84,78 +84,113 @@ INTERMEDIATE = [
         'put, get, remove and the order of pairs', 'V put(K, V);  V get(Object);  V remove(Object)', 'as HashMap', 'O(1)',
         'New keys are added at the <strong>end</strong> of the order. Putting a key that already exists replaces its value but <strong>keeps its position</strong>. Removing a key just closes the gap.',
         'Each entry is a <code>LinkedHashMap.Entry</code> with <code>before</code> and <code>after</code> links in addition to the bucket link, so adding, removing and reordering are all O(1) pointer changes.',
-        r'''// LinkedHashMap put / get / remove keep a stable order
+        r'''// LinkedHashMap put(K, V): adds a pair, order is kept
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class LinkedHashMapOrderDemo {
+public class LinkedHashMapPutDemo {
     public static void main(String[] args) {
-        Map<String, Integer> areaCodes = new LinkedHashMap<>();
-        areaCodes.put("Pune", 20);
-        areaCodes.put("Mumbai", 22);
-        areaCodes.put("Nagpur", 712);
-        System.out.println("Added        : " + areaCodes);
+        Map<String, Integer> heights = new LinkedHashMap<>();
+        heights.put("Raigad", 820);
+        heights.put("Torna", 1400);
+        heights.put("Sinhagad", 1300);
 
-        areaCodes.put("Pune", 2020);                 // existing key: value replaced, position kept
-        System.out.println("Replace Pune : " + areaCodes);
-
-        areaCodes.remove("Mumbai");
-        areaCodes.put("Delhi", 11);                  // a new key goes to the end
-        System.out.println("After remove : " + areaCodes);
-        System.out.println("get(Nagpur)  : " + areaCodes.get("Nagpur"));
+        System.out.println(heights);
     }
 }
-''' + OUT),
+''' + OUT, extra_codes=(r'''// LinkedHashMap get(Object key): reads a value by key
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+public class LinkedHashMapGetDemo {
+    public static void main(String[] args) {
+        Map<String, Integer> heights = new LinkedHashMap<>();
+        heights.put("Raigad", 820);
+        heights.put("Torna", 1400);
+
+        System.out.println(heights.get("Torna"));   // 1400
+    }
+}
+''' + OUT, r'''// LinkedHashMap remove(Object key): removes a pair, the rest keep their order
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+public class LinkedHashMapRemoveDemo {
+    public static void main(String[] args) {
+        Map<String, Integer> heights = new LinkedHashMap<>();
+        heights.put("Raigad", 820);
+        heights.put("Torna", 1400);
+        heights.put("Sinhagad", 1300);
+
+        heights.remove("Torna");
+
+        System.out.println(heights);
+    }
+}
+''' + OUT,)),
     method(
         'keySet(), values(), entrySet() and forEach()', 'Set<K> keySet();  Collection<V> values();  Set<Map.Entry<K, V>> entrySet();  void forEach(BiConsumer)', 'views in insertion order', 'O(n)',
         'Every view and every loop visits the pairs in insertion order, so printed results are the <strong>same on every run</strong>: ideal for reports, logs and tests.',
         'Iteration costs O(size), not O(capacity + size), because it follows the entry chain and skips empty buckets.',
-        r'''// LinkedHashMap views and loops are in insertion order
+        r'''// LinkedHashMap keySet(): keys in insertion order
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class LinkedHashMapViewsDemo {
+public class LinkedHashMapKeySetDemo {
     public static void main(String[] args) {
-        Map<String, Integer> trekHours = new LinkedHashMap<>();
-        trekHours.put("Raigad", 6);
-        trekHours.put("Torna", 5);
-        trekHours.put("Purandar", 3);
-        trekHours.put("Lohagad", 2);
+        Map<String, Integer> heights = new LinkedHashMap<>();
+        heights.put("Raigad", 820);
+        heights.put("Torna", 1400);
 
-        System.out.println("keys   : " + trekHours.keySet());
-        System.out.println("values : " + trekHours.values());
-
-        for (Map.Entry<String, Integer> e : trekHours.entrySet()) {
-            System.out.println(e.getKey() + " -> " + e.getValue());
-        }
-        trekHours.forEach((fort, hours) -> System.out.print(fort.charAt(0) + "" + hours + " "));
-        System.out.println();
+        System.out.println(heights.keySet());
     }
 }
-''' + OUT),
+''' + OUT, extra_codes=(r'''// LinkedHashMap values(): values in insertion order
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+public class LinkedHashMapValuesDemo {
+    public static void main(String[] args) {
+        Map<String, Integer> heights = new LinkedHashMap<>();
+        heights.put("Raigad", 820);
+        heights.put("Torna", 1400);
+
+        System.out.println(heights.values());
+    }
+}
+''' + OUT, r'''// LinkedHashMap entrySet(): pairs in insertion order
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+public class LinkedHashMapEntrySetDemo {
+    public static void main(String[] args) {
+        Map<String, Integer> heights = new LinkedHashMap<>();
+        heights.put("Raigad", 820);
+        heights.put("Torna", 1400);
+
+        for (Map.Entry<String, Integer> e : heights.entrySet()) {
+            System.out.println(e.getKey() + " = " + e.getValue());
+        }
+    }
+}
+''' + OUT,)),
     method(
         'computeIfAbsent, merge and the other compute methods', 'compute / computeIfAbsent / computeIfPresent / merge', 'as HashMap', 'O(1)',
         'They behave exactly as in HashMap. A new key created by one of them is added at the end of the order.',
         'When you build a grouped or counted result that you later print, LinkedHashMap gives you the groups in the order they were first seen.',
-        r'''// LinkedHashMap with merge() and computeIfAbsent(): groups appear in first-seen order
-import java.util.ArrayList;
+        r'''// LinkedHashMap with merge(): counts appear in first-seen order
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
-public class LinkedHashMapComputeDemo {
+public class LinkedHashMapMergeDemo {
     public static void main(String[] args) {
-        Map<String, Integer> counts = new LinkedHashMap<>();
-        for (String city : new String[] {"Nashik", "Pune", "Nashik", "Nagpur", "Pune", "Nashik"}) {
-            counts.merge(city, 1, Integer::sum);
-        }
-        System.out.println("Counts : " + counts);
+        Map<String, Integer> count = new LinkedHashMap<>();
 
-        Map<Integer, List<String>> byLength = new LinkedHashMap<>();
-        for (String fort : new String[] {"Torna", "Raigad", "Lohagad", "Rajgad", "Panhala"}) {
-            byLength.computeIfAbsent(fort.length(), k -> new ArrayList<>()).add(fort);
-        }
-        System.out.println("By length: " + byLength);
+        count.merge("Pune", 1, Integer::sum);
+        count.merge("Agra", 1, Integer::sum);
+        count.merge("Pune", 1, Integer::sum);   // Pune becomes 2
+
+        System.out.println(count);              // Pune stays first
     }
 }
 ''' + OUT),
@@ -171,20 +206,14 @@ import java.util.Map;
 
 public class LinkedHashMapAccessOrderDemo {
     public static void main(String[] args) {
-        Map<String, Integer> recent = new LinkedHashMap<>(16, 0.75f, true);   // true = access order
-        recent.put("Raigad", 1);
-        recent.put("Torna", 2);
-        recent.put("Purandar", 3);
-        System.out.println("Start      : " + recent);
+        Map<String, Integer> map = new LinkedHashMap<>(16, 0.75f, true);   // true = access order
+        map.put("Raigad", 1);
+        map.put("Torna", 2);
+        map.put("Sinhagad", 3);
 
-        recent.get("Raigad");                      // Raigad was just used: it moves to the end
-        System.out.println("After get  : " + recent);
+        map.get("Raigad");            // reading Raigad moves it to the end
 
-        recent.put("Torna", 22);                   // updating counts as access too
-        System.out.println("After put  : " + recent);
-
-        recent.containsKey("Purandar");            // does NOT count as access
-        System.out.println("containsKey: " + recent);
+        System.out.println(map);      // {Torna=2, Sinhagad=3, Raigad=1}
     }
 }
 ''' + OUT),
@@ -233,76 +262,205 @@ public class LinkedHashMapLruDemo {
         'firstEntry, lastEntry, pollFirstEntry and pollLastEntry', 'Map.Entry<K, V> firstEntry();  lastEntry();  pollFirstEntry();  pollLastEntry()', 'the entry, or <code>null</code> if the map is empty', 'O(1)',
         'Read or remove the <strong>first</strong> or <strong>last</strong> pair directly. The <code>poll</code> versions remove and return it. The returned entries are <strong>snapshots</strong> (immutable).',
         'Before Java 21 you had to iterate to the end to find the last entry. With <code>pollFirstEntry</code> in a loop a LinkedHashMap can act as an ordered work queue with key lookups.',
-        r'''// LinkedHashMap firstEntry / lastEntry / pollFirstEntry / pollLastEntry (Java 21)
+        r'''// LinkedHashMap firstEntry() (Java 21): the first pair
 import java.util.LinkedHashMap;
-import java.util.Map;
 
-public class LinkedHashMapEndsDemo {
+public class LinkedHashMapFirstEntryDemo {
     public static void main(String[] args) {
-        LinkedHashMap<String, Integer> trekHours = new LinkedHashMap<>();
-        trekHours.put("Raigad", 6);
-        trekHours.put("Torna", 5);
-        trekHours.put("Purandar", 3);
+        LinkedHashMap<String, Integer> heights = new LinkedHashMap<>();
+        heights.put("Raigad", 820);
+        heights.put("Torna", 1400);
 
-        System.out.println("firstEntry     : " + trekHours.firstEntry());
-        System.out.println("lastEntry      : " + trekHours.lastEntry());
-        System.out.println("pollFirstEntry : " + trekHours.pollFirstEntry());
-        System.out.println("pollLastEntry  : " + trekHours.pollLastEntry());
-        System.out.println("Remaining      : " + trekHours);
-        System.out.println("Empty map first: " + new LinkedHashMap<String, Integer>().firstEntry());
+        System.out.println(heights.firstEntry());   // Raigad=820
     }
 }
-''' + OUT),
+''' + OUT, extra_codes=(r'''// LinkedHashMap lastEntry() (Java 21): the last pair
+import java.util.LinkedHashMap;
+
+public class LinkedHashMapLastEntryDemo {
+    public static void main(String[] args) {
+        LinkedHashMap<String, Integer> heights = new LinkedHashMap<>();
+        heights.put("Raigad", 820);
+        heights.put("Torna", 1400);
+
+        System.out.println(heights.lastEntry());   // Torna=1400
+    }
+}
+''' + OUT, r'''// LinkedHashMap pollFirstEntry() (Java 21): removes and returns the first pair
+import java.util.LinkedHashMap;
+
+public class LinkedHashMapPollFirstEntryDemo {
+    public static void main(String[] args) {
+        LinkedHashMap<String, Integer> heights = new LinkedHashMap<>();
+        heights.put("Raigad", 820);
+        heights.put("Torna", 1400);
+
+        System.out.println(heights.pollFirstEntry());   // Raigad=820
+        System.out.println(heights);
+    }
+}
+''' + OUT, r'''// LinkedHashMap pollLastEntry() (Java 21): removes and returns the last pair
+import java.util.LinkedHashMap;
+
+public class LinkedHashMapPollLastEntryDemo {
+    public static void main(String[] args) {
+        LinkedHashMap<String, Integer> heights = new LinkedHashMap<>();
+        heights.put("Raigad", 820);
+        heights.put("Torna", 1400);
+
+        System.out.println(heights.pollLastEntry());   // Torna=1400
+        System.out.println(heights);
+    }
+}
+''' + OUT,)),
     method(
         'putFirst, putLast and reversed', 'V putFirst(K, V);  V putLast(K, V);  SequencedMap<K, V> reversed()', 'the previous value / a reversed view', 'O(1)',
         '<code>putFirst</code> and <code>putLast</code> add a pair at the <strong>front</strong> or the <strong>back</strong>; if the key already exists it is <strong>moved</strong> there. <code>reversed()</code> is a live view that walks from the last entry to the first.',
         'This finally allows reordering a LinkedHashMap without removing and re-adding. <code>sequencedKeySet()</code>, <code>sequencedValues()</code> and <code>sequencedEntrySet()</code> give the same ordered views with <code>getFirst</code>, <code>getLast</code> and <code>reversed</code>.',
-        r'''// LinkedHashMap putFirst / putLast / reversed (Java 21)
+        r'''// LinkedHashMap putFirst(K, V) (Java 21): puts a pair at the front
 import java.util.LinkedHashMap;
 
-public class LinkedHashMapPutFirstLastDemo {
+public class LinkedHashMapPutFirstDemo {
     public static void main(String[] args) {
-        LinkedHashMap<String, Integer> route = new LinkedHashMap<>();
-        route.put("Pune", 1);
-        route.put("Nashik", 2);
-        route.put("Nagpur", 3);
+        LinkedHashMap<String, Integer> heights = new LinkedHashMap<>();
+        heights.put("Torna", 1400);
 
-        route.putFirst("Mumbai", 0);        // new key at the front
-        route.putLast("Pune", 1);           // existing key moved to the back
-        System.out.println("Route      : " + route);
-        System.out.println("Reversed   : " + route.reversed());
-        System.out.println("First key  : " + route.sequencedKeySet().getFirst());
-        System.out.println("Last value : " + route.sequencedValues().getLast());
+        heights.putFirst("Raigad", 820);
+
+        System.out.println(heights);
     }
 }
-''' + OUT),
+''' + OUT, extra_codes=(r'''// LinkedHashMap putLast(K, V) (Java 21): puts a pair at the end
+import java.util.LinkedHashMap;
+
+public class LinkedHashMapPutLastDemo {
+    public static void main(String[] args) {
+        LinkedHashMap<String, Integer> heights = new LinkedHashMap<>();
+        heights.put("Raigad", 820);
+
+        heights.putLast("Torna", 1400);
+
+        System.out.println(heights);
+    }
+}
+''' + OUT, r'''// LinkedHashMap reversed() (Java 21): the map in reverse order
+import java.util.LinkedHashMap;
+
+public class LinkedHashMapReversedDemo {
+    public static void main(String[] args) {
+        LinkedHashMap<String, Integer> heights = new LinkedHashMap<>();
+        heights.put("Raigad", 820);
+        heights.put("Torna", 1400);
+
+        System.out.println(heights.reversed());
+    }
+}
+''' + OUT,)),
     method(
         'clone, equals and toString', 'Object clone();  boolean equals(Object);  String toString()', 'a shallow copy / comparison / text', 'O(n)',
         'A LinkedHashMap is <strong>equal</strong> to any other <code>Map</code> with the same pairs; the order is <strong>ignored</strong> by <code>equals</code>. <code>toString</code> prints the pairs in order.',
         'Copy with <code>new LinkedHashMap&lt;&gt;(map)</code> to keep the order of the source map.',
-        r'''// LinkedHashMap equals ignores order; the copy constructor keeps it
+        r'''// LinkedHashMap equals(): same pairs means equal, order is ignored
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class LinkedHashMapEqualsDemo {
     public static void main(String[] args) {
         Map<String, Integer> a = new LinkedHashMap<>();
-        a.put("Raigad", 6);
-        a.put("Torna", 5);
+        a.put("Raigad", 1);
+        a.put("Torna", 2);
 
         Map<String, Integer> b = new LinkedHashMap<>();
-        b.put("Torna", 5);                       // other order
-        b.put("Raigad", 6);
+        b.put("Torna", 2);
+        b.put("Raigad", 1);
 
-        System.out.println("a : " + a);
-        System.out.println("b : " + b);
-        System.out.println("a.equals(b) : " + a.equals(b));
-
-        Map<String, Integer> copy = new LinkedHashMap<>(a);
-        System.out.println("copy keeps order: " + copy);
+        System.out.println(a.equals(b));   // true
     }
 }
-''' + OUT),
+''' + OUT, extra_codes=(r'''// LinkedHashMap copy constructor: keeps the order
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+public class LinkedHashMapCopyDemo {
+    public static void main(String[] args) {
+        Map<String, Integer> heights = new LinkedHashMap<>();
+        heights.put("Raigad", 820);
+        heights.put("Torna", 1400);
+
+        Map<String, Integer> copy = new LinkedHashMap<>(heights);
+
+        System.out.println(copy);
+    }
+}
+''' + OUT,)),
+    (
+        '<h3>Master program: every LinkedHashMap method in one place</h3>\n'
+        '<p>One single program that uses all the LinkedHashMap methods you learned above, step by step. Read the numbered comments from top to bottom, run it, and match each output line with its step.</p>',
+        [r'''// MASTER PROGRAM: all important LinkedHashMap methods in one program
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+public class LinkedHashMapMasterDemo {
+    public static void main(String[] args) {
+        // 1. Create an empty map (it remembers insertion order)
+        LinkedHashMap<String, Integer> heights = new LinkedHashMap<>();
+
+        // 2. put, putIfAbsent, putAll
+        heights.put("Torna", 1400);
+        heights.put("Raigad", 820);
+        heights.putIfAbsent("Sinhagad", 1300);
+        heights.putAll(Map.of("Purandar", 1200));
+        System.out.println("2. size           : " + heights.size());
+
+        // 3. Java 21: putFirst and putLast
+        heights.putFirst("Rajgad", 1300);
+        heights.putLast("Lohagad", 1033);
+        System.out.println("3. After puts     : " + heights);
+
+        // 4. get, getOrDefault, containsKey, containsValue
+        System.out.println("4. get            : " + heights.get("Raigad"));
+        System.out.println("   getOrDefault   : " + heights.getOrDefault("Panhala", 0));
+        System.out.println("   containsKey    : " + heights.containsKey("Torna"));
+        System.out.println("   containsValue  : " + heights.containsValue(820));
+
+        // 5. Change values: replace, merge, compute
+        heights.replace("Raigad", 900);
+        heights.merge("Raigad", 10, Integer::sum);
+        heights.compute("Torna", (k, v) -> v + 3);
+        System.out.println("5. Raigad / Torna : " + heights.get("Raigad") + " / " + heights.get("Torna"));
+
+        // 6. Views and loops: always in insertion order
+        System.out.println("6. keys           : " + heights.keySet());
+        System.out.println("   values         : " + heights.values());
+        heights.forEach((fort, h) -> System.out.print(fort + " "));
+        System.out.println();
+
+        // 7. Java 21: firstEntry, lastEntry, reversed
+        System.out.println("7. first / last   : " + heights.firstEntry() + " / " + heights.lastEntry());
+        System.out.println("   reversed       : " + heights.reversed());
+
+        // 8. Remove: remove, pollFirstEntry, pollLastEntry
+        heights.remove("Purandar");
+        heights.pollFirstEntry();
+        heights.pollLastEntry();
+        System.out.println("8. After removes  : " + heights);
+
+        // 9. Access order: reading a key moves it to the end
+        LinkedHashMap<String, Integer> recent = new LinkedHashMap<>(16, 0.75f, true);
+        recent.put("A", 1);
+        recent.put("B", 2);
+        recent.get("A");
+        System.out.println("9. access order   : " + recent);
+
+        // 10. equals ignores order; clear
+        LinkedHashMap<String, Integer> x = new LinkedHashMap<>(Map.of("A", 1));
+        System.out.println("10. equals        : " + x.equals(Map.of("A", 1)));
+        heights.clear();
+        System.out.println("    After clear   : " + heights);
+    }
+}
+''' + OUT],
+    ),
 ]
 
 EXPERT = [

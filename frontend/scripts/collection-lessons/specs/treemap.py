@@ -88,56 +88,82 @@ INTERMEDIATE = [
         'put, get, remove and containsKey', 'V put(K, V);  V get(Object);  V remove(Object);  boolean containsKey(Object)', 'as Map', 'O(log n)',
         'Same meaning as in HashMap, but the map <strong>keeps itself sorted</strong>. A new key is inserted at its sorted place; an existing key just has its value replaced.',
         'Each call walks from the root comparing the key, so the cost is the tree height. Passing a key that is not comparable throws <code>ClassCastException</code>; passing <code>null</code> throws <code>NullPointerException</code> (natural ordering).',
-        r'''// TreeMap put / get / remove / containsKey: the keys stay sorted
+        r'''// TreeMap put(K, V): adds a pair, keys stay sorted
+import java.util.Map;
 import java.util.TreeMap;
 
-public class TreeMapPutGetDemo {
+public class TreeMapPutDemo {
     public static void main(String[] args) {
-        TreeMap<String, Integer> areaCodes = new TreeMap<>();
+        Map<String, Integer> heights = new TreeMap<>();
 
-        areaCodes.put("Pune", 20);
-        areaCodes.put("Delhi", 11);
-        areaCodes.put("Nagpur", 712);
-        areaCodes.put("Mumbai", 22);
-        System.out.println("Sorted by key : " + areaCodes);
+        heights.put("Torna", 1400);
+        heights.put("Raigad", 820);
 
-        System.out.println("get(Nagpur)   : " + areaCodes.get("Nagpur"));
-        System.out.println("get(Kochi)    : " + areaCodes.get("Kochi"));
-        areaCodes.put("Pune", 2020);                                    // replace
-        areaCodes.remove("Delhi");
-        System.out.println("containsKey(Delhi): " + areaCodes.containsKey("Delhi"));
-        System.out.println("Now           : " + areaCodes);
-
-        try {
-            areaCodes.put(null, 0);
-        } catch (NullPointerException e) {
-            System.out.println("null key      : NullPointerException");
-        }
+        System.out.println(heights);   // sorted by key
     }
 }
-''' + OUT),
+''' + OUT, extra_codes=(r'''// TreeMap get(Object key): reads a value by key
+import java.util.TreeMap;
+
+public class TreeMapGetDemo {
+    public static void main(String[] args) {
+        TreeMap<Integer, String> map = new TreeMap<>();
+        map.put(10, "Raigad");
+        map.put(20, "Sinhagad");
+        map.put(30, "Torna");
+        map.put(40, "Purandar");
+
+        System.out.println(map.get(20));   // Sinhagad
+    }
+}
+''' + OUT, r'''// TreeMap containsKey(Object key): is the key present?
+import java.util.TreeMap;
+
+public class TreeMapContainsKeyDemo {
+    public static void main(String[] args) {
+        TreeMap<Integer, String> map = new TreeMap<>();
+        map.put(10, "Raigad");
+        map.put(20, "Sinhagad");
+        map.put(30, "Torna");
+        map.put(40, "Purandar");
+
+        System.out.println(map.containsKey(30));   // true
+    }
+}
+''' + OUT, r'''// TreeMap remove(Object key): removes a pair
+import java.util.TreeMap;
+
+public class TreeMapRemoveDemo {
+    public static void main(String[] args) {
+        TreeMap<Integer, String> map = new TreeMap<>();
+        map.put(10, "Raigad");
+        map.put(20, "Sinhagad");
+        map.put(30, "Torna");
+        map.put(40, "Purandar");
+
+        map.remove(30);
+
+        System.out.println(map);
+    }
+}
+''' + OUT,)),
     method(
         'merge, computeIfAbsent and the other compute methods', 'compute / computeIfAbsent / computeIfPresent / merge / putIfAbsent / getOrDefault', 'as HashMap', 'O(log n)',
         'They behave exactly as in HashMap. Combine them with a TreeMap to get <strong>sorted counts and groups</strong>.',
         'A TreeMap is often the finishing step of a data pipeline: collect into a HashMap for speed, then copy into a TreeMap to print in order.',
-        r'''// TreeMap with merge / computeIfAbsent gives sorted counts and groups
-import java.util.ArrayList;
-import java.util.List;
+        r'''// TreeMap with merge(): sorted counts
+import java.util.Map;
 import java.util.TreeMap;
 
 public class TreeMapMergeDemo {
     public static void main(String[] args) {
-        TreeMap<String, Integer> visits = new TreeMap<>();
-        for (String city : new String[] {"Pune", "Nashik", "Pune", "Nagpur", "Pune", "Nashik"}) {
-            visits.merge(city, 1, Integer::sum);
-        }
-        System.out.println("Visits by city : " + visits);
+        Map<String, Integer> count = new TreeMap<>();
 
-        TreeMap<Integer, List<String>> byLength = new TreeMap<>();
-        for (String fort : new String[] {"Torna", "Raigad", "Lohagad", "Rajgad", "Panhala"}) {
-            byLength.computeIfAbsent(fort.length(), k -> new ArrayList<>()).add(fort);
-        }
-        System.out.println("Forts by length: " + byLength);
+        count.merge("Pune", 1, Integer::sum);
+        count.merge("Agra", 1, Integer::sum);
+        count.merge("Pune", 1, Integer::sum);   // Pune becomes 2
+
+        System.out.println(count);              // sorted: Agra first
     }
 }
 ''' + OUT),
@@ -145,196 +171,434 @@ public class TreeMapMergeDemo {
         'keySet(), values(), entrySet() and forEach()', 'Set<K> keySet();  Collection<V> values();  Set<Map.Entry<K, V>> entrySet();  void forEach(BiConsumer)', 'views in ascending key order', 'O(n)',
         'Every view and loop is in <strong>ascending key order</strong>. They are live views: removing from a view removes from the map.',
         '<code>navigableKeySet()</code> returns the keys as a <code>NavigableSet</code> and <code>descendingKeySet()</code> in reverse. Entries from <code>entrySet()</code> support <code>setValue</code>, but entries returned by <code>firstEntry()</code> and friends are immutable snapshots.',
-        r'''// TreeMap views are in ascending key order
+        r'''// TreeMap keySet(): keys in ascending order
+import java.util.TreeMap;
+
+public class TreeMapKeySetDemo {
+    public static void main(String[] args) {
+        TreeMap<Integer, String> map = new TreeMap<>();
+        map.put(10, "Raigad");
+        map.put(20, "Sinhagad");
+        map.put(30, "Torna");
+        map.put(40, "Purandar");
+
+        System.out.println(map.keySet());
+    }
+}
+''' + OUT, extra_codes=(r'''// TreeMap values(): values in key order
+import java.util.TreeMap;
+
+public class TreeMapValuesDemo {
+    public static void main(String[] args) {
+        TreeMap<Integer, String> map = new TreeMap<>();
+        map.put(10, "Raigad");
+        map.put(20, "Sinhagad");
+        map.put(30, "Torna");
+        map.put(40, "Purandar");
+
+        System.out.println(map.values());
+    }
+}
+''' + OUT, r'''// TreeMap entrySet(): pairs in key order
 import java.util.Map;
 import java.util.TreeMap;
 
-public class TreeMapViewsDemo {
+public class TreeMapEntrySetDemo {
     public static void main(String[] args) {
-        TreeMap<String, Integer> trekHours = new TreeMap<>(Map.of("Raigad", 6, "Torna", 5, "Purandar", 3, "Lohagad", 2));
+        TreeMap<Integer, String> map = new TreeMap<>();
+        map.put(10, "Raigad");
+        map.put(20, "Sinhagad");
+        map.put(30, "Torna");
+        map.put(40, "Purandar");
 
-        System.out.println("keys   : " + trekHours.keySet());
-        System.out.println("values : " + trekHours.values());            // in key order, not value order
-
-        for (Map.Entry<String, Integer> e : trekHours.entrySet()) {
-            System.out.println(e.getKey() + " -> " + e.getValue());
+        for (Map.Entry<Integer, String> e : map.entrySet()) {
+            System.out.println(e.getKey() + " = " + e.getValue());
         }
-
-        trekHours.keySet().remove("Torna");                              // views are live
-        trekHours.values().removeIf(h -> h > 5);
-        System.out.println("After removals: " + trekHours);
     }
 }
-''' + OUT),
+''' + OUT,)),
 
     section('The ends of the map', 'Smallest and largest key, with or without removing them.'),
     method(
         'firstKey, lastKey, firstEntry and lastEntry', 'K firstKey();  K lastKey();  Map.Entry<K, V> firstEntry();  Map.Entry<K, V> lastEntry()', 'the key / the entry', 'O(log n)',
         '<code>firstKey()</code> and <code>lastKey()</code> return the smallest and the largest <strong>key</strong> and throw <code>NoSuchElementException</code> when the map is empty. <code>firstEntry()</code> and <code>lastEntry()</code> return the whole <strong>pair</strong> (or <code>null</code> when empty).',
         'The entry versions are safer for possibly-empty maps and give the value in the same call. The returned entries are snapshots: calling <code>setValue</code> on them throws <code>UnsupportedOperationException</code>.',
-        r'''// TreeMap firstKey / lastKey / firstEntry / lastEntry
-import java.util.Map;
-import java.util.NoSuchElementException;
+        r'''// TreeMap firstKey(): the smallest key
 import java.util.TreeMap;
 
-public class TreeMapEndsDemo {
+public class TreeMapFirstKeyDemo {
     public static void main(String[] args) {
-        TreeMap<String, Integer> trekHours = new TreeMap<>(Map.of("Raigad", 6, "Torna", 5, "Purandar", 3));
+        TreeMap<Integer, String> map = new TreeMap<>();
+        map.put(10, "Raigad");
+        map.put(20, "Sinhagad");
+        map.put(30, "Torna");
+        map.put(40, "Purandar");
 
-        System.out.println("firstKey   : " + trekHours.firstKey());
-        System.out.println("lastKey    : " + trekHours.lastKey());
-        System.out.println("firstEntry : " + trekHours.firstEntry());
-        System.out.println("lastEntry  : " + trekHours.lastEntry());
-
-        TreeMap<String, Integer> empty = new TreeMap<>();
-        System.out.println("empty.firstEntry() : " + empty.firstEntry());     // null, no exception
-        try {
-            empty.firstKey();
-        } catch (NoSuchElementException e) {
-            System.out.println("empty.firstKey()  : NoSuchElementException");
-        }
+        System.out.println(map.firstKey());   // 10
     }
 }
-''' + OUT),
+''' + OUT, extra_codes=(r'''// TreeMap lastKey(): the biggest key
+import java.util.TreeMap;
+
+public class TreeMapLastKeyDemo {
+    public static void main(String[] args) {
+        TreeMap<Integer, String> map = new TreeMap<>();
+        map.put(10, "Raigad");
+        map.put(20, "Sinhagad");
+        map.put(30, "Torna");
+        map.put(40, "Purandar");
+
+        System.out.println(map.lastKey());   // 40
+    }
+}
+''' + OUT, r'''// TreeMap firstEntry(): the pair with the smallest key
+import java.util.TreeMap;
+
+public class TreeMapFirstEntryDemo {
+    public static void main(String[] args) {
+        TreeMap<Integer, String> map = new TreeMap<>();
+        map.put(10, "Raigad");
+        map.put(20, "Sinhagad");
+        map.put(30, "Torna");
+        map.put(40, "Purandar");
+
+        System.out.println(map.firstEntry());   // 10=Raigad
+    }
+}
+''' + OUT, r'''// TreeMap lastEntry(): the pair with the biggest key
+import java.util.TreeMap;
+
+public class TreeMapLastEntryDemo {
+    public static void main(String[] args) {
+        TreeMap<Integer, String> map = new TreeMap<>();
+        map.put(10, "Raigad");
+        map.put(20, "Sinhagad");
+        map.put(30, "Torna");
+        map.put(40, "Purandar");
+
+        System.out.println(map.lastEntry());   // 40=Purandar
+    }
+}
+''' + OUT,)),
     method(
         'pollFirstEntry() and pollLastEntry()', 'Map.Entry<K, V> pollFirstEntry();  Map.Entry<K, V> pollLastEntry()', 'the removed entry, or <code>null</code> if empty', 'O(log n)',
         'Remove and return the entry with the smallest or the largest key. Repeat <code>pollFirstEntry</code> until it returns <code>null</code> to process entries in key order while consuming them (a sorted queue with lookups).',
         'Handy for event schedulers: key = time, value = task; <code>pollFirstEntry</code> always gives the next task due.',
-        r'''// TreeMap pollFirstEntry / pollLastEntry: a tiny scheduler keyed by hour
-import java.util.Map;
+        r'''// TreeMap pollFirstEntry(): removes and returns the smallest pair
 import java.util.TreeMap;
 
-public class TreeMapPollDemo {
+public class TreeMapPollFirstEntryDemo {
     public static void main(String[] args) {
-        TreeMap<Integer, String> schedule = new TreeMap<>();
-        schedule.put(15, "Visit Purandar");
-        schedule.put(6, "Start at Raigad");
-        schedule.put(11, "Lunch at Torna");
+        TreeMap<Integer, String> map = new TreeMap<>();
+        map.put(10, "Raigad");
+        map.put(20, "Sinhagad");
+        map.put(30, "Torna");
+        map.put(40, "Purandar");
 
-        Map.Entry<Integer, String> next;
-        while ((next = schedule.pollFirstEntry()) != null) {          // earliest first
-            System.out.println(next.getKey() + ":00  " + next.getValue());
-        }
-        System.out.println("Left: " + schedule + ", pollLastEntry on empty = " + schedule.pollLastEntry());
+        System.out.println(map.pollFirstEntry());   // 10=Raigad
+        System.out.println(map);
     }
 }
-''' + OUT),
+''' + OUT, extra_codes=(r'''// TreeMap pollLastEntry(): removes and returns the biggest pair
+import java.util.TreeMap;
+
+public class TreeMapPollLastEntryDemo {
+    public static void main(String[] args) {
+        TreeMap<Integer, String> map = new TreeMap<>();
+        map.put(10, "Raigad");
+        map.put(20, "Sinhagad");
+        map.put(30, "Torna");
+        map.put(40, "Purandar");
+
+        System.out.println(map.pollLastEntry());   // 40=Purandar
+        System.out.println(map);
+    }
+}
+''' + OUT,)),
 
     section('Neighbours: lowerKey, floorKey, ceilingKey and higherKey', 'Find the closest key to a value, <strong>even if the value is not a key</strong>. Each has an <code>Entry</code> twin: <code>lowerEntry</code>, <code>floorEntry</code>, <code>ceilingEntry</code>, <code>higherEntry</code>.'),
     method(
         'lowerKey, floorKey, ceilingKey, higherKey (and the Entry versions)', 'K lowerKey(K);  K floorKey(K);  K ceilingKey(K);  K higherKey(K);  Map.Entry lowerEntry(K) ...', 'the neighbouring key / entry, or <code>null</code>', 'O(log n)',
         '<code>lowerKey(k)</code> = greatest key <strong>strictly below</strong> k; <code>floorKey(k)</code> = greatest key <strong>below or equal</strong>; <code>ceilingKey(k)</code> = smallest key <strong>above or equal</strong>; <code>higherKey(k)</code> = smallest key <strong>strictly above</strong>. If there is no such key the result is <code>null</code>.',
         'The Entry versions return the key <em>and</em> its value in one call, which is what you usually want. This is the standard way to implement <strong>price slabs, tax brackets, grade boundaries and time-line lookups</strong>.',
-        r'''// TreeMap lowerKey / floorKey / ceilingKey / higherKey
-import java.util.Map;
+        r'''// TreeMap lowerKey(K key): the key just smaller than key
 import java.util.TreeMap;
 
-public class TreeMapNeighboursDemo {
+public class TreeMapLowerKeyDemo {
     public static void main(String[] args) {
-        TreeMap<Integer, String> altitudeLevels = new TreeMap<>();
-        altitudeLevels.put(100, "Base");
-        altitudeLevels.put(400, "Plateau");
-        altitudeLevels.put(800, "Ridge");
-        altitudeLevels.put(1200, "Summit");
+        TreeMap<Integer, String> map = new TreeMap<>();
+        map.put(10, "Raigad");
+        map.put(20, "Sinhagad");
+        map.put(30, "Torna");
+        map.put(40, "Purandar");
 
-        int probe = 500;                                          // not a key
-        System.out.println("lowerKey(500)   : " + altitudeLevels.lowerKey(probe));
-        System.out.println("floorKey(500)   : " + altitudeLevels.floorKey(probe));
-        System.out.println("ceilingKey(500) : " + altitudeLevels.ceilingKey(probe));
-        System.out.println("higherKey(500)  : " + altitudeLevels.higherKey(probe));
-
-        Map.Entry<Integer, String> band = altitudeLevels.floorEntry(probe);     // the band that contains 500
-        System.out.println("Band for 500    : " + band.getValue() + " (starts at " + band.getKey() + ")");
-        System.out.println("floorEntry(50)  : " + altitudeLevels.floorEntry(50));     // below the smallest key
-        System.out.println("higherKey(1200) : " + altitudeLevels.higherKey(1200));   // above the largest key
+        System.out.println(map.lowerKey(20));   // 10
     }
 }
-''' + OUT),
+''' + OUT, extra_codes=(r'''// TreeMap floorKey(K key): smaller than or equal to key
+import java.util.TreeMap;
+
+public class TreeMapFloorKeyDemo {
+    public static void main(String[] args) {
+        TreeMap<Integer, String> map = new TreeMap<>();
+        map.put(10, "Raigad");
+        map.put(20, "Sinhagad");
+        map.put(30, "Torna");
+        map.put(40, "Purandar");
+
+        System.out.println(map.floorKey(25));   // 20
+    }
+}
+''' + OUT, r'''// TreeMap ceilingKey(K key): bigger than or equal to key
+import java.util.TreeMap;
+
+public class TreeMapCeilingKeyDemo {
+    public static void main(String[] args) {
+        TreeMap<Integer, String> map = new TreeMap<>();
+        map.put(10, "Raigad");
+        map.put(20, "Sinhagad");
+        map.put(30, "Torna");
+        map.put(40, "Purandar");
+
+        System.out.println(map.ceilingKey(25));   // 30
+    }
+}
+''' + OUT, r'''// TreeMap higherKey(K key): the key just bigger than key
+import java.util.TreeMap;
+
+public class TreeMapHigherKeyDemo {
+    public static void main(String[] args) {
+        TreeMap<Integer, String> map = new TreeMap<>();
+        map.put(10, "Raigad");
+        map.put(20, "Sinhagad");
+        map.put(30, "Torna");
+        map.put(40, "Purandar");
+
+        System.out.println(map.higherKey(40));   // null: nothing bigger
+    }
+}
+''' + OUT,)),
 
     section('Range views: headMap, tailMap and subMap', 'Take a part of the map by key. The result is a live view.'),
     method(
         'headMap, tailMap and subMap', 'SortedMap<K, V> headMap(K toKey);  NavigableMap<K, V> headMap(K toKey, boolean inclusive);  tailMap(K fromKey[, boolean]);  subMap(from, to) / subMap(from, fromInc, to, toInc)', 'a view of that key range', 'O(log n) to create',
         '<code>headMap(to)</code> = entries with keys <strong>before</strong> to; <code>tailMap(from)</code> = keys <strong>from</strong> from onwards; <code>subMap(from, to)</code> = from (included) to to (<strong>excluded</strong>). The long forms let you choose whether each end is included.',
         'Views are not copies: changing the view changes the map and the other way round. Putting a key outside the view\'s range throws <code>IllegalArgumentException</code>. Copy with <code>new TreeMap&lt;&gt;(view)</code> for an independent map.',
-        r'''// TreeMap headMap / tailMap / subMap: range views by key
-import java.util.NavigableMap;
+        r'''// TreeMap headMap(K to): pairs with keys smaller than "to"
 import java.util.TreeMap;
 
-public class TreeMapRangeDemo {
+public class TreeMapHeadMapDemo {
     public static void main(String[] args) {
-        NavigableMap<String, Integer> trekHours = new TreeMap<>();
-        trekHours.put("Lohagad", 2);
-        trekHours.put("Panhala", 4);
-        trekHours.put("Purandar", 3);
-        trekHours.put("Raigad", 6);
-        trekHours.put("Sinhagad", 2);
-        trekHours.put("Torna", 5);
+        TreeMap<Integer, String> map = new TreeMap<>();
+        map.put(10, "Raigad");
+        map.put(20, "Sinhagad");
+        map.put(30, "Torna");
+        map.put(40, "Purandar");
 
-        System.out.println("headMap(Raigad)           : " + trekHours.headMap("Raigad"));          // before Raigad
-        System.out.println("headMap(Raigad, true)     : " + trekHours.headMap("Raigad", true));
-        System.out.println("tailMap(Raigad)           : " + trekHours.tailMap("Raigad"));          // Raigad and after
-        System.out.println("subMap(Panhala, Sinhagad) : " + trekHours.subMap("Panhala", "Sinhagad"));
-
-        trekHours.subMap("Panhala", "Raigad").clear();                 // remove a key range through the view
-        System.out.println("After clearing the range  : " + trekHours);
+        System.out.println(map.headMap(30));   // 10 and 20
     }
 }
-''' + OUT),
+''' + OUT, extra_codes=(r'''// TreeMap tailMap(K from): pairs with keys from "from" and bigger
+import java.util.TreeMap;
+
+public class TreeMapTailMapDemo {
+    public static void main(String[] args) {
+        TreeMap<Integer, String> map = new TreeMap<>();
+        map.put(10, "Raigad");
+        map.put(20, "Sinhagad");
+        map.put(30, "Torna");
+        map.put(40, "Purandar");
+
+        System.out.println(map.tailMap(30));   // 30 and 40
+    }
+}
+''' + OUT, r'''// TreeMap subMap(K from, K to): from "from" up to (not including) "to"
+import java.util.TreeMap;
+
+public class TreeMapSubMapDemo {
+    public static void main(String[] args) {
+        TreeMap<Integer, String> map = new TreeMap<>();
+        map.put(10, "Raigad");
+        map.put(20, "Sinhagad");
+        map.put(30, "Torna");
+        map.put(40, "Purandar");
+
+        System.out.println(map.subMap(20, 40));   // 20 and 30
+    }
+}
+''' + OUT,)),
 
     section('Reverse order', 'See the map upside down without copying it.'),
     method(
         'descendingMap(), descendingKeySet(), navigableKeySet() and reversed()', 'NavigableMap<K, V> descendingMap();  NavigableSet<K> descendingKeySet();  NavigableSet<K> navigableKeySet();  NavigableMap reversed()', 'live reversed / key-set views', 'O(1)',
         '<code>descendingMap()</code> shows the same entries from the <strong>largest key to the smallest</strong>. <code>descendingKeySet()</code> does the same for the keys only. In Java 21 <code>reversed()</code> is the same as <code>descendingMap()</code>.',
         'All are views: they update when the map changes, and removing through them changes the map. They can be chained: <code>map.descendingMap().headMap(x)</code>.',
-        r'''// TreeMap descendingMap / descendingKeySet / reversed
-import java.util.Map;
+        r'''// TreeMap descendingMap(): the map in reverse order
 import java.util.TreeMap;
 
-public class TreeMapDescendingDemo {
+public class TreeMapDescendingMapDemo {
     public static void main(String[] args) {
-        TreeMap<String, Integer> trekHours = new TreeMap<>(Map.of("Raigad", 6, "Torna", 5, "Purandar", 3));
+        TreeMap<Integer, String> map = new TreeMap<>();
+        map.put(10, "Raigad");
+        map.put(20, "Sinhagad");
+        map.put(30, "Torna");
+        map.put(40, "Purandar");
 
-        System.out.println("ascending      : " + trekHours);
-        System.out.println("descendingMap  : " + trekHours.descendingMap());
-        System.out.println("descendingKeys : " + trekHours.descendingKeySet());
-        System.out.println("reversed (21)  : " + trekHours.reversed());
-
-        trekHours.put("Lohagad", 2);                                      // views are live
-        System.out.println("view updated   : " + trekHours.descendingMap());
+        System.out.println(map.descendingMap());
     }
 }
-''' + OUT),
+''' + OUT, extra_codes=(r'''// TreeMap descendingKeySet(): keys from big to small
+import java.util.TreeMap;
+
+public class TreeMapDescendingKeySetDemo {
+    public static void main(String[] args) {
+        TreeMap<Integer, String> map = new TreeMap<>();
+        map.put(10, "Raigad");
+        map.put(20, "Sinhagad");
+        map.put(30, "Torna");
+        map.put(40, "Purandar");
+
+        System.out.println(map.descendingKeySet());
+    }
+}
+''' + OUT, r'''// TreeMap reversed() (Java 21): the map in reverse order
+import java.util.TreeMap;
+
+public class TreeMapReversedDemo {
+    public static void main(String[] args) {
+        TreeMap<Integer, String> map = new TreeMap<>();
+        map.put(10, "Raigad");
+        map.put(20, "Sinhagad");
+        map.put(30, "Torna");
+        map.put(40, "Purandar");
+
+        System.out.println(map.reversed());
+    }
+}
+''' + OUT,)),
     method(
         'comparator(), clone, equals and toString', 'Comparator<? super K> comparator();  Object clone();  boolean equals(Object);  String toString()', 'the ordering / a shallow copy / comparison / text', 'O(n)',
         '<code>comparator()</code> returns the ordering in use (<code>null</code> for natural ordering). A TreeMap is <code>equal</code> to any Map with the same pairs, whatever the order or class.',
         'A <code>clone</code> copies the structure and keeps the comparator. Because <code>equals</code> on maps uses <code>equals</code> of the keys, a TreeMap with an unusual comparator can be "not equal" to a HashMap that looks identical.',
-        r'''// TreeMap comparator() / clone / equals
+        r'''// TreeMap comparator(): the custom order, or null for natural order
 import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.TreeMap;
 
 public class TreeMapComparatorDemo {
     public static void main(String[] args) {
-        TreeMap<String, Integer> natural = new TreeMap<>(Map.of("Raigad", 6, "Torna", 5));
-        TreeMap<String, Integer> reverse = new TreeMap<>(Comparator.reverseOrder());
-        reverse.putAll(natural);
+        TreeMap<String, Integer> natural = new TreeMap<>();
+        TreeMap<String, Integer> custom = new TreeMap<>(Comparator.reverseOrder());
 
-        System.out.println("natural.comparator() : " + natural.comparator());
-        System.out.println("reverse.comparator() is set: " + (reverse.comparator() != null));
-        System.out.println("natural : " + natural + "   reverse : " + reverse);
-        System.out.println("equal?  : " + natural.equals(reverse));            // same pairs, so equal
-
-        Map<String, Integer> hash = new HashMap<>(natural);
-        System.out.println("equals a HashMap with the same pairs: " + natural.equals(hash));
-
-        @SuppressWarnings("unchecked")
-        TreeMap<String, Integer> copy = (TreeMap<String, Integer>) reverse.clone();
-        copy.put("Lohagad", 2);
-        System.out.println("clone keeps the comparator: " + copy);
+        System.out.println(natural.comparator());          // null
+        System.out.println(custom.comparator() != null);   // true
     }
 }
-''' + OUT),
+''' + OUT, extra_codes=(r'''// TreeMap clone(): makes a copy
+import java.util.TreeMap;
+
+public class TreeMapCloneDemo {
+    public static void main(String[] args) {
+        TreeMap<Integer, String> map = new TreeMap<>();
+        map.put(10, "Raigad");
+        map.put(20, "Sinhagad");
+        map.put(30, "Torna");
+        map.put(40, "Purandar");
+
+        Object copy = map.clone();
+
+        System.out.println(copy);
+    }
+}
+''' + OUT, r'''// TreeMap equals(): same pairs means equal
+import java.util.TreeMap;
+
+public class TreeMapEqualsDemo {
+    public static void main(String[] args) {
+        TreeMap<Integer, String> map = new TreeMap<>();
+        map.put(10, "Raigad");
+        map.put(20, "Sinhagad");
+        map.put(30, "Torna");
+        map.put(40, "Purandar");
+
+        TreeMap<Integer, String> other = new TreeMap<>(map);
+
+        System.out.println(map.equals(other));   // true
+    }
+}
+''' + OUT,)),
+    (
+        '<h3>Master program: every TreeMap method in one place</h3>\n'
+        '<p>One single program that uses all the TreeMap methods you learned above, step by step. Read the numbered comments from top to bottom, run it, and match each output line with its step.</p>',
+        [r'''// MASTER PROGRAM: all important TreeMap methods in one program
+import java.util.Comparator;
+import java.util.Map;
+import java.util.TreeMap;
+
+public class TreeMapMasterDemo {
+    public static void main(String[] args) {
+        // 1. Create an empty TreeMap (keys always sorted)
+        TreeMap<Integer, String> map = new TreeMap<>();
+
+        // 2. put, putAll, putIfAbsent
+        map.put(30, "Torna");
+        map.put(10, "Raigad");
+        map.putAll(Map.of(20, "Sinhagad", 40, "Purandar"));
+        map.putIfAbsent(50, "Lohagad");
+        System.out.println("2. After puts      : " + map);
+
+        // 3. get, getOrDefault, containsKey, containsValue, size
+        System.out.println("3. get(10)         : " + map.get(10));
+        System.out.println("   getOrDefault    : " + map.getOrDefault(99, "none"));
+        System.out.println("   containsKey     : " + map.containsKey(20));
+        System.out.println("   containsValue   : " + map.containsValue("Torna"));
+        System.out.println("   size            : " + map.size());
+
+        // 4. firstKey, lastKey, firstEntry, lastEntry
+        System.out.println("4. firstKey/lastKey: " + map.firstKey() + " / " + map.lastKey());
+        System.out.println("   first / last    : " + map.firstEntry() + " / " + map.lastEntry());
+
+        // 5. Nearest keys: lowerKey, floorKey, ceilingKey, higherKey
+        System.out.println("5. lowerKey(30)    : " + map.lowerKey(30));
+        System.out.println("   floorKey(30)    : " + map.floorKey(30));
+        System.out.println("   ceilingKey(35)  : " + map.ceilingKey(35));
+        System.out.println("   higherKey(50)   : " + map.higherKey(50));
+
+        // 6. Range views: headMap, tailMap, subMap
+        System.out.println("6. headMap(30)     : " + map.headMap(30));
+        System.out.println("   tailMap(30)     : " + map.tailMap(30));
+        System.out.println("   subMap(20, 40)  : " + map.subMap(20, 40));
+
+        // 7. Reverse order: descendingMap, descendingKeySet, reversed
+        System.out.println("7. descendingMap   : " + map.descendingMap());
+        System.out.println("   descendingKeySet: " + map.descendingKeySet());
+
+        // 8. Views: keySet, values, forEach
+        System.out.println("8. keys / values   : " + map.keySet() + " / " + map.values());
+        map.forEach((k, v) -> System.out.print(k + "=" + v + " "));
+        System.out.println();
+
+        // 9. Change values: replace, merge
+        map.replace(10, "Raigad Fort");
+        map.merge(10, "!", String::concat);
+        System.out.println("9. map.get(10)     : " + map.get(10));
+
+        // 10. Remove: remove, pollFirstEntry, pollLastEntry
+        map.remove(30);
+        System.out.println("10. pollFirstEntry : " + map.pollFirstEntry());
+        System.out.println("    pollLastEntry  : " + map.pollLastEntry());
+        System.out.println("    Left           : " + map);
+
+        // 11. A custom order, and clear
+        TreeMap<String, Integer> zToA = new TreeMap<>(Comparator.reverseOrder());
+        zToA.put("Pune", 1);
+        zToA.put("Agra", 2);
+        System.out.println("11. Z to A         : " + zToA);
+        map.clear();
+        System.out.println("    After clear    : " + map);
+    }
+}
+''' + OUT],
+    ),
 ]
 
 EXPERT = [

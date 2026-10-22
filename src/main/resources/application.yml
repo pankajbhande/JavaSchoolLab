@@ -6,6 +6,10 @@ server:
   # (the Node server used TRUST_PROXY for this).
   forward-headers-strategy: ${FORWARD_HEADERS_STRATEGY:none}
   port: ${PORT:3001}              # 3001 matches the Node API, so the React app's default API address still works
+  shutdown: graceful              # on stop (docker stop / rolling deploy) finish the requests in flight before exiting; see lifecycle below
+  tomcat:
+    mbeanregistry:
+      enabled: true               # Tomcat thread-pool and connection metrics (tomcat_threads_busy_threads...) for /actuator/prometheus
   compression:
     enabled: true
     mime-types: application/json,text/html,text/css,application/javascript,text/plain
@@ -14,6 +18,8 @@ server:
 spring:
   application:
     name: javaschoollab
+  lifecycle:
+    timeout-per-shutdown-phase: ${SHUTDOWN_TIMEOUT:30s}   # how long a graceful shutdown may wait for requests in flight
   profiles:
     default: local   # STS / mvn spring-boot:run use the "local" profile; production sets SPRING_PROFILES_ACTIVE=prod
   datasource:
@@ -43,6 +49,7 @@ spring:
     redis:
       host: ${REDIS_HOST:localhost}
       port: ${REDIS_PORT:6379}
+      username: ${REDIS_USERNAME:}      # Redis 6+ ACL user; empty = the password alone (the default user)
       password: ${REDIS_PASSWORD:}
       timeout: 1s
       connect-timeout: 1s
@@ -51,6 +58,9 @@ spring:
       static-locations: classpath:/static/   # the built React site, when packaged with -Pwith-site
 
 app:
+  actuator:
+    user: ${ACTUATOR_USER:actuator}      # HTTP Basic account for the protected operations endpoints (metrics, prometheus)
+    password: ${ACTUATOR_PASSWORD:}      # empty = that account does not exist, so only /actuator/health and /actuator/info answer
   admin:
     emails: ${ADMIN_EMAILS:}             # comma-separated emails allowed to open /admin (the analytics dashboard); empty = nobody
   redis:
@@ -61,6 +71,12 @@ app:
     verify-per-minute: ${VERIFY_RATE_LIMIT:60}          # public certificate verification, per client address
     profile-per-minute: ${PROFILE_RATE_LIMIT:60}        # public learner profile pages
     handle-check-per-minute: ${HANDLE_RATE_LIMIT:40}     # "is this handle free?" while typing
+    # Sign-in routes. Each limit is applied per client address AND per account (email), so one attacker cannot hammer one account
+    # from many addresses, and one address cannot hammer many accounts.
+    writes-per-minute: ${WRITE_RATE_LIMIT:120}           # POST/PUT/PATCH/DELETE per signed-in user (notes, bookmarks, progress, quiz attempts ...)
+    login-per-minute: ${LOGIN_RATE_LIMIT:10}             # password sign-in / sign-up attempts
+    otp-send-per-minute: ${OTP_SEND_RATE_LIMIT:3}        # one-time-code e-mails (also stops mail flooding)
+    otp-verify-per-minute: ${OTP_VERIFY_RATE_LIMIT:6}    # one-time-code guesses: 6 a minute against 1,000,000 codes
   jwt:
     secret: ${JWT_SECRET:}        # REQUIRED. Use the same value as the Node server to keep users signed in.
     expires-days: 7
@@ -68,6 +84,9 @@ app:
     origins: ${CORS_ORIGIN:}      # comma-separated; empty = allow any origin (development only)
   google:
     client-id: ${GOOGLE_CLIENT_ID:}   # OAuth "Web application" client id from Google Cloud Console; empty = Google sign-in is off
+  site-url: ${SITE_URL:}                # the public address of the site (https://example.com); used in link previews so the Host header is never trusted
+  security:
+    csp-mode: ${CSP_MODE:report-only}   # report-only | enforce | off: the script / connection allow-list of the Content-Security-Policy (see SecurityHeadersFilter)
   otp:
     dev-echo: ${OTP_DEV_ECHO:false}   # returns the OTP in the response; ignored under the "prod" profile
   mail:
@@ -81,3 +100,88 @@ app:
 logging:
   level:
     com.javaschoollab: INFO
+
+# ---------------------------------------------------------------------------------------------------------------------
+# Operations (Spring Boot Actuator). Only what monitoring needs is exposed; everything else (env, beans, heapdump, loggers...)
+# stays off. In production the endpoints live on a separate management port that is not published to the internet
+# (application-prod.yml); locally they share the app's port.
+#   /actuator/health            overall status (public: status only, no details)
+#   /actuator/health/liveness   "is the process alive?"          -> restart it when DOWN
+#   /actuator/health/readiness  "can it take traffic now?"       -> stop sending traffic when DOWN
+#   /actuator/info              application name, version, build time
+#   /actuator/metrics, /actuator/prometheus   metrics (HTTP Basic: app.actuator.user / app.actuator.password)
+# ---------------------------------------------------------------------------------------------------------------------
+management:
+  server:
+    port: ${MANAGEMENT_PORT:}              # empty = same port as the app. Production sets a separate, private port.
+  endpoints:
+    web:
+      base-path: /actuator
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      probes:
+        enabled: true                      # adds the liveness and readiness groups (they also switch on automatically in Kubernetes)
+      show-details: when-authorized        # anonymous callers get the status only; the actuator account sees every component
+      show-components: when-authorized
+      roles: ACTUATOR
+      status:
+        order: DOWN,OUT_OF_SERVICE,DEGRADED,UP,UNKNOWN
+        http-mapping:
+          DEGRADED: 200                    # a working app with search still preparing is not an outage
+      group:
+        # Liveness only asks whether the JVM itself is healthy. Never put the database here: a database outage must not make an
+        # orchestrator kill and restart a perfectly good app in a loop.
+        liveness:
+          include: livenessState
+        # Readiness = the app can serve requests: it has finished starting (Flyway included) and MySQL answers. Redis and
+        # search are left out on purpose: the app degrades gracefully without them, so their outage must not pull it out of rotation.
+        readiness:
+          include: readinessState,db
+  health:
+    redis:
+      enabled: ${REDIS_ENABLED:false}      # a Redis that was never switched on must not report DOWN
+    mail:
+      enabled: false                       # sign-up codes use our own SMTP code, not Spring's mail sender
+    diskspace:
+      enabled: true
+  info:
+    build:
+      enabled: true                        # from META-INF/build-info.properties written at build time
+    java:
+      enabled: true
+    env:
+      enabled: true                        # the "info.*" keys below
+  tracing:
+    # Distributed tracing (Micrometer Tracing + OpenTelemetry). Trace and span ids are always put into the logs, so a log line can be
+    # matched to its trace. Spans are only EXPORTED (over OTLP, to Tempo) when TRACING_EXPORT_ENABLED=true.
+    sampling:
+      probability: ${TRACING_SAMPLING_PROBABILITY:1.0}      # share of requests traced (1.0 = all). Production default is lower: application-prod.yml
+  otlp:
+    tracing:
+      export:
+        enabled: ${TRACING_EXPORT_ENABLED:false}
+      endpoint: ${OTLP_TRACING_ENDPOINT:http://localhost:4318/v1/traces}
+      timeout: 5s
+  metrics:
+    tags:
+      application: ${spring.application.name}       # lets one Prometheus / Grafana tell several services apart
+    distribution:
+      # A key that contains dots must be written in [brackets], otherwise Spring splits it on the dots and the setting is silently ignored.
+      percentiles-histogram:
+        "[http.server.requests]": true               # latency histograms, so p50 / p95 / p99 can be computed in Prometheus
+        "[jsl.service]": true                        # the same for every business operation (jsl_service_seconds_bucket)
+      slo:
+        "[http.server.requests]": 100ms,300ms,1s,3s
+  prometheus:
+    metrics:
+      export:
+        enabled: true
+
+info:
+  app:
+    name: JavaSchoolLab
+    description: JavaSchoolLab API and course site
+    commit: ${APP_COMMIT:unknown}          # set APP_COMMIT at deploy time to show which commit is running
+

@@ -10,6 +10,8 @@
  * console noise. So this is safe to merge before approval comes through.
  */
 
+import { getConsent } from '../../lib/consent';
+
 export const ADSENSE_CLIENT = import.meta.env.VITE_ADSENSE_CLIENT ?? '';
 
 /** Guards against a half-filled .env: "ca-pub-" alone would load a script that 400s. */
@@ -30,6 +32,8 @@ let loader: Promise<void> | null = null;
  */
 export function loadAdSense(): Promise<void> {
   if (!adsEnabled) return Promise.reject(new Error('adsense-not-configured'));
+  // No advertising script is ever fetched before the visitor says yes (lib/consent.ts, components/ConsentBanner.tsx).
+  if (getConsent() !== 'granted') return Promise.reject(new Error('adsense-no-consent'));
   if (loader) return loader;
 
   loader = new Promise<void>((resolve, reject) => {

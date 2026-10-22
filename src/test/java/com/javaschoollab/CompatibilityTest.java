@@ -28,13 +28,15 @@ class CompatibilityTest {
 
     private static JwtService jwt(String secret) {
         return new JwtService(new AppProperties(new AppProperties.Jwt(secret, 7), new AppProperties.Cors(""),
-                new AppProperties.Otp(false), new AppProperties.Mail("", 465, "", "", "", ""), new AppProperties.RateLimit(60, 60, 40)));
+                new AppProperties.Otp(false), new AppProperties.Mail("", 465, "", "", "", ""), new AppProperties.RateLimit(60, 60, 40, 10, 3, 6)));
     }
 
     @Test
     void acceptsATokenIssuedByTheNodeServer() {
         var user = jwt(SECRET).parse(NODE_TOKEN);
-        assertThat(user).contains(new AuthUser(7, "Abaji Rao", "abaji@example.com", null));
+        assertThat(user).isPresent();
+        assertThat(user.get()).usingRecursiveComparison().ignoringFields("issuedAt")
+                .isEqualTo(new AuthUser(7, "Abaji Rao", "abaji@example.com", null));
     }
 
     @Test
@@ -54,7 +56,10 @@ class CompatibilityTest {
     void roundTripsItsOwnTokens() {
         JwtService service = jwt(SECRET);
         var user = new AuthUser(42, "Tanaji Malusare", null, "9876543210");
-        assertThat(service.parse(service.issue(user))).contains(user);
+        var parsed = service.parse(service.issue(user));
+        assertThat(parsed).isPresent();
+        assertThat(parsed.get()).usingRecursiveComparison().ignoringFields("issuedAt").isEqualTo(user);
+        assertThat(parsed.get().issuedAt()).isNotNull();
     }
 
     @Test

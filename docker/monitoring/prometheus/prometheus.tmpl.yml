@@ -1,0 +1,110 @@
+# Prometheus configuration TEMPLATE. prometheus-entrypoint.sh turns it into /tmp/prometheus.yml at container start, replacing the two
+# __PLACEHOLDERS__ below from docker/.env, and writes the actuator password to a file that "password_file" reads. The password is therefore
+# never stored in an image or in this repository.
+global:
+  scrape_interval: 15s          # how often every target is scraped
+  scrape_timeout: 10s
+  evaluation_interval: 15s      # how often the rules (recording + alerting) are evaluated
+  external_labels:
+    environment: production
+    stack: javaschoollab
+
+rule_files:
+  - /etc/prometheus/rules/*.yml
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: ["javaschoollab-alertmanager:9093"]
+
+scrape_configs:
+  # ---- the application (Spring Boot Actuator on the private management port) ------------------------------------
+  - job_name: javaschoollab-app
+    metrics_path: /actuator/prometheus
+    basic_auth:
+      username: __ACTUATOR_USER__
+      password_file: /tmp/actuator_password
+    static_configs:
+      - targets: ["javaschoollab-app:__MANAGEMENT_PORT__"]
+        labels:
+          application: javaschoollab
+
+  # ---- the shared services, through their exporters --------------------------------------------------------------
+  - job_name: mysql
+    static_configs:
+      - targets: ["javaschoollab-mysqld-exporter:9104"]
+  - job_name: redis
+    static_configs:
+      - targets: ["javaschoollab-redis-exporter:9121"]
+  - job_name: opensearch
+    static_configs:
+      - targets: ["javaschoollab-opensearch-exporter:9114"]
+
+  # ---- synthetic checks from the outside: is the site reachable, are the APIs answering, how long does each take --
+  - job_name: blackbox-http
+    metrics_path: /probe
+    params:
+      module: [http_2xx]
+    static_configs:
+      - targets:
+          - http://javaschoollab-app:3001/                                  # the website itself
+          - http://javaschoollab-app:3001/api/search/status                 # a public API route
+          - http://javaschoollab-app:__MANAGEMENT_PORT__/actuator/health/readiness   # the readiness probe
+          - http://javaschoollab-app:__MANAGEMENT_PORT__/actuator/health/liveness    # the liveness probe
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: javaschoollab-blackbox:9115
+
+  # ---- the server and its containers ------------------------------------------------------------------------------
+  - job_name: node
+    static_configs:
+      - targets: ["javaschoollab-node-exporter:9100"]
+  - job_name: cadvisor
+    static_configs:
+      - targets: ["javaschoollab-cadvisor:8080"]
+
+  # ---- PLUG-IN POINT: other applications ---------------------------------------------------------------------------
+  # Drop a small YAML file into docker/monitoring/prometheus/targets/apps/ (metrics) or .../probes/ (URLs to check) and it is picked up
+  # within a minute, without restarting anything. See targets/README.txt.
+  - job_name: apps
+    file_sd_configs:
+      - files: ["/etc/prometheus/targets/apps/*.yml"]
+        refresh_interval: 1m
+  - job_name: blackbox-extra
+    metrics_path: /probe
+    params:
+      module: [http_2xx]
+    file_sd_configs:
+      - files: ["/etc/prometheus/targets/probes/*.yml"]
+        refresh_interval: 1m
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: javaschoollab-blackbox:9115
+
+  # ---- the observability stack itself ----------------------------------------------------------------------------
+  - job_name: prometheus
+    static_configs:
+      - targets: ["localhost:9090"]
+  - job_name: alertmanager
+    static_configs:
+      - targets: ["javaschoollab-alertmanager:9093"]
+  - job_name: grafana
+    static_configs:
+      - targets: ["javaschoollab-grafana:3000"]
+  - job_name: loki
+    static_configs:
+      - targets: ["javaschoollab-loki:3100"]
+  - job_name: tempo
+    static_configs:
+      - targets: ["javaschoollab-tempo:3200"]
+  - job_name: alloy
+    static_configs:
+      - targets: ["javaschoollab-alloy:12345"]

@@ -1,0 +1,355 @@
+# JavaSchoolLab OBSERVABILITY: metrics, logs, traces, dashboards and alerts. Started and stopped on its own; the application and the
+# shared stack neither need it nor are affected by it.
+#
+#   cd docker
+#   docker compose -f docker-compose.shared.yml up -d       (the shared network and the services to watch must exist first)
+#   docker compose -f docker-compose.monitoring.yml up -d
+#   open http://localhost:3000                              Grafana (user: GRAFANA_ADMIN_USER, password: GRAFANA_ADMIN_PASSWORD)
+#
+#   Signal    Collected by                                        Stored in      Looked at in
+#   --------  --------------------------------------------------  -------------  --------------------------------------------
+#   metrics   Prometheus scrapes the app (Spring Actuator) and    Prometheus     Grafana dashboards, Prometheus UI :9090
+#             the exporters for MySQL, Redis and OpenSearch,
+#             plus blackbox probes of the site from outside
+#   logs      Alloy reads the console of every javaschoollab-*    Loki           Grafana > Logs & Traces
+#             container (the app writes JSON in production)
+#   traces    the app sends spans over OTLP                       Tempo          Grafana > Logs & Traces, and the "View trace" links
+#   alerts    Prometheus rules (docker/monitoring/prometheus/     Alertmanager   Grafana > Alerts & SLO, Alertmanager UI :9093
+#             rules) -> Alertmanager (optional e-mail)
+#
+# Everything is published on 127.0.0.1 only (this machine), never to the network. Settings and passwords come from docker/.env.
+name: javaschoollab-monitoring
+
+# Every container's console log is rotated by Docker: at most 3 files of 10 MB each (30 MB per container). Without this a busy container's log
+# grows until the disk is full. (The logs are also shipped to Loki by Alloy, which keeps them for 14 days.)
+x-logging: &default-logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+
+services:
+  # ------------------------------------------------------------------------------------------------------------------
+  #  Prometheus: scrapes and stores the metrics, evaluates the alert rules
+  # ------------------------------------------------------------------------------------------------------------------
+  prometheus:
+    image: prom/prometheus:v2.55.1
+    logging: *default-logging
+    container_name: javaschoollab-prometheus
+    restart: unless-stopped
+    entrypoint: ["/bin/sh", "/prometheus-entrypoint.sh"]
+    environment:
+      ACTUATOR_USER: ${ACTUATOR_USER:-actuator}
+      ACTUATOR_PASSWORD: ${ACTUATOR_PASSWORD:-}
+      MANAGEMENT_PORT: ${MANAGEMENT_PORT:-9001}
+      PROMETHEUS_RETENTION: ${PROMETHEUS_RETENTION:-15d}
+      PROMETHEUS_RETENTION_SIZE: ${PROMETHEUS_RETENTION_SIZE:-5GB}
+    volumes:
+      - ./monitoring/prometheus/prometheus-entrypoint.sh:/prometheus-entrypoint.sh:ro
+      - ./monitoring/prometheus/prometheus.tmpl.yml:/etc/prometheus/prometheus.tmpl.yml:ro
+      - ./monitoring/prometheus/rules:/etc/prometheus/rules:ro
+      # Plug-in point: another application adds its metrics endpoint / probe URLs as a small YAML file here (no restart needed).
+      - ./monitoring/prometheus/targets:/etc/prometheus/targets:ro
+      - prometheus_data:/prometheus
+    ports:
+      - "127.0.0.1:${PROMETHEUS_PORT:-9090}:9090"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:9090/-/healthy >/dev/null || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    deploy:
+      resources:
+        limits:
+          memory: 512m
+    networks: [observability, shared]
+
+  # ------------------------------------------------------------------------------------------------------------------
+  #  Alertmanager: groups the alerts, sends e-mail when ALERT_EMAIL_TO is set
+  # ------------------------------------------------------------------------------------------------------------------
+  alertmanager:
+    image: prom/alertmanager:v0.27.0
+    logging: *default-logging
+    container_name: javaschoollab-alertmanager
+    restart: unless-stopped
+    entrypoint: ["/bin/sh", "/alertmanager-entrypoint.sh"]
+    environment:
+      ALERT_EMAIL_TO: ${ALERT_EMAIL_TO:-}
+      SMTP_HOST: ${SMTP_HOST:-}
+      SMTP_PORT: ${SMTP_PORT:-465}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASS: ${SMTP_PASS:-}
+    volumes:
+      - ./monitoring/alertmanager/alertmanager-entrypoint.sh:/alertmanager-entrypoint.sh:ro
+      - alertmanager_data:/alertmanager
+    ports:
+      - "127.0.0.1:${ALERTMANAGER_PORT:-9093}:9093"
+    deploy:
+      resources:
+        limits:
+          memory: 128m
+    networks: [observability]
+
+  # ------------------------------------------------------------------------------------------------------------------
+  #  Blackbox exporter: probes the site and the health endpoints from the outside
+  # ------------------------------------------------------------------------------------------------------------------
+  blackbox:
+    image: prom/blackbox-exporter:v0.25.0
+    logging: *default-logging
+    container_name: javaschoollab-blackbox
+    restart: unless-stopped
+    command: ["--config.file=/etc/blackbox/blackbox.yml"]
+    volumes:
+      - ./monitoring/blackbox/blackbox.yml:/etc/blackbox/blackbox.yml:ro
+    deploy:
+      resources:
+        limits:
+          memory: 64m
+    networks: [observability, shared]
+
+  # ------------------------------------------------------------------------------------------------------------------
+  #  Exporters: translate MySQL, Redis and OpenSearch statistics into Prometheus metrics
+  # ------------------------------------------------------------------------------------------------------------------
+  mysqld-exporter:
+    image: prom/mysqld-exporter:v0.16.0
+    logging: *default-logging
+    container_name: javaschoollab-mysqld-exporter
+    restart: unless-stopped
+    entrypoint: ["/bin/sh", "-c"]
+    # Logs in with the read-only "exporter" account that docker-compose.shared.yml (db-setup) creates; the password goes into a
+    # private file inside the container, never onto a command line.
+    # The password is written between backticks: the exporter reads this file with an INI parser that treats # and ; as the start of a comment
+    # unless the value is in backticks, so a password such as Ab@#1234 would otherwise be cut off.
+    command:
+      - |
+        printf '[client]\nuser=`%s`\npassword=`%s`\n' "$$EXPORTER_USER" "$$EXPORTER_PASSWORD" > /tmp/my.cnf
+        exec /bin/mysqld_exporter --config.my-cnf=/tmp/my.cnf --mysqld.address=javaschoollab-db:3306
+    environment:
+      EXPORTER_USER: ${EXPORTER_USER:-exporter}
+      EXPORTER_PASSWORD: ${EXPORTER_PASSWORD:?set EXPORTER_PASSWORD in .env}
+    deploy:
+      resources:
+        limits:
+          memory: 64m
+    networks: [observability, shared]
+
+  redis-exporter:
+    image: oliver006/redis_exporter:v1.66.0
+    logging: *default-logging
+    container_name: javaschoollab-redis-exporter
+    restart: unless-stopped
+    environment:
+      REDIS_ADDR: redis://javaschoollab-redis:6379
+      REDIS_USER: ${REDIS_USERNAME:-supervisor}
+      REDIS_PASSWORD: ${REDIS_PASSWORD:?set REDIS_PASSWORD in .env}
+    deploy:
+      resources:
+        limits:
+          memory: 64m
+    networks: [observability, shared]
+
+  opensearch-exporter:
+    image: quay.io/prometheuscommunity/elasticsearch-exporter:v1.8.0
+    logging: *default-logging
+    container_name: javaschoollab-opensearch-exporter
+    restart: unless-stopped
+    command:
+      - --es.uri=http://javaschoollab-opensearch:9200
+      - --es.all
+      - --es.indices
+      - --es.timeout=10s
+    deploy:
+      resources:
+        limits:
+          memory: 64m
+    networks: [observability, shared]
+
+  # ------------------------------------------------------------------------------------------------------------------
+  #  The server and its containers: CPU, memory, disk, load, and per-container CPU / memory / restarts
+  # ------------------------------------------------------------------------------------------------------------------
+  # node-exporter reads the host's /proc and /sys (through the read-only mount of "/") and the text files the backup scripts write
+  # (backups/metrics/*.prom), so "when did the last backup succeed" is a metric too.
+  node-exporter:
+    image: prom/node-exporter:v1.8.2
+    logging: *default-logging
+    container_name: javaschoollab-node-exporter
+    restart: unless-stopped
+    command:
+      - --path.rootfs=/host
+      - --collector.textfile.directory=/textfiles
+      - --collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc|run|var/lib/docker/.+|var/lib/containers/.+)($$|/)
+    volumes:
+      - /:/host:ro
+      - ../backups/metrics:/textfiles:ro
+    deploy:
+      resources:
+        limits:
+          memory: 64m
+    networks: [observability]
+
+  # cAdvisor: CPU, memory, network and restarts of every container. It needs read access to the Docker data folder and to cgroups.
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:v0.49.1
+    logging: *default-logging
+    container_name: javaschoollab-cadvisor
+    restart: unless-stopped
+    privileged: true
+    command:
+      - --housekeeping_interval=30s
+      - --docker_only=true
+      - --store_container_labels=false
+      - --whitelisted_container_labels=com.docker.compose.service,com.docker.compose.project
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+    deploy:
+      resources:
+        limits:
+          memory: 256m
+    networks: [observability]
+
+  # ------------------------------------------------------------------------------------------------------------------
+  #  Loki + Alloy: the logs
+  # ------------------------------------------------------------------------------------------------------------------
+  loki:
+    image: grafana/loki:3.3.2
+    logging: *default-logging
+    container_name: javaschoollab-loki
+    restart: unless-stopped
+    command: ["-config.file=/etc/loki/loki.yml"]
+    volumes:
+      - ./monitoring/loki/loki.yml:/etc/loki/loki.yml:ro
+      - loki_data:/loki
+    deploy:
+      resources:
+        limits:
+          memory: 384m
+    networks: [observability]
+
+  # Reads the console output of the javaschoollab-* containers through the Docker socket (read-only) and pushes it to Loki.
+  alloy:
+    image: grafana/alloy:v1.5.1
+    logging: *default-logging
+    container_name: javaschoollab-alloy
+    restart: unless-stopped
+    command:
+      - run
+      - --server.http.listen-addr=0.0.0.0:12345
+      - --storage.path=/var/lib/alloy/data
+      - /etc/alloy/config.alloy
+    environment:
+      # Regular expression of the container names whose logs are collected. Default: every container on this machine (a shared platform
+      # logs every application). Narrow it, e.g.  javaschoollab-.*|otherapp-.*
+      LOG_CONTAINER_REGEX: ${LOG_CONTAINER_REGEX:-.+}
+    volumes:
+      - ./monitoring/alloy/config.alloy:/etc/alloy/config.alloy:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - alloy_data:/var/lib/alloy/data
+    depends_on:
+      - loki
+    deploy:
+      resources:
+        limits:
+          memory: 256m
+    networks: [observability]
+
+  # ------------------------------------------------------------------------------------------------------------------
+  #  Tempo: the traces
+  # ------------------------------------------------------------------------------------------------------------------
+  # Tempo runs as an unprivileged user and cannot write to a brand-new volume: this one-shot container gives the volume to that user.
+  tempo-init:
+    image: busybox:1.36
+    logging: *default-logging
+    container_name: javaschoollab-tempo-init
+    user: root
+    restart: "no"
+    entrypoint: ["/bin/sh", "-c", "chown -R 10001:10001 /var/tempo"]
+    volumes:
+      - tempo_data:/var/tempo
+    networks: [observability]
+
+  tempo:
+    image: grafana/tempo:2.6.1
+    logging: *default-logging
+    container_name: javaschoollab-tempo
+    restart: unless-stopped
+    command: ["-config.file=/etc/tempo/tempo.yml"]
+    depends_on:
+      tempo-init:
+        condition: service_completed_successfully
+    volumes:
+      - ./monitoring/tempo/tempo.yml:/etc/tempo/tempo.yml:ro
+      - tempo_data:/var/tempo
+    deploy:
+      resources:
+        limits:
+          memory: 384m
+    networks:
+      observability:
+      shared:
+        aliases: [javaschoollab-tempo]     # the application sends its spans here (OTLP, port 4318)
+
+  # ------------------------------------------------------------------------------------------------------------------
+  #  Grafana: the dashboards
+  # ------------------------------------------------------------------------------------------------------------------
+  grafana:
+    image: grafana/grafana:11.3.0
+    logging: *default-logging
+    container_name: javaschoollab-grafana
+    restart: unless-stopped
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER:-supervisor}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:?set GRAFANA_ADMIN_PASSWORD in .env}
+      GF_USERS_ALLOW_SIGN_UP: "false"
+      GF_AUTH_ANONYMOUS_ENABLED: "false"
+      GF_ANALYTICS_REPORTING_ENABLED: "false"
+      GF_ANALYTICS_CHECK_FOR_UPDATES: "false"
+      GF_SERVER_ROOT_URL: ${GRAFANA_ROOT_URL:-http://localhost:3000}
+      GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH: /var/lib/grafana/dashboards/JavaSchoolLab/javaschoollab-overview.json
+      GF_DASHBOARDS_MIN_REFRESH_INTERVAL: 5s
+    volumes:
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards:ro
+      - grafana_data:/var/lib/grafana
+    ports:
+      - "127.0.0.1:${GRAFANA_PORT:-3000}:3000"
+    depends_on:
+      - prometheus
+      - loki
+      - tempo
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:3000/api/health | grep -q '\"database\": \"ok\"' || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          memory: 384m
+    networks: [observability]
+
+volumes:
+  prometheus_data:
+    name: javaschoollab_prometheus_data
+  alertmanager_data:
+    name: javaschoollab_alertmanager_data
+  loki_data:
+    name: javaschoollab_loki_data
+  tempo_data:
+    name: javaschoollab_tempo_data
+  alloy_data:
+    name: javaschoollab_alloy_data
+  grafana_data:
+    name: javaschoollab_grafana_data
+
+networks:
+  # Private network of the monitoring stack (Prometheus, Grafana, Loki, Tempo, Alloy, exporters).
+  observability:
+  # Created by docker-compose.shared.yml: how Prometheus reaches the application and the shared services, and how the application reaches Tempo.
+  shared:
+    external: true
+    name: javaschoollab_shared

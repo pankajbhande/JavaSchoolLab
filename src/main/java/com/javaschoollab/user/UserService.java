@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 
 /** The users service: the only way other packages read or change an account. */
 @Service
-public class UserService {
+public class UserService implements com.javaschoollab.security.TokenCutoffs {
 
     private final UserRepository users;
 
@@ -29,6 +29,16 @@ public class UserService {
     public long insert(String fullName, String email, String mobile, String passwordHash, String loginType,
                        String gender, LocalDate dob, String organization) {
         return users.insert(fullName, email, mobile, passwordHash, loginType, gender, dob, organization);
+    }
+
+    @Override
+    public Optional<java.time.Instant> tokensValidFrom(long id) {
+        return users.tokensValidFrom(id);
+    }
+
+    @Override
+    public void revokeTokens(long id, java.time.Instant from) {
+        users.revokeTokens(id, from);
     }
 
     public void updatePasswordHash(long id, String hash) {

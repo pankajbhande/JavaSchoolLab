@@ -1,9 +1,12 @@
-# PRODUCTION profile: SPRING_PROFILES_ACTIVE=prod (docker/docker-compose.yml sets it).
+# PRODUCTION profile: SPRING_PROFILES_ACTIVE=prod (docker/docker-compose.yml sets it; the database is the shared stack in docker/docker-compose.db.yml).
 # Nothing secret and nothing environment-specific has a default here: a missing value stops the app at start-up with
 # "Could not resolve placeholder", instead of running half-configured.
 #
 # Required environment variables: DB_HOST, DB_NAME, DB_USER, DB_PASSWORD, JWT_SECRET (32+ chars), CORS_ORIGIN
 # Redis (REDIS_ENABLED=true, REDIS_HOST, REDIS_PORT, REDIS_PASSWORD) and OpenSearch (SEARCH_URL) are optional; docker-compose.yml turns both on.
+# Where the values come from: docker/.env, which docker/docker-compose.yml passes to the app under exactly these names,
+# together with SPRING_PROFILES_ACTIVE=prod. Nothing secret lives in this file or in the image.
+# Operations: MANAGEMENT_PORT (default 9001), ACTUATOR_USER / ACTUATOR_PASSWORD (protect /actuator/prometheus; empty password = it stays closed), APP_COMMIT (shown in /actuator/info)
 # Optional: GOOGLE_CLIENT_ID (turns on "Continue with Google"), DB_PORT, PORT, SMTP_* (without SMTP the sign-up code cannot be delivered, and production never echoes it)
 
 server:
@@ -25,6 +28,16 @@ spring:
   flyway:
     clean-disabled: true               # never allow Flyway to wipe the production database
 
+# Operations endpoints (Actuator) on a SEPARATE management port that docker-compose binds to 127.0.0.1 only, so they are not
+# reachable from the internet through the website's port. Health probes: /actuator/health/liveness and /actuator/health/readiness.
+# Metrics (/actuator/prometheus) need HTTP Basic with ACTUATOR_USER / ACTUATOR_PASSWORD.
+management:
+  server:
+    port: ${MANAGEMENT_PORT:9001}
+  tracing:
+    sampling:
+      probability: ${TRACING_SAMPLING_PROBABILITY:0.2}   # production traces 1 request in 5 unless TRACING_SAMPLING_PROBABILITY says otherwise
+
 app:
   jwt:
     secret: ${JWT_SECRET}
@@ -34,6 +47,12 @@ app:
     dev-echo: false                    # also forced off in code under this profile
 
 logging:
+  # One JSON object per line on the console (Logstash JSON layout), carrying timestamp, level, logger, message, stack trace and the
+  # traceId / spanId of the request. Docker collects the console; Alloy ships it to Loki; Grafana searches it and jumps from a log line
+  # to its trace. Local runs keep the readable one-line format.
+  structured:
+    format:
+      console: logstash
   level:
     root: WARN
     com.javaschoollab: INFO

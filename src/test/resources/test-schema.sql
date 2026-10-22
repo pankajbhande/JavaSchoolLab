@@ -11,6 +11,7 @@ CREATE TABLE IF NOT EXISTS users (
   organization  VARCHAR(255) NULL,
   avatar        VARCHAR(100000) NULL,
   weekly_goal_minutes SMALLINT NULL,
+  tokens_valid_from TIMESTAMP NULL,
   created_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -94,6 +95,16 @@ CREATE TABLE IF NOT EXISTS notes (
   body       CLOB NOT NULL,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   CONSTRAINT uniq_note UNIQUE (user_id, course_id, topic_id)
+);
+
+CREATE TABLE IF NOT EXISTS suggestions (
+  id         INT AUTO_INCREMENT PRIMARY KEY,
+  user_id    INT NOT NULL,
+  category   VARCHAR(20) NOT NULL,
+  message    CLOB NOT NULL,
+  page_path  VARCHAR(300) NULL,
+  status     VARCHAR(20) NOT NULL DEFAULT 'new',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS user_profiles (

@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 
 # The app is a client-rendered SPA; the sitemap is how the topic URLs are discovered.
-Sitemap: https://javaschoollab.com/sitemap.xml
+Sitemap: https://javaschoollab.dhipansoft.in/sitemap.xml

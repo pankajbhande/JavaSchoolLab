@@ -36,7 +36,8 @@ public class ProgressService {
         if (!JsonInput.truthy(body.get("courseId")) || !JsonInput.truthy(body.get("moduleId")) || !JsonInput.truthy(body.get("topicId"))) {
             throw ApiException.badRequest("courseId, moduleId and topicId are required");
         }
-        repo.recordTopic(userId, body.get("courseId").asText(), body.get("moduleId").asText(), body.get("topicId").asText());
+        repo.recordTopic(userId, JsonInput.bounded(body.get("courseId"), "courseId", 120), JsonInput.bounded(body.get("moduleId"), "moduleId", 120),
+                JsonInput.bounded(body.get("topicId"), "topicId", 120));
     }
 
     /** Adopts a guest's localStorage history. Capped so a hostile client can't push an unbounded insert. Returns how many were imported. */
@@ -46,7 +47,8 @@ public class ProgressService {
         List<TopicRef> batch = new ArrayList<>();
         for (JsonNode t : topics) {
             if (batch.size() >= IMPORT_BATCH_LIMIT) break;
-            if (t != null && t.isObject() && JsonInput.truthy(t.get("courseId")) && JsonInput.truthy(t.get("moduleId")) && JsonInput.truthy(t.get("topicId"))) {
+            if (t != null && t.isObject() && JsonInput.truthy(t.get("courseId")) && JsonInput.truthy(t.get("moduleId")) && JsonInput.truthy(t.get("topicId"))
+                    && t.get("courseId").asText().length() <= 120 && t.get("moduleId").asText().length() <= 120 && t.get("topicId").asText().length() <= 120) {
                 batch.add(new TopicRef(t.get("courseId").asText(), t.get("moduleId").asText(), t.get("topicId").asText()));
             }
         }

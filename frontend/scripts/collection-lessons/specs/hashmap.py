@@ -126,16 +126,13 @@ import java.util.Map;
 
 public class HashMapPutDemo {
     public static void main(String[] args) {
-        Map<String, Integer> areaCodes = new HashMap<>();
+        Map<String, Integer> heights = new HashMap<>();
 
-        System.out.println("put Pune   : " + areaCodes.put("Pune", 20));      // new key -> null
-        System.out.println("put Mumbai : " + areaCodes.put("Mumbai", 22));
-        System.out.println("put Pune   : " + areaCodes.put("Pune", 2020));    // existing key -> old value returned
-        areaCodes.put(null, 0);                                              // one null key is allowed
-        areaCodes.put("Nagpur", null);                                       // null values are allowed
+        heights.put("Raigad", 820);                    // new key: added
+        Integer old = heights.put("Raigad", 900);      // same key: value replaced, old value returned
 
-        System.out.println("Map        : " + areaCodes);
-        System.out.println("Size       : " + areaCodes.size());
+        System.out.println(old);       // 820
+        System.out.println(heights);   // {Raigad=900}
     }
 }
 ''' + OUT),
@@ -149,11 +146,13 @@ import java.util.Map;
 
 public class HashMapPutAllDemo {
     public static void main(String[] args) {
-        Map<String, Integer> west = new HashMap<>(Map.of("Pune", 20, "Mumbai", 22));
-        Map<String, Integer> other = Map.of("Mumbai", 2222, "Nagpur", 712, "Delhi", 11);
+        Map<String, Integer> heights = new HashMap<>();
+        heights.put("Raigad", 820);
 
-        west.putAll(other);                  // Mumbai is replaced, Nagpur and Delhi are added
-        System.out.println(new java.util.TreeMap<>(west));          // sorted copy only for a tidy print
+        heights.putAll(Map.of("Torna", 1400, "Raigad", 900));   // adds Torna, replaces Raigad
+
+        System.out.println(heights.get("Raigad"));   // 900
+        System.out.println(heights.size());          // 2
     }
 }
 ''' + OUT),
@@ -167,15 +166,14 @@ import java.util.Map;
 
 public class HashMapPutIfAbsentDemo {
     public static void main(String[] args) {
-        Map<String, Integer> trekHours = new HashMap<>();
-        trekHours.put("Raigad", 6);
+        Map<String, Integer> heights = new HashMap<>();
+        heights.put("Raigad", 820);
 
-        Integer a = trekHours.putIfAbsent("Raigad", 99);    // exists: nothing changes, old value returned
-        Integer b = trekHours.putIfAbsent("Torna", 5);      // missing: added, null returned
+        heights.putIfAbsent("Raigad", 999);   // Raigad exists, so nothing changes
+        heights.putIfAbsent("Torna", 1400);   // Torna is new, so it is added
 
-        System.out.println("Raigad call returned : " + a);
-        System.out.println("Torna call returned  : " + b);
-        System.out.println("Map                  : " + new java.util.TreeMap<>(trekHours));
+        System.out.println(heights.get("Raigad"));   // 820
+        System.out.println(heights.get("Torna"));    // 1400
     }
 }
 ''' + OUT),
@@ -185,115 +183,183 @@ public class HashMapPutIfAbsentDemo {
         'get(Object key) and getOrDefault(Object key, V defaultValue)', 'V get(Object key);  V getOrDefault(Object key, V defaultValue)', 'the value, or <code>null</code> / the default if the key is missing', 'O(1) average',
         '<code>get</code> returns the value stored for the key, or <code>null</code> when the key is absent. <code>getOrDefault</code> lets you give a value to use instead of <code>null</code>, which avoids a <code>NullPointerException</code> when you unbox the result.',
         'A <code>null</code> from <code>get</code> can mean "no key" <em>or</em> "the value is null". Use <code>containsKey</code> to tell them apart. <code>int hours = map.get("x")</code> throws <code>NullPointerException</code> when the key is missing because of the unboxing; <code>getOrDefault("x", 0)</code> does not.',
-        r'''// HashMap get() and getOrDefault()
+        r'''// HashMap get(Object key): reads a value by key
 import java.util.HashMap;
 import java.util.Map;
 
 public class HashMapGetDemo {
     public static void main(String[] args) {
-        Map<String, Integer> trekHours = new HashMap<>(Map.of("Raigad", 6, "Torna", 5));
+        Map<String, Integer> heights = new HashMap<>();
+        heights.put("Raigad", 820);
+        heights.put("Torna", 1400);
 
-        System.out.println("get(Raigad)             : " + trekHours.get("Raigad"));
-        System.out.println("get(Panhala)            : " + trekHours.get("Panhala"));
-        System.out.println("getOrDefault(Panhala, 0): " + trekHours.getOrDefault("Panhala", 0));
-
-        try {
-            int hours = trekHours.get("Panhala");          // unboxing null
-            System.out.println(hours);
-        } catch (NullPointerException e) {
-            System.out.println("int hours = get(missing) -> NullPointerException");
-        }
+        System.out.println(heights.get("Raigad"));   // 820
+        System.out.println(heights.get("Delhi"));    // null: key not found
     }
 }
-''' + OUT),
+''' + OUT, extra_codes=(r'''// HashMap getOrDefault(key, default): a value, or our own default
+import java.util.HashMap;
+import java.util.Map;
+
+public class HashMapGetOrDefaultDemo {
+    public static void main(String[] args) {
+        Map<String, Integer> heights = new HashMap<>();
+        heights.put("Raigad", 820);
+        heights.put("Torna", 1400);
+
+        System.out.println(heights.getOrDefault("Delhi", 0));   // 0
+    }
+}
+''' + OUT,)),
     method(
         'containsKey(Object key) and containsValue(Object value)', 'boolean containsKey(Object key);  boolean containsValue(Object value)', '<code>true</code> or <code>false</code>', 'O(1) / O(n)',
         '<code>containsKey</code> asks "is this key in the map?" and is very fast. <code>containsValue</code> asks "does any key have this value?" and has to <strong>scan every entry</strong>, so it is slow on big maps.',
         'If you need fast "by value" lookups, keep a second map from value to key, or use a bidirectional map from a library. <code>containsKey</code> also tells you whether <code>get</code> returned <code>null</code> because of a missing key or a null value.',
-        r'''// HashMap containsKey (fast) and containsValue (scans all entries)
+        r'''// HashMap containsKey(Object key): is the key present?
 import java.util.HashMap;
 import java.util.Map;
 
-public class HashMapContainsDemo {
+public class HashMapContainsKeyDemo {
     public static void main(String[] args) {
-        Map<String, Integer> areaCodes = new HashMap<>(Map.of("Pune", 20, "Mumbai", 22, "Delhi", 11));
+        Map<String, Integer> heights = new HashMap<>();
+        heights.put("Raigad", 820);
+        heights.put("Torna", 1400);
 
-        System.out.println("containsKey(Pune)    : " + areaCodes.containsKey("Pune"));
-        System.out.println("containsKey(Kochi)   : " + areaCodes.containsKey("Kochi"));
-        System.out.println("containsValue(22)    : " + areaCodes.containsValue(22));
-        System.out.println("containsValue(999)   : " + areaCodes.containsValue(999));
-
-        areaCodes.put("Indore", null);                                  // a key whose value is null
-        System.out.println("get(Indore)          : " + areaCodes.get("Indore"));
-        System.out.println("containsKey(Indore)  : " + areaCodes.containsKey("Indore"));   // distinguishes it from a missing key
+        System.out.println(heights.containsKey("Raigad"));   // true
     }
 }
-''' + OUT),
+''' + OUT, extra_codes=(r'''// HashMap containsValue(Object value): is the value present?
+import java.util.HashMap;
+import java.util.Map;
+
+public class HashMapContainsValueDemo {
+    public static void main(String[] args) {
+        Map<String, Integer> heights = new HashMap<>();
+        heights.put("Raigad", 820);
+        heights.put("Torna", 1400);
+
+        System.out.println(heights.containsValue(1400));   // true
+    }
+}
+''' + OUT,)),
     method(
         'size(), isEmpty() and clear()', 'int size();  boolean isEmpty();  void clear()', 'the count / emptiness / nothing', 'O(1) / O(1) / O(capacity)',
         'Count the pairs, test for none, or remove every pair.',
         '<code>clear()</code> removes the entries but keeps the table size, so a map that once held millions of entries stays big in memory. Create a new map if you want to release it.',
-        r'''// HashMap size / isEmpty / clear
+        r'''// HashMap size(): how many pairs
 import java.util.HashMap;
 import java.util.Map;
 
 public class HashMapSizeDemo {
     public static void main(String[] args) {
-        Map<String, Integer> areaCodes = new HashMap<>(Map.of("Pune", 20, "Mumbai", 22));
-        System.out.println("size " + areaCodes.size() + ", empty? " + areaCodes.isEmpty());
+        Map<String, Integer> heights = new HashMap<>();
+        heights.put("Raigad", 820);
+        heights.put("Torna", 1400);
 
-        areaCodes.clear();
-        System.out.println("size " + areaCodes.size() + ", empty? " + areaCodes.isEmpty());
+        System.out.println(heights.size());   // 2
     }
 }
-''' + OUT),
+''' + OUT, extra_codes=(r'''// HashMap isEmpty(): is the map empty?
+import java.util.HashMap;
+import java.util.Map;
+
+public class HashMapIsEmptyDemo {
+    public static void main(String[] args) {
+        Map<String, Integer> heights = new HashMap<>();
+
+        System.out.println(heights.isEmpty());   // true
+    }
+}
+''' + OUT, r'''// HashMap clear(): removes everything
+import java.util.HashMap;
+import java.util.Map;
+
+public class HashMapClearDemo {
+    public static void main(String[] args) {
+        Map<String, Integer> heights = new HashMap<>();
+        heights.put("Raigad", 820);
+        heights.put("Torna", 1400);
+
+        heights.clear();
+
+        System.out.println(heights);
+    }
+}
+''' + OUT,)),
 
     section('Removing and replacing', 'Remove by key, remove conditionally, and replace without adding new keys.'),
     method(
         'remove(Object key) and remove(Object key, Object value)', 'V remove(Object key);  boolean remove(Object key, Object value)', 'the removed value (or <code>null</code>) / <code>true</code> if removed', 'O(1)',
         '<code>remove(key)</code> deletes the pair and returns the value that was stored. <code>remove(key, value)</code> deletes it <strong>only if the key currently has exactly that value</strong>.',
         'The two-argument form is a compare-and-remove, useful for "remove this entry only if nobody changed it".',
-        r'''// HashMap remove(key) and remove(key, value)
+        r'''// HashMap remove(Object key): removes a pair by key
 import java.util.HashMap;
 import java.util.Map;
 
-public class HashMapRemoveDemo {
+public class HashMapRemoveKeyDemo {
     public static void main(String[] args) {
-        Map<String, Integer> trekHours = new HashMap<>(Map.of("Raigad", 6, "Torna", 5, "Purandar", 3));
+        Map<String, Integer> heights = new HashMap<>();
+        heights.put("Raigad", 820);
+        heights.put("Torna", 1400);
 
-        System.out.println("remove(Torna)         : " + trekHours.remove("Torna"));         // returns the value 5
-        System.out.println("remove(Panhala)       : " + trekHours.remove("Panhala"));       // no such key -> null
-        System.out.println("remove(Raigad, 99)    : " + trekHours.remove("Raigad", 99));    // wrong value -> not removed
-        System.out.println("remove(Raigad, 6)     : " + trekHours.remove("Raigad", 6));     // right value -> removed
-        System.out.println("Remaining             : " + trekHours);
+        Integer old = heights.remove("Raigad");   // returns the removed value
+
+        System.out.println(old);
+        System.out.println(heights);
     }
 }
-''' + OUT),
+''' + OUT, extra_codes=(r'''// HashMap remove(key, value): removes only if the value also matches
+import java.util.HashMap;
+import java.util.Map;
+
+public class HashMapRemoveKeyValueDemo {
+    public static void main(String[] args) {
+        Map<String, Integer> heights = new HashMap<>();
+        heights.put("Raigad", 820);
+        heights.put("Torna", 1400);
+
+        heights.remove("Raigad", 999);   // value does not match: nothing removed
+        heights.remove("Torna", 1400);   // matches: removed
+
+        System.out.println(heights);
+    }
+}
+''' + OUT,)),
     method(
         'replace(K, V) and replaceAll(BiFunction)', 'V replace(K key, V value);  boolean replace(K key, V oldValue, V newValue);  void replaceAll(BiFunction<K, V, V> function)', 'the old value / whether replaced / nothing', 'O(1) / O(n)',
         '<code>replace(key, value)</code> changes the value <strong>only if the key exists</strong> (unlike <code>put</code>, it never adds a new key). <code>replaceAll(function)</code> recalculates <strong>every</strong> value from its key and old value.',
         '<code>replaceAll</code> is a clean way to transform all values in place, for example "add 1 to every count" or "make all values upper case".',
-        r'''// HashMap replace() and replaceAll()
+        r'''// HashMap replace(key, value): changes the value of an existing key
 import java.util.HashMap;
 import java.util.Map;
-import java.util.TreeMap;
 
 public class HashMapReplaceDemo {
     public static void main(String[] args) {
-        Map<String, Integer> trekHours = new HashMap<>(Map.of("Raigad", 6, "Torna", 5));
+        Map<String, Integer> heights = new HashMap<>();
+        heights.put("Raigad", 820);
+        heights.put("Torna", 1400);
 
-        trekHours.replace("Raigad", 7);               // exists: changed
-        trekHours.replace("Panhala", 4);              // missing: NOT added
-        System.out.println("After replace   : " + new TreeMap<>(trekHours));
+        heights.replace("Raigad", 900);
 
-        trekHours.replaceAll((fort, hours) -> hours + 1);     // every value gets one more hour
-        System.out.println("After replaceAll: " + new TreeMap<>(trekHours));
-
-        trekHours.replaceAll((fort, hours) -> fort.length() > 5 ? hours * 2 : hours);   // uses the key too
-        System.out.println("Using the key   : " + new TreeMap<>(trekHours));
+        System.out.println(heights.get("Raigad"));
     }
 }
-''' + OUT),
+''' + OUT, extra_codes=(r'''// HashMap replaceAll(function): changes every value
+import java.util.HashMap;
+import java.util.Map;
+
+public class HashMapReplaceAllDemo {
+    public static void main(String[] args) {
+        Map<String, Integer> heights = new HashMap<>();
+        heights.put("Raigad", 820);
+        heights.put("Torna", 1400);
+
+        heights.replaceAll((fort, h) -> h + 100);   // add 100 to every value
+
+        System.out.println(heights.get("Raigad"));
+    }
+}
+''' + OUT,)),
 
     section('Calculating values: compute, computeIfAbsent, computeIfPresent and merge', 'These four methods (Java 8) replace the old "get, check, put" pattern. They do the lookup <strong>once</strong>.'),
     method(
@@ -305,18 +371,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 
 public class HashMapComputeIfAbsentDemo {
     public static void main(String[] args) {
-        String[][] forts = {{"Sinhagad", "Pune"}, {"Raigad", "Raigad"}, {"Torna", "Pune"}, {"Lohagad", "Pune"}, {"Panhala", "Kolhapur"}};
+        Map<String, List<String>> forts = new HashMap<>();
 
-        Map<String, List<String>> byDistrict = new HashMap<>();
-        for (String[] pair : forts) {
-            byDistrict.computeIfAbsent(pair[1], district -> new ArrayList<>())      // create the list on first use
-                      .add(pair[0]);                                                // then add to it
-        }
-        System.out.println(new TreeMap<>(byDistrict));
+        forts.computeIfAbsent("Pune", k -> new ArrayList<>()).add("Sinhagad");   // creates the list if missing
+        forts.computeIfAbsent("Pune", k -> new ArrayList<>()).add("Purandar");   // list exists, just adds
+
+        System.out.println(forts);
     }
 }
 ''' + OUT),
@@ -324,21 +387,19 @@ public class HashMapComputeIfAbsentDemo {
         'computeIfPresent(K, BiFunction)', 'V computeIfPresent(K key, BiFunction<? super K, ? super V, ? extends V> remappingFunction)', 'the new value, or <code>null</code> if removed / absent', 'O(1) + function',
         'If the key <strong>exists</strong> (with a non-null value), call the function with the key and the old value and store the result. If the function returns <code>null</code> the entry is <strong>removed</strong>. If the key is missing nothing happens.',
         'Perfect for "update if it exists" and for "decrement, and delete when it reaches zero".',
-        r'''// HashMap computeIfPresent(): update only existing keys; null result removes the entry
+        r'''// HashMap computeIfPresent(): update only existing keys
 import java.util.HashMap;
 import java.util.Map;
-import java.util.TreeMap;
 
 public class HashMapComputeIfPresentDemo {
     public static void main(String[] args) {
-        Map<String, Integer> seatsLeft = new HashMap<>(Map.of("Raigad", 2, "Torna", 5));
+        Map<String, Integer> heights = new HashMap<>();
+        heights.put("Raigad", 820);
 
-        seatsLeft.computeIfPresent("Raigad", (fort, seats) -> seats - 1);     // 2 -> 1
-        seatsLeft.computeIfPresent("Panhala", (fort, seats) -> seats - 1);    // missing: ignored
-        System.out.println("After one booking : " + new TreeMap<>(seatsLeft));
+        heights.computeIfPresent("Raigad", (key, value) -> value + 10);   // key exists: updated
+        heights.computeIfPresent("Torna", (key, value) -> value + 10);    // key missing: nothing happens
 
-        seatsLeft.computeIfPresent("Raigad", (fort, seats) -> seats == 1 ? null : seats - 1);   // null removes the entry
-        System.out.println("Raigad sold out   : " + new TreeMap<>(seatsLeft));
+        System.out.println(heights);
     }
 }
 ''' + OUT),
@@ -349,16 +410,15 @@ public class HashMapComputeIfPresentDemo {
         r'''// HashMap compute(): one call for "absent or present"
 import java.util.HashMap;
 import java.util.Map;
-import java.util.TreeMap;
 
 public class HashMapComputeDemo {
     public static void main(String[] args) {
         Map<String, Integer> visits = new HashMap<>();
 
-        for (String city : new String[] {"Pune", "Nashik", "Pune", "Nagpur", "Pune"}) {
-            visits.compute(city, (key, count) -> count == null ? 1 : count + 1);     // old value is null the first time
-        }
-        System.out.println(new TreeMap<>(visits));
+        visits.compute("Raigad", (key, value) -> value == null ? 1 : value + 1);   // first visit: 1
+        visits.compute("Raigad", (key, value) -> value == null ? 1 : value + 1);   // second visit: 2
+
+        System.out.println(visits);
     }
 }
 ''' + OUT),
@@ -366,29 +426,19 @@ public class HashMapComputeDemo {
         'merge(K, V, BiFunction)', 'V merge(K key, V value, BiFunction<? super V, ? super V, ? extends V> remappingFunction)', 'the new value in the map', 'O(1) + function',
         'The shortest way to count or to combine values. If the key is <strong>absent</strong>, it stores the given value. If the key is <strong>present</strong>, it stores <code>function(oldValue, givenValue)</code>. A <code>null</code> result removes the entry. Counting words: <code>map.merge(word, 1, Integer::sum)</code>.',
         'The function takes the two <strong>values</strong> (not the key), so method references such as <code>Integer::sum</code>, <code>String::concat</code> or <code>Math::max</code> fit perfectly. Neither the value nor the function may be <code>null</code>.',
-        r'''// HashMap merge(): count and combine with a method reference
+        r'''// HashMap merge(): count words
 import java.util.HashMap;
 import java.util.Map;
-import java.util.TreeMap;
 
 public class HashMapMergeDemo {
     public static void main(String[] args) {
-        Map<String, Integer> counts = new HashMap<>();
-        for (String city : new String[] {"Pune", "Nashik", "Pune", "Nagpur", "Pune", "Nashik"}) {
-            counts.merge(city, 1, Integer::sum);               // absent: 1; present: old + 1
-        }
-        System.out.println("Visit counts : " + new TreeMap<>(counts));
+        Map<String, Integer> count = new HashMap<>();
 
-        Map<String, Integer> longest = new HashMap<>();
-        longest.merge("Raigad", 6, Math::max);                 // keep the maximum of old and new
-        longest.merge("Raigad", 4, Math::max);
-        longest.merge("Raigad", 9, Math::max);
-        System.out.println("Longest trek : " + longest);
+        count.merge("Pune", 1, Integer::sum);   // new key: stores 1
+        count.merge("Pune", 1, Integer::sum);   // existing key: 1 + 1 = 2
+        count.merge("Agra", 1, Integer::sum);
 
-        Map<String, String> notes = new HashMap<>();
-        notes.merge("Torna", "steep", (oldNote, newNote) -> oldNote + ", " + newNote);
-        notes.merge("Torna", "windy", (oldNote, newNote) -> oldNote + ", " + newNote);
-        System.out.println("Notes        : " + notes);
+        System.out.println(count);
     }
 }
 ''' + OUT),
@@ -398,44 +448,63 @@ public class HashMapMergeDemo {
         'keySet(), values() and entrySet()', 'Set<K> keySet();  Collection<V> values();  Set<Map.Entry<K, V>> entrySet()', 'live views', 'O(1) to create',
         '<code>keySet()</code> is the set of keys, <code>values()</code> the collection of values and <code>entrySet()</code> the set of <strong>key-value pairs</strong> (<code>Map.Entry</code>). They are <strong>views</strong>: removing from a view removes from the map. Loop over <code>entrySet()</code> when you need both key and value; looping over <code>keySet()</code> and calling <code>get</code> does an extra lookup for every key.',
         'Views do not support <code>add</code>. The iteration order is the map\'s order (for HashMap: arbitrary). Removing during iteration must go through the iterator, <code>removeIf</code> on the view, or <code>Map.removeIf</code>-style calls on <code>entrySet()</code>.',
-        r'''// HashMap views: keySet(), values(), entrySet()
+        r'''// HashMap keySet(): only the keys
 import java.util.HashMap;
 import java.util.Map;
 
-public class HashMapViewsDemo {
+public class HashMapKeySetDemo {
     public static void main(String[] args) {
-        Map<String, Integer> areaCodes = new HashMap<>(Map.of("Pune", 20, "Mumbai", 22, "Delhi", 11, "Nagpur", 712));
+        Map<String, Integer> heights = new HashMap<>();
+        heights.put("Raigad", 820);
+        heights.put("Torna", 1400);
 
-        System.out.println("keys   : " + new java.util.TreeSet<>(areaCodes.keySet()));
-        System.out.println("values : " + new java.util.TreeSet<>(areaCodes.values()));
-
-        for (Map.Entry<String, Integer> entry : new java.util.TreeMap<>(areaCodes).entrySet()) {   // pairs
-            System.out.println(entry.getKey() + " -> " + entry.getValue());
-        }
-
-        areaCodes.keySet().remove("Delhi");                         // removing from a view removes from the map
-        areaCodes.values().removeIf(code -> code > 500);            // remove every entry whose value matches
-        System.out.println("After view removals: " + new java.util.TreeMap<>(areaCodes));
+        System.out.println(heights.keySet());
     }
 }
-''' + OUT),
+''' + OUT, extra_codes=(r'''// HashMap values(): only the values
+import java.util.HashMap;
+import java.util.Map;
+
+public class HashMapValuesDemo {
+    public static void main(String[] args) {
+        Map<String, Integer> heights = new HashMap<>();
+        heights.put("Raigad", 820);
+        heights.put("Torna", 1400);
+
+        System.out.println(heights.values());
+    }
+}
+''' + OUT, r'''// HashMap entrySet(): key and value together
+import java.util.HashMap;
+import java.util.Map;
+
+public class HashMapEntrySetDemo {
+    public static void main(String[] args) {
+        Map<String, Integer> heights = new HashMap<>();
+        heights.put("Raigad", 820);
+        heights.put("Torna", 1400);
+
+        for (Map.Entry<String, Integer> e : heights.entrySet()) {
+            System.out.println(e.getKey() + " = " + e.getValue());
+        }
+    }
+}
+''' + OUT,)),
     method(
         'forEach(BiConsumer)', 'void forEach(BiConsumer<? super K, ? super V> action)', 'nothing (void)', 'O(n + capacity)',
         'Runs an action for every pair, written as a lambda with two parameters: <code>map.forEach((key, value) -&gt; ...)</code>. It is the shortest loop when you only need to read.',
         'Cannot <code>break</code> out of it. It is fail-fast: changing the map inside the lambda throws <code>ConcurrentModificationException</code> at the end of the loop.',
         r'''// HashMap forEach((key, value) -> ...)
+import java.util.HashMap;
 import java.util.Map;
-import java.util.TreeMap;
 
 public class HashMapForEachDemo {
     public static void main(String[] args) {
-        Map<String, Integer> trekHours = new TreeMap<>(Map.of("Raigad", 6, "Torna", 5, "Purandar", 3));   // sorted only for a stable print
+        Map<String, Integer> heights = new HashMap<>();
+        heights.put("Raigad", 820);
+        heights.put("Torna", 1400);
 
-        trekHours.forEach((fort, hours) -> System.out.println(fort + " takes " + hours + " hours"));
-
-        int[] total = {0};                                      // a one-element array: lambdas need effectively final variables
-        trekHours.forEach((fort, hours) -> total[0] += hours);
-        System.out.println("Total hours: " + total[0]);
+        heights.forEach((fort, height) -> System.out.println(fort + " = " + height));
     }
 }
 ''' + OUT),
@@ -443,7 +512,7 @@ public class HashMapForEachDemo {
         'Iterating safely: removing while looping', 'entrySet().iterator() with remove(), entrySet().removeIf(...), keySet().removeIf(...)', 'removes pairs without an exception', 'O(n)',
         'Removing from a map inside a for-each loop throws <code>ConcurrentModificationException</code>. Use an <strong>Iterator</strong>, or the one-line <code>entrySet().removeIf(...)</code>.',
         'This is the same fail-fast rule as for lists. <code>HashMap</code> checks a modification counter on each step.',
-        r'''// Removing entries while iterating a HashMap
+        r'''// Removing entries while iterating a HashMap: two safe ways
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -451,18 +520,6 @@ import java.util.TreeMap;
 
 public class HashMapSafeRemoveDemo {
     public static void main(String[] args) {
-        Map<String, Integer> a = new HashMap<>(Map.of("Raigad", 6, "Torna", 5, "Purandar", 3, "Lohagad", 2));
-
-        try {
-            for (String fort : a.keySet()) {
-                if (a.get(fort) < 4) {
-                    a.remove(fort);                         // BAD: structure change during iteration
-                }
-            }
-        } catch (java.util.ConcurrentModificationException e) {
-            System.out.println("BAD way : ConcurrentModificationException");
-        }
-
         Map<String, Integer> b = new HashMap<>(Map.of("Raigad", 6, "Torna", 5, "Purandar", 3, "Lohagad", 2));
         Iterator<Map.Entry<String, Integer>> it = b.entrySet().iterator();
         while (it.hasNext()) {
@@ -484,28 +541,35 @@ public class HashMapSafeRemoveDemo {
         'clone, equals, hashCode and toString', 'Object clone();  boolean equals(Object);  int hashCode();  String toString()', 'a shallow copy / comparison / hash / text', 'O(n)',
         'Two maps are <strong>equal</strong> when they have the same keys with equal values, whatever the Map class and the order. <code>clone()</code> makes a shallow copy (keys and values are shared).',
         'Prefer <code>new HashMap&lt;&gt;(map)</code> to <code>clone()</code>. The map\'s hash code is the sum of the hash codes of its entries, so it is order-independent.',
-        r'''// HashMap equals / clone: same pairs means equal
+        r'''// HashMap clone(): makes a copy
+import java.util.HashMap;
+
+public class HashMapCloneDemo {
+    public static void main(String[] args) {
+        HashMap<String, Integer> heights = new HashMap<>();
+        heights.put("Raigad", 820);
+
+        Object copy = heights.clone();
+
+        System.out.println(copy);
+    }
+}
+''' + OUT, extra_codes=(r'''// HashMap equals(): same pairs means equal
 import java.util.HashMap;
 import java.util.Map;
-import java.util.TreeMap;
 
 public class HashMapEqualsDemo {
     public static void main(String[] args) {
-        Map<String, Integer> a = new HashMap<>(Map.of("Pune", 20, "Mumbai", 22));
-        Map<String, Integer> b = new TreeMap<>(Map.of("Mumbai", 22, "Pune", 20));    // other class, other order
-        Map<String, Integer> c = new HashMap<>(Map.of("Pune", 20, "Mumbai", 99));
+        Map<String, Integer> heights = new HashMap<>();
+        heights.put("Raigad", 820);
+        heights.put("Torna", 1400);
 
-        System.out.println("a.equals(b): " + a.equals(b));           // same pairs
-        System.out.println("a.equals(c): " + a.equals(c));           // different value for Mumbai
+        Map<String, Integer> other = new HashMap<>(heights);
 
-        @SuppressWarnings("unchecked")
-        Map<String, Integer> copy = (HashMap<String, Integer>) ((HashMap<String, Integer>) a).clone();
-        copy.put("Delhi", 11);
-        System.out.println("original: " + new TreeMap<>(a));
-        System.out.println("copy    : " + new TreeMap<>(copy));
+        System.out.println(heights.equals(other));   // true
     }
 }
-''' + OUT),
+''' + OUT,)),
     method(
         'Map.of, Map.entry, Map.ofEntries and Map.copyOf', 'Map.of(k1, v1, ...);  Map.entry(k, v);  Map.ofEntries(...);  Map.copyOf(map)', 'an immutable map / entry', 'O(n)',
         'Create small <strong>immutable</strong> maps quickly. <code>Map.of</code> takes up to 10 key-value pairs; <code>Map.ofEntries(Map.entry(...), ...)</code> takes any number; <code>Map.copyOf</code> makes an immutable copy. They reject <code>null</code> and duplicate keys, and any change throws <code>UnsupportedOperationException</code>.',
@@ -538,6 +602,85 @@ public class HashMapImmutableDemo {
     }
 }
 ''' + OUT),
+    (
+        '<h3>Master program: every HashMap method in one place</h3>\n'
+        '<p>One single program that uses all the HashMap methods you learned above, step by step. Read the numbered comments from top to bottom, run it, and match each output line with its step.</p>',
+        [r'''// MASTER PROGRAM: all important HashMap methods in one program
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public class HashMapMasterDemo {
+    public static void main(String[] args) {
+        // 1. Create an empty map: fort name -> height in metres
+        Map<String, Integer> heights = new HashMap<>();
+
+        // 2. put: add or replace (returns the old value)
+        heights.put("Raigad", 820);
+        heights.put("Torna", 1400);
+        System.out.println("2. put again      : " + heights.put("Raigad", 900));
+
+        // 3. putAll and putIfAbsent
+        heights.putAll(Map.of("Sinhagad", 1300));
+        heights.putIfAbsent("Raigad", 1);              // ignored: key exists
+        heights.putIfAbsent("Purandar", 1200);         // added
+        System.out.println("3. After puts     : " + new java.util.TreeMap<>(heights));
+
+        // 4. get and getOrDefault
+        System.out.println("4. get Raigad     : " + heights.get("Raigad"));
+        System.out.println("   get missing    : " + heights.get("Lohagad"));
+        System.out.println("   getOrDefault   : " + heights.getOrDefault("Lohagad", 0));
+
+        // 5. containsKey, containsValue, size, isEmpty
+        System.out.println("5. containsKey    : " + heights.containsKey("Torna"));
+        System.out.println("   containsValue  : " + heights.containsValue(1400));
+        System.out.println("   size / isEmpty : " + heights.size() + " / " + heights.isEmpty());
+
+        // 6. replace and replaceAll
+        heights.replace("Torna", 1403);
+        heights.replaceAll((fort, h) -> h + 1);        // add 1 to every height
+        System.out.println("6. Torna          : " + heights.get("Torna"));
+
+        // 7. compute, computeIfPresent, computeIfAbsent, merge
+        heights.compute("Raigad", (fort, h) -> h == null ? 1 : h + 10);
+        heights.computeIfPresent("Torna", (fort, h) -> h + 10);
+        heights.computeIfAbsent("Lohagad", fort -> 1033);
+        heights.merge("Torna", 5, Integer::sum);
+        System.out.println("7. Torna / Lohagad: " + heights.get("Torna") + " / " + heights.get("Lohagad"));
+
+        // 8. Group values into lists with computeIfAbsent
+        Map<String, List<String>> byDistrict = new HashMap<>();
+        byDistrict.computeIfAbsent("Pune", d -> new ArrayList<>()).add("Sinhagad");
+        byDistrict.computeIfAbsent("Pune", d -> new ArrayList<>()).add("Torna");
+        System.out.println("8. Pune forts     : " + byDistrict.get("Pune"));
+
+        // 9. Three views: keySet, values, entrySet
+        System.out.println("9. keys count     : " + heights.keySet().size());
+        System.out.println("   values count   : " + heights.values().size());
+        for (Map.Entry<String, Integer> e : new java.util.TreeMap<>(heights).entrySet()) {
+            System.out.println("   " + e.getKey() + " = " + e.getValue());
+        }
+
+        // 10. forEach
+        heights.forEach((fort, h) -> { if (h > 1400) System.out.println("   tall: " + fort); });
+
+        // 11. remove by key, remove by key and value
+        heights.remove("Lohagad");
+        heights.remove("Torna", 0);                    // value does not match: nothing removed
+        System.out.println("11. After removes    : " + heights.size());
+
+        // 12. copy and equals
+        Map<String, Integer> copy = new HashMap<>(heights);
+        System.out.println("12. equals copy      : " + heights.equals(copy));
+
+        // 13. clear
+        heights.clear();
+        System.out.println("13. After clear      : " + heights);
+    }
+}
+''' + OUT],
+    ),
 ]
 
 EXPERT = [

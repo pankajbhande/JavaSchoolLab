@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { X } from 'lucide-react';
 import { AdSlot } from './AdSlot';
 import { AD_SLOTS, adsEnabled } from './adsense';
+import { useConsent } from '../../lib/consent';
 
 const DISMISS_KEY = 'jsl_corner_ad_dismissed';
 
@@ -16,9 +17,10 @@ const DISMISS_KEY = 'jsl_corner_ad_dismissed';
 export function CornerAd() {
   const [visible, setVisible] = useState(false);
   const [dismissed, setDismissed] = useState(false);
+  const consent = useConsent();
 
   useEffect(() => {
-    if (!adsEnabled || !AD_SLOTS.corner) return;
+    if (!adsEnabled || !AD_SLOTS.corner || consent !== 'granted') return;
 
     try {
       if (sessionStorage.getItem(DISMISS_KEY) === '1') {
@@ -34,7 +36,7 @@ export function CornerAd() {
     // one shown at second 0 to someone still deciding whether to stay.
     const timer = window.setTimeout(() => setVisible(true), 20_000);
     return () => window.clearTimeout(timer);
-  }, []);
+  }, [consent]);
 
   const dismiss = () => {
     setDismissed(true);

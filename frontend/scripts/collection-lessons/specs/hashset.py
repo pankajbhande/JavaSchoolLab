@@ -117,21 +117,16 @@ INTERMEDIATE = [
         'It calls <code>map.put(e, PRESENT)</code> on the internal HashMap. A duplicate is detected with <code>hashCode()</code> (to find the bucket) then <code>equals()</code> (to compare inside the bucket). The existing element is <strong>kept</strong>; the new equal one is discarded.',
         r'''// HashSet add(E e): the return value detects duplicates
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 public class HashSetAddDemo {
     public static void main(String[] args) {
-        List<String> visits = List.of("Pune", "Nashik", "Nagpur", "Nashik", "Indore", "Pune");
-        Set<String> seen = new HashSet<>();
+        Set<String> forts = new HashSet<>();
 
-        for (String city : visits) {
-            boolean isNew = seen.add(city);          // true only the first time
-            if (!isNew) {
-                System.out.println("Repeated visit: " + city);
-            }
-        }
-        System.out.println("Distinct cities: " + seen.size() + " -> " + seen);
+        System.out.println(forts.add("Raigad"));   // true: new element added
+        System.out.println(forts.add("Raigad"));   // false: duplicate, ignored
+
+        System.out.println(forts.size());          // 1
     }
 }
 ''' + OUT),
@@ -145,15 +140,13 @@ import java.util.Set;
 
 public class HashSetAddAllDemo {
     public static void main(String[] args) {
-        Set<String> northForts = new HashSet<>(Set.of("Raigad", "Torna", "Purandar"));
-        Set<String> southForts = Set.of("Torna", "Panhala", "Vijaydurg");        // Torna is in both
+        Set<String> forts = new HashSet<>();
+        forts.add("Raigad");
+        forts.add("Torna");
 
-        Set<String> all = new HashSet<>(northForts);
-        boolean changed = all.addAll(southForts);
+        forts.addAll(Set.of("Torna", "Purandar"));   // Torna is already there, so it is ignored
 
-        System.out.println("addAll changed it : " + changed);
-        System.out.println("Union             : " + all);
-        System.out.println("Union size        : " + all.size());
+        System.out.println(forts.size());            // 3
     }
 }
 ''' + OUT),
@@ -163,42 +156,70 @@ public class HashSetAddAllDemo {
         'contains(Object o) and containsAll(Collection c)', 'boolean contains(Object o);  boolean containsAll(Collection<?> c)', '<code>true</code> or <code>false</code>', 'O(1) / O(m)',
         '<code>contains</code> tells whether the element is in the set. It does <strong>not</strong> scan the whole set: it jumps straight to the right bucket. <code>containsAll</code> tests that <em>every</em> element of another collection is present (a "subset" test).',
         'Compare: <code>ArrayList.contains</code> is O(n). Turning a big list into a <code>HashSet</code> before many lookups is one of the most common performance fixes. Lookup cost degrades only when many elements share a bucket (bad <code>hashCode</code>).',
-        r'''// HashSet contains / containsAll: fast membership tests
+        r'''// HashSet contains(Object o): is the value present?
 import java.util.HashSet;
 import java.util.Set;
 
 public class HashSetContainsDemo {
     public static void main(String[] args) {
-        Set<String> opened = new HashSet<>(Set.of("Raigad", "Sinhagad", "Torna", "Purandar"));
+        Set<String> forts = new HashSet<>(Set.of("Raigad", "Sinhagad", "Torna"));
 
-        System.out.println("contains(Raigad)   : " + opened.contains("Raigad"));
-        System.out.println("contains(Lohagad)  : " + opened.contains("Lohagad"));
-        System.out.println("contains is case-sensitive: " + opened.contains("raigad"));
-
-        Set<String> wishlist = Set.of("Raigad", "Torna");
-        System.out.println("containsAll(wishlist): " + opened.containsAll(wishlist));
-        System.out.println("containsAll(with Lohagad): " + opened.containsAll(Set.of("Raigad", "Lohagad")));
+        System.out.println(forts.contains("Raigad"));   // true
+        System.out.println(forts.contains("Delhi"));    // false
     }
 }
-''' + OUT),
+''' + OUT, extra_codes=(r'''// HashSet containsAll(Collection c): are all of these present?
+import java.util.HashSet;
+import java.util.Set;
+
+public class HashSetContainsAllDemo {
+    public static void main(String[] args) {
+        Set<String> forts = new HashSet<>(Set.of("Raigad", "Sinhagad", "Torna"));
+
+        System.out.println(forts.containsAll(Set.of("Raigad", "Torna")));   // true
+    }
+}
+''' + OUT,)),
     method(
         'size(), isEmpty() and clear()', 'int size();  boolean isEmpty();  void clear()', 'the count / whether empty / nothing', 'O(1) / O(1) / O(capacity)',
         'Count the elements, test for none, or remove all of them.',
         '<code>clear()</code> empties the table but keeps its capacity, so the set does not shrink. Clearing a set that once held millions of elements leaves a big, empty table behind; create a new set if memory matters.',
-        r'''// HashSet size / isEmpty / clear
+        r'''// HashSet size(): how many elements
 import java.util.HashSet;
 import java.util.Set;
 
 public class HashSetSizeDemo {
     public static void main(String[] args) {
-        Set<String> cities = new HashSet<>(Set.of("Pune", "Nashik", "Nagpur"));
-        System.out.println("size " + cities.size() + ", empty? " + cities.isEmpty());
+        Set<String> forts = new HashSet<>(Set.of("Raigad", "Sinhagad", "Torna"));
 
-        cities.clear();
-        System.out.println("size " + cities.size() + ", empty? " + cities.isEmpty());
+        System.out.println(forts.size());   // 3
     }
 }
-''' + OUT),
+''' + OUT, extra_codes=(r'''// HashSet isEmpty(): is the set empty?
+import java.util.HashSet;
+import java.util.Set;
+
+public class HashSetIsEmptyDemo {
+    public static void main(String[] args) {
+        Set<String> forts = new HashSet<>();
+
+        System.out.println(forts.isEmpty());   // true
+    }
+}
+''' + OUT, r'''// HashSet clear(): removes everything
+import java.util.HashSet;
+import java.util.Set;
+
+public class HashSetClearDemo {
+    public static void main(String[] args) {
+        Set<String> forts = new HashSet<>(Set.of("Raigad", "Sinhagad", "Torna"));
+
+        forts.clear();
+
+        System.out.println(forts);
+    }
+}
+''' + OUT,)),
 
     section('Removing elements', 'Remove one element, a group, the elements that match a rule, or everything outside a group.'),
     method(
@@ -211,11 +232,10 @@ import java.util.Set;
 
 public class HashSetRemoveDemo {
     public static void main(String[] args) {
-        Set<String> forts = new HashSet<>(Set.of("Raigad", "Sinhagad", "Torna"));
+        Set<String> forts = new HashSet<>(Set.of("Raigad", "Torna"));
 
-        System.out.println("remove Torna    : " + forts.remove("Torna"));
-        System.out.println("remove Lohagad  : " + forts.remove("Lohagad"));   // was never there
-        System.out.println("Remaining       : " + forts);
+        System.out.println(forts.remove("Raigad"));    // true: it was there
+        System.out.println(forts.remove("Raigad"));    // false: already removed
     }
 }
 ''' + OUT),
@@ -223,120 +243,182 @@ public class HashSetRemoveDemo {
         'removeAll, retainAll and removeIf', 'boolean removeAll(Collection<?> c);  boolean retainAll(Collection<?> c);  boolean removeIf(Predicate<? super E> filter)', '<code>true</code> if the set changed', 'O(n) typical',
         '<code>removeAll(c)</code> is <strong>set difference</strong> (A minus B). <code>retainAll(c)</code> is <strong>intersection</strong> (what both sets share). <code>removeIf</code> removes everything that matches a rule written as a lambda.',
         'They are inherited from <code>AbstractSet</code>/<code>Collection</code>. For <code>removeAll</code>, Java chooses to iterate the smaller of the two collections when the argument is a Set, which keeps it fast. The argument\'s <code>contains</code> speed matters: pass a Set, not a List.',
-        r'''// HashSet removeAll / retainAll / removeIf: difference, intersection, rule
+        r'''// HashSet removeAll(Collection c): removes every element found in c
 import java.util.HashSet;
 import java.util.Set;
 
 public class HashSetRemoveAllDemo {
     public static void main(String[] args) {
-        Set<String> a = new HashSet<>(Set.of("Raigad", "Sinhagad", "Torna", "Purandar"));
-        Set<String> b = Set.of("Torna", "Purandar", "Lohagad");
+        Set<Integer> numbers = new HashSet<>(Set.of(1, 2, 3, 4));
 
-        Set<String> difference = new HashSet<>(a);
-        difference.removeAll(b);                       // in a but not in b
-        System.out.println("a minus b      : " + difference);
+        numbers.removeAll(Set.of(1, 2));
 
-        Set<String> intersection = new HashSet<>(a);
-        intersection.retainAll(b);                     // in both
-        System.out.println("a and b        : " + intersection);
-
-        Set<String> shortNames = new HashSet<>(a);
-        shortNames.removeIf(name -> name.length() > 6);    // drop long names
-        System.out.println("short names    : " + shortNames);
+        System.out.println(numbers);
     }
 }
-''' + OUT),
+''' + OUT, extra_codes=(r'''// HashSet retainAll(Collection c): keeps only elements found in c
+import java.util.HashSet;
+import java.util.Set;
+
+public class HashSetRetainAllDemo {
+    public static void main(String[] args) {
+        Set<Integer> numbers = new HashSet<>(Set.of(1, 2, 3, 4));
+
+        numbers.retainAll(Set.of(1, 2));
+
+        System.out.println(numbers);
+    }
+}
+''' + OUT, r'''// HashSet removeIf(Predicate): removes by a rule
+import java.util.HashSet;
+import java.util.Set;
+
+public class HashSetRemoveIfDemo {
+    public static void main(String[] args) {
+        Set<Integer> numbers = new HashSet<>(Set.of(1, 2, 3, 4));
+
+        numbers.removeIf(n -> n % 2 == 0);   // remove even numbers
+
+        System.out.println(numbers);
+    }
+}
+''' + OUT,)),
 
     section('Walking and converting', 'A set has no index, so you visit every element with a loop, an iterator or a stream.'),
     method(
         'for-each, iterator() and forEach()', 'for (E e : set) ...;  Iterator<E> iterator();  void forEach(Consumer)', 'each element once, in hash order', 'O(n + capacity)',
         'Visit every element. The order is <strong>not</strong> insertion order and is not guaranteed. Remove while walking only through <code>Iterator.remove()</code> (or <code>removeIf</code>), otherwise you get <code>ConcurrentModificationException</code>.',
         'The iterator walks the bucket array, so its cost is proportional to <strong>capacity + size</strong>; a mostly empty large table is slow to iterate. The iterator is fail-fast.',
-        r'''// HashSet iteration: for-each, iterator with remove, forEach
+        r'''// HashSet for-each loop
+import java.util.HashSet;
+import java.util.Set;
+
+public class HashSetForEachLoopDemo {
+    public static void main(String[] args) {
+        Set<String> forts = new HashSet<>(Set.of("Raigad", "Sinhagad", "Torna"));
+
+        for (String fort : forts) {
+            System.out.println(fort);
+        }
+    }
+}
+''' + OUT, extra_codes=(r'''// HashSet iterator(): loop and remove safely
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-public class HashSetIterationDemo {
+public class HashSetIteratorDemo {
     public static void main(String[] args) {
-        Set<String> cities = new HashSet<>(Set.of("Pune", "Nashik", "Nagpur", "Indore"));
+        Set<Integer> numbers = new HashSet<>(Set.of(1, 2, 3, 4));
 
-        for (String city : cities) {                  // order is decided by the hash codes
-            System.out.println("for-each: " + city);
-        }
-
-        Iterator<String> it = cities.iterator();
+        Iterator<Integer> it = numbers.iterator();
         while (it.hasNext()) {
-            if (it.next().startsWith("N")) {
-                it.remove();                           // the safe way to remove while walking
+            if (it.next() == 2) {
+                it.remove();   // safe removal while looping
             }
         }
-        System.out.println("After removing N*: " + cities);
 
-        cities.forEach(c -> System.out.println("forEach : " + c));
+        System.out.println(numbers);
     }
 }
-''' + OUT),
+''' + OUT, r'''// HashSet forEach(): does something with every element
+import java.util.HashSet;
+import java.util.Set;
+
+public class HashSetForEachDemo {
+    public static void main(String[] args) {
+        Set<Integer> numbers = new HashSet<>(Set.of(1, 2, 3, 4));
+
+        numbers.forEach(n -> System.out.println(n));
+    }
+}
+''' + OUT,)),
     method(
         'stream(), toArray() and clone()', 'Stream<E> stream();  Object[] toArray();  Object clone()', 'a stream / an array / a shallow copy', 'O(n)',
         'Process the elements with a stream pipeline, copy them into an array, or make a shallow copy of the set.',
         'The stream is unordered (the set has no order), so results of <code>findFirst</code> are arbitrary. Prefer the copy constructor <code>new HashSet&lt;&gt;(set)</code> to <code>clone()</code>.',
-        r'''// HashSet stream / toArray / clone
-import java.util.Arrays;
+        r'''// HashSet stream(): count with a rule
 import java.util.HashSet;
 import java.util.Set;
-import java.util.TreeSet;
-import java.util.stream.Collectors;
 
-public class HashSetConvertDemo {
+public class HashSetStreamDemo {
     public static void main(String[] args) {
-        Set<String> forts = new HashSet<>(Set.of("Raigad", "Sinhagad", "Torna", "Purandar"));
+        Set<String> forts = new HashSet<>(Set.of("Raigad", "Sinhagad", "Torna"));
 
-        Set<String> longNames = forts.stream().filter(f -> f.length() > 6).collect(Collectors.toCollection(TreeSet::new));
-        System.out.println("long names (sorted): " + longNames);
+        long count = forts.stream().filter(f -> f.startsWith("R")).count();
 
-        String[] array = forts.toArray(new String[0]);
-        Arrays.sort(array);
-        System.out.println("array (sorted)     : " + Arrays.toString(array));
-
-        @SuppressWarnings("unchecked")
-        Set<String> copy = (Set<String>) ((HashSet<String>) forts).clone();
-        copy.add("Lohagad");
-        System.out.println("original size " + forts.size() + ", copy size " + copy.size());
+        System.out.println(count);
     }
 }
-''' + OUT),
+''' + OUT, extra_codes=(r'''// HashSet toArray(): converts to an array
+import java.util.HashSet;
+import java.util.Set;
+
+public class HashSetToArrayDemo {
+    public static void main(String[] args) {
+        Set<String> forts = new HashSet<>(Set.of("Raigad", "Sinhagad", "Torna"));
+
+        Object[] array = forts.toArray();
+
+        System.out.println(array.length);
+    }
+}
+''' + OUT, r'''// HashSet clone(): makes a copy
+import java.util.HashSet;
+import java.util.Set;
+
+public class HashSetCloneDemo {
+    public static void main(String[] args) {
+        HashSet<String> forts = new HashSet<>(Set.of("Raigad", "Torna"));
+
+        Object copy = forts.clone();
+
+        System.out.println(copy.equals(forts));
+    }
+}
+''' + OUT,)),
     method(
         'equals, hashCode, toString and Set.of', 'boolean equals(Object);  int hashCode();  String toString();  Set.of(...) / Set.copyOf(...)', 'comparison / hash / text / immutable sets', 'O(n)',
         'Two sets are equal when they hold the <strong>same elements</strong>, whatever the order or the Set class. <code>Set.of(...)</code> creates an <strong>immutable</strong> set (add and remove throw <code>UnsupportedOperationException</code>, no nulls, no duplicates allowed at creation).',
         '<code>Set.of</code> rejects duplicate arguments with <code>IllegalArgumentException</code>, and its iteration order is randomised per JVM run (on purpose, to stop code depending on it).',
-        r'''// HashSet equals / toString and the immutable Set.of
+        r'''// HashSet equals(): same elements? (order does not matter)
 import java.util.HashSet;
 import java.util.Set;
-import java.util.TreeSet;
 
 public class HashSetEqualsDemo {
     public static void main(String[] args) {
         Set<String> a = new HashSet<>(Set.of("Raigad", "Torna"));
-        Set<String> b = new TreeSet<>(Set.of("Torna", "Raigad"));      // another Set class, other order
+        Set<String> b = new HashSet<>(Set.of("Torna", "Raigad"));
 
-        System.out.println("a.equals(b)   : " + a.equals(b));           // same elements -> equal
-        System.out.println("hash equal    : " + (a.hashCode() == b.hashCode()));
+        System.out.println(a.equals(b));   // true
+    }
+}
+''' + OUT, extra_codes=(r'''// HashSet toString(): prints the set as text
+import java.util.HashSet;
+import java.util.Set;
 
-        Set<String> immutable = Set.of("Raigad", "Torna");
+public class HashSetToStringDemo {
+    public static void main(String[] args) {
+        Set<String> forts = new HashSet<>(Set.of("Raigad"));
+
+        System.out.println(forts);   // [Raigad]
+    }
+}
+''' + OUT, r'''// HashSet Set.of(): a set that cannot be changed
+import java.util.Set;
+
+public class HashSetImmutableDemo {
+    public static void main(String[] args) {
+        Set<String> fixed = Set.of("Raigad");
+
         try {
-            immutable.add("Purandar");
+            fixed.add("Torna");   // not allowed
         } catch (UnsupportedOperationException e) {
-            System.out.println("Set.of is immutable");
-        }
-        try {
-            Set.of("Raigad", "Raigad");
-        } catch (IllegalArgumentException e) {
-            System.out.println("Set.of rejects duplicates: " + e.getMessage());
+            System.out.println("Set.of cannot be changed");
         }
     }
 }
-''' + OUT),
+''' + OUT,)),
 
     section('Common jobs with a HashSet', 'Three everyday uses.'),
     (
@@ -415,6 +497,76 @@ public class HashSetLookupDemo {
         }
         System.out.println("Blocked visits via list: " + hitsList);
         System.out.println("Blocked visits via set : " + hitsSet);
+    }
+}
+''' + OUT],
+    ),
+    (
+        '<h3>Master program: every HashSet method in one place</h3>\n'
+        '<p>One single program that uses all the HashSet methods you learned above, step by step. Read the numbered comments from top to bottom, run it, and match each output line with its step.</p>',
+        [r'''// MASTER PROGRAM: all important HashSet methods in one program
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
+
+public class HashSetMasterDemo {
+    public static void main(String[] args) {
+        // 1. Create an empty set
+        Set<Integer> a = new HashSet<>();
+
+        // 2. add: returns true for new, false for a duplicate
+        System.out.println("2. add 1      : " + a.add(1));
+        System.out.println("   add 1 again: " + a.add(1));
+        a.add(2);
+        a.add(3);
+
+        // 3. addAll: union (everything from both sets)
+        a.addAll(Set.of(3, 4, 5));
+        System.out.println("3. After addAll: " + a);
+
+        // 4. size and isEmpty
+        System.out.println("4. size/isEmpty: " + a.size() + " / " + a.isEmpty());
+
+        // 5. contains and containsAll
+        System.out.println("5. contains 4  : " + a.contains(4));
+        System.out.println("   containsAll : " + a.containsAll(Set.of(1, 2)));
+
+        // 6. remove: true only if it was present
+        System.out.println("6. remove 5    : " + a.remove(5));
+        System.out.println("   remove 5    : " + a.remove(5));
+
+        // 7. Loop: for-each, iterator with remove, forEach
+        for (int n : a) {
+            System.out.print(n + " ");
+        }
+        System.out.println();
+        Iterator<Integer> it = a.iterator();
+        while (it.hasNext()) {
+            if (it.next() == 4) {
+                it.remove();
+            }
+        }
+        a.forEach(n -> System.out.print(n + ","));
+        System.out.println();
+
+        // 8. Set maths: retainAll (common), removeAll (difference), removeIf (rule)
+        Set<Integer> common = new HashSet<>(a);
+        common.retainAll(Set.of(2, 3, 9));
+        System.out.println("8. common      : " + common);
+        Set<Integer> diff = new HashSet<>(a);
+        diff.removeAll(Set.of(2, 3));
+        System.out.println("   difference  : " + diff);
+        a.removeIf(n -> n % 2 == 0);
+
+        // 9. Convert: toArray, stream, copy
+        System.out.println("9. array length: " + a.toArray().length);
+        System.out.println("   stream count: " + a.stream().count());
+        Set<Integer> copy = new HashSet<>(a);
+        System.out.println("   equals copy : " + a.equals(copy));
+
+        // 10. clear
+        a.clear();
+        System.out.println("10. After clear: " + a);
     }
 }
 ''' + OUT],

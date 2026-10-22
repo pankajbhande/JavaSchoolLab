@@ -40,6 +40,7 @@ public class SearchController {
                     .header(HttpHeaders.RETRY_AFTER, String.valueOf(wait.getAsLong()))
                     .body(Map.<String, Object>of("error", "Too many searches. Please wait a minute and try again."));
         }
+        if (q.length() > 200) q = q.substring(0, 200);   // no real search is longer; keeps the OpenSearch request small
         List<SearchHit> hits = search.search(q, course, limit);
         Map<String, Object> body = new LinkedHashMap<>();
         body.put("query", q.trim());

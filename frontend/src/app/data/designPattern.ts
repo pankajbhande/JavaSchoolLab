@@ -82,213 +82,208 @@ public class Singleton {
 <p>The Singleton Pattern ensures that a class has only one instance and provides a global point of access to it.</p>
 <h4>Why?</h4>
 `,
-                                codeExamples: [`package com.javaschoollab.demo; 
-public class SingletonTest { 
-private static SingletonTest s; 
-private static SingletonTest test() { 
- s = new SingletonTest(); 
- return s; 
- } 
-public static void main(String args[]) { 
- System.out.println("one instance=" + SingletonTest.s.test().hashCode()); 
- System.out.println("two instance=" + SingletonTest.s.test().hashCode()); 
- System.out.println("three instance=" + SingletonTest.s.test().hashCode()); 
- } 
-} 
-`]
+                                codeExamples: [`// SingletonTest.java: three calls create three different objects
+package com.javaschoollab.demo;
+
+public class SingletonTest {
+
+    private static SingletonTest s;
+
+    private static SingletonTest test() {
+        s = new SingletonTest();   // a new object every time
+        return s;
+    }
+
+    public static void main(String args[]) {
+        System.out.println("one instance=" + SingletonTest.s.test().hashCode());
+        System.out.println("two instance=" + SingletonTest.s.test().hashCode());
+        System.out.println("three instance=" + SingletonTest.s.test().hashCode());
+    }
+}`]
                             },
                             {
-                                content: `In the above program, we have created the 3 instance of same class but I want to create only 1 instance 
+                                content: `In the above program, we have created the 3 instance of same class but I want to create only 1 instance
 of class then I should go for singleton design pattern. <br><br>
 <h4>When? </h4>
-If you have business requirement in which only 1 object is created then you should go for singleton 
+If you have business requirement in which only 1 object is created then you should go for singleton
 design pattern.<br><br>
 
-<h4>Steps to create the singleton design pattern as</h4><br>
+<h4>Steps to create the singleton design pattern as</h4>
+<b>Step 1:</b> Create class singleton and static member of class.
+`,
+                                codeExamples: [`// Step 1: the class and its static member
+package com.javaschoollab.demo;
 
-<div class='bg-secondary border border-primary p-2'>
-Step- 1 : Create class singleton and static member of class.<br> 
-package com.javaschoollab.demo; <br>
-public class Singleton { <br>
-private static Singleton singletonobject; <br>
-} <br>
-</div><br>
+public class Singleton {
 
-<div class='bg-secondary border border-primary p-2'>
-Step- 2 : Make constructor as private <br>
-package com.javaschoollab.demo; <br>
-public class Singleton { <br>
-private static Singleton singletonobject; <br>
-private singleton(){ <br>
- } <br>
-} <br>
- </div><br>
+    private static Singleton singletonobject;
+}`]
+                            },
+                            {
+                                content: `<b>Step 2:</b> Make constructor as private, so nobody outside the class can use <code>new</code>.`,
+                                codeExamples: [`// Step 2: private constructor
+package com.javaschoollab.demo;
 
-<div class='bg-secondary border border-primary p-2'>
-Step- 3 : Create the method for checking the references and use synchronized block instead of 
-method. <br>
-package com.javaschoollab.demo; <br>
- 
-public static Singleton getSingletonObject() { <br>
-synchronized (Singleton.class) { <br>
- if (singletonobject == null) { <br>
- singletonobject = new Singleton(); <br>
- } else { <br>
- return singletonobject; <br>
- } <br>
- return singletonobject; <br>
- } <br>
-} <br>
-</div><br>
+public class Singleton {
 
-<div class='bg-secondary border border-primary p-2'>
-Step- 4 : We can still able to create the copy of object by cloning it using object clone method. <br>
-Override the object clone method to prevent cloning as below. <br>
-(If singleton class will implements clonable interface ->class Singleton implements Clonable and 
-override object clone method into singleton class) <br>
-public static void main(String[] args) throws CloneNotSupportedException { <br>
- Singleton obj1 = Singleton.getSingletonObject(); <br>
- Singleton obj2 = (Singleton) obj1.clone(); <br>
- System.out.println("object 1>>"+obj1.hashCode()); <br>
- System.out.println("object 2>>"+obj2.hashCode()); <br>
-} <br>
-OUTPUT=object 1>>2018699554 <br>
-object 2>>1311053135 <br>
- 
-This again violates the design principle. We need to override the object clone method which throws <br>
-CloneNotSupportedException. <br>
-@Override <br>
-protected Object clone() throws CloneNotSupportedException { <br>
-// TODO Auto-generated method stub<br>
-throw new CloneNotSupportedException("Singleton cannot be cloned"); // super.clone() would NOT prevent cloning<br>
-} <br>
-OUTPUT=object 1>>2018699554 <br>
-object 2>>1311053135 <br>
-</div><br>
-`, codeExamples: [`package com.javaschoollab.demo; 
- 
-import java.io.Serializable; 
-public class Singleton implements Cloneable { 
-private static Singleton singletonobject; 
-private Singleton() { 
- } 
-public static Singleton getSingletonObject() { 
- synchronized (Singleton.class) { 
- if (singletonobject == null) { 
- singletonobject = new Singleton(); 
- } else { 
- return singletonobject; 
- } 
- return singletonobject; 
- } 
- } 
+    private static Singleton singletonobject;
+
+    private Singleton() {
+    }
+}`]
+                            },
+                            {
+                                content: `<b>Step 3:</b> Create the method for checking the references and use synchronized block instead of method.`,
+                                codeExamples: [`// Step 3: the access method (added inside class Singleton)
+public static Singleton getSingletonObject() {
+    synchronized (Singleton.class) {
+        if (singletonobject == null) {
+            singletonobject = new Singleton();
+        }
+        return singletonobject;
+    }
+}`]
+                            },
+                            {
+                                content: `<b>Step 4:</b> We can still create a copy of the object by cloning it with the object <code>clone()</code> method.
+If the singleton class implements <code>Cloneable</code>, cloning gives a second object. Run this program:`,
+                                codeExamples: [`// Singleton.java: cloning breaks the singleton
+package com.javaschoollab.demo;
+
+public class Singleton implements Cloneable {
+
+    private static Singleton singletonobject;
+
+    private Singleton() {
+    }
+
+    public static Singleton getSingletonObject() {
+        synchronized (Singleton.class) {
+            if (singletonobject == null) {
+                singletonobject = new Singleton();
+            }
+            return singletonobject;
+        }
+    }
+
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        return super.clone();   // creates a second object
+    }
+
+    public static void main(String[] args) throws CloneNotSupportedException {
+        Singleton obj1 = Singleton.getSingletonObject();
+        Singleton obj2 = (Singleton) obj1.clone();
+
+        System.out.println("object 1>>" + obj1.hashCode());
+        System.out.println("object 2>>" + obj2.hashCode());
+    }
+}
+// OUTPUT:
+// object 1>>2018699554
+// object 2>>1311053135
+// The two hash codes are different: two objects exist.`]
+                            },
+                            {
+                                content: `This again violates the design principle. To prevent cloning, override the object <code>clone()</code> method and throw
+<code>CloneNotSupportedException</code>. Calling <code>super.clone()</code> would NOT prevent cloning.`,
+                                codeExamples: [`// Step 4 fix: block cloning (add this method inside class Singleton)
 @Override
-protected Object clone() throws CloneNotSupportedException { 
- // TODO Auto-generated method stub
- return super.clone(); 
- } 
-public static void main(String[] args) throws CloneNotSupportedException { 
- Singleton obj1 = Singleton.getSingletonObject(); 
- Singleton obj2 = (Singleton) obj1.clone(); 
- System.out.println("object 1>>" + obj1.hashCode()); 
- System.out.println("object 2>>" + obj2.hashCode()); 
- } 
+protected Object clone() throws CloneNotSupportedException {
+    throw new CloneNotSupportedException("Singleton cannot be cloned");
 }`]
                             },
                             {
                                 content: `<h4>Singleton Pattern with Serialization</h4>
-        Some times in distributed system, we need to implement serializable interface in singleton class so that 
-we can store it state in file system and retrieve it later point. <br>
+Some times in distributed system, we need to implement serializable interface in singleton class so that
+we can store its state in file system and retrieve it later point. <br><br>
+<b>Step 1:</b> Create the singleton class that implements <code>Serializable</code>.`,
+                                codeExamples: [`// Step 1: Singleton that implements Serializable
+package com.javaschoollab.demo;
 
-<div class='bg-secondary border border-primary p-2'>
-package com.javaschoollab.demo; <br>
-import java.io.Serializable; <br>
-public class Singleton implements Cloneable, Serializable { <br>
-private static Singleton singletonobject; <br>
-private Singleton() { <br>
- } <br>
-public static Singleton getSingletonObject() { <br>
- synchronized (Singleton.class) { <br>
- if (singletonobject == null) { <br>
- singletonobject = new Singleton(); <br>
- } else { <br>
- return singletonobject; <br>
- } <br>
- return singletonobject; <br>
- } <br>
- } <br>
-@Override<br>
-protected Object clone() throws CloneNotSupportedException { <br>
- // TODO Auto-generated method stub<br>
- return super.clone(); <br>
- } <br>
-} <br>
-</div><br>
+import java.io.Serializable;
 
-<div class='bg-secondary border border-primary p-2'>
-Step- 2 : Create class singleton with serialization <br>
-package com.javaschoollab.demo; <br>
-import java.io.FileInputStream; <br>
-import java.io.FileOutputStream; <br>
-import java.io.ObjectInput; <br>
-import java.io.ObjectInputStream; <br>
-import java.io.ObjectOutput; <br>
-import java.io.ObjectOutputStream; <br>
-import java.io.Serializable; <br>
-public class SingletonSerializedTest implements Serializable { <br>
+public class Singleton implements Cloneable, Serializable {
 
-private static final long serialVersionUID = 1L; <br>
-public static void main(String[] args) { <br>
- try { <br>
- Singleton instance1 = Singleton.getSingletonObject(); <br>
- ObjectOutput out = new ObjectOutputStream(new FileOutputStream("E:\\test.txt")); <br>
- out.writeObject(instance1); <br>
- out.close(); <br>
- ObjectInput in = new ObjectInputStream(new FileInputStream("E:\\test.txt"));  <br>
- Singleton instance2 = (Singleton) in.readObject();  <br>
- in.close();  <br>
- System.out.println("instance 1>>" + instance1.hashCode());  <br>
- System.out.println("instance 2>>" + instance2.hashCode());  <br>
- } catch (Exception e) {  <br>
- e.printStackTrace();  <br>
- }  <br>
- }  <br>
-}  <br>
-</div><br>
+    private static Singleton singletonobject;
 
-<div class='bg-secondary border border-primary p-2'>
-Step- 3 : Create the input and output for reading and writing the object .  <br>
-ObjectOutput out = new ObjectOutputStream(new FileOutputStream("D:\\test.txt"));  <br>
-out.writeObject(instance1);  <br>
-out.close();  <br>
-// deserailize from file to object <br>
-ObjectInput in = new ObjectInputStream(new FileInputStream("D:\\test.txt"));  <br>
-Singleton instance2 = (Singleton) in.readObject();  <br>
-in.close();  <br>
-</div><br>
+    private Singleton() {
+    }
 
-<div class='bg-secondary border border-primary p-2'>
-Step- 4 : Run program to check output.  <br>
-instance1 hashCode:- 625576447  <br>
-instance2 hashCode:- 1494279232  <br> <br>
-It is prove that singleton object is not preserved during deserialization. Because both instance have 
-different hashcode.  <br>
-</div><br>
+    public static Singleton getSingletonObject() {
+        synchronized (Singleton.class) {
+            if (singletonobject == null) {
+                singletonobject = new Singleton();
+            }
+            return singletonobject;
+        }
+    }
 
-<div class='bg-secondary border border-primary p-2'>
-Step- 5 : To overcome this problem, we need to override the readResolve() method into singleton class.  <br>
-protected Object readResolve() {  <br>
-return singletonobject;  <br>
-}  <br>
-</div><br>
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        throw new CloneNotSupportedException("Singleton cannot be cloned");
+    }
+}`]
+                            },
+                            {
+                                content: `<b>Step 2:</b> Create a test class that writes the object to a file and reads it back (serialize and deserialize).
+The input and output streams do the writing and reading (Step 3 is inside this program).`,
+                                codeExamples: [`// Step 2 and 3: serialize to a file, then read it back
+package com.javaschoollab.demo;
 
-<div class='bg-secondary border border-primary p-2'>
-Step- 6 : After Running SingletonSerializedTest Program, you will get the output as  <br>
-instance1 hashCode:- 625576447  <br>
-instance2 hashCode:- 625576447 <br>
-</div><br>
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInput;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutput;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 
-`
+public class SingletonSerializedTest implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
+    public static void main(String[] args) {
+        try {
+            Singleton instance1 = Singleton.getSingletonObject();
+
+            // Serialize: object to file
+            ObjectOutput out = new ObjectOutputStream(new FileOutputStream("E:\\\\test.txt"));
+            out.writeObject(instance1);
+            out.close();
+
+            // Deserialize: file to object
+            ObjectInput in = new ObjectInputStream(new FileInputStream("E:\\\\test.txt"));
+            Singleton instance2 = (Singleton) in.readObject();
+            in.close();
+
+            System.out.println("instance 1>>" + instance1.hashCode());
+            System.out.println("instance 2>>" + instance2.hashCode());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}`]
+                            },
+                            {
+                                content: `<b>Step 4:</b> Run the program to check the output.
+<pre class="bg-[#1e1e2e] text-gray-100 p-4 rounded-lg overflow-x-auto font-mono text-[13px] leading-6">instance1 hashCode:- 625576447
+instance2 hashCode:- 1494279232</pre>
+It proves that the singleton object is not preserved during deserialization, because both instances have
+different hash codes.`
+                            },
+                            {
+                                content: `<b>Step 5:</b> To overcome this problem, we need to override the <code>readResolve()</code> method into the singleton class.`,
+                                codeExamples: [`// Step 5: add this method inside class Singleton
+protected Object readResolve() {
+    return singletonobject;   // return the existing object after deserialization
+}`]
+                            },
+                            {
+                                content: `<b>Step 6:</b> After running the <code>SingletonSerializedTest</code> program again, you will get the output as:
+<pre class="bg-[#1e1e2e] text-gray-100 p-4 rounded-lg overflow-x-auto font-mono text-[13px] leading-6">instance1 hashCode:- 625576447
+instance2 hashCode:- 625576447</pre>
+Both hash codes are the same, so the singleton is preserved.`
                             }
                         ],
 
@@ -504,102 +499,117 @@ To overcome this above situation, we should go for factory pattern. <br><br>
 When user wants the specific object at run time.<br><br>
 
 <h4>Example </h4>
-Suppose we have requirement to book AC ticket for First tier, second tier and Third tier. <br>
-Step 1: Create the interface Booking. <br>
-Step 2: Create the concreate class First tier will implement the same interface. <br>
-Step 3: Create the concreate class Second tier will implement the same interface. <br>
-Step 4: Create the concreate class Third tier will implement the same interface. <br>
-Step 5: Create class BookingFactory to generate the object of concreate class. <br>
-Step 6: Create the factory class to get the object of concreate class by passing the data. <br><br>
+<p>Suppose we have requirement to book AC ticket for First tier, second tier and Third tier. Follow these steps:</p>
+<ol>
+<li><b>Step 1:</b> Create the interface Booking.</li>
+<li><b>Step 2:</b> Create the concrete class First tier, which implements the same interface.</li>
+<li><b>Step 3:</b> Create the concrete class Second tier, which implements the same interface.</li>
+<li><b>Step 4:</b> Create the concrete class Third tier, which implements the same interface.</li>
+<li><b>Step 5:</b> Create class BookingFactory to generate the object of the concrete class.</li>
+<li><b>Step 6:</b> Create the client class that gets the object from the factory by passing the data.</li>
+</ol>
 
-
-<div class='bg-secondary border border-primary p-2'>
-Step 1: Create the interface Booking <br>
-package com.javaschoollab.demo; <br>
-public interface Booking { // Step: 01<br>
-public String getACClass(); <br>
-} <br>
-</div><br>
-
-<div class='bg-secondary border border-primary p-2'>
-Step 2: Create the concreate class First tier will implement the same interface <br>
-package com.javaschoollab.demo; <br>
-public class FirstTier implements Booking { <br>
-@Override<br>
-public String getACClass() { <br>
- return "first class-AC- Seat availability:10"; <br>
- } <br>
-} <br>
-</div><br>
-
-<div class='bg-secondary border border-primary p-2'>
-Step 3: Create the concreate class Second tier will implement the same interface <br>
-package com.javaschoollab.demo; <br>
-public class SecondTier implements Booking { <br>
-@Override<br>
-public String getACClass() { <br>
- return "Second class- AC- Seat availability:8"; <br>
- } <br>
-} <br>
-</div> <br>
-
-<div class='bg-secondary border border-primary p-2'>
-Step 4: Create the concreate class Third tier will implement the same interface  <br>
-package com.javaschoollab.demo;  <br>
-public class ThirdTier implements Booking {  <br>
-@Override <br>
-public String getACClass() {  <br>
- return "Third class-AC Seat availability:2";  <br>
- }  <br>
-}  <br>
-</div> <br>
-
-<div class='bg-secondary border border-primary p-2'>
-Step 5: Create class BookingFactory to generate the object of concreate class. <br>
-package com.javaschoollab.demo; <br>
- 
-public class BookingFactory { <br>
-// Design the factory method here<br>
-// We Takes input should be first, second, third<br>
-public static Booking createBooking(String input) { <br>
- if (input.equalsIgnoreCase("first")) { <br>
- return new FirstTier(); <br>
- } else if (input.equalsIgnoreCase("second")) { <br>
- return new SecondTier(); <br>
- } else if (input.equalsIgnoreCase("third")) { <br>
- return new ThirdTier(); <br>
- } <br>
- throw new IllegalArgumentException("Invalid input from user.."); <br>
- } <br>
-} <br>
-</div><br>
-
-<div class='bg-secondary border border-primary p-2'>
-Step 6: Create the factory class to get the object of concreate class by passing the data.<br>
-package com.javaschoollab.demo; <br>
- 
-import java.util.Scanner; <br>
-public class TestMain { <br>
-public static void main(String[] args) { <br>
- try { <br>
- String booking; <br>
- System.out.println("Enter the AC class type>>"); <br>
- Scanner scanner = new Scanner(System.in); <br>
- booking = scanner.next(); <br>
- Booking b = BookingFactory.createBooking(booking); <br>
- System.out.println(b.getACClass()); <br>
- scanner.close(); <br>
- } catch (Exception e) { <br>
- e.printStackTrace(); <br>
- } <br>
- } <br>
-} <br><br>
-OUTPUT <br>
-Enter the AC class type>> <br>
-first<br>
-first class-AC- Seat availability:10 <br>
-</div>
 `
+                            },
+                            {
+                                content: `<b>Step 1:</b> Create the interface Booking.`,
+                                codeExamples: [`// Step 1: the interface
+package com.javaschoollab.demo;
+
+public interface Booking {
+
+    public String getACClass();
+}`]
+                            },
+                            {
+                                content: `<b>Step 2:</b> Create the concrete class First tier, which implements the same interface.`,
+                                codeExamples: [`// Step 2: FirstTier
+package com.javaschoollab.demo;
+
+public class FirstTier implements Booking {
+
+    @Override
+    public String getACClass() {
+        return "first class-AC- Seat availability:10";
+    }
+}`]
+                            },
+                            {
+                                content: `<b>Step 3:</b> Create the concrete class Second tier, which implements the same interface.`,
+                                codeExamples: [`// Step 3: SecondTier
+package com.javaschoollab.demo;
+
+public class SecondTier implements Booking {
+
+    @Override
+    public String getACClass() {
+        return "Second class- AC- Seat availability:8";
+    }
+}`]
+                            },
+                            {
+                                content: `<b>Step 4:</b> Create the concrete class Third tier, which implements the same interface.`,
+                                codeExamples: [`// Step 4: ThirdTier
+package com.javaschoollab.demo;
+
+public class ThirdTier implements Booking {
+
+    @Override
+    public String getACClass() {
+        return "Third class-AC Seat availability:2";
+    }
+}`]
+                            },
+                            {
+                                content: `<b>Step 5:</b> Create class BookingFactory to generate the object of the concrete class.
+The factory method takes the input first, second or third and returns the matching object.`,
+                                codeExamples: [`// Step 5: the factory
+package com.javaschoollab.demo;
+
+public class BookingFactory {
+
+    // Design the factory method here.
+    // The input should be first, second or third.
+    public static Booking createBooking(String input) {
+        if (input.equalsIgnoreCase("first")) {
+            return new FirstTier();
+        } else if (input.equalsIgnoreCase("second")) {
+            return new SecondTier();
+        } else if (input.equalsIgnoreCase("third")) {
+            return new ThirdTier();
+        }
+        throw new IllegalArgumentException("Invalid input from user..");
+    }
+}`]
+                            },
+                            {
+                                content: `<b>Step 6:</b> Use the factory class to get the object of the concrete class by passing the data.`,
+                                codeExamples: [`// Step 6: the client
+package com.javaschoollab.demo;
+
+import java.util.Scanner;
+
+public class TestMain {
+
+    public static void main(String[] args) {
+        try {
+            System.out.println("Enter the AC class type>>");
+            Scanner scanner = new Scanner(System.in);
+            String booking = scanner.next();
+
+            Booking b = BookingFactory.createBooking(booking);
+            System.out.println(b.getACClass());
+
+            scanner.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
+// OUTPUT:
+// Enter the AC class type>>
+// first
+// first class-AC- Seat availability:10`]
                             }
                         ],
 
@@ -785,9 +795,12 @@ This makes factory fully dynamic.
     }
 
     public static void main(String[] args) {
-        Object obj = createInstance("com.javaschoollab.demo.Circle");
+        Object obj = createInstance(Circle.class.getName());   // class name as a String
         System.out.println(obj.getClass().getName());
     }
+}
+
+class Circle {
 }`
                                 ]
                             },
@@ -976,18 +989,26 @@ interface Checkbox { void render(); }
 
 // Windows family
 class WindowsButton implements Button {
-    public void render() { System.out.println("Rendering a Windows-style button"); }
+    public void render() {
+        System.out.println("Rendering a Windows-style button");
+    }
 }
 class WindowsCheckbox implements Checkbox {
-    public void render() { System.out.println("Rendering a Windows-style checkbox"); }
+    public void render() {
+        System.out.println("Rendering a Windows-style checkbox");
+    }
 }
 
 // Mac family
 class MacButton implements Button {
-    public void render() { System.out.println("Rendering a Mac-style button"); }
+    public void render() {
+        System.out.println("Rendering a Mac-style button");
+    }
 }
 class MacCheckbox implements Checkbox {
-    public void render() { System.out.println("Rendering a Mac-style checkbox"); }
+    public void render() {
+        System.out.println("Rendering a Mac-style checkbox");
+    }
 }
 
 // Abstract Factory - declares creation methods for the WHOLE family
@@ -997,13 +1018,21 @@ interface UIFactory {
 }
 
 class WindowsFactory implements UIFactory {
-    public Button createButton() { return new WindowsButton(); }
-    public Checkbox createCheckbox() { return new WindowsCheckbox(); }
+    public Button createButton() {
+        return new WindowsButton();
+    }
+    public Checkbox createCheckbox() {
+        return new WindowsCheckbox();
+    }
 }
 
 class MacFactory implements UIFactory {
-    public Button createButton() { return new MacButton(); }
-    public Checkbox createCheckbox() { return new MacCheckbox(); }
+    public Button createButton() {
+        return new MacButton();
+    }
+    public Checkbox createCheckbox() {
+        return new MacCheckbox();
+    }
 }
 
 public class AbstractFactoryDemo {
@@ -1083,9 +1112,18 @@ public class Pizza {
             this.size = size; // required field passed to the builder's constructor
         }
 
-        public Builder cheese(boolean value) { this.cheese = value; return this; }         // fluent chaining
-        public Builder pepperoni(boolean value) { this.pepperoni = value; return this; }
-        public Builder mushrooms(boolean value) { this.mushrooms = value; return this; }
+        public Builder cheese(boolean value) { // fluent chaining
+            this.cheese = value;
+            return this;
+        }
+        public Builder pepperoni(boolean value) {
+            this.pepperoni = value;
+            return this;
+        }
+        public Builder mushrooms(boolean value) {
+            this.mushrooms = value;
+            return this;
+        }
 
         public Pizza build() {
             return new Pizza(this);
@@ -1285,27 +1323,45 @@ interface Coffee {
 
 // Concrete component - the base object being decorated
 class SimpleCoffee implements Coffee {
-    public String getDescription() { return "Coffee"; }
-    public double getCost() { return 50.0; }
+    public String getDescription() {
+        return "Coffee";
+    }
+    public double getCost() {
+        return 50.0;
+    }
 }
 
 // Base decorator - wraps a Coffee and implements the same interface
 abstract class CoffeeDecorator implements Coffee {
     protected Coffee decoratedCoffee;
-    public CoffeeDecorator(Coffee coffee) { this.decoratedCoffee = coffee; }
+    public CoffeeDecorator(Coffee coffee) {
+        this.decoratedCoffee = coffee;
+    }
 }
 
 // Concrete decorators - each adds its own behavior, then delegates to the wrapped object
 class MilkDecorator extends CoffeeDecorator {
-    public MilkDecorator(Coffee coffee) { super(coffee); }
-    public String getDescription() { return decoratedCoffee.getDescription() + " + Milk"; }
-    public double getCost() { return decoratedCoffee.getCost() + 10.0; }
+    public MilkDecorator(Coffee coffee) {
+        super(coffee);
+    }
+    public String getDescription() {
+        return decoratedCoffee.getDescription() + " + Milk";
+    }
+    public double getCost() {
+        return decoratedCoffee.getCost() + 10.0;
+    }
 }
 
 class SugarDecorator extends CoffeeDecorator {
-    public SugarDecorator(Coffee coffee) { super(coffee); }
-    public String getDescription() { return decoratedCoffee.getDescription() + " + Sugar"; }
-    public double getCost() { return decoratedCoffee.getCost() + 5.0; }
+    public SugarDecorator(Coffee coffee) {
+        super(coffee);
+    }
+    public String getDescription() {
+        return decoratedCoffee.getDescription() + " + Sugar";
+    }
+    public double getCost() {
+        return decoratedCoffee.getCost() + 5.0;
+    }
 }
 
 public class DecoratorDemo {
@@ -1348,12 +1404,20 @@ Facade Pattern provides a <b>single, simplified interface</b> in front of a comp
 
 // Complex subsystem classes - client should NOT need to know about all of these
 class CPU {
-    void freeze() { System.out.println("CPU: freezing"); }
-    void jump(long position) { System.out.println("CPU: jumping to " + position); }
-    void execute() { System.out.println("CPU: executing"); }
+    void freeze() {
+        System.out.println("CPU: freezing");
+    }
+    void jump(long position) {
+        System.out.println("CPU: jumping to " + position);
+    }
+    void execute() {
+        System.out.println("CPU: executing");
+    }
 }
 class Memory {
-    void load(long position, byte[] data) { System.out.println("Memory: loading data at " + position); }
+    void load(long position, byte[] data) {
+        System.out.println("Memory: loading data at " + position);
+    }
 }
 class HardDrive {
     byte[] read(long lba, int size) {
@@ -1508,13 +1572,21 @@ interface Device {
 }
 
 class TV implements Device {
-    public void turnOn()  { System.out.println("TV is now ON"); }
-    public void turnOff() { System.out.println("TV is now OFF"); }
+    public void turnOn() {
+        System.out.println("TV is now ON");
+    }
+    public void turnOff() {
+        System.out.println("TV is now OFF");
+    }
 }
 
 class Radio implements Device {
-    public void turnOn()  { System.out.println("Radio is now ON"); }
-    public void turnOff() { System.out.println("Radio is now OFF"); }
+    public void turnOn() {
+        System.out.println("Radio is now ON");
+    }
+    public void turnOff() {
+        System.out.println("Radio is now OFF");
+    }
 }
 
 // Abstraction hierarchy - "what" the client asks for
@@ -1536,7 +1608,11 @@ class BasicRemote extends RemoteControl {
     }
 
     void power() {
-        if (on) { device.turnOff(); } else { device.turnOn(); }
+        if (on) {
+            device.turnOff();
+        } else {
+            device.turnOn();
+        }
         on = !on;
     }
 }
@@ -1805,7 +1881,9 @@ interface Subscriber {
 // Concrete observers
 class EmailSubscriber implements Subscriber {
     private String name;
-    public EmailSubscriber(String name) { this.name = name; }
+    public EmailSubscriber(String name) {
+        this.name = name;
+    }
     public void update(String videoTitle) {
         System.out.println("Email to " + name + ": New video uploaded - " + videoTitle);
     }
@@ -2823,11 +2901,15 @@ interface PaymentStrategy {
 
 // Concrete strategies
 class CreditCardPayment implements PaymentStrategy {
-    public void pay(int amount) { System.out.println("Paid Rs." + amount + " using Credit Card"); }
+    public void pay(int amount) {
+        System.out.println("Paid Rs." + amount + " using Credit Card");
+    }
 }
 
 class UpiPayment implements PaymentStrategy {
-    public void pay(int amount) { System.out.println("Paid Rs." + amount + " using UPI"); }
+    public void pay(int amount) {
+        System.out.println("Paid Rs." + amount + " using UPI");
+    }
 }
 
 // Context - holds a reference to a strategy and delegates to it
@@ -2894,28 +2976,44 @@ interface Command {
 
 // Receiver - knows HOW to actually perform the action
 class Light {
-    void turnOn() { System.out.println("Light is ON"); }
-    void turnOff() { System.out.println("Light is OFF"); }
+    void turnOn() {
+        System.out.println("Light is ON");
+    }
+    void turnOff() {
+        System.out.println("Light is OFF");
+    }
 }
 
 // Concrete commands - each wraps a receiver + the action to invoke on it
 class LightOnCommand implements Command {
     private Light light;
-    public LightOnCommand(Light light) { this.light = light; }
-    public void execute() { light.turnOn(); }
+    public LightOnCommand(Light light) {
+        this.light = light;
+    }
+    public void execute() {
+        light.turnOn();
+    }
 }
 
 class LightOffCommand implements Command {
     private Light light;
-    public LightOffCommand(Light light) { this.light = light; }
-    public void execute() { light.turnOff(); }
+    public LightOffCommand(Light light) {
+        this.light = light;
+    }
+    public void execute() {
+        light.turnOff();
+    }
 }
 
 // Invoker - triggers a command without knowing what it actually does
 class RemoteControl {
     private Command command;
-    public void setCommand(Command command) { this.command = command; }
-    public void pressButton() { command.execute(); }
+    public void setCommand(Command command) {
+        this.command = command;
+    }
+    public void pressButton() {
+        command.execute();
+    }
 }
 
 public class CommandDemo {
@@ -2973,21 +3071,33 @@ abstract class Beverage {
         addCondiments();  // varies per subclass
     }
 
-    private void boilWater() { System.out.println("Boiling water"); }
-    private void pourInCup() { System.out.println("Pouring into cup"); }
+    private void boilWater() {
+        System.out.println("Boiling water");
+    }
+    private void pourInCup() {
+        System.out.println("Pouring into cup");
+    }
 
     protected abstract void brew();          // subclasses MUST implement
     protected abstract void addCondiments(); // subclasses MUST implement
 }
 
 class Tea extends Beverage {
-    protected void brew() { System.out.println("Steeping the tea"); }
-    protected void addCondiments() { System.out.println("Adding lemon"); }
+    protected void brew() {
+        System.out.println("Steeping the tea");
+    }
+    protected void addCondiments() {
+        System.out.println("Adding lemon");
+    }
 }
 
 class Coffee extends Beverage {
-    protected void brew() { System.out.println("Dripping coffee through filter"); }
-    protected void addCondiments() { System.out.println("Adding sugar and milk"); }
+    protected void brew() {
+        System.out.println("Dripping coffee through filter");
+    }
+    protected void addCondiments() {
+        System.out.println("Adding sugar and milk");
+    }
 }
 
 public class TemplateMethodDemo {
@@ -3045,26 +3155,42 @@ import java.util.Deque;
 // Memento - immutable state snapshot
 class EditorMemento {
     private final String content;
-    EditorMemento(String content) { this.content = content; }
-    String getContent() { return content; } // only the Originator reads this
+    EditorMemento(String content) {
+        this.content = content;
+    }
+    String getContent() { // only the Originator reads this
+        return content;
+    }
 }
 
 // Originator - creates and restores from Mementos
 class TextEditor {
     private String content = "";
 
-    void write(String text) { content += text; }
-    String getContent() { return content; }
+    void write(String text) {
+        content += text;
+    }
+    String getContent() {
+        return content;
+    }
 
-    EditorMemento save() { return new EditorMemento(content); }
-    void restore(EditorMemento m) { this.content = m.getContent(); }
+    EditorMemento save() {
+        return new EditorMemento(content);
+    }
+    void restore(EditorMemento m) {
+        this.content = m.getContent();
+    }
 }
 
 // Caretaker - stores Mementos without inspecting them
 class History {
     private final Deque<EditorMemento> stack = new ArrayDeque<>();
-    void push(EditorMemento m) { stack.push(m); }
-    EditorMemento pop() { return stack.pop(); }
+    void push(EditorMemento m) {
+        stack.push(m);
+    }
+    EditorMemento pop() {
+        return stack.pop();
+    }
 }
 
 public class MementoDemo {
@@ -3206,14 +3332,26 @@ class ATMMachine {
     private final ATMState noCardState = new NoCardState();
     private ATMState currentState = noCardState;
 
-    public void setState(ATMState state) { this.currentState = state; }
-    public ATMState getHasCardState() { return hasCardState; }
-    public ATMState getNoCardState() { return noCardState; }
+    public void setState(ATMState state) {
+        this.currentState = state;
+    }
+    public ATMState getHasCardState() {
+        return hasCardState;
+    }
+    public ATMState getNoCardState() {
+        return noCardState;
+    }
 
     // Step 4: Delegate to current state
-    public void insertCard() { currentState.insertCard(this); }
-    public void ejectCard() { currentState.ejectCard(this); }
-    public void requestCash(int amount) { currentState.requestCash(this, amount); }
+    public void insertCard() {
+        currentState.insertCard(this);
+    }
+    public void ejectCard() {
+        currentState.ejectCard(this);
+    }
+    public void requestCash(int amount) {
+        currentState.requestCash(this, amount);
+    }
 }
 
 public class StateDemo {
@@ -3320,16 +3458,28 @@ interface Item {
 
 class Book implements Item {
     private double price;
-    public Book(double price) { this.price = price; }
-    public double getPrice() { return price; }
-    public void accept(Visitor visitor) { visitor.visit(this); } // Step 3: double dispatch
+    public Book(double price) {
+        this.price = price;
+    }
+    public double getPrice() {
+        return price;
+    }
+    public void accept(Visitor visitor) { // Step 3: double dispatch
+        visitor.visit(this);
+    }
 }
 
 class Electronics implements Item {
     private double price;
-    public Electronics(double price) { this.price = price; }
-    public double getPrice() { return price; }
-    public void accept(Visitor visitor) { visitor.visit(this); } // Step 3: double dispatch
+    public Electronics(double price) {
+        this.price = price;
+    }
+    public double getPrice() {
+        return price;
+    }
+    public void accept(Visitor visitor) { // Step 3: double dispatch
+        visitor.visit(this);
+    }
 }
 
 // Step 1: Visitor interface
@@ -3353,7 +3503,9 @@ class PriceVisitor implements Visitor {
         System.out.println("Electronics price with tax: " + priceWithTax);
     }
 
-    public double getTotal() { return total; }
+    public double getTotal() {
+        return total;
+    }
 }
 
 public class VisitorDemo {

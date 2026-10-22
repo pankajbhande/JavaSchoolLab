@@ -108,9 +108,14 @@ export default function AdminAnalyticsPage() {
             <h1 className="text-xl sm:text-2xl font-bold tracking-tight">Site analytics</h1>
             <p className="text-sm text-white/90">Visits, sign-ups, learning activity and what people search for</p>
           </div>
-          <Link to="/dashboard" className="inline-flex items-center gap-1.5 rounded-lg bg-white/20 hover:bg-white/30 px-3 py-2 text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white">
-            <ArrowLeft className="w-4 h-4" aria-hidden="true" /> Back to site
-          </Link>
+          <div className="flex gap-2">
+            <Link to="/admin/suggestions" className="inline-flex items-center gap-1.5 rounded-lg bg-white/20 hover:bg-white/30 px-3 py-2 text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white">
+              Suggestions
+            </Link>
+                      <Link to="/dashboard" className="inline-flex items-center gap-1.5 rounded-lg bg-white/20 hover:bg-white/30 px-3 py-2 text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white">
+              <ArrowLeft className="w-4 h-4" aria-hidden="true" /> Back to site
+            </Link>
+          </div>
         </div>
       </header>
 

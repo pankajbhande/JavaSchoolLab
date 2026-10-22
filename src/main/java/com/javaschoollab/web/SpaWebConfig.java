@@ -15,7 +15,7 @@ import org.springframework.web.servlet.resource.PathResourceResolver;
  *
  * React Router routes such as /course/java/basics/Constructor_in_java don't exist as files, so a refresh or a
  * shared link would 404. Any path that is not an API call and has no file extension therefore gets index.html
- * and the browser router takes over. A missing real file (a .js, .png...) is still a proper 404.
+ * and the browser router takes over. A missing real file (a .js, .png...) is still a proper 404, and so is anything under /actuator.
  */
 @Configuration
 public class SpaWebConfig implements WebMvcConfigurer {
@@ -47,7 +47,7 @@ public class SpaWebConfig implements WebMvcConfigurer {
         protected Resource getResource(String resourcePath, Resource location) throws IOException {
             Resource requested = location.createRelative(resourcePath);
             if (requested.exists() && requested.isReadable()) return requested;
-            if (resourcePath.startsWith("api/") || HAS_EXTENSION.matcher(resourcePath).matches()) return null;
+            if (resourcePath.startsWith("api/") || resourcePath.startsWith("actuator") || HAS_EXTENSION.matcher(resourcePath).matches()) return null;
             Resource index = location.createRelative("index.html");
             return index.exists() && index.isReadable() ? index : null;
         }

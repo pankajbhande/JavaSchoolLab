@@ -1,0 +1,450 @@
+=====================================================================================================
+ JavaSchoolLab - HOW TO RUN THE WHOLE APPLICATION WITH DOCKER
+=====================================================================================================
+
+ Read this top to bottom the first time. After that, use the "QUICK START" section.
+
+ There are THREE stacks (three compose files). Each is started and stopped on its own, in this order:
+
+     1. SHARED      docker-compose.shared.yml      MySQL + Redis + OpenSearch (+ the nightly database backup)   start FIRST, keep running
+     2. APPLICATION docker-compose.yml             the website + API (Spring Boot)                              start SECOND
+     3. MONITORING  docker-compose.monitoring.yml  Prometheus, Grafana, Loki, Tempo, Alloy, Alertmanager,      start THIRD (optional but
+                                                   exporters, blackbox                                         recommended)
+
+ "docker compose down" on the application stops ONLY the application. MySQL, Redis and OpenSearch keep running, and the data of MySQL
+ stays in the Docker volume "javaschoollab_db_data" (never deleted by down, down -v or a rebuild).
+
+ ALL commands below are run from THIS folder (the "docker" folder):
+
+     cd <your project>\app\docker
+
+
+-----------------------------------------------------------------------------------------------------
+ QUICK START (everything already set up, you just want to start it)
+-----------------------------------------------------------------------------------------------------
+
+     docker compose -f docker-compose.shared.yml up -d        <- 1. MySQL + Redis + OpenSearch (skip if already running)
+     docker compose up -d --build                             <- 2. the application
+     docker compose -f docker-compose.monitoring.yml up -d    <- 3. dashboards, logs, traces, alerts
+
+     website     http://localhost:8080
+     dashboards  http://localhost:3000     (Grafana; user and password = GRAFANA_ADMIN_USER / GRAFANA_ADMIN_PASSWORD in .env)
+
+ Stop only the application:     docker compose down
+ Stop the monitoring:           docker compose -f docker-compose.monitoring.yml stop
+ Stop MySQL/Redis/OpenSearch:   docker compose -f docker-compose.shared.yml stop      (stop the application first)
+
+
+=====================================================================================================
+ FULL STEPS, IN ORDER (first time on a machine, and whenever something is not working)
+=====================================================================================================
+
+ STEP 1 - Is Docker running?
+ ---------------------------
+     docker version
+
+   You must see BOTH a "Client" and a "Server" section.
+   If you only see Client, or an error like "cannot find the file specified ... dockerDesktopLinuxEngine":
+     -> Docker Desktop is not running. Start it and wait until it says "Engine running". Then run "docker version" again.
+   Memory: the whole stack (all three) needs about 4 GB for Docker. On Docker Desktop give it at least 5 GB
+   (Settings > Resources). Without the monitoring stack about 2.5 GB is enough.
+
+
+ STEP 2 - Is the .env file ready?
+ --------------------------------
+   The file docker\.env must exist. It holds the passwords, so it is never committed to git. It is a PLAIN TEXT file: it is NOT
+   encrypted. Keep it safe: on a Linux server run  chmod 600 docker/.env  and let only the deploying user read it.
+   If it does not exist:   copy it from your PC (it is the only copy and is not in Git): scp docker/.env user@server:/opt/javaschoollab/docker/.env
+
+   REQUIRED (Docker stops with "set ... in .env" if one is empty):
+       JWT_SECRET            at least 32 characters:  node -e "console.log(require('crypto').randomBytes(48).toString('hex'))"
+                             Keep the SAME value on every restart, otherwise every user is logged out.
+       DB_ROOT_PASSWORD      MySQL administrator ("root")
+       DB_PASSWORD           password of the application's database account (DB_USER, "supervisor")
+       REDIS_PASSWORD        password of Redis (user REDIS_USERNAME, "supervisor"); no spaces or quotes
+       EXPORTER_PASSWORD     password of the read-only monitoring account of MySQL (a long random value)
+       GRAFANA_ADMIN_PASSWORD  login of Grafana (user GRAFANA_ADMIN_USER)
+   The production profile is selected there too:  SPRING_PROFILES_ACTIVE=prod
+
+   A password that contains # or $ must be wrapped in SINGLE quotes:   DB_PASSWORD='My#pass$word'
+   (otherwise Docker reads # as the start of a comment.) Redis passwords must not contain spaces, quotes or backslashes.
+
+   Quick syntax check of all three files (prints nothing when everything is fine):
+       docker compose -f docker-compose.shared.yml config --quiet
+       docker compose config --quiet
+       docker compose -f docker-compose.monitoring.yml config --quiet
+
+
+ STEP 3 - Create the data volume (ONCE per machine)
+ --------------------------------------------------
+       docker volume ls
+   Look for the name:  javaschoollab_db_data
+   If it is NOT in the list:     docker volume create javaschoollab_db_data
+
+   This volume holds ALL users, progress, certificates and notes. It is outside every compose project, so down and down -v never
+   delete it. Only "docker volume rm javaschoollab_db_data" does. NEVER run that without a backup.
+
+
+ STEP 4 - Older containers on this machine (ONLY if an older version of this project already runs here)
+ --------------------------------------------------------------------------------------------------------
+       docker ps -a
+   If you see containers like  javaschoollab-db-1, javaschoollab-api-1, javaschoollab-web-1  (the old single-file setup):
+     * They use the SAME database volume. Two MySQL servers on one volume corrupt it. STOP the old database first:
+           docker stop javaschoollab-db-1 javaschoollab-backup-1
+           docker rm   javaschoollab-db-1 javaschoollab-backup-1
+       (Your data is NOT touched; it stays in the volume.) Take a copy first if you want to be extra safe: STEP "Backups" below.
+     * The old web container probably uses port 8080, the same default as the new application. Stop it (docker stop javaschoollab-web-1
+       javaschoollab-api-1) or set another WEB_PORT in .env.
+   The old database has the OLD passwords inside. Put the old root password into .env once as  DB_ROOT_PASSWORD_PREVIOUS  and the old
+   account name as  DB_USER_PREVIOUS  (see "Changing the database passwords" below); the "db-setup" container then switches them over.
+   Do NOT use "--remove-orphans" while old containers are around.
+
+
+ STEP 5 - Start the shared stack (MySQL, Redis, OpenSearch)
+ ----------------------------------------------------------
+       docker compose -f docker-compose.shared.yml up -d
+
+   Is it live?
+       docker ps --filter name=javaschoollab-db --filter name=javaschoollab-redis --filter name=javaschoollab-opensearch
+   Every one must say "(healthy)". MySQL takes up to a minute on a new volume; OpenSearch up to two minutes.
+       docker inspect -f "{{.State.Health.Status}}" javaschoollab-db        (prints "healthy")
+
+   The accounts are created / refreshed from .env by the one-shot container "db-setup":
+       docker logs javaschoollab-db-setup          -> must end with:  accounts ready: root, supervisor (database ...), exporter (monitoring)
+
+   Optional checks:
+       docker exec -it javaschoollab-db mysql -uroot -p -e "SHOW DATABASES;"            (asks for DB_ROOT_PASSWORD)
+       docker exec -e REDISCLI_AUTH=<REDIS_PASSWORD> javaschoollab-redis redis-cli --user supervisor ping       -> PONG
+       curl http://127.0.0.1:9200/_cluster/health                                                   (OpenSearch, this machine only)
+       docker network ls                                                                            (javaschoollab_shared must exist)
+
+   On a Linux host, once:  sudo sysctl -w vm.max_map_count=262144   (OpenSearch needs it; put it in /etc/sysctl.conf to keep it)
+
+
+ STEP 6 - Start the application
+ ------------------------------
+       docker compose up -d --build
+
+   --build rebuilds the image (needed the first time and after any code or course-content change). The first build takes several
+   minutes (it builds the website and the Java jar). Later builds are faster.
+       docker compose ps                    -> "app" must say (healthy) after about a minute
+       docker compose logs -f app           (Ctrl+C stops watching, NOT the app)
+
+   The container is "healthy" only when its READINESS probe answers: start-up (including the database migration, "Flyway") has finished
+   and MySQL answers. You can ask it yourself (works from this machine only):
+       curl http://127.0.0.1:9001/actuator/health/readiness        -> {"status":"UP"}
+   Open the website:   http://localhost:8080          API check:   curl http://localhost:8080/api/search/status
+
+
+ STEP 7 - Start the monitoring (the observability desktop)
+ ---------------------------------------------------------
+       docker compose -f docker-compose.monitoring.yml up -d
+       docker compose -f docker-compose.monitoring.yml ps
+
+   Then open Grafana:  http://localhost:3000   (user/password from .env). EVERYTHING IS CREATED AUTOMATICALLY at start:
+   the data sources (Prometheus, Loki, Tempo, Alertmanager) and all 5 dashboards in the folder "JavaSchoolLab". You never have to create
+   or import anything by hand, on this machine or on a server: starting this stack is all it takes.
+
+
+=====================================================================================================
+ THE OBSERVABILITY DESKTOP (what you can see, and where)
+=====================================================================================================
+
+   Grafana  http://localhost:3000     Home dashboard = "Overview". Switch dashboards from the dropdown at the top ("JavaSchoolLab dashboards").
+
+   1. Overview               requests per second, response time (p50 / p95 / p99), server errors (5xx) and client errors (4xx), busiest and
+                             slowest endpoints, a heat map of response times, sign-ups / logins / quiz attempts / certificates, SQL speed,
+                             database pool, cache, search index status, alerts firing.
+                             Use the "Endpoint" filter at the top to look at one API route.
+   2. JVM, Tomcat, database  memory (heap, GC), CPU, threads, web server threads and connections, MySQL connection pool, SQL time, cache.
+   3. MySQL, Redis, OpenSearch  health, connections, queries per second, memory, hit ratios, search speed + the uptime probes of the site.
+   4. Logs and traces        search the application logs (filter by level or text), error counts, slow and failed requests as TRACES, SQL
+                             spans, and the service map. Click "View trace" on a log line to open the whole request; from a trace jump to its logs.
+   5. Alerts and SLO         what is alerting now, availability against the objective (99.5% of requests without a 5xx), error budget left.
+
+   Other tools (this machine only):
+       Prometheus   http://localhost:9090     metrics, rules, targets (Status > Targets: everything must be "UP")
+       Alertmanager http://localhost:9093     the alerts that fired
+   Alerts: 34 ready-made rules (site down, error rate, slow responses, error-budget burn, JVM heap, database pool, MySQL / Redis /
+   OpenSearch problems, no traces, ...). To receive them by e-mail set ALERT_EMAIL_TO in .env (it uses your SMTP_* settings), then:
+       docker compose -f docker-compose.monitoring.yml up -d --force-recreate alertmanager
+
+   Health endpoints of the application (this machine only, port MANAGEMENT_PORT = 9001):
+       /actuator/health/liveness   /actuator/health/readiness   /actuator/health   /actuator/info
+       /actuator/prometheus  (needs the ACTUATOR_USER / ACTUATOR_PASSWORD account)
+
+
+=====================================================================================================
+ BACKUPS
+=====================================================================================================
+
+ A) DATABASE - automatic, every night at 00:00
+ ---------------------------------------------
+   The container "javaschoollab-db-backup" (part of the shared stack) dumps the database EVERY DAY AT MIDNIGHT (BACKUP_AT, in the time
+   zone BACKUP_TIMEZONE = Asia/Kolkata). No cron, no script to schedule: it starts with the shared stack and restarts with Docker.
+       Where:   <project>\backups\database\<YYYY-MM-DD>\javaschoollab_<date>_<time>.sql.gz   (+ a .sha256 checksum)
+       Kept:    the newest 3 (BACKUP_KEEP_COUNT). Older ones are deleted, but ONLY after a new, verified backup exists.
+       Safety:  every backup is checked (complete dump, intact file) before it counts. A failed night never deletes a good backup.
+       First start: if no backup exists yet, one is taken immediately.
+   See what it did:             docker logs javaschoollab-db-backup
+   Take one right now:          docker compose -f docker-compose.shared.yml run --rm -e BACKUP_ONCE=1 backup
+   Change the time/count:       BACKUP_AT / BACKUP_KEEP_COUNT in .env, then
+                                docker compose -f docker-compose.shared.yml up -d --force-recreate backup
+
+ B) RESTORE a database backup
+ ----------------------------
+       docker compose stop app                                                     (stop the application first)
+       bash scripts/restore-db.sh ../backups/database/2026-10-21/javaschoollab_2026-10-21_00-00-00.sql.gz
+       docker compose up -d
+   The script checks the file, makes a safety copy of the current database (in backups\pre-restore, never deleted automatically), asks you
+   to type the database name, then restores. To TRY a backup without touching live data, restore it into another database name:
+       bash scripts/restore-db.sh <file> restore_check
+
+ C) CUSTOM DOCKER IMAGES + DEPLOYMENT CONFIGURATION - last 3 versions
+ ---------------------------------------------------------------------
+   Only the image YOU build (javaschoollab/app, from docker/Dockerfile) is custom. mysql, redis, opensearch, prometheus, grafana, loki, tempo,
+   alloy and the exporters are public images (pulled again from the internet) and hold no data of yours: the database data is covered by A).
+       bash scripts/backup-images.sh
+   saves (compressed, with checksums):
+       <project>\backups\images\<date>\...javaschoollab_app_latest_<imageid>.tar.gz      the application image (+ .info.txt)
+       <project>\backups\config\...javaschoollab-config.tar.gz                           docker/ : compose files, monitoring config, nginx, scripts, .env
+   Kept: the newest 3 DIFFERENT versions of each image (an unchanged image is not saved again, so three quiet nights do not push your older
+   versions out and you can still roll back) and the newest 3 configuration archives.
+   The configuration archive contains .env (passwords): it is created readable by its owner only. To encrypt it set
+   BACKUP_ENCRYPT_PASSFILE=<file holding a passphrase> in the environment (keep that file somewhere else).
+   Restore an image:  gunzip -c backups/images/<date>/<file>.tar.gz | docker load        then  docker compose up -d
+   Schedule it every night at 00:30 on a Linux server (systemd timer, or cron if there is no systemd):
+       sudo bash scripts/install-backup-schedule.sh          (remove again with --remove)
+   Also run it right after every deployment:   docker compose up -d --build && bash scripts/backup-images.sh
+
+ D) Copy the backups OFF the server
+ ----------------------------------
+   A backup on the same machine does not survive losing that machine. Copy <project>\backups to another server or cloud storage every
+   day, for example:   rsync -a --delete <project>/backups/ backupuser@other-host:/srv/javaschoollab-backups/
+   (or rclone to S3 / Google Drive). Never commit or share backups: they contain user data and password hashes.
+
+
+====================================================================================================================================================================================================
+ PUTTING IT ON AN UBUNTU SERVER (domain names + nginx + one shared platform)
+=====================================================================================================
+
+   The platform is ONE set of shared containers that any number of applications use:
+       shared      MySQL, Redis, OpenSearch, nightly DB backup      docker-compose.shared.yml
+       monitoring  Prometheus, Grafana, Loki, Tempo, Alertmanager, exporters      docker-compose.monitoring.yml
+       app         JavaSchoolLab itself (this is the only part that changes when you deploy a new version)   docker-compose.yml
+   Another application later: give it its own compose file on the network  javaschoollab_shared , drop a file in
+   monitoring/prometheus/targets/apps (see README.txt there), and its logs and dashboards appear in the same Grafana.
+
+   DNS names to create (all A records to the server's IP address):
+       javaschoollab.dhipansoft.in     REQUIRED   the website + API
+       grafana.dhipansoft.in           RECOMMENDED the observability dashboards (has its own login; you may restrict it to your IP in nginx)
+       staging.javaschoollab.dhipansoft.in   OPTIONAL   only if you run a test copy
+       jenkins.dhipansoft.in           OPTIONAL (later)  the Jenkins CI/CD server: see docs/jenkins.md, Jenkinsfile, scripts/deploy.sh, nginx/jenkins.conf.example
+   Do NOT create names for Prometheus, Alertmanager, Loki, Tempo, MySQL, Redis or OpenSearch: reach them with an SSH tunnel.
+
+   Steps (Ubuntu 22.04 / 24.04, run as a sudo user):
+   1. sudo bash scripts/server-setup-ubuntu.sh base          Docker, log rotation, firewall, fail2ban, auto security updates, swap, nginx
+   2. git clone the project, then copy the one settings file from your PC:   scp docker/.env user@server:/opt/javaschoollab/docker/.env ; chmod 600 docker/.env
+          CORS_ORIGIN=https://javaschoollab.dhipansoft.in     SITE_URL=https://javaschoollab.dhipansoft.in
+          GRAFANA_ROOT_URL=https://grafana.dhipansoft.in
+          FORWARD_HEADERS_STRATEGY=native    WEB_BIND_ADDRESS=127.0.0.1    SPRING_PROFILES_ACTIVE=prod
+      plus strong, NEW passwords and a NEW JWT_SECRET (never reuse development ones).
+   3. docker volume create javaschoollab_db_data ; bash scripts/stack.sh up all     (shared, then app, then monitoring, with health waits)
+   4. sudo bash scripts/install-backup-schedule.sh           nightly DB dump 00:00, image backup 00:30, optional off-server copy (BACKUP_REMOTE)
+   5. sudo bash scripts/server-setup-ubuntu.sh nginx --domain javaschoollab.dhipansoft.in --grafana-domain grafana.dhipansoft.in --email you@dhipansoft.in
+   Other stack.sh commands:  status | down | up shared|app|monitoring | logs <service>
+   OBSERVABILITY switch: OBSERVABILITY=true in docker/.env = Prometheus, Grafana, Loki, Tempo ... are started by "stack.sh up all" and the app exports traces.
+   Anything else (or no line) = they are NOT started, running ones are removed (history volumes kept), no traces are exported; saves about 1 to 2 GB of RAM.
+   With it off, grafana.<your domain> has nothing behind it: skip that nginx block and DNS record. Switch: edit .env, then  bash scripts/stack.sh up all
+   BEFORE GO-LIVE: bash scripts/generate-secrets.sh (strong random passwords into docker/.env; --rotate replaces existing ones) then
+                   bash scripts/preflight.sh (PASS / WARN / FAIL / TODO for .env, the server, DNS, SPF/DMARC; --dkim-selector <name> for DKIM)
+   Who deployed what and when (audit log in MySQL database jsl_ops + backups/deploy-history/history.jsonl):  bash scripts/deploy-history.sh list
+   Deploy by itself when you merge into the deployment branch (backup, health check, automatic roll-back): docs/auto-deploy.md  (scripts/install-auto-deploy.sh)
+
+   Dashboards need nothing more: the monitoring stack creates data sources, alert rules and the dashboards (folder JavaSchoolLab) by itself.
+   Also do outside the server: an external uptime check (UptimeRobot / Better Stack) on the website, because the monitoring runs on the
+   same machine and cannot report its own death; and mail DNS (SPF, DKIM, DMARC) for the domain that sends the one-time codes.
+   Everything reboots by itself (restart: unless-stopped).  Docker bypasses ufw: never publish a port on 0.0.0.0.
+
+
+======
+ DAILY USE
+=====================================================================================================
+
+   What is running?                      docker ps
+   Application logs:                     docker compose logs -f app
+   Database / backup logs:               docker logs javaschoollab-db        docker logs javaschoollab-db-backup
+
+   Deploy a new version of the code or the course content:
+       docker compose up -d --build              (MySQL, Redis and OpenSearch are NOT touched or restarted)
+       bash scripts/backup-images.sh             (save the new image)
+
+   Restart the application without rebuilding:   docker compose restart app
+   Stop everything cleanly, in the right order:
+       docker compose -f docker-compose.monitoring.yml stop
+       docker compose down
+       docker compose -f docker-compose.shared.yml stop
+   Start everything again after a reboot: the containers have restart: unless-stopped and come back on their own (Docker Desktop on
+   Windows must be started). If they do not, run the QUICK START commands again.
+
+
+=====================================================================================================
+ CHANGING THE DATABASE PASSWORDS
+=====================================================================================================
+
+   MySQL only reads DB_ROOT_PASSWORD / DB_PASSWORD the very first time it creates an empty database. For an EXISTING database the
+   container "db-setup" changes them to match .env on every start of the shared stack. Steps:
+     1. In .env set the NEW values for DB_ROOT_PASSWORD, DB_PASSWORD (and DB_USER if the account name changes).
+     2. Just ONCE, also put the OLD ones in .env:   DB_ROOT_PASSWORD_PREVIOUS='<old root password>'   DB_USER_PREVIOUS=<old account name>
+        (db-setup logs in with the old root password, sets the new one, and removes the old account.)
+     3. docker compose -f docker-compose.shared.yml up -d
+        docker logs javaschoollab-db-setup          -> "accounts ready"
+     4. Restart what uses the password:   docker compose up -d --force-recreate        and  docker compose -f docker-compose.monitoring.yml up -d --force-recreate
+   Redis and Grafana read their passwords from .env every start:
+        Redis:    docker compose -f docker-compose.shared.yml up -d --force-recreate redis      then recreate app and redis-exporter
+        Grafana:  the admin password is stored in Grafana's own volume after the first start. Change it in Grafana (profile > change
+                  password) or reset:  docker exec -it javaschoollab-grafana grafana cli admin reset-admin-password <new>
+   Use a DIFFERENT strong password for root, for the application account, for Redis and for Grafana: if one leaks, only one door opens.
+
+
+=====================================================================================================
+ REACHING THE SERVICES FROM YOUR OWN COMPUTER (127.0.0.1 only, never the network)
+=====================================================================================================
+
+   MySQL       127.0.0.1:3306   user supervisor (or root), DB_PASSWORD, database javaschoollab    (MySQL Workbench, DBeaver, mysql CLI)
+   Redis       127.0.0.1:6379   redis-cli -p 6379 --user supervisor --pass <REDIS_PASSWORD>
+   OpenSearch  127.0.0.1:9200   curl http://127.0.0.1:9200/_cluster/health    (no login: it is not reachable from outside this machine)
+   Grafana 3000, Prometheus 9090, Alertmanager 9093, application management 9001: all 127.0.0.1 only.
+   (Ports are set by DB_PUBLISH_PORT, REDIS_PUBLISH_PORT, OPENSEARCH_PUBLISH_PORT, GRAFANA_PORT, PROMETHEUS_PORT, ALERTMANAGER_PORT.)
+   Running the Spring Boot app from STS/Eclipse against this Docker database? In application.properties use:
+       spring.datasource.url=jdbc:mysql://localhost:3306/javaschoollab?useUnicode=true&characterEncoding=utf8
+       spring.datasource.username=supervisor
+       spring.datasource.password=<DB_PASSWORD>
+
+
+=====================================================================================================
+ CHECKLIST BEFORE YOU START (all must be true)
+=====================================================================================================
+
+   [ ] Docker is running                                 (docker version shows Client AND Server)
+   [ ] docker\.env exists with every REQUIRED password   and  SPRING_PROFILES_ACTIVE=prod
+   [ ] Volume javaschoollab_db_data exists               (docker volume ls)
+   [ ] No OLD database / web containers are running        (docker ps -a)
+   [ ] Shared stack is healthy                           (docker ps: javaschoollab-db, -redis, -opensearch all "(healthy)")
+   [ ] docker logs javaschoollab-db-setup ends with "accounts ready"
+   [ ] Ports free: 8080 (WEB_PORT), 9001, 3306, 6379, 9200, 3000, 9090, 9093      (Windows: netstat -ano | findstr :8080)
+
+
+=====================================================================================================
+ PROBLEMS AND FIXES
+=====================================================================================================
+
+ "error during connect ... dockerDesktopLinuxEngine ... cannot find the file"
+     Docker Desktop is not running. Start it, wait for "Engine running".
+
+ "set DB_PASSWORD in .env" / "set REDIS_PASSWORD in .env" / "set JWT_SECRET in .env" ...
+     That value is empty or .env is missing. Fix .env (STEP 2).
+
+ "network javaschoollab_shared declared as external, but could not be found"
+     The shared stack was not started. Run STEP 5, then the stack that complained.
+
+ "volume javaschoollab_db_data declared as external, but could not be found"
+     docker volume create javaschoollab_db_data
+
+ "port is already allocated" / "Bind for 127.0.0.1:3306 failed" / "Bind for 0.0.0.0:8080 failed"
+     Something else uses that port (often the OLD web container on 8080, or a MySQL installed on this PC). Stop it, or set another port in .env.
+
+ docker logs javaschoollab-db-setup says  "cannot log in to MySQL as root"
+     The database already exists with a different root password than DB_ROOT_PASSWORD. Put the old one in .env as DB_ROOT_PASSWORD_PREVIOUS
+     (see "Changing the database passwords") and start the shared stack again.
+
+ The application container restarts / exits right after starting
+     docker compose logs app
+     - "Communications link failure" / "Connection refused" / "Unknown host javaschoollab-db": MySQL is not ready or not running (STEP 5);
+       Docker retries by itself.
+     - "Access denied for user": DB_USER / DB_PASSWORD in .env do not match the database. Check docker logs javaschoollab-db-setup.
+     - "NOAUTH" / "WRONGPASS" for Redis: REDIS_USERNAME / REDIS_PASSWORD differ between Redis and the app. Recreate both after fixing .env:
+           docker compose -f docker-compose.shared.yml up -d --force-recreate redis        docker compose up -d --force-recreate app
+     - "Could not resolve placeholder" / "set JWT_SECRET": a required .env value is missing.
+
+ The app stays "unhealthy" / "starting" for a long time
+     curl http://127.0.0.1:9001/actuator/health   -> if "db" is DOWN the database is the problem. The first start has a 90 s grace period.
+
+ Search does not work / "Search is still being prepared"
+     OpenSearch is starting or down (the site still works, the browser searches by itself). docker logs javaschoollab-opensearch.
+     The index is built once at start (about 25 s for all topics); check  curl http://localhost:8080/api/search/status
+
+ Grafana shows "No data"
+     Prometheus > Status > Targets: is "javaschoollab-app" UP? If it says 401 the ACTUATOR_PASSWORD differs between the app and Prometheus:
+     recreate both after fixing .env. Some panels are empty until the first such event happens (cache, errors, sign-ups): that is normal.
+
+ Website shows the OLD content after an update
+     docker compose up -d --build   and hard-refresh the browser (Ctrl+F5).
+
+ "orphan containers" warning
+     Harmless; it refers to older containers (STEP 4). Do NOT add --remove-orphans until you have done STEP 4.
+
+
+=====================================================================================================
+ DANGEROUS COMMANDS - these DELETE data. Do not run them unless you are sure and have a backup.
+=====================================================================================================
+
+     docker volume rm javaschoollab_db_data         <- deletes ALL users and progress for good
+     docker system prune --volumes                  <- deletes every volume no container uses, including the data volume
+        (A volume counts as unused once its container is REMOVED, for example after "docker compose -f docker-compose.shared.yml down".)
+     docker compose -f docker-compose.shared.yml down -v      <- the data volume is protected (external), but OpenSearch's is not (it is rebuilt)
+
+
+=====================================================================================================
+ WHAT EACH FILE IS
+=====================================================================================================
+
+   docker-compose.shared.yml       MySQL + Redis + OpenSearch + db-setup (accounts) + nightly backup. Start FIRST.
+   docker-compose.yml              the application. Start SECOND.
+   docker-compose.monitoring.yml   Prometheus, Grafana, Loki, Tempo, Alloy, Alertmanager, exporters, blackbox. Start THIRD.
+   Dockerfile                      how the application image is built (website + Java jar).
+   .env                            the ONE file with your passwords and settings (not in Git; every key is explained inside it).
+   backup.sh                       the nightly database backup (run by the backup container).
+   mysql/setup-accounts.sh         makes the MySQL accounts match .env (run by db-setup).
+   scripts/restore-db.sh           restore a database backup.
+   scripts/backup-images.sh        back up the custom image + configuration (last 3).
+   scripts/install-backup-schedule.sh   schedule that every night on a Linux server.
+   monitoring/                     Prometheus, Alertmanager, Loki, Tempo, Alloy, blackbox and Grafana configuration + the 5 dashboards
+                                   (monitoring/tools/generate_dashboards.py regenerates the dashboards).
+   nginx/javaschoollab.conf.example   the reverse proxy for a server (domain, HTTPS).
+   help.txt                        this file.
+
+
+=====================================================================================================
+ PROBLEMS SEEN ON THE FIRST DEPLOYMENTS, AND THE FIX
+=====================================================================================================
+
+   "Bind for 127.0.0.1:3306 failed ... forbidden by its access permissions"  (Windows PC)
+       Windows' own MySQL80 service holds port 3306. Either start with another published port for this PC only:
+           DB_PUBLISH_PORT=3307 bash scripts/stack.sh up shared        (or $env:DB_PUBLISH_PORT="3307" in PowerShell)
+       or stop that service (PowerShell as Administrator):  Stop-Service MySQL80   (and Set-Service MySQL80 -StartupType Manual).
+       On a server there is no such service: use the standard 3306.
+
+   The application restarts again and again; the log says "Access denied for user 'supervisor'"
+       The database VOLUME (javaschoollab_db_data) already existed from an earlier install and has a different root password. db-setup then says
+       "cannot log in to MySQL as root". Put the OLD root password into .env once and start the shared stack again:
+           DB_ROOT_PASSWORD_PREVIOUS=<the old root password>        then   bash scripts/stack.sh up shared   and   bash scripts/stack.sh up app --no-build
+       db-setup logs in with the old password and sets the new one. Then delete the PREVIOUS line from .env.
+       If the old password is lost and the data is worth keeping: copy the volume first (docker run --rm -v javaschoollab_db_data:/from:ro
+       -v backup_copy:/to alpine cp -a /from/. /to/), start MySQL once on the real volume with --skip-grant-tables --skip-networking, set root's password,
+       and start normally. If the data is not needed: stop the stack, docker volume rm javaschoollab_db_data, start again.
+
+   502 Bad Gateway on the website
+       nginx is up but the application behind it is not: look at  docker ps  (is javaschoollab-app "Restarting"?) and  docker logs --tail 40 javaschoollab-app.
+       curl http://127.0.0.1:8080/login must answer 200 before nginx can.
+
+   "Welcome to nginx!" instead of Grafana (or any new name)
+       nginx has no site for that name yet. Add a site and a certificate: docs/auto-deploy.md, "Existing nginx".
+
+   The browser says "Not secure" on an https page
+       Press F12 -> Console and read the "Mixed Content" lines; click the icon and read the first line of the popup (not "Learn more"). The nginx Grafana block sends
+       Content-Security-Policy: upgrade-insecure-requests, which makes the browser load stray http:// sub-resources over https.
+
+   Docker stops answering on a PC with little free memory
+       The whole stack needs about 3 to 4 GB. Set OBSERVABILITY=false in .env and run  bash scripts/stack.sh up all  to remove Prometheus, Grafana, Loki and Tempo (about 1 to 2 GB).
+

@@ -24,8 +24,25 @@ export function canonicalCourseUrl(origin: string, courseId: string): string {
 }
 
 export function shareText(p: SharePayload): string {
-  if (p.kind === 'course') return `Learn ${p.courseName} on JavaSchoolLab: free lessons, worked examples, quizzes and interview questions.`;
-  return `Learn ${p.topicName} (${p.courseName}) on JavaSchoolLab: free lessons, worked examples and interview questions.`;
+  if (p.kind === 'course') return `📚 ${p.courseName}: a complete free course on JavaSchoolLab, with lessons, worked examples, quizzes and interview questions.`;
+  return `📘 ${p.topicName} (${p.courseName}): a clear, free lesson on JavaSchoolLab with worked examples and interview questions. 🚀`;
+}
+
+/** The WhatsApp message: a bold title, one friendly line, then the link on its own line so WhatsApp shows the preview card under it. */
+export function whatsappText(p: SharePayload): string {
+  if (p.kind === 'course') {
+    return `📚 *${p.courseName}: complete free course*\nStep-by-step lessons, worked examples, quizzes and interview questions on JavaSchoolLab.\n\n👉 Start learning:\n${p.url}`;
+  }
+  return `📘 *${p.topicName}* (${p.courseName})\nA clear, free lesson with worked examples and interview questions on JavaSchoolLab. Give it a read, it feels good to learn this! 🚀\n\n👉 Read it here:\n${p.url}`;
+}
+
+/** Friendly WhatsApp message for any other link (a profile, an achievement, the site itself): bold headline, one line, the link last. */
+export function whatsappGeneric(headline: string, line: string, url: string, cta = 'Take a look'): string {
+  return `✨ *${headline}*
+${line}
+
+👉 ${cta}:
+${url}`;
 }
 
 /** The address that opens each app with the message ready to send. Every value is URL-encoded. */
@@ -34,7 +51,7 @@ export function shareLink(channel: ShareChannel, p: SharePayload): string {
   const u = encodeURIComponent(p.url);
   const t = encodeURIComponent(text);
   switch (channel) {
-    case 'whatsapp': return `https://wa.me/?text=${encodeURIComponent(`${text}\n${p.url}`)}`;
+    case 'whatsapp': return `https://wa.me/?text=${encodeURIComponent(whatsappText(p))}`;
     case 'telegram': return `https://t.me/share/url?url=${u}&text=${t}`;
     case 'linkedin': return `https://www.linkedin.com/sharing/share-offsite/?url=${u}`;
     case 'x': return `https://twitter.com/intent/tweet?url=${u}&text=${t}`;

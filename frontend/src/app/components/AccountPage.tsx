@@ -4,13 +4,15 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'motion/react';
 import {
   LayoutDashboard, Bookmark as BookmarkIcon, Award, Trophy, UserCog, Download, Trash2,
-  Flame, Zap, BookOpenCheck, Clock, Medal, Lock, StickyNote,
+  Flame, Zap, BookOpenCheck, Clock, Medal, Lock, StickyNote, Lightbulb,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useAuth } from '../context/AuthContext';
 import { useProgress } from '../context/ProgressContext';
 import { ProgressPanel } from './ProgressPanel';
 import { ProfileSettingsCard } from './profile/ProfileSettingsCard';
+import { PrivacyCard } from './profile/PrivacyCard';
+import { SuggestionBox } from './profile/SuggestionBox';
 import { slugify } from '../lib/slug';
 import {
   Bookmark, Note, CertificateData, Leaderboard,
@@ -21,13 +23,14 @@ import { Avatar } from './Avatar';
 import { AvatarCropDialog } from './AvatarCropDialog';
 import { avatarFileError } from '../lib/avatarImage';
 
-type Tab = 'overview' | 'saved' | 'certificates' | 'leaderboard' | 'profile';
+type Tab = 'overview' | 'saved' | 'certificates' | 'leaderboard' | 'suggestions' | 'profile';
 
 const TABS: { id: Tab; label: string; icon: React.ReactNode }[] = [
   { id: 'overview', label: 'Overview', icon: <LayoutDashboard className="w-4 h-4" /> },
   { id: 'saved', label: 'Bookmarks & Notes', icon: <BookmarkIcon className="w-4 h-4" /> },
   { id: 'certificates', label: 'Certificates', icon: <Award className="w-4 h-4" /> },
   { id: 'leaderboard', label: 'Leaderboard & Badges', icon: <Trophy className="w-4 h-4" /> },
+  { id: 'suggestions', label: 'Suggestion Box', icon: <Lightbulb className="w-4 h-4" /> },
   { id: 'profile', label: 'Profile', icon: <UserCog className="w-4 h-4" /> },
 ];
 
@@ -438,8 +441,8 @@ function ProfileTab() {
           <input id="pf-cur" type="password" autoComplete="current-password" className={input} value={pw.currentPassword} onChange={e => setPw({ ...pw, currentPassword: e.target.value })} required />
         </div>
         <div>
-          <label className={label} htmlFor="pf-new">New password (min 6 characters)</label>
-          <input id="pf-new" type="password" autoComplete="new-password" className={input} value={pw.newPassword} onChange={e => setPw({ ...pw, newPassword: e.target.value })} required minLength={6} />
+          <label className={label} htmlFor="pf-new">New password (min 8 characters)</label>
+          <input id="pf-new" type="password" autoComplete="new-password" className={input} value={pw.newPassword} onChange={e => setPw({ ...pw, newPassword: e.target.value })} required minLength={8} />
         </div>
         <button disabled={savingPw} className="rounded-lg bg-gray-800 hover:bg-gray-900 dark:bg-gray-100 dark:hover:bg-white dark:text-gray-900 disabled:opacity-60 text-white text-sm font-semibold px-5 py-2">
           {savingPw ? 'Updating…' : 'Update password'}
@@ -447,6 +450,8 @@ function ProfileTab() {
       </form>
 
       <ProfileSettingsCard />
+
+      <PrivacyCard />
 
       <AvatarCropDialog file={pickedPhoto} busy={photoBusy} onCancel={() => setPickedPhoto(null)} onConfirm={savePhoto} />
     </div>
@@ -499,6 +504,7 @@ export function AccountPage() {
         {tab === 'saved' && <Saved />}
         {tab === 'certificates' && <Certificates />}
         {tab === 'leaderboard' && <LeaderboardTab />}
+        {tab === 'suggestions' && <SuggestionBox />}
         {tab === 'profile' && <ProfileTab />}
       </div>
     </main>

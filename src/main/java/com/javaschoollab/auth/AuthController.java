@@ -2,6 +2,7 @@ package com.javaschoollab.auth;
 
 import com.javaschoollab.security.AuthUser;
 import com.javaschoollab.user.UserRow;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.springframework.http.HttpStatus;
@@ -19,33 +20,40 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
     private final AuthService auth;
+    private final AuthGuard guard;
 
-    public AuthController(AuthService auth) {
+    public AuthController(AuthService auth, AuthGuard guard) {
         this.auth = auth;
+        this.guard = guard;
     }
 
     @PostMapping("/register")
-    public ResponseEntity<Map<String, Object>> register(@RequestBody RegisterRequest r) {
+    public ResponseEntity<Map<String, Object>> register(@RequestBody RegisterRequest r, HttpServletRequest request) {
+        guard.login(request.getRemoteAddr(), account(r.email(), r.mobile()));
         return created(auth.register(r));
     }
 
     @PostMapping("/register-otp")
-    public ResponseEntity<Map<String, Object>> registerWithOtp(@RequestBody RegisterOtpRequest r) {
+    public ResponseEntity<Map<String, Object>> registerWithOtp(@RequestBody RegisterOtpRequest r, HttpServletRequest request) {
+        guard.verifyOtp(request.getRemoteAddr(), account(r.email(), r.mobile()));
         return created(auth.registerWithOtp(r));
     }
 
     @PostMapping("/login")
-    public Map<String, Object> login(@RequestBody LoginRequest r) {
+    public Map<String, Object> login(@RequestBody LoginRequest r, HttpServletRequest request) {
+        guard.login(request.getRemoteAddr(), account(r.email(), r.mobile()));
         return session(auth.login(r));
     }
 
     @PostMapping("/login-otp")
-    public Map<String, Object> loginWithOtp(@RequestBody LoginOtpRequest r) {
+    public Map<String, Object> loginWithOtp(@RequestBody LoginOtpRequest r, HttpServletRequest request) {
+        guard.verifyOtp(request.getRemoteAddr(), account(r.email(), r.mobile()));
         return session(auth.loginWithOtp(r));
     }
 
     @PostMapping("/google")
-    public Map<String, Object> google(@RequestBody GoogleLoginRequest r) {
+    public Map<String, Object> google(@RequestBody GoogleLoginRequest r, HttpServletRequest request) {
+        guard.login(request.getRemoteAddr(), "google");
         return session(auth.loginWithGoogle(r));
     }
 
@@ -74,8 +82,18 @@ public class AuthController {
 
     @PostMapping("/change-password")
     public Map<String, Object> changePassword(@AuthenticationPrincipal AuthUser principal, @RequestBody ChangePasswordRequest r) {
-        auth.changePassword(principal.id(), r);
+        String token = auth.changePassword(principal.id(), r);
+        return Map.of("ok", true, "token", token);   // the token for THIS device; all others were signed out
+    }
+
+    @PostMapping("/logout-all")
+    public Map<String, Object> logoutAll(@AuthenticationPrincipal AuthUser principal) {
+        auth.signOutEverywhere(principal.id());
         return Map.of("ok", true);
+    }
+
+    private static String account(String email, String mobile) {
+        return email != null && !email.isBlank() ? email : mobile;
     }
 
     private static ResponseEntity<Map<String, Object>> created(AuthSession s) {

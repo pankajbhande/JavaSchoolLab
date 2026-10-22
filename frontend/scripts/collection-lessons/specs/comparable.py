@@ -56,29 +56,15 @@ INTERMEDIATE = [
         'compareTo(T other)', 'int compareTo(T other)', 'negative, zero or positive <code>int</code>', 'depends on your code',
         'Compare the field you want to sort by. Use the helper methods <code>Integer.compare</code>, <code>Double.compare</code>, <code>String.compareTo</code> instead of subtracting.',
         'Never write <code>return this.x - other.x</code>: the subtraction can <strong>overflow</strong> for large or negative values and give the wrong sign. <code>Integer.compare(this.x, other.x)</code> is always correct.',
-        r'''// A Fort class with a natural order: by name A to Z
+        r'''// A Fort with a natural order: by name A to Z
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 public class ComparableFortDemo {
-    static class Fort implements Comparable<Fort> {
-        final String name;
-        final int heightMetres;
-
-        Fort(String name, int heightMetres) {
-            this.name = name;
-            this.heightMetres = heightMetres;
-        }
-
-        @Override
+    record Fort(String name, int heightMetres) implements Comparable<Fort> {
         public int compareTo(Fort other) {
-            return this.name.compareTo(other.name);                  // natural order = by name
-        }
-
-        @Override
-        public String toString() {
-            return name + "(" + heightMetres + "m)";
+            return name.compareTo(other.name);                       // natural order = by name
         }
     }
 
@@ -89,7 +75,7 @@ public class ComparableFortDemo {
         forts.add(new Fort("Lohagad", 1033));
 
         Collections.sort(forts);                                     // uses compareTo
-        System.out.println("Sorted by name: " + forts);
+        System.out.println(forts);
     }
 }
 ''' + OUT),
@@ -130,21 +116,9 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 public class ComparableCollectionsDemo {
-    static class Fort implements Comparable<Fort> {
-        final String name;
-
-        Fort(String name) {
-            this.name = name;
-        }
-
-        @Override
+    record Fort(String name) implements Comparable<Fort> {
         public int compareTo(Fort other) {
             return name.compareTo(other.name);
-        }
-
-        @Override
-        public String toString() {
-            return name;
         }
     }
 
@@ -152,8 +126,7 @@ public class ComparableCollectionsDemo {
         TreeSet<Fort> forts = new TreeSet<>();
         forts.add(new Fort("Torna"));
         forts.add(new Fort("Raigad"));
-        forts.add(new Fort("Lohagad"));
-        forts.add(new Fort("Raigad"));                               // compareTo == 0: treated as a duplicate
+        forts.add(new Fort("Raigad"));                               // compareTo == 0: a duplicate
         System.out.println("TreeSet : " + forts);
 
         TreeMap<Fort, Integer> hours = new TreeMap<>();
@@ -175,23 +148,9 @@ import java.util.Collections;
 import java.util.List;
 
 public class ComparableNumberDemo {
-    static class Fort implements Comparable<Fort> {
-        final String name;
-        final int heightMetres;
-
-        Fort(String name, int heightMetres) {
-            this.name = name;
-            this.heightMetres = heightMetres;
-        }
-
-        @Override
+    record Fort(String name, int heightMetres) implements Comparable<Fort> {
         public int compareTo(Fort other) {
             return Integer.compare(other.heightMetres, this.heightMetres);   // swapped: descending
-        }
-
-        @Override
-        public String toString() {
-            return name + "(" + heightMetres + "m)";
         }
     }
 
@@ -212,33 +171,16 @@ import java.util.Collections;
 import java.util.List;
 
 public class ComparableTieBreakDemo {
-    static class Fort implements Comparable<Fort> {
-        final String district;
-        final String name;
-
-        Fort(String district, String name) {
-            this.district = district;
-            this.name = name;
-        }
-
-        @Override
+    record Fort(String district, String name) implements Comparable<Fort> {
         public int compareTo(Fort other) {
             int byDistrict = district.compareTo(other.district);
-            if (byDistrict != 0) {
-                return byDistrict;                                   // districts differ: decided
-            }
-            return name.compareTo(other.name);                       // same district: compare names
-        }
-
-        @Override
-        public String toString() {
-            return district + "/" + name;
+            return byDistrict != 0 ? byDistrict : name.compareTo(other.name);   // tie: compare names
         }
     }
 
     public static void main(String[] args) {
         List<Fort> forts = new ArrayList<>(List.of(
-            new Fort("Pune", "Torna"), new Fort("Raigad", "Raigad"), new Fort("Pune", "Purandar"), new Fort("Pune", "Lohagad")));
+            new Fort("Pune", "Torna"), new Fort("Raigad", "Raigad"), new Fort("Pune", "Lohagad")));
         Collections.sort(forts);
         System.out.println(forts);
     }

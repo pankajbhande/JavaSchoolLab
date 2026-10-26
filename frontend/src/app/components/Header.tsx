@@ -1,4 +1,4 @@
-import { Search, Moon, Sun, LogIn, LogOut, User, Bot, Trophy, Home } from 'lucide-react';
+import { Search, Moon, Sun, LogIn, LogOut, User, Bot, Trophy, Home, Crown } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { toast } from 'sonner';
 import logo from '../../assets/logo1.jpg';
@@ -9,6 +9,7 @@ import { StudyTimeTracker } from './StudyTimeTracker';
 import { useTheme } from './ThemeProvider';
 import { headerBox, headerBadge, headerIconBtn } from './headerStyles';
 import { useAuth } from '../context/AuthContext';
+import { usePro } from '../context/ProContext';
 import { Avatar } from './Avatar';
 import { LoginModal } from './LoginModal';
 import { motion } from 'motion/react';
@@ -43,6 +44,7 @@ export function Header({ onToggleSpeech, isSpeaking, onSearch, showSearch = true
   }, []);
   const { theme, toggleTheme } = useTheme();
   const { user, isLoggedIn, isGuest, logout } = useAuth();
+  const { isPro } = usePro();
   const [showAlarm, setShowAlarm] = useState(false);
   const [showTimer, setShowTimer] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
@@ -197,6 +199,17 @@ export function Header({ onToggleSpeech, isSpeaking, onSearch, showSearch = true
             >
               {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
             </motion.button>
+
+            {/* Pro plan */}
+            <button
+              type="button"
+              onClick={() => navigate('/pricing')}
+              className={`${headerIconBtn} max-sm:hidden`}
+              aria-label={isPro ? 'Your Pro plan' : 'Go Pro'}
+              title={isPro ? 'Your Pro plan' : 'Go Pro: learn without ads'}
+            >
+              <Crown className={`w-5 h-5 ${isPro ? 'text-amber-200' : ''}`} aria-hidden="true" />
+            </button>
 
             {/* User / Login Button */}
             {isLoggedIn ? (

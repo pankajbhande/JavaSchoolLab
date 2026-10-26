@@ -139,3 +139,22 @@ CREATE TABLE IF NOT EXISTS user_badges (
   earned_at TIMESTAMP   DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (user_id, badge_id)
 );
+
+CREATE TABLE IF NOT EXISTS payments (
+  id                  INT AUTO_INCREMENT PRIMARY KEY,
+  user_id             INT NULL,
+  plan                VARCHAR(20) NOT NULL,
+  amount_paise        INT NOT NULL,
+  currency            VARCHAR(3) NOT NULL DEFAULT 'INR',
+  razorpay_order_id   VARCHAR(64) NOT NULL,
+  razorpay_payment_id VARCHAR(64) NULL,
+  status              VARCHAR(20) NOT NULL DEFAULT 'created',
+  created_at          TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  paid_at             TIMESTAMP NULL,
+  CONSTRAINT uq_payment_order UNIQUE (razorpay_order_id)
+);
+
+CREATE TABLE IF NOT EXISTS premium_access (
+  user_id    INT PRIMARY KEY,
+  expires_at DATETIME NOT NULL
+);

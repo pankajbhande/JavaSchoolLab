@@ -84,6 +84,14 @@ app:
     origins: ${CORS_ORIGIN:}      # comma-separated; empty = allow any origin (development only)
   google:
     client-id: ${GOOGLE_CLIENT_ID:}   # OAuth "Web application" client id from Google Cloud Console; empty = Google sign-in is off
+  razorpay:
+    key-id: ${RAZORPAY_KEY_ID:}                  # public key id from the Razorpay dashboard (rzp_live_... or rzp_test_...); empty = payments are off
+    key-secret: ${RAZORPAY_KEY_SECRET:}          # the secret that goes with it; server only, never sent to the browser
+    webhook-secret: ${RAZORPAY_WEBHOOK_SECRET:}  # the secret set on the webhook in the Razorpay dashboard (URL: /api/payments/webhook)
+  premium:
+    monthly-paise: ${PREMIUM_MONTHLY_PAISE:14900}      # price of 30 days of Pro, in paise (14900 = Rs 149)
+    yearly-paise: ${PREMIUM_YEARLY_PAISE:99900}        # price of 365 days of Pro, in paise (99900 = Rs 999)
+    certificates-pro-only: ${PREMIUM_CERTIFICATES_PRO_ONLY:false}   # true = only Pro learners can get a certificate
   site-url: ${SITE_URL:}                # the public address of the site (https://example.com); used in link previews so the Host header is never trusted
   security:
     csp-mode: ${CSP_MODE:report-only}   # report-only | enforce | off: the script / connection allow-list of the Content-Security-Policy (see SecurityHeadersFilter)

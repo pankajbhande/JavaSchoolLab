@@ -35,7 +35,7 @@ class ArchitectureTest {
             Map.entry("progress", Set.of("quiz")),
             Map.entry("leaderboard", Set.of("progress")),
             Map.entry("notes", Set.of()),
-            Map.entry("certificate", Set.of("quiz")),
+            Map.entry("certificate", Set.of("quiz", "payment")),
             Map.entry("profile", Set.of("user", "certificate", "progress", "quiz")),
             Map.entry("content", Set.of()),
             Map.entry("search", Set.of("content")),
@@ -43,7 +43,8 @@ class ArchitectureTest {
             Map.entry("share", Set.of("content")),
             Map.entry("achievements", Set.of("progress", "quiz", "certificate")),
             Map.entry("visitor", Set.of()),
-            Map.entry("account", Set.of("user")));
+            Map.entry("account", Set.of("user")),
+            Map.entry("payment", Set.of()));
 
     private static final Set<String> INFRASTRUCTURE = Set.of("common", "config", "security", "web");
 

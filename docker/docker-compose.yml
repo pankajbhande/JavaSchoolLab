@@ -79,6 +79,13 @@ services:
       OTP_VERIFY_RATE_LIMIT: ${OTP_VERIFY_RATE_LIMIT:-6}
       ADMIN_EMAILS: ${ADMIN_EMAILS:-}           # who may open /admin (analytics). Comma-separated emails.
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}   # empty = "Continue with Google" is off
+      # --- Pro plan (Razorpay). Empty key = payments are off and the Pro page says so. ---------------------------------
+      RAZORPAY_KEY_ID: ${RAZORPAY_KEY_ID:-}
+      RAZORPAY_KEY_SECRET: ${RAZORPAY_KEY_SECRET:-}
+      RAZORPAY_WEBHOOK_SECRET: ${RAZORPAY_WEBHOOK_SECRET:-}
+      PREMIUM_MONTHLY_PAISE: ${PREMIUM_MONTHLY_PAISE:-14900}
+      PREMIUM_YEARLY_PAISE: ${PREMIUM_YEARLY_PAISE:-99900}
+      PREMIUM_CERTIFICATES_PRO_ONLY: ${PREMIUM_CERTIFICATES_PRO_ONLY:-false}
       # --- Operations (Spring Boot Actuator) ----------------------------------------------------------------------
       # Health probes, info and metrics are served on this separate port. It is published to 127.0.0.1 only (see "ports"),
       # so it is never reachable from the internet through the website's port. Prometheus scrapes it over the shared network.

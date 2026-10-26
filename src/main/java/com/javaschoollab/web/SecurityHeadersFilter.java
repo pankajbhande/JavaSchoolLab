@@ -39,13 +39,13 @@ public class SecurityHeadersFilter extends OncePerRequestFilter {
      */
     private static final String ALLOW_LIST = String.join("; ",
             "default-src 'self'",
-            "script-src 'self' https://accounts.google.com https://pagead2.googlesyndication.com https://*.googlesyndication.com "
+            "script-src 'self' https://accounts.google.com https://checkout.razorpay.com https://pagead2.googlesyndication.com https://*.googlesyndication.com "
                     + "https://*.adtrafficquality.google https://www.googletagservices.com https://partner.googleadservices.com",
             "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://accounts.google.com",
             "font-src 'self' data: https://fonts.gstatic.com",
             "img-src 'self' data: blob: https:",
-            "connect-src 'self' https://accounts.google.com https://*.googlesyndication.com https://*.adtrafficquality.google https://*.google.com",
-            "frame-src 'self' https://accounts.google.com https://www.jdoodle.com https://*.googlesyndication.com https://*.doubleclick.net https://*.google.com https://*.adtrafficquality.google",
+            "connect-src 'self' https://accounts.google.com https://api.razorpay.com https://lumberjack.razorpay.com https://*.googlesyndication.com https://*.adtrafficquality.google https://*.google.com",
+            "frame-src 'self' https://accounts.google.com https://api.razorpay.com https://checkout.razorpay.com https://www.jdoodle.com https://*.googlesyndication.com https://*.doubleclick.net https://*.google.com https://*.adtrafficquality.google",
             "worker-src 'self' blob:",
             "manifest-src 'self'",
             "media-src 'self' https: data: blob:");

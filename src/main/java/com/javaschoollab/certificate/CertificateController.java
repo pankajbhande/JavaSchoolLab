@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.javaschoollab.common.RateLimiter;
 import com.javaschoollab.common.RateLimiters;
 import com.javaschoollab.config.AppProperties;
+import com.javaschoollab.payment.PaymentService;
 import com.javaschoollab.security.AuthUser;
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.Clock;
@@ -33,15 +34,18 @@ import org.springframework.web.bind.annotation.RestController;
 public class CertificateController {
 
     private final CertificateService certificates;
+    private final PaymentService payments;
     private final RateLimiter verifyLimiter;
 
-    public CertificateController(CertificateService certificates, AppProperties props, RateLimiters limiters) {
+    public CertificateController(CertificateService certificates, PaymentService payments, AppProperties props, RateLimiters limiters) {
         this.certificates = certificates;
+        this.payments = payments;
         this.verifyLimiter = limiters.perMinute("verify", props.rateLimit().verifyPerMinute());
     }
 
     @PostMapping
     public ResponseEntity<Map<String, Object>> issue(@AuthenticationPrincipal AuthUser user, @RequestBody JsonNode body) {
+        payments.requireProForCertificate(user.id());          // a no-op unless PREMIUM_CERTIFICATES_PRO_ONLY=true
         IssueResult result = certificates.issue(user.id(), user.fullName(), text(body, "courseName"), text(body, "topicName"));
         return ResponseEntity.status(result.created() ? HttpStatus.CREATED : HttpStatus.OK).body(owned(result.certificate()));
     }

@@ -38,6 +38,8 @@ public class SecurityConfig {
             "/api/content/**",                        // course content JSON, public like the site itself
             "/api/analytics/event",                   // the site reports page views and searches (no login needed, rate limited)
             "/api/search/**",                         // topic search (needs no login; rate limited)
+            "/api/payments/plans",                    // the price list; checkout itself needs a token
+            "/api/payments/webhook",                  // Razorpay calling us; authenticated by its signature over the body
     };
 
     /**

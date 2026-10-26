@@ -5,7 +5,7 @@ import { setConsent, useConsent } from '../lib/consent';
 
 const CONTACT = (import.meta.env.VITE_CONTACT_EMAIL ?? '').trim();
 
-const UPDATED = '21 October 2026';
+const UPDATED = '26 October 2026';
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
@@ -95,6 +95,14 @@ function Terms() {
       <Section title="Certificates">
         <p>A certificate is issued for a quiz you passed on the site and can be verified publicly at its link. It shows your name, the course and your score. It is a record of practice on this site, not an accredited qualification.</p>
       </Section>
+      <Section title="Pro plan and payments">
+        <ul className="list-disc pl-5 space-y-1">
+          <li>JavaSchoolLab Pro is an optional paid plan that gives you a set period of extra benefits (shown on the Pro page). The courses themselves remain free to read.</li>
+          <li>You pay once for the period you choose. There is no automatic renewal, so there is nothing to cancel; when the period ends your account simply returns to the free plan.</li>
+          <li>Payments are taken by Razorpay. Prices are in Indian rupees. We never see or store your card, UPI or bank details.</li>
+          <li>Refunds are described in the <a className="underline" href="/refund-policy">Refund Policy</a>.</li>
+        </ul>
+      </Section>
       <Section title="Your content">
         <p>Notes and profile text you write stay yours. You allow us to store and show them to you (and to others only where you switched on a public profile). Do not post unlawful or abusive text.</p>
       </Section>
@@ -108,16 +116,48 @@ function Terms() {
   );
 }
 
-export default function LegalPage({ kind }: { kind: 'privacy' | 'terms' }) {
-  const privacy = kind === 'privacy';
-  useDocumentMeta({
-    title: privacy ? 'Privacy Policy' : 'Terms of Use',
-    description: privacy ? 'What JavaSchoolLab stores about you and how you control it.' : 'The terms for using JavaSchoolLab.',
-    path: privacy ? '/privacy' : '/terms',
-  });
+function Refunds() {
   return (
-    <PageShell title={privacy ? 'Privacy Policy' : 'Terms of Use'}>
-      <article className={card}>{privacy ? <Privacy /> : <Terms />}</article>
+    <>
+      <p className="text-sm text-gray-600 dark:text-gray-300">Last updated: {UPDATED}. This covers payments for JavaSchoolLab Pro, which is a digital plan that is switched on as soon as your payment is confirmed.</p>
+      <Section title="Cancelling">
+        <p>Pro does not renew by itself. You pay once for the period you pick, so there is no subscription to cancel and no future charge.</p>
+      </Section>
+      <Section title="If something went wrong with a payment">
+        <ul className="list-disc pl-5 space-y-1">
+          <li><strong>Money was taken but Pro is not active:</strong> wait a few minutes first; confirmed payments are applied automatically. If it is still not active after 30 minutes, write to us with the payment id from your Razorpay receipt and we will switch it on or refund you in full.</li>
+          <li><strong>You were charged twice for the same plan:</strong> we will refund the extra payment in full.</li>
+          <li><strong>A payment failed but your account was debited:</strong> the bank or Razorpay returns that money automatically, usually within 5 to 7 working days.</li>
+        </ul>
+      </Section>
+      <Section title="Changing your mind">
+        <p>You can ask for a full refund within 7 days of paying, for any reason. After a refund your Pro access ends. After 7 days a payment is not refundable, because the plan has already been used.</p>
+      </Section>
+      <Section title="How refunds are paid">
+        <p>Approved refunds go back to the original payment method (card, UPI, net banking or wallet) through Razorpay and normally reach you within 5 to 7 working days, depending on your bank.</p>
+      </Section>
+      <Section title="Contact">
+        <p>
+          To ask for a refund or report a payment problem, write to{' '}
+          {CONTACT ? <a className="underline" href={`mailto:${CONTACT}`}>{CONTACT}</a> : "the address given on the site's contact details"} from the e-mail on your account and include the payment id.
+        </p>
+      </Section>
+    </>
+  );
+}
+
+const PAGES = {
+  privacy: { title: 'Privacy Policy', description: 'What JavaSchoolLab stores about you and how you control it.', path: '/privacy', body: <Privacy /> },
+  terms: { title: 'Terms of Use', description: 'The terms for using JavaSchoolLab.', path: '/terms', body: <Terms /> },
+  refunds: { title: 'Refund Policy', description: 'How cancellations and refunds work for JavaSchoolLab Pro.', path: '/refund-policy', body: <Refunds /> },
+} as const;
+
+export default function LegalPage({ kind }: { kind: 'privacy' | 'terms' | 'refunds' }) {
+  const page = PAGES[kind];
+  useDocumentMeta({ title: page.title, description: page.description, path: page.path });
+  return (
+    <PageShell title={page.title}>
+      <article className={card}>{page.body}</article>
     </PageShell>
   );
 }

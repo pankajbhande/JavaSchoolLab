@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { ADSENSE_CLIENT, adsEnabled, loadAdSense } from './adsense';
 import { useConsent } from '../../lib/consent';
+import { usePro } from '../../context/ProContext';
 
 interface AdSlotProps {
   /** Numeric ad unit id from the AdSense dashboard. */
@@ -32,7 +33,7 @@ type Status = 'idle' | 'requested' | 'filled' | 'empty';
  * 3. **No empty boxes.** Blocked, unconfigured or unfilled units collapse to nothing
  *    rather than leaving a labelled hole in the sidebar.
  */
-export function AdSlot({ slot, width, height, format = 'rectangle', className = '', label = true }: AdSlotProps) {
+function AdSlotUnit({ slot, width, height, format = 'rectangle', className = '', label = true }: AdSlotProps) {
   const hostRef = useRef<HTMLDivElement>(null);
   const [status, setStatus] = useState<Status>('idle');
   const { pathname } = useLocation();
@@ -126,4 +127,10 @@ export function AdSlot({ slot, width, height, format = 'rectangle', className = 
       />
     </div>
   );
+}
+
+/** Pro learners see no ads, and no ad script is requested for them. */
+export function AdSlot(props: AdSlotProps) {
+  const { isPro } = usePro();
+  return isPro ? null : <AdSlotUnit {...props} />;
 }

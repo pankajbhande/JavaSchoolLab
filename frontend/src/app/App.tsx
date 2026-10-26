@@ -10,6 +10,7 @@ import { Dashboard } from './components/Dashboard';
 import { ThemeProvider, useTheme } from './components/ThemeProvider';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ProgressProvider } from './context/ProgressContext';
+import { ProProvider } from './context/ProContext';
 import { LoginModal } from './components/LoginModal';
 import { AccountPage } from './components/AccountPage';
 import { Toaster } from './components/ui/sonner';
@@ -28,6 +29,7 @@ const FlashcardsPage = lazy(() => import('./pages/FlashcardsPage'));
 const InterviewPracticePage = lazy(() => import('./pages/InterviewPracticePage'));
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
 const LegalPage = lazy(() => import('./pages/LegalPage'));
+const PricingPage = lazy(() => import('./pages/PricingPage'));
 const AdminAnalyticsPage = lazy(() => import('./pages/AdminAnalyticsPage'));
 const AdminSuggestionsPage = lazy(() => import('./pages/AdminSuggestionsPage'));
 const AchievementsPage = lazy(() => import('./pages/AchievementsPage'));
@@ -228,6 +230,7 @@ export default function App() {
     <BrowserRouter>
       <ThemeProvider>
         <AuthProvider>
+          <ProProvider>
           <ProgressProvider>
           <AppToaster />
           <AchievementWatcher />
@@ -236,6 +239,7 @@ export default function App() {
             <AppRoutes />
           </AuthGate>
           </ProgressProvider>
+          </ProProvider>
         </AuthProvider>
       </ThemeProvider>
     </BrowserRouter>
@@ -264,6 +268,8 @@ function AppRoutes() {
               <Route path="/signup" element={<SignupPage />} />
               <Route path="/privacy" element={<Suspense fallback={<WorkspaceFallback />}><LegalPage kind="privacy" /></Suspense>} />
               <Route path="/terms" element={<Suspense fallback={<WorkspaceFallback />}><LegalPage kind="terms" /></Suspense>} />
+              <Route path="/refund-policy" element={<Suspense fallback={<WorkspaceFallback />}><LegalPage kind="refunds" /></Suspense>} />
+              <Route path="/pricing" element={<Suspense fallback={<WorkspaceFallback />}><PricingPage /></Suspense>} />
               <Route path="/verify" element={<Suspense fallback={<WorkspaceFallback />}><VerifyCertificate /></Suspense>} />
               <Route path="/verify/:uid" element={<Suspense fallback={<WorkspaceFallback />}><VerifyCertificate /></Suspense>} />
               <Route path="/u/:handle" element={<Suspense fallback={<WorkspaceFallback />}><ProfilePage /></Suspense>} />

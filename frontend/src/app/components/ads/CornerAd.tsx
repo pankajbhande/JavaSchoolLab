@@ -3,6 +3,7 @@ import { X } from 'lucide-react';
 import { AdSlot } from './AdSlot';
 import { AD_SLOTS, adsEnabled } from './adsense';
 import { useConsent } from '../../lib/consent';
+import { usePro } from '../../context/ProContext';
 
 const DISMISS_KEY = 'jsl_corner_ad_dismissed';
 
@@ -14,7 +15,7 @@ const DISMISS_KEY = 'jsl_corner_ad_dismissed';
  * column on desktop, it closes on one click, and it stays closed for the rest of the
  * session. Nothing here interrupts, redirects or takes over the page.
  */
-export function CornerAd() {
+function CornerAdUnit() {
   const [visible, setVisible] = useState(false);
   const [dismissed, setDismissed] = useState(false);
   const consent = useConsent();
@@ -76,4 +77,10 @@ export function CornerAd() {
       </div>
     </div>
   );
+}
+
+/** Pro learners never see the corner unit. */
+export function CornerAd() {
+  const { isPro } = usePro();
+  return isPro ? null : <CornerAdUnit />;
 }

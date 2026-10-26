@@ -119,4 +119,44 @@ class ShareLinkPreviewTest {
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("<title>JavaSchoolLab test shell</title>")));
     }
+
+    private static final SharePageService.OutlineTopic T1 = new SharePageService.OutlineTopic("what-is-java", "What is <Java>?");
+    private static final SharePageService.OutlineTopic T2 = new SharePageService.OutlineTopic("jvm", "JVM");
+    private static final SharePageService.OutlineModule M = new SharePageService.OutlineModule("basics", "Java Basics", java.util.List.of(T1, T2));
+    private static final SharePageService.OutlineCourse C = new SharePageService.OutlineCourse("java", "Java", java.util.List.of(M));
+
+    @Test
+    void aTopicPageCarriesCanonicalStructuredDataAndRealTextAndLinksInTheRoot() {
+        String page = "<html><head><title>x</title></head><body><div id=\"root\"></div></body></html>";
+        String body = SharePageService.topicBody(C, M, T1, "Learn it.", "Java runs everywhere.");
+        String html = SharePageService.withSeo(page, "https://javaschoollab.dhipansoft.in/course/java/basics/what-is-java", "{\"a\":\"</script>\"}", body);
+        assertThat(html).contains("<link rel=\"canonical\" href=\"https://javaschoollab.dhipansoft.in/course/java/basics/what-is-java\" />");
+        assertThat(html).contains("<script type=\"application/ld+json\">{\"a\":\"\\u003c/script>\"}</script>");
+        assertThat(html).contains("<div id=\"root\"><main>").contains("<h1>What is &lt;Java&gt;?</h1>").contains("Java runs everywhere.");
+        assertThat(html).contains("<a href=\"/course/java/basics/jvm\">JVM</a>").doesNotContain("<a href=\"/course/java/basics/what-is-java\">");
+    }
+
+    @Test
+    void anExistingCanonicalIsNotDuplicated() {
+        String html = SharePageService.withSeo("<head><link rel=\"canonical\" href=\"x\"></head><div id=\"root\"></div>", "c", null, "B");
+        assertThat(html.split("rel=\"canonical\"", -1).length - 1).isEqualTo(1);
+    }
+
+    @Test
+    void lessonExcerptsAreShortPlainTextWithoutCodeBlocks() {
+        String text = SharePageService.plainText("<h3>Hi</h3><pre>secret()</pre><p>Java &amp; JVM run <b>everywhere</b>.</p>");
+        assertThat(text).isEqualTo("Hi Java & JVM run everywhere .");
+        assertThat(SharePageService.plainText("word ".repeat(400)).length()).isLessThan(620);
+    }
+
+    @Test
+    void theHomePageListsEveryCourseAsALink() {
+        assertThat(SharePageService.homeBody(java.util.List.of(C))).contains("<h1>JavaSchoolLab").contains("<a href=\"/course/java\">Java</a>");
+    }
+
+    @Test
+    void theHomeAndDashboardUrlsStillAnswerWithThePage() throws Exception {
+        mvc.perform(get("/")).andExpect(status().isOk()).andExpect(content().string(containsString("test shell")));
+        mvc.perform(get("/dashboard")).andExpect(status().isOk()).andExpect(content().string(containsString("test shell")));
+    }
 }

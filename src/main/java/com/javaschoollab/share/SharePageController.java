@@ -25,6 +25,11 @@ public class SharePageController {
         this.siteUrl = siteUrl == null ? "" : siteUrl.trim().replaceAll("/+$", "");
     }
 
+    @GetMapping({"/", "/dashboard"})
+    public ResponseEntity<byte[]> home(HttpServletRequest request) {
+        return html(pages.homePage(origin(request)));
+    }
+
     @GetMapping("/course/{courseId}")
     public ResponseEntity<byte[]> course(@PathVariable String courseId, HttpServletRequest request) {
         return html(pages.coursePage(courseId, origin(request), request.getRequestURI()));

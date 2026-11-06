@@ -66,7 +66,7 @@ jobs:
       - name: Build the application image
         run: docker build -f docker/Dockerfile -t javaschoollab/app:ci .
       - name: Scan the image for known vulnerabilities (fails on critical)
-        uses: aquasecurity/trivy-action@0.28.0
+        uses: aquasecurity/trivy-action@v0.36.0
         with:
           image-ref: javaschoollab/app:ci
           severity: CRITICAL

@@ -13,7 +13,7 @@
 # stack in docker/docker-compose.shared.yml).
 
 # ---- Stage 1: build the React site ---------------------------------------------------
-FROM node:22-alpine AS web
+FROM node:25-alpine AS web
 WORKDIR /app
 COPY frontend/package.json frontend/package-lock.json ./
 RUN --mount=type=cache,target=/root/.npm npm ci --ignore-scripts --no-audit --no-fund --prefer-offline

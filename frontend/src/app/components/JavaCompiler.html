@@ -1,0 +1,1065 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Java Compiler</title>
+<style>
+  :root {
+    color-scheme: dark; /* dark scrollbars and form controls */
+    --bg: #1e1e1e;
+    --bg-panel: #252526;
+    --bg-titlebar: #323233;
+    --border: #3c3c3c;
+    --text: #d4d4d4;
+    --text-dim: #8a8a8a;
+    --accent: #0e9f6e;
+    --accent-hover: #0d8a5f;
+    --blue: #007acc;
+    --blue-hover: #0090f1;
+    --red: #f14c4c;
+    --yellow: #dcb350;
+    --gutter-bg: #1e1e1e;
+    --gutter-text: #6e7681;
+    --page-bg: #12121a;
+    --shadow: 0 20px 50px -20px rgba(0,0,0,0.6);
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    background: var(--page-bg);
+    background-image:
+      radial-gradient(circle at 12% 8%, rgba(234,88,12,0.14), transparent 42%),
+      radial-gradient(circle at 88% 92%, rgba(245,158,11,0.13), transparent 45%),
+      radial-gradient(circle at 92% 15%, rgba(14,159,110,0.06), transparent 38%);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+
+  .page {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 28px 24px 40px;
+    min-height: 100%;
+  }
+
+  .app-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .app-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .app-title .logo {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #f89820, #e76f00);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    box-shadow: 0 4px 14px rgba(232,111,0,0.45);
+  }
+
+  .app-title h1 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 700;
+    color: #f4f4f5;
+    letter-spacing: 0.2px;
+  }
+
+  .app-title .subtitle {
+    margin: 2px 0 0;
+    font-size: 12.5px;
+    color: var(--text-dim);
+  }
+
+  .header-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 12.5px;
+    color: var(--text-dim);
+  }
+
+  .header-badge .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 8px var(--accent);
+  }
+
+  .workspace {
+    display: grid;
+    grid-template-columns: 3fr 2fr;
+    gap: 18px;
+    align-items: stretch;
+  }
+
+  /* Desktop: both panels share one fixed height, so long code or long output scrolls
+     inside its panel instead of stretching the whole page. */
+  @media (min-width: 901px) {
+    .workspace { height: calc(100vh - 150px); min-height: 480px; }
+    .panel { min-height: 0; }
+  }
+
+  @media (max-width: 900px) {
+    .workspace { grid-template-columns: 1fr; }
+    .page { padding: 18px 14px 28px; }
+    .output-area { max-height: 420px; }
+  }
+
+  .panel {
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .panel-titlebar {
+    background: var(--bg-titlebar);
+    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .traffic-lights {
+    display: flex;
+    gap: 7px;
+  }
+
+  .traffic-lights span {
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    display: inline-block;
+  }
+
+  .tl-red { background: #ff5f57; }
+  .tl-yellow { background: #febc2e; }
+  .tl-green { background: #28c840; }
+
+  .panel-filename {
+    font-size: 12.5px;
+    color: var(--text-dim);
+    font-family: ui-monospace, SFMono-Regular, "JetBrains Mono", Menlo, Consolas, monospace;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .panel-filename .file-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--yellow);
+  }
+
+  .toolbar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+    background: var(--bg-panel);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    border: none;
+    border-radius: 7px;
+    padding: 7px 14px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.12s ease, filter 0.12s ease, background 0.12s ease;
+    font-family: inherit;
+  }
+
+  .btn:active { transform: translateY(1px) scale(0.98); }
+
+  .btn svg { width: 14px; height: 14px; flex-shrink: 0; }
+
+  .btn-run {
+    background: linear-gradient(135deg, var(--accent), #0b8659);
+    color: #fff;
+    box-shadow: 0 4px 14px rgba(14,159,110,0.35);
+  }
+  .btn-run:hover { filter: brightness(1.08); }
+  .btn-run:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    filter: none;
+  }
+
+  .btn-copy {
+    background: rgba(255,255,255,0.07);
+    color: var(--text);
+    border: 1px solid var(--border);
+  }
+  .btn-copy:hover { background: rgba(255,255,255,0.12); }
+
+  .btn-reset {
+    background: rgba(220,179,80,0.12);
+    color: var(--yellow);
+    border: 1px solid rgba(220,179,80,0.35);
+  }
+  .btn-reset:hover { background: rgba(220,179,80,0.2); }
+
+  .toolbar-spacer { flex: 1; }
+
+  .lang-pill {
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+    color: #f89820;
+    background: rgba(248,152,32,0.12);
+    border: 1px solid rgba(248,152,32,0.3);
+    padding: 5px 10px;
+    border-radius: 999px;
+  }
+
+  .editor-wrap {
+    position: relative;
+    flex: 1;
+    display: flex;
+    min-height: 320px;
+    background: var(--bg);
+  }
+  @media (min-width: 901px) { .editor-wrap { min-height: 0; } }
+
+  .gutter {
+    flex-shrink: 0;
+    width: 46px;
+    background: var(--gutter-bg);
+    color: var(--gutter-text);
+    font-family: ui-monospace, SFMono-Regular, "JetBrains Mono", Menlo, Consolas, monospace;
+    font-size: 13px;
+    line-height: 21px;
+    text-align: right;
+    /* Extra bottom padding mirrors the textarea's horizontal scrollbar so the last line
+       numbers stay aligned with the code when it scrolls to the end. */
+    padding: 14px 8px 30px 0;
+    user-select: none;
+    overflow: hidden;
+    border-right: 1px solid var(--border);
+    white-space: pre;
+  }
+
+  #code {
+    flex: 1;
+    resize: none;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: #d4d4d4;
+    font-family: ui-monospace, SFMono-Regular, "JetBrains Mono", Menlo, Consolas, monospace;
+    font-size: 13px;
+    line-height: 21px;
+    padding: 14px 16px;
+    tab-size: 4;
+    white-space: pre;
+    overflow: auto;
+  }
+
+  #code::selection { background: rgba(0,122,204,0.4); }
+
+  .btn:focus-visible, #code:focus-visible {
+    outline: 2px solid var(--blue-hover);
+    outline-offset: 2px;
+  }
+  kbd {
+    font-family: inherit;
+    font-size: 10.5px;
+    opacity: 0.75;
+    border: 1px solid rgba(255,255,255,0.25);
+    border-radius: 4px;
+    padding: 0 4px;
+    margin-left: 2px;
+  }
+
+  .status-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 7px 14px;
+    background: var(--bg-titlebar);
+    border-top: 1px solid var(--border);
+    font-size: 11.5px;
+    color: var(--text-dim);
+    font-family: ui-monospace, SFMono-Regular, "JetBrains Mono", Menlo, Consolas, monospace;
+  }
+
+  .status-left { display: flex; align-items: center; gap: 14px; }
+
+  .output-area {
+    flex: 1;
+    min-height: 320px;
+    padding: 16px;
+    font-family: ui-monospace, SFMono-Regular, "JetBrains Mono", Menlo, Consolas, monospace;
+    font-size: 13px;
+    line-height: 1.6;
+    white-space: pre-wrap;
+    word-break: break-word;
+    overflow: auto;
+    background: #1b1d23; /* Eclipse-dark console */
+  }
+
+  /* ---- Eclipse / STS style console ---- */
+  .con-head {
+    font-size: 12px;
+    padding-bottom: 8px;
+    margin-bottom: 8px;
+    border-bottom: 1px solid #2f323b;
+    color: #8b949e;
+  }
+  .con-head .con-tag { font-weight: 700; }
+  .con-head.con-running .con-tag { color: #6bd968; }
+  .con-head.con-terminated .con-tag { color: #e5c07b; }
+  .con-head.con-failed .con-tag { color: #ff6b6b; }
+  .con-head .con-stamp { color: #6e7681; }
+  .con-head .con-exit { margin-left: 8px; padding: 0 7px; border-radius: 999px; font-size: 11px; font-weight: 700; }
+  .con-head .con-exit.ok { color: #6bd968; background: rgba(107,217,104,0.12); }
+  .con-head .con-exit.bad { color: #ff6b6b; background: rgba(255,107,107,0.12); }
+
+  .con-line { white-space: pre-wrap; word-break: break-word; min-height: 1.6em; color: #d4d4d4; }
+  .con-line.err { color: #ff6b6b; }
+  .con-line.sys { color: #8b949e; font-style: italic; }
+  .con-line .lvl-error { color: #ff6b6b; font-weight: 700; }
+  .con-line .lvl-warn  { color: #e5c07b; font-weight: 700; }
+  .con-line .lvl-info  { color: #6bd968; font-weight: 700; }
+  .con-line .lvl-debug { color: #7aa2f7; font-weight: 700; }
+  .con-line .tok-time  { color: #8b949e; }
+  .con-line .tok-num   { color: #79c0ff; }
+  .con-line .tok-kw    { color: #d2a8ff; }
+  .con-line .tok-brk   { color: #56d4dd; }
+  .con-line .tok-str   { color: #f0a868; }
+  .con-line .tok-label { color: #e5c07b; }
+  .con-line .con-link  { color: #589df6; text-decoration: underline; text-underline-offset: 2px; }
+  .con-line.trace      { color: #9aa0a6; padding-left: 2px; }
+  .con-line .con-strong { font-weight: 700; }
+  .con-line.caret      { color: #e5c07b; }
+
+  .con-cursor {
+    display: inline-block;
+    width: 8px;
+    height: 15px;
+    background: #6bd968;
+    vertical-align: text-bottom;
+    animation: blink 1s steps(1) infinite;
+  }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  .btn-stop {
+    background: rgba(241,76,76,0.12);
+    color: var(--red);
+    border: 1px solid rgba(241,76,76,0.4);
+  }
+  .btn-stop:hover:not(:disabled) { background: rgba(241,76,76,0.22); }
+  .btn-stop:disabled { opacity: 0.35; cursor: not-allowed; }
+  .lang-pill.con-pill { color: #6bd968; background: rgba(107,217,104,0.1); border-color: rgba(107,217,104,0.3); }
+  @media (min-width: 901px) { .output-area { min-height: 0; } }
+
+  .output-placeholder {
+    color: var(--text-dim);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .output-placeholder svg { width: 15px; height: 15px; opacity: 0.7; }
+
+  .output-line-stdout { color: #d4d4d4; }
+  .output-line-stderr { color: var(--red); }
+  .output-line-success-banner {
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+    font-weight: 600;
+    padding-bottom: 8px;
+    border-bottom: 1px dashed var(--border);
+  }
+  .output-line-error-banner {
+    color: var(--red);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+    font-weight: 600;
+    padding-bottom: 8px;
+    border-bottom: 1px dashed var(--border);
+  }
+
+  .running-indicator {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--blue);
+    font-weight: 600;
+  }
+
+  .spinner {
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    border: 2px solid rgba(0,122,204,0.25);
+    border-top-color: var(--blue);
+    animation: spin 0.7s linear infinite;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 6px;
+  }
+  .status-ready .status-dot { background: var(--text-dim); }
+  .status-running .status-dot { background: var(--blue); box-shadow: 0 0 6px var(--blue); animation: pulse 1s infinite; }
+  .status-success .status-dot { background: var(--accent); box-shadow: 0 0 6px var(--accent); }
+  .status-error .status-dot { background: var(--red); box-shadow: 0 0 6px var(--red); }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: #1f2937;
+    color: #fff;
+    padding: 10px 18px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+    border: 1px solid rgba(255,255,255,0.08);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    z-index: 50;
+  }
+  .toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+  .toast svg { width: 15px; height: 15px; color: var(--accent); }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <div class="app-header">
+    <div class="app-title">
+      <div class="logo">☕</div>
+      <div>
+        <h1>Java Compiler</h1>
+        <p class="subtitle">Write, run, and test Java code instantly in your browser</p>
+      </div>
+    </div>
+    <div class="header-badge">
+      <span class="dot"></span>
+      Online &middot; Powered by Wandbox
+    </div>
+  </div>
+
+  <div class="workspace">
+
+    <!-- Editor Panel -->
+    <div class="panel">
+      <div class="panel-titlebar">
+        <div class="traffic-lights">
+          <span class="tl-red"></span>
+          <span class="tl-yellow"></span>
+          <span class="tl-green"></span>
+        </div>
+        <div class="panel-filename"><span class="file-dot"></span><span id="fileName">Main.java</span></div>
+      </div>
+
+      <div class="toolbar">
+        <button class="btn btn-run" id="runBtn" onclick="runCode()" title="Run (Ctrl+Enter)">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+          Run <kbd>Ctrl&#8629;</kbd>
+        </button>
+        <button class="btn btn-copy" onclick="copyCode()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>
+          Copy
+        </button>
+        <button class="btn btn-reset" onclick="resetCode()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+          Reset
+        </button>
+        <div class="toolbar-spacer"></div>
+        <span class="lang-pill">JAVA</span>
+      </div>
+
+      <div class="editor-wrap">
+        <div class="gutter" id="gutter">1</div>
+        <textarea id="code" aria-label="Java source code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off"></textarea>
+      </div>
+
+      <div class="status-bar">
+        <div class="status-left">
+          <span>UTF-8</span>
+          <span>OpenJDK 22</span>
+        </div>
+        <span id="charCount">0 characters</span>
+      </div>
+    </div>
+
+    <!-- Output Panel -->
+    <div class="panel">
+      <div class="panel-titlebar">
+        <div class="traffic-lights">
+          <span class="tl-red"></span>
+          <span class="tl-yellow"></span>
+          <span class="tl-green"></span>
+        </div>
+        <div class="panel-filename"><span class="file-dot" style="background:#3fb950;"></span>Console</div>
+      </div>
+
+      <div class="toolbar">
+        <button class="btn btn-stop" id="stopBtn" onclick="stopRun()" disabled title="Terminate">
+          <svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="1.5"/></svg>
+          Stop
+        </button>
+        <button class="btn btn-copy" onclick="copyConsole()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>
+          Copy
+        </button>
+        <button class="btn btn-copy" onclick="clearConsole()" title="Clear console">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg>
+          Clear
+        </button>
+        <div class="toolbar-spacer"></div>
+        <span class="lang-pill con-pill">CONSOLE</span>
+      </div>
+
+      <!-- No whitespace around the placeholder: .output-area uses white-space: pre-wrap, which
+           would render the newlines as blank lines above it. -->
+      <div class="output-area" id="output" role="log" aria-live="polite"><div class="output-placeholder" id="outputPlaceholder">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 5v14l11-7z"/></svg>
+          <span>Click <b style="color:#d4d4d4; margin: 0 2px;">Run ▶</b> to see the output here</span>
+        </div></div>
+
+      <div class="status-bar">
+        <div class="status-left">
+          <span id="statusIndicator" class="status-ready"><span class="status-dot"></span>Ready</span>
+        </div>
+        <span id="execTime"></span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="toast" id="toast">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+  <span id="toastText">Copied!</span>
+</div>
+
+<script>
+  const defaultCode = `public class Main {
+    public static void main(String[] args) {
+        System.out.println("Hello, World!");
+    }
+}`;
+
+  const codeArea = document.getElementById("code");
+  const outputArea = document.getElementById("output");
+  const outputPlaceholder = document.getElementById("outputPlaceholder");
+  const gutter = document.getElementById("gutter");
+  const runBtn = document.getElementById("runBtn");
+  const stopBtn = document.getElementById("stopBtn");
+  const statusIndicator = document.getElementById("statusIndicator");
+  const execTimeEl = document.getElementById("execTime");
+  const charCountEl = document.getElementById("charCount");
+  const toast = document.getElementById("toast");
+  const toastText = document.getElementById("toastText");
+
+  const savedCode = localStorage.getItem("java_try_code");
+  codeArea.value = savedCode && savedCode.trim() ? savedCode : defaultCode;
+
+  function updateGutter() {
+    const lineCount = codeArea.value.split("\n").length;
+    let lines = "";
+    for (let i = 1; i <= lineCount; i++) lines += (i < lineCount ? i + "\n" : i);
+    gutter.textContent = lines;
+    charCountEl.textContent = codeArea.value.length + " characters";
+    const fileNameEl = document.getElementById("fileName");
+    if (fileNameEl) fileNameEl.textContent = mainClassName(codeArea.value) + ".java";
+  }
+
+  // The class that holds main(): the last top-level type declared before it. Eclipse titles
+  // its console with this name, so the console does too.
+  function mainClassName(code) {
+    const m = /\bpublic\s+static\s+void\s+main\s*\(/.exec(code);
+    const re = /\b(?:class|interface|enum|record)\s+([A-Za-z_$][\w$]*)/g;
+    let name = null, hit;
+    while ((hit = re.exec(code)) && (!m || hit.index < m.index)) name = hit[1];
+    return name || "Main";
+  }
+
+  function syncScroll() {
+    gutter.scrollTop = codeArea.scrollTop;
+  }
+
+  codeArea.addEventListener("input", () => {
+    updateGutter();
+    localStorage.setItem("java_try_code", codeArea.value);
+  });
+  codeArea.addEventListener("scroll", syncScroll);
+
+  // Tab key -> insert 4 spaces instead of losing focus. Ctrl/Cmd+Enter runs the code.
+  codeArea.addEventListener("keydown", (e) => {
+    if (e.key === "Tab") {
+      e.preventDefault();
+      const start = codeArea.selectionStart;
+      const end = codeArea.selectionEnd;
+      codeArea.value = codeArea.value.substring(0, start) + "    " + codeArea.value.substring(end);
+      codeArea.selectionStart = codeArea.selectionEnd = start + 4;
+      updateGutter();
+      localStorage.setItem("java_try_code", codeArea.value);
+    } else if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
+      e.preventDefault();
+      if (!runBtn.disabled) runCode();
+    }
+  });
+
+  updateGutter();
+
+  function showToast(message) {
+    toastText.textContent = message;
+    toast.classList.add("show");
+    setTimeout(() => toast.classList.remove("show"), 1800);
+  }
+
+  function copyCode() {
+    navigator.clipboard.writeText(codeArea.value).then(() => {
+      showToast("Code copied to clipboard!");
+    }).catch(() => {
+      codeArea.select();
+      document.execCommand("copy");
+      showToast("Code copied to clipboard!");
+    });
+  }
+
+  function resetCode() {
+    codeArea.value = defaultCode;
+    updateGutter();
+    localStorage.setItem("java_try_code", defaultCode);
+    setOutputPlaceholder();
+    setStatus("ready");
+    execTimeEl.textContent = "";
+  }
+
+  function setOutputPlaceholder() {
+    outputArea.innerHTML = "";
+    outputArea.appendChild(outputPlaceholder);
+  }
+
+  function setStatus(state, label) {
+    statusIndicator.className = "status-" + state;
+    const text = label || (state === "ready" ? "Ready" : state === "running" ? "Running" : state === "success" ? "Success" : "Error");
+    statusIndicator.innerHTML = '<span class="status-dot"></span>' + text;
+  }
+
+  function escapeHtml(str) {
+    return str
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;");
+  }
+
+  // ---- Eclipse / STS style console -------------------------------------------------
+  let consoleClass = "Main";
+  let streamTimer = null;
+  let currentController = null;
+  let userStopped = false;
+
+  function stamp() {
+    return new Date().toLocaleString("en-GB", {
+      day: "2-digit", month: "short", year: "numeric",
+      hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false
+    });
+  }
+
+  // "<running> Main [Java Application] ..." header, exactly like the Eclipse Console tab.
+  function consoleHeader(state, exitCode, cls) {
+    const tag = state === "running" ? "&lt;running&gt;" : "&lt;terminated&gt;";
+    const exit = (exitCode === undefined || exitCode === null) ? "" :
+      `<span class="con-exit ${String(exitCode) === "0" ? "ok" : "bad"}">exit ${escapeHtml(String(exitCode))}</span>`;
+    return `<div class="con-head con-${state}"><span class="con-tag">${tag}</span> ${escapeHtml(cls || consoleClass)} [Java Application] OpenJDK 22 <span class="con-stamp">(${stamp()})</span>${exit}</div>`;
+  }
+
+  // Colours one console line: log levels, timestamps, numbers, literals, [brackets],
+  // stack-trace links and javac diagnostics.
+  function colorizeLine(raw, kind) {
+    const s = escapeHtml(raw);
+    if (kind === "sys") return { html: s, cls: "sys" };
+    if (kind === "err") {
+      if (/^\s+at\s/.test(raw)) {
+        return { html: s.replace(/\(([^)]+\.java:\d+)\)/, '(<span class="con-link">$1</span>)'), cls: "err trace" };
+      }
+      if (/^\s*\^+\s*$/.test(raw)) return { html: s, cls: "caret" };
+      const diag = s.match(/^([\w$.\/\-]+\.java:\d+)(: )(error|warning)(:)(.*)$/);
+      if (diag) {
+        return {
+          html: `<span class="con-link">${diag[1]}</span>${diag[2]}<span class="con-strong">${diag[3]}</span>${diag[4]}${diag[5]}`,
+          cls: "err"
+        };
+      }
+      if (/^(Exception in thread|Caused by:)/.test(raw)) return { html: `<span class="con-strong">${s}</span>`, cls: "err" };
+      return { html: s, cls: "err" };
+    }
+    const html = s.replace(
+      /(\b\d{4}-\d{2}-\d{2}[ T]\d{2}:\d{2}:\d{2}(?:[.,]\d+)?\b)|(\b(?:ERROR|FATAL|SEVERE)\b)|(\bWARN(?:ING)?\b)|(\bINFO\b)|(\b(?:DEBUG|TRACE)\b)|(\b(?:true|false|null)\b)|(\[[^\]\n]{1,40}\])|("[^"\n]*")|(^[A-Za-z][\w .-]{0,30}?(?=:\s))|((?<![\w.])-?\d+(?:\.\d+)?(?![\w.]))/g,
+      (m, time, error, warn, info, debug, kw, brk, str, label, num) =>
+        time  ? `<span class="tok-time">${m}</span>`  :
+        error ? `<span class="lvl-error">${m}</span>` :
+        warn  ? `<span class="lvl-warn">${m}</span>`  :
+        info  ? `<span class="lvl-info">${m}</span>`  :
+        debug ? `<span class="lvl-debug">${m}</span>` :
+        kw    ? `<span class="tok-kw">${m}</span>`    :
+        brk   ? `<span class="tok-brk">${m}</span>`   :
+        str   ? `<span class="tok-str">${m}</span>`   :
+        label ? `<span class="tok-label">${m}</span>` :
+                `<span class="tok-num">${m}</span>`
+    );
+    return { html, cls: "" };
+  }
+
+  function toLines(text, kind) {
+    if (!text) return [];
+    const lines = text.replace(/\r\n/g, "\n").replace(/\n+$/, "").split("\n");
+    return lines.map(t => ({ text: t, kind }));
+  }
+
+  function stopStream() {
+    if (streamTimer) { clearTimeout(streamTimer); streamTimer = null; }
+  }
+
+  // Prints lines one after another (auto-scrolling) so output appears live, like a real
+  // console. The batch size grows for long output so it never takes more than ~1.5s.
+  function streamLines(lines, onDone) {
+    stopStream();
+    const body = document.createElement("div");
+    outputArea.appendChild(body);
+    if (!lines.length) { onDone && onDone(); return; }
+    const batch = Math.max(1, Math.ceil(lines.length / 80));
+    const delay = Math.max(10, Math.min(60, 1500 / Math.ceil(lines.length / batch)));
+    let i = 0;
+    const tick = () => {
+      const stop = Math.min(lines.length, i + batch);
+      for (; i < stop; i++) {
+        const { html, cls } = colorizeLine(lines[i].text, lines[i].kind);
+        const div = document.createElement("div");
+        div.className = "con-line " + cls;
+        div.innerHTML = html || "&nbsp;";
+        body.appendChild(div);
+      }
+      outputArea.scrollTop = outputArea.scrollHeight;
+      if (i < lines.length) streamTimer = setTimeout(tick, delay);
+      else { streamTimer = null; onDone && onDone(); }
+    };
+    tick();
+  }
+
+  function renderOutput({ banner, bannerType, stdout, stderr, exitCode }) {
+    const lines = [];
+    if (banner && bannerType === "error") lines.push({ text: banner, kind: "err" });
+    lines.push(...toLines(stdout, "out"), ...toLines(stderr, "err"));
+    if (!lines.length) lines.push({ text: "(no output)", kind: "sys" });
+    const failed = bannerType === "error";
+    outputArea.innerHTML = consoleHeader("terminated", exitCode)
+      .replace("con-terminated", failed ? "con-failed" : "con-terminated");
+    streamLines(lines);
+  }
+
+  function stopRun() {
+    if (!currentController) return;
+    userStopped = true;
+    currentController.abort();
+  }
+
+  function clearConsole() {
+    stopStream();
+    setOutputPlaceholder();
+    setStatus("ready");
+    execTimeEl.textContent = "";
+  }
+
+  function copyConsole() {
+    const text = Array.from(outputArea.querySelectorAll(".con-head, .con-line"))
+      .map(el => el.textContent).join("\n");
+    if (!text.trim()) return;
+    navigator.clipboard.writeText(text).then(() => showToast("Console copied!")).catch(() => {});
+  }
+
+  // NOTE: The public Piston API (emkc.org) went whitelist-only and now
+  // rejects every request with 401. Wandbox (wandbox.org) is used instead —
+  // it's free, requires no API key/token, and allows CORS from any origin.
+  const WANDBOX_COMPILE_URL = "https://wandbox.org/api/compile.json";
+  const WANDBOX_JAVA_COMPILER = "openjdk-jdk-22+36";
+
+  // Wandbox's NDJSON endpoint streams events while the program runs
+  // (Start, CompilerMessageS/E, StdOut, StdErr, Signal, ExitCode, Finish), so the console
+  // fills in real time instead of after the whole run.
+  const WANDBOX_STREAM_URL = "https://wandbox.org/api/compile.ndjson";
+
+  // Live console: stdout/stderr chunks are appended to the line currently being written.
+  function createLiveConsole() {
+    outputArea.innerHTML = consoleHeader("running");
+    const head = outputArea.firstElementChild;
+    const body = document.createElement("div");
+    outputArea.appendChild(body);
+    const cursor = document.createElement("span");
+    cursor.className = "con-cursor";
+
+    let pending = null; // { kind, text, el }: the line still being written
+    const status = document.createElement("div");
+    status.className = "con-line sys";
+    status.textContent = "Compiling " + consoleClass + ".java …";
+    body.appendChild(status);
+
+    function paint(line) {
+      const { html, cls } = colorizeLine(line.text, line.kind);
+      line.el.className = "con-line " + cls;
+      line.el.innerHTML = html || "&nbsp;";
+    }
+
+    function put(text, kind) {
+      if (status.parentNode) status.remove();
+      const parts = text.split("\n");
+      parts.forEach((part, i) => {
+        if (pending && pending.kind !== kind) pending = null;
+        if (!pending) {
+          if (part === "" && i === parts.length - 1) return; // trailing newline: no new line yet
+          pending = { kind, text: "", el: document.createElement("div") };
+          body.appendChild(pending.el);
+        }
+        pending.text += part;
+        paint(pending);
+        if (i < parts.length - 1) pending = null; // newline closes the line
+      });
+      body.appendChild(cursor);
+      outputArea.scrollTop = outputArea.scrollHeight;
+    }
+
+    function finish({ exitCode, failed }) {
+      if (status.parentNode) {
+        status.textContent = "(no output)";
+        status.className = "con-line sys";
+      }
+      cursor.remove();
+      head.outerHTML = consoleHeader("terminated", exitCode)
+        .replace("con-terminated", failed ? "con-failed" : "con-terminated");
+      outputArea.scrollTop = outputArea.scrollHeight;
+    }
+
+    return { put, finish };
+  }
+
+  async function runCode() {
+    const code = codeArea.value;
+    if (!code.trim()) {
+      setStatus("error", "Empty");
+      renderOutput({ banner: "✕ No code to run", bannerType: "error" });
+      return;
+    }
+
+    if (!/public\s+static\s+void\s+main\s*\(\s*String/.test(code)) {
+      setStatus("error", "Compile Error");
+      renderOutput({ banner: "✕ No main() method found — add: public static void main(String[] args)", bannerType: "error" });
+      return;
+    }
+
+    stopStream();
+    consoleClass = mainClassName(code);
+    runBtn.disabled = true;
+    stopBtn.disabled = false;
+    userStopped = false;
+    setStatus("running");
+    execTimeEl.textContent = "";
+    const live = createLiveConsole();
+
+    const startedAt = performance.now();
+    // Real-time stopwatch: ticks while the program compiles and runs.
+    const tickTimer = setInterval(() => {
+      execTimeEl.textContent = ((performance.now() - startedAt) / 1000).toFixed(1) + "s";
+    }, 100);
+
+    // Wandbox always names the submitted file "prog.java". Java only
+    // requires the file name to match a PUBLIC top-level class, so we
+    // strip the "public" modifier from every top-level class/interface/enum
+    // declaration before sending. Multiple classes in one snippet (e.g. a
+    // helper class + a class with main()) keep working exactly as written —
+    // no manual file-splitting needed.
+    // Wandbox runs a single un-packaged prog.java, so a leading `package ...;` line (which the
+    // lessons now include) is dropped for the run only; the editor keeps it.
+    const sanitizedCode = code.replace(/^\s*package\s+[\w.]+\s*;[ \t]*\r?\n?/m, "").replace(
+      /\bpublic(\s+)((?:final\s+|abstract\s+|static\s+)*(?:class|interface|enum)\s+)/g,
+      "$2"
+    );
+
+    // Without a timeout a stalled request would leave Run disabled forever. The clock is
+    // reset whenever output arrives, so a long-running program that keeps printing is fine.
+    const controller = new AbortController();
+    currentController = controller;
+    let timeoutId = setTimeout(() => controller.abort(), 30000);
+    const bump = () => { clearTimeout(timeoutId); timeoutId = setTimeout(() => controller.abort(), 30000); };
+
+    let exitCode = null;
+    let sawCompileError = false;
+    let sawOutput = false;
+
+    const handle = (ev) => {
+      const data = String(ev.data == null ? "" : ev.data).replace(/prog\.java/g, consoleClass + ".java");
+      switch (ev.type) {
+        case "CompilerMessageE":
+          sawCompileError = true;
+          live.put(data, "err");
+          break;
+        case "CompilerMessageS":
+          live.put(data, "sys");
+          break;
+        case "StdOut":
+          sawOutput = true;
+          live.put(data, "out");
+          break;
+        case "StdErr":
+          sawOutput = true;
+          live.put(data, "err");
+          break;
+        case "Signal":
+          live.put("\n" + data + "\n", "err");
+          break;
+        case "ExitCode":
+          exitCode = data;
+          break;
+      }
+    };
+
+    try {
+      const response = await fetch(WANDBOX_STREAM_URL, {
+        method: "POST",
+        signal: controller.signal,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          code: sanitizedCode,
+          compiler: WANDBOX_JAVA_COMPILER,
+          save: false
+        })
+      });
+
+      if (!response.ok) {
+        const body = await response.text().catch(() => "");
+        finish(() => {
+          setStatus("error", "Server Error");
+          renderOutput({
+            banner: `✕ Compiler service responded with status ${response.status}`,
+            bannerType: "error",
+            stderr: body
+          });
+        });
+        return;
+      }
+
+      // Read the stream line by line (one JSON event per line).
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = "";
+      for (;;) {
+        const { done, value } = await reader.read();
+        if (value) {
+          bump();
+          buffer += decoder.decode(value, { stream: !done });
+          let nl;
+          while ((nl = buffer.indexOf("\n")) >= 0) {
+            const line = buffer.slice(0, nl).trim();
+            buffer = buffer.slice(nl + 1);
+            if (line) { try { handle(JSON.parse(line)); } catch (_) { /* ignore a malformed line */ } }
+          }
+        }
+        if (done) break;
+      }
+      if (buffer.trim()) { try { handle(JSON.parse(buffer.trim())); } catch (_) {} }
+
+      const ok = exitCode === "0" || exitCode === 0;
+      finish(() => {
+        live.finish({ exitCode, failed: !ok });
+        if (ok) setStatus("success", "Success");
+        else if (sawCompileError) setStatus("error", "Compile Error");
+        else setStatus("error", "Runtime Error");
+      });
+    } catch (err) {
+      finish(() => {
+        if (userStopped) {
+          live.put("\n", "sys");
+          live.finish({ exitCode: null, failed: true });
+          setStatus("error", "Terminated");
+          return;
+        }
+        setStatus("error", "Connection Error");
+        renderOutput({
+          banner: "✕ Could not reach the compiler service",
+          bannerType: "error",
+          stderr: (err && err.name === "AbortError")
+            ? "The compiler took longer than 30 seconds to respond. Please try again."
+            : (err && err.message) ? err.message : "Please check your internet connection and try again."
+        });
+      });
+    }
+
+    function finish(render) {
+      clearTimeout(timeoutId);
+      clearInterval(tickTimer);
+      currentController = null;
+      stopBtn.disabled = true;
+      const elapsed = ((performance.now() - startedAt) / 1000).toFixed(2);
+      execTimeEl.textContent = elapsed + "s";
+      runBtn.disabled = false;
+      render();
+    }
+  }
+</script>
+
+</body>
+</html>

@@ -18,7 +18,7 @@
 
   <properties>
     <java.version>21</java.version>
-    <datasource-micrometer.version>1.0.6</datasource-micrometer.version>
+    <datasource-micrometer.version>2.3.0</datasource-micrometer.version>
     <jjwt.version>0.12.6</jjwt.version>
     <!-- Folder holding the built React site (npm run build:fast). Used by -Pwith-site. -->
     <frontend.dist>${project.basedir}/frontend/dist</frontend.dist>

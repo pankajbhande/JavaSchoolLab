@@ -6,6 +6,7 @@
 // module and topic order follow the syllabus numbering exactly.
 
 import type { SubTopic } from './types';
+import { mergeTopics } from './mergeTopics';
 
 import { springFrameworkIntroduction } from './topics/SpringFrameworkIntroduction';
 import { springArchitecture } from './topics/SpringArchitecture';
@@ -544,29 +545,14 @@ export const springBootModules: SubTopic[] = [
         id: 'springboot-fundamentals',
         name: 'Spring Framework Fundamentals',
         topics: [
-            springFrameworkIntroduction,
-            springArchitecture,
-            springCoreIocDi,
-            springDependencyInjectionFundamentals,
-            springConstructorInjection,
-            springSetterInjection,
-            springFieldInjection,
-            springBeans,
-            springBeanLifecycle,
-            springBeanScopes,
-            springComponent,
-            springService,
-            springRepository,
-            springController,
-            springConfiguration,
-            springBean,
-            springAutowired,
-            springQualifier,
-            springPrimary,
-            springComponentScanning,
-            springApplicationcontext,
-            springEnvironmentAndProfiles,
-            springExpressionLanguageSpel,
+            mergeTopics("Spring Framework Introduction & Architecture", [springFrameworkIntroduction, springArchitecture]),
+            mergeTopics("IoC & Dependency Injection", [springCoreIocDi, springDependencyInjectionFundamentals, springConstructorInjection, springSetterInjection, springFieldInjection]),
+            mergeTopics("Spring Beans: Lifecycle & Scopes", [springBeans, springBeanLifecycle, springBeanScopes]),
+            mergeTopics("Stereotype Annotations", [springComponent, springService, springRepository, springController]),
+            mergeTopics("Java Configuration & @Bean", [springConfiguration, springBean]),
+            mergeTopics("Autowiring: @Autowired, @Qualifier & @Primary", [springAutowired, springQualifier, springPrimary]),
+            mergeTopics("Component Scanning & ApplicationContext", [springComponentScanning, springApplicationcontext]),
+            mergeTopics("Environment, Profiles & SpEL", [springEnvironmentAndProfiles, springExpressionLanguageSpel]),
         ]
     },
     {

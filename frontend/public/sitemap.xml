@@ -5001,32 +5001,7 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://javaschoollab.dhipansoft.in/course/spring-boot/springboot-fundamentals/sb-spring-architecture</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
     <loc>https://javaschoollab.dhipansoft.in/course/spring-boot/springboot-fundamentals/spring-core-ioc-di</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://javaschoollab.dhipansoft.in/course/spring-boot/springboot-fundamentals/sb-dependency-injection</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://javaschoollab.dhipansoft.in/course/spring-boot/springboot-fundamentals/sb-constructor-injection</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://javaschoollab.dhipansoft.in/course/spring-boot/springboot-fundamentals/sb-setter-injection</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://javaschoollab.dhipansoft.in/course/spring-boot/springboot-fundamentals/sb-field-injection</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -5036,32 +5011,7 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://javaschoollab.dhipansoft.in/course/spring-boot/springboot-fundamentals/sb-bean-lifecycle</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://javaschoollab.dhipansoft.in/course/spring-boot/springboot-fundamentals/sb-bean-scopes</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
     <loc>https://javaschoollab.dhipansoft.in/course/spring-boot/springboot-fundamentals/sb-component</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://javaschoollab.dhipansoft.in/course/spring-boot/springboot-fundamentals/sb-service</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://javaschoollab.dhipansoft.in/course/spring-boot/springboot-fundamentals/sb-repository</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://javaschoollab.dhipansoft.in/course/spring-boot/springboot-fundamentals/sb-controller</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -5071,22 +5021,7 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://javaschoollab.dhipansoft.in/course/spring-boot/springboot-fundamentals/sb-bean</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
     <loc>https://javaschoollab.dhipansoft.in/course/spring-boot/springboot-fundamentals/sb-autowired</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://javaschoollab.dhipansoft.in/course/spring-boot/springboot-fundamentals/sb-qualifier</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://javaschoollab.dhipansoft.in/course/spring-boot/springboot-fundamentals/sb-primary</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -5096,17 +5031,7 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://javaschoollab.dhipansoft.in/course/spring-boot/springboot-fundamentals/sb-applicationcontext</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
     <loc>https://javaschoollab.dhipansoft.in/course/spring-boot/springboot-fundamentals/sb-environment-and-profiles</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://javaschoollab.dhipansoft.in/course/spring-boot/springboot-fundamentals/sb-spring-expression-language-spel</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>

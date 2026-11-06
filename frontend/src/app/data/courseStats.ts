@@ -2,7 +2,7 @@
 //
 // Per-course totals for the dashboard's completion rings. Kept separate from coursesData
 // so the landing page can show progress without downloading every topic.
-// 29 courses, 3658 topics.
+// 29 courses, 3643 topics.
 
 export interface CourseStat {
   topics: number;
@@ -36,10 +36,10 @@ export const courseStats: Record<string, CourseStat> = {
   "python": { topics: 397, modules: 40 },
   "react-js": { topics: 68, modules: 19 },
   "software-foundations": { topics: 41, modules: 4 },
-  "spring-boot": { topics: 530, modules: 30 },
+  "spring-boot": { topics: 515, modules: 30 },
   "spring-core": { topics: 62, modules: 24 },
   "spring-mvc": { topics: 443, modules: 35 },
 };
 
 /** Total topics across every course. */
-export const TOTAL_TOPICS = 3658;
+export const TOTAL_TOPICS = 3643;

@@ -3,14 +3,14 @@
  "courses": 29,
  "totals": {
   "modules": 464,
-  "topics": 3658,
+  "topics": 3643,
   "blocks": 28580,
   "codeExamples": 20978,
   "codeExplanations": 558,
   "interviewQA": 3070,
   "cheatNotes": 960,
   "interviewQuestions": 3181,
-  "characters": 24046455
+  "characters": 24047909
  },
  "items": [
   {
@@ -125,18 +125,18 @@
    "id": "spring-boot",
    "name": "Spring Boot",
    "file": "courses/spring-boot.json",
-   "bytes": 2399940,
-   "sha256": "938d17ecab91670a932fc852d989f01584e8e7b23e38de807eb0ba0b8664707d",
+   "bytes": 2400410,
+   "sha256": "2bb299477f89bf89cf032d86fc6233f7c31023826d41660975d8895153b10470",
    "counts": {
     "modules": 30,
-    "topics": 530,
+    "topics": 515,
     "blocks": 1325,
     "codeExamples": 1270,
     "codeExplanations": 0,
     "interviewQA": 0,
     "cheatNotes": 96,
     "interviewQuestions": 5,
-    "characters": 2266303
+    "characters": 2267757
    }
   },
   {

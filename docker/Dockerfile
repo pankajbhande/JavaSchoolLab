@@ -35,7 +35,7 @@ ENV VITE_API_BASE_URL=$VITE_API_BASE_URL VITE_CONTENT_SOURCE=$VITE_CONTENT_SOURC
 RUN npm run build
 
 # ---- Stage 2: build the jar with the site baked in -----------------------------------
-FROM maven:3.9-eclipse-temurin-21 AS jar
+FROM maven:3.9-eclipse-temurin-26 AS jar
 WORKDIR /build
 COPY pom.xml .
 RUN --mount=type=cache,target=/root/.m2 mvn -B -q dependency:go-offline

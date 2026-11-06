@@ -230,8 +230,8 @@ import com.twilio.type.PhoneNumber;
 @Service
 public class SmsService {
 
-    // PDF:  private final String ACCOUNT_SID = "ACf96fad0b...";
-    //       private final String AUTH_TOKEN  = "7fca9108...";
+    // PDF:  private final String ACCOUNT_SID = "ACxxxxxxxx...";
+    //       private final String AUTH_TOKEN  = "your_auth_t...";
     // A live Auth Token in source control. Rotate it and never do this.
     @Value("\${twilio.account-sid}") private String accountSid;
     @Value("\${twilio.auth-token}")  private String authToken;
@@ -1066,7 +1066,7 @@ application-local.properties
 .env
 
 // Checking your own history for the mistake:
-//   git log -p -S "ACf96fad" -- .
+//   git log -p -S "ACxxxxxx" -- .
 //   gitleaks detect --source . --redact
 //
 // OUTPUT if it is there:

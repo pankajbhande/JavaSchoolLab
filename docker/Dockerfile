@@ -45,7 +45,7 @@ COPY --from=web /app/dist /site
 RUN --mount=type=cache,target=/root/.m2 mvn -B -q -Pwith-site -Dfrontend.skip=true -Dfrontend.dist=/site -DskipTests package
 
 # ---- Stage 3: run ---------------------------------------------------------------------
-FROM eclipse-temurin:21-jre
+FROM eclipse-temurin:25-jre
 ENV SPRING_PROFILES_ACTIVE=prod
 # Fonts for the share-preview pictures (the slim JRE image has none).
 RUN apt-get update && apt-get install -y --no-install-recommends fontconfig fonts-dejavu-core && rm -rf /var/lib/apt/lists/*
